@@ -14,7 +14,7 @@ namespace Survey.TestData
         public static void Test1()
         {
             //var lData = Data.GetData("axsusdt", EInterval.I15M);
-            var lData = Data.GetData("axsusdt", EInterval.I1H);
+            var lData = Data.GetData("c98usdt", EInterval.I1H);
             var lDataQuote = lData.Select(x => x.To<Quote>());
             var count = lData.Count();
             var lIchimoku = lDataQuote.GetIchimoku();
@@ -48,7 +48,7 @@ namespace Survey.TestData
 
                 if(state)
                 {
-                    var check = Check2Buy(item, ichimoku, 5);
+                    var check = Check2Buy(item, ichimoku, 1);
                     if (check)
                     {
                         stateBuy = true;
@@ -56,7 +56,7 @@ namespace Survey.TestData
                 }
                 else 
                 {
-                    var check = Check2Sell(item, ichimoku, ma20,4);
+                    var check = Check2Sell(item, ichimoku, ma20,5);
                     if (check)
                     {
                         stateSell = true;
@@ -66,7 +66,7 @@ namespace Survey.TestData
             //print
             var countResult = lSell.Count();
             var lRate = new List<double>();
-            for (int i = 0; i < countResult; i = i + 2)
+            for (int i = 0; i < countResult; i++)
             {
                 var itemBuy = lBuy.ElementAt(i);
                 var itemSell = lSell.ElementAt(i);
@@ -88,7 +88,7 @@ namespace Survey.TestData
             case 2: nến C vượt mây 
             case 3: nến L vượt mây
             case 4: nến H vượt mây và nến xanh
-            case 5: nến C vượt mây và nến xanh
+            case 5: nến C vượt mây và nến xanh(tỉ lệ đang tốt nhất)
             case 6: nến L vượt mây và nến xanh
          */
         public static bool Check2Buy(FinancialDataPoint item, IchimokuResult itemIchi, int mode = 1)
@@ -142,7 +142,7 @@ namespace Survey.TestData
             case 1: giá H nhỏ hơn ma20
             case 2: giá C nhỏ hơn ma20 
             case 3: giá L nhỏ hơn ma20
-            case 4: giá H nhỏ hơn cận trên mây
+            case 4: giá H nhỏ hơn cận trên mây(tỉ lệ đang tốt nhất)
             case 5: giá C nhỏ hơn cận trên mây 
             case 6: giá L nhỏ hơn cận trên mây
          */
