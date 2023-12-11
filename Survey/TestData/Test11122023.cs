@@ -14,7 +14,7 @@ namespace Survey.TestData
         public static void Test1()
         {
             //var lData = Data.GetData("axsusdt", EInterval.I15M);
-            var lData = Data.GetData("c98usdt", EInterval.I1H);
+            var lData = Data.GetData("axsusdt", EInterval.I1H);
             var lDataQuote = lData.Select(x => x.To<Quote>());
             var count = lData.Count();
             var lIchimoku = lDataQuote.GetIchimoku();
