@@ -138,6 +138,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestData\Test08122023.cs" />
     <Compile Include="TestData\Test11122023.cs" />
+    <Compile Include="TestData\Test12122023.cs" />
     <Compile Include="Utils\CalculateMng.cs" />
     <Compile Include="Utils\Data.cs" />
     <Compile Include="Utils\EnumMng.cs" />

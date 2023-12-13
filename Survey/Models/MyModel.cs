@@ -48,6 +48,7 @@ namespace Survey.Models
         public double Volume { get; set; }
         public bool IsEmpty { get { return DateTimeStamp.Equals(new DateTime()); } }
         public double MCDX { get; set; }
+        public string Description { get; set; }
 
         public FinancialDataPoint() { }
         public FinancialDataPoint(DateTime date, double open, double high, double low, double close, double volume)
