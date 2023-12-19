@@ -1,5 +1,11 @@
-﻿using Survey.TestData;
+﻿using Survey.GUI;
+using Survey.Models;
+using Survey.TestData;
+using Survey.Utils;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Survey
 {
@@ -11,10 +17,11 @@ namespace Survey
         [STAThread]
         static void Main()
         {
-            Test12122023.Test1();
+            //new Test14122023().HandleData();
+            //Test14122023.Test1();
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new Form1());
+            Application.Run(new frmMain());
         }
     }
 }

@@ -1,8 +1,14 @@
-﻿using Skender.Stock.Indicators;
-using System;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Survey.Models
 {
+    public class AppsettingModel
+    {
+        public APIModel API { get; set; }
+        public ViewWebModel ViewWeb { get; set; }
+    }
+
     public class APIModel
     {
         public string API24hr { get; set; }
@@ -12,6 +18,24 @@ namespace Survey.Models
         public string History1HTime { get; set; }
         public string History15MTime { get; set; }
     }
+
+    public class ViewWebModel
+    {
+        public string Single { get; set; }
+    }
+
+    public class UserDataModel
+    {
+        public IEnumerable<UserDataCoinModel> FOLLOW { get; set; }
+    }
+
+    public class UserDataCoinModel
+    {
+        public string Coin { get; set; }
+        public float Price { get; set; }
+    }
+
+
 
     public class TicketModel
     {

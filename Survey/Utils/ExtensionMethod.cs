@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using Skender.Stock.Indicators;
 using Survey.Models;
 using System;
+using System.IO;
 
 namespace Survey.Utils
 {
@@ -20,6 +22,49 @@ namespace Survey.Utils
             if (model == null)
                 return default(T);
             return MapperConfig.Map<T>(model);
+        }
+
+        public static T LoadJsonFile<T>(this int val, string fileName)
+        {
+            try
+            {
+                string path = $"{Directory.GetCurrentDirectory()}\\Config\\{fileName}.json";
+                if (!File.Exists(path))
+                    return default(T);
+                using (StreamReader r = new StreamReader(path))
+                {
+                    string json = r.ReadToEnd();
+                    var result = JsonConvert.DeserializeObject<T>(json);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogLogger.PublishException(ex, $"ExtensionMethod.LoadJsonFile|EXCEPTION|INPUT: fileName: {fileName}| {ex.Message}");
+                return default(T);
+            }
+        }
+
+        public static bool UpdateJson<T>(this T _model, string fileName)
+        {
+            try
+            {
+                string path = $"{Directory.GetCurrentDirectory()}\\Config\\{fileName}.json";
+                var check = File.Exists(path);
+                if (!check)
+                {
+                    using (StreamWriter w = File.AppendText(path)) ;
+                }
+                string json = JsonConvert.SerializeObject(_model);
+                //write string to file
+                File.WriteAllText(path, json);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                NLogLogger.PublishException(ex, $"ExtensionMethod.UpdateJson|EXCEPTION|INPUT: fileName: {fileName}| {ex.Message}");
+                return false;
+            }
         }
     }
 

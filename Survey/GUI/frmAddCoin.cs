@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DevExpress.XtraEditors;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,11 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Survey
+namespace Survey.GUI
 {
-    public partial class Form1 : Form
+    /// <summary>
+    /// Form thêm mới Coin
+    /// </summary>
+    public partial class frmAddCoin : DevExpress.XtraEditors.XtraForm
     {
-        public Form1()
+        public frmAddCoin()
         {
             InitializeComponent();
         }

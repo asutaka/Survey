@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Survey.Models;
 using System;
@@ -16,19 +15,22 @@ namespace Survey.Utils
         /// <returns></returns>
         /// 
         private static IEnumerable<TicketModel> _lCoin = null;
-        public static IEnumerable<TicketModel> GetCoins()
+        public static IEnumerable<TicketModel> GetCoins(int top = 0)
         {
             if (_lCoin != null)
                 return _lCoin;
 
-            var settings = Helper.GetConfig().GetSection("API").Get<APIModel>();
-            var content = WebClass.GetWebContent(settings.API24hr).GetAwaiter().GetResult();
+            var settings = 0.LoadJsonFile<AppsettingModel>("appsettings"); 
+            var content = WebClass.GetWebContent(settings.API.API24hr).GetAwaiter().GetResult();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 _lCoin = JsonConvert.DeserializeObject<IEnumerable<TicketModel>>(content)
                             .Where(x => x.symbol.EndsWith("USDT"))
                             .OrderByDescending(x => x.priceChangePercent)
                             .ToList();
+
+                if (top > 0)
+                    _lCoin = _lCoin.Take(top);
             }
             return _lCoin;
         }
@@ -45,8 +47,8 @@ namespace Survey.Utils
             
             try
             {
-                var settings = Helper.GetConfig().GetSection("API").Get<APIModel>();
-                var url = (interval == EInterval.I15M) ? settings.History15M : settings.History1H;
+                var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
+                var url = (interval == EInterval.I15M) ? settings.API.History15M : settings.API.History1H;
                 var content = WebClass.GetWebContent(string.Format(url, symbol.ToUpper())).GetAwaiter().GetResult();
                 if (!string.IsNullOrWhiteSpace(content))
                 {
