@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace Survey.GUI
 {
     /// <summary>
-    /// Form thêm mới Coin
+    /// Form thêm mới Coin, có option noti Telegram
     /// </summary>
     public partial class frmAddCoin : DevExpress.XtraEditors.XtraForm
     {
