@@ -1,0 +1,44 @@
+﻿using Newtonsoft.Json;
+using Quartz;
+using Survey.Job;
+using Survey.Job.ScheduleJob;
+using Survey.Models;
+using Survey.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Survey
+{
+    public class Startup
+    {
+        public static ScheduleMng _jMng = ScheduleMng.Instance();
+        public static List<CryptonDetailDataModel> _lCoin;
+
+        private static Startup _instance = null;
+        public static Startup Instance()
+        {
+            _instance = _instance ?? new Startup();
+            return _instance;
+        }
+
+        private Startup()
+        {
+            var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
+            var content = WebClass.GetWebContent(settings.API.Coin).GetAwaiter().GetResult();
+            if (!string.IsNullOrWhiteSpace(content))
+            {
+                _lCoin = JsonConvert.DeserializeObject<CryptonDataModel>(content).Data
+                           .Where(x => x.S.EndsWith("USDT")
+                                   && !x.S.EndsWith("UPUSDT")
+                                   && !x.S.EndsWith("DOWNUSDT"))
+                           .OrderBy(x => x.S).ToList();
+            }
+
+            _jMng.AddSchedule(new ScheduleMember(ScheduleMng.Instance().GetScheduler(), JobBuilder.Create<SubcribeJob>(), "0/10 * * * * ?", nameof(SubcribeJob)));
+            _jMng.StartAllJob();
+        }
+    }
+}

@@ -2,11 +2,13 @@
   "FOLLOW": [
     {
       "Coin": "AXSUSDT",
-      "Price": 3.8
+      "Buy": 3.8,
+      "Value":  1.1
     },
     {
       "Coin": "C98USDT",
-      "Price":  0.3
+      "Buy": 0.3,
+      "Value":  1.4
     }
   ]
 }

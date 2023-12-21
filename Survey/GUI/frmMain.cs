@@ -1,4 +1,6 @@
 ﻿using DevExpress.XtraBars;
+using Newtonsoft.Json;
+using Survey.Job;
 using Survey.Models;
 using Survey.Utils;
 using System;
@@ -82,7 +84,13 @@ namespace Survey.GUI
 
         private void btnExit_ItemClick(object sender, ItemClickEventArgs e)
         {
+            Startup._jMng.Stop();
             Application.Exit();
+        }
+
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Startup._jMng.Stop();
         }
     }
 }

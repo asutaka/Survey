@@ -1,6 +1,7 @@
 ﻿using Binance.Net.Clients;
 using Binance.Net.Interfaces;
 using Binance.Net.Objects;
+using Newtonsoft.Json;
 using Quartz;
 using Survey.Utils;
 using System;
@@ -25,12 +26,13 @@ namespace Survey.Job
                 Thread.Sleep(2000);
                 var binanceTick = _binanceTicks;
                 var isLock = false;
-                var subscribeResult = SocketInstance().SpotStreams.SubscribeToAllMiniTickerUpdatesAsync(data => {
+                var subscribeResult = SocketInstance().SpotStreams.SubscribeToAllMiniTickerUpdatesAsync(data =>
+                {
                     if (!isLock)
                     {
                         isLock = true;
-                        var lData = data.Data.Where(x => x.Symbol.EndsWith("USDT") 
-                                                    && !x.Symbol.EndsWith("UPUSDT") 
+                        var lData = data.Data.Where(x => x.Symbol.EndsWith("USDT")
+                                                    && !x.Symbol.EndsWith("UPUSDT")
                                                     && !x.Symbol.EndsWith("DOWNUSDT")).ToList();
                         var lExists = binanceTick.Where(x => lData.Any(y => y.Symbol.Equals(x.Symbol, StringComparison.InvariantCultureIgnoreCase)));
                         if (lExists != null && lExists.Any())
@@ -40,6 +42,7 @@ namespace Survey.Job
                         binanceTick.AddRange(lData);
                         _binanceTicks = binanceTick;
                         isLock = false;
+                        Console.WriteLine(JsonConvert.SerializeObject(lData));
                     }
                 }).GetAwaiter().GetResult();
 

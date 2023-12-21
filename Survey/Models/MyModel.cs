@@ -26,13 +26,14 @@ namespace Survey.Models
 
     public class UserDataModel
     {
-        public IEnumerable<UserDataCoinModel> FOLLOW { get; set; }
+        public List<UserDataCoinModel> FOLLOW { get; set; }
     }
 
     public class UserDataCoinModel
     {
         public string Coin { get; set; }
-        public float Price { get; set; }
+        public decimal Buy { get; set; }
+        public decimal Value { get; set; }
     }
 
 
@@ -84,5 +85,16 @@ namespace Survey.Models
             this.Close = close;
             this.Volume = volume;
         }
+    }
+
+    public class CryptonDataModel
+    {
+        public List<CryptonDetailDataModel> Data { get; set; }
+    }
+
+    public class CryptonDetailDataModel
+    {
+        public string S { get; set; }
+        public string AN { get; set; }
     }
 }
