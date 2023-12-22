@@ -41,6 +41,7 @@ namespace Survey.GUI
         {
             var userData = 0.LoadJsonFile<UserDataModel>("userdata");
             var index = 1;
+            _lTrace.Clear();
             foreach (var item in userData.FOLLOW)
             {
                 _lTrace.Add(new TraceCoinModel

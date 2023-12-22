@@ -2,6 +2,7 @@
 using Survey.Models;
 using Survey.Utils;
 using System;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Survey.GUI
@@ -35,16 +36,29 @@ namespace Survey.GUI
             {
                 MessageBox.Show("Đầu vào không hợp lệ", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
-            }    
+            }
+            var coin = cmbCoin.EditValue.ToString();
+            var buy = nmBuy.Value;
+            var val = nmValue.Value;
 
             var userData = 0.LoadJsonFile<UserDataModel>("userdata");
-            userData.FOLLOW.Add(new UserDataCoinModel
+            var entityExists = userData.FOLLOW.FirstOrDefault(x => x.Coin == coin);
+            if (entityExists != null)
             {
-                Coin = cmbCoin.EditValue.ToString(),
-                Buy = nmBuy.Value,
-                Value = nmValue.Value
-            });
-
+                userData.FOLLOW.Remove(entityExists);
+                entityExists.Buy = Math.Round(((entityExists.Value + val) * entityExists.Buy * buy) / (buy * entityExists.Value + entityExists.Buy * val), 6);
+                entityExists.Value += nmValue.Value;
+                userData.FOLLOW.Add(entityExists);
+            }
+            else
+            {
+                userData.FOLLOW.Add(new UserDataCoinModel
+                {
+                    Coin = coin,
+                    Buy = buy,
+                    Value = val
+                });
+            }
             userData.UpdateJson("userdata");
             Utils.Helper.MesSuccess();
             DialogResult = DialogResult.OK;
