@@ -84,13 +84,19 @@ namespace Survey.GUI
 
         private void btnExit_ItemClick(object sender, ItemClickEventArgs e)
         {
-            Startup._jMng.Stop();
+            if (Startup._jMng != null)
+            {
+                Startup._jMng.Stop();
+            }
             Application.Exit();
         }
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Startup._jMng.Stop();
+            if(Startup._jMng != null)
+            {
+                Startup._jMng.Stop();
+            }    
         }
     }
 }

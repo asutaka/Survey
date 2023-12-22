@@ -36,6 +36,14 @@ namespace Survey.Models
         public decimal Value { get; set; }
     }
 
+    public class TraceCoinModel : UserDataCoinModel
+    {
+        public int STT { get; set; }
+        public decimal CurValue { get; set; }
+        public decimal DivValue { get; set; }
+        public string RatioValue { get; set; }
+    }
+
 
 
     public class TicketModel

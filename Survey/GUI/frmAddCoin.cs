@@ -46,7 +46,8 @@ namespace Survey.GUI
             });
 
             userData.UpdateJson("userdata");
-            MessageBox.Show("Đã lưu dữ liệu", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Utils.Helper.MesSuccess();
+            DialogResult = DialogResult.OK;
             this.Close();
         }
 

@@ -30,21 +30,21 @@ namespace Survey.GUI
         private void InitializeComponent()
         {
             this.groupControl1 = new DevExpress.XtraEditors.GroupControl();
-            this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
-            this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
-            this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
+            this.nmValue = new DevExpress.XtraEditors.CalcEdit();
+            this.nmBuy = new DevExpress.XtraEditors.CalcEdit();
+            this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
+            this.btnOkAndSave = new DevExpress.XtraEditors.SimpleButton();
             this.cmbCoin = new DevExpress.XtraEditors.SearchLookUpEdit();
             this.searchLookUpEdit1View = new DevExpress.XtraGrid.Views.Grid.GridView();
-            this.btnOkAndSave = new DevExpress.XtraEditors.SimpleButton();
-            this.btnCancel = new DevExpress.XtraEditors.SimpleButton();
-            this.nmBuy = new DevExpress.XtraEditors.CalcEdit();
-            this.nmValue = new DevExpress.XtraEditors.CalcEdit();
+            this.labelControl1 = new DevExpress.XtraEditors.LabelControl();
+            this.labelControl3 = new DevExpress.XtraEditors.LabelControl();
+            this.labelControl2 = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).BeginInit();
             this.groupControl1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmValue.Properties)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmBuy.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbCoin.Properties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.searchLookUpEdit1View)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmBuy.Properties)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmValue.Properties)).BeginInit();
             this.SuspendLayout();
             // 
             // groupControl1
@@ -63,29 +63,43 @@ namespace Survey.GUI
             this.groupControl1.TabIndex = 5;
             this.groupControl1.Text = "Thông tin";
             // 
-            // labelControl3
+            // nmValue
             // 
-            this.labelControl3.Location = new System.Drawing.Point(33, 72);
-            this.labelControl3.Name = "labelControl3";
-            this.labelControl3.Size = new System.Drawing.Size(38, 13);
-            this.labelControl3.TabIndex = 3;
-            this.labelControl3.Text = "Giá mua";
+            this.nmValue.Location = new System.Drawing.Point(117, 97);
+            this.nmValue.Name = "nmValue";
+            this.nmValue.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.nmValue.Size = new System.Drawing.Size(243, 20);
+            this.nmValue.TabIndex = 3;
             // 
-            // labelControl2
+            // nmBuy
             // 
-            this.labelControl2.Location = new System.Drawing.Point(33, 46);
-            this.labelControl2.Name = "labelControl2";
-            this.labelControl2.Size = new System.Drawing.Size(42, 13);
-            this.labelControl2.TabIndex = 2;
-            this.labelControl2.Text = "Tên Coin";
+            this.nmBuy.Location = new System.Drawing.Point(117, 69);
+            this.nmBuy.Name = "nmBuy";
+            this.nmBuy.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.nmBuy.Size = new System.Drawing.Size(243, 20);
+            this.nmBuy.TabIndex = 2;
             // 
-            // labelControl1
+            // btnCancel
             // 
-            this.labelControl1.Location = new System.Drawing.Point(33, 100);
-            this.labelControl1.Name = "labelControl1";
-            this.labelControl1.Size = new System.Drawing.Size(28, 13);
-            this.labelControl1.TabIndex = 6;
-            this.labelControl1.Text = "Giá trị";
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnCancel.Location = new System.Drawing.Point(285, 135);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 32);
+            this.btnCancel.TabIndex = 6;
+            this.btnCancel.Text = "Hủy bỏ";
+            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            // 
+            // btnOkAndSave
+            // 
+            this.btnOkAndSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnOkAndSave.Location = new System.Drawing.Point(206, 135);
+            this.btnOkAndSave.Name = "btnOkAndSave";
+            this.btnOkAndSave.Size = new System.Drawing.Size(75, 32);
+            this.btnOkAndSave.TabIndex = 5;
+            this.btnOkAndSave.Text = "Xác nhận";
+            this.btnOkAndSave.Click += new System.EventHandler(this.btnOkAndSave_Click);
             // 
             // cmbCoin
             // 
@@ -107,43 +121,29 @@ namespace Survey.GUI
             this.searchLookUpEdit1View.OptionsSelection.EnableAppearanceFocusedCell = false;
             this.searchLookUpEdit1View.OptionsView.ShowGroupPanel = false;
             // 
-            // btnOkAndSave
+            // labelControl1
             // 
-            this.btnOkAndSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnOkAndSave.Location = new System.Drawing.Point(206, 135);
-            this.btnOkAndSave.Name = "btnOkAndSave";
-            this.btnOkAndSave.Size = new System.Drawing.Size(75, 32);
-            this.btnOkAndSave.TabIndex = 5;
-            this.btnOkAndSave.Text = "Xác nhận";
-            this.btnOkAndSave.Click += new System.EventHandler(this.btnOkAndSave_Click);
+            this.labelControl1.Location = new System.Drawing.Point(33, 100);
+            this.labelControl1.Name = "labelControl1";
+            this.labelControl1.Size = new System.Drawing.Size(28, 13);
+            this.labelControl1.TabIndex = 6;
+            this.labelControl1.Text = "Giá trị";
             // 
-            // btnCancel
+            // labelControl3
             // 
-            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnCancel.Location = new System.Drawing.Point(285, 135);
-            this.btnCancel.Name = "btnCancel";
-            this.btnCancel.Size = new System.Drawing.Size(75, 32);
-            this.btnCancel.TabIndex = 6;
-            this.btnCancel.Text = "Hủy bỏ";
-            this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
+            this.labelControl3.Location = new System.Drawing.Point(33, 72);
+            this.labelControl3.Name = "labelControl3";
+            this.labelControl3.Size = new System.Drawing.Size(38, 13);
+            this.labelControl3.TabIndex = 3;
+            this.labelControl3.Text = "Giá mua";
             // 
-            // nmBuy
+            // labelControl2
             // 
-            this.nmBuy.Location = new System.Drawing.Point(117, 69);
-            this.nmBuy.Name = "nmBuy";
-            this.nmBuy.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.nmBuy.Size = new System.Drawing.Size(243, 20);
-            this.nmBuy.TabIndex = 2;
-            // 
-            // nmValue
-            // 
-            this.nmValue.Location = new System.Drawing.Point(117, 97);
-            this.nmValue.Name = "nmValue";
-            this.nmValue.Properties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
-            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            this.nmValue.Size = new System.Drawing.Size(243, 20);
-            this.nmValue.TabIndex = 3;
+            this.labelControl2.Location = new System.Drawing.Point(33, 46);
+            this.labelControl2.Name = "labelControl2";
+            this.labelControl2.Size = new System.Drawing.Size(42, 13);
+            this.labelControl2.TabIndex = 2;
+            this.labelControl2.Text = "Tên Coin";
             // 
             // frmAddCoin
             // 
@@ -152,14 +152,15 @@ namespace Survey.GUI
             this.ClientSize = new System.Drawing.Size(399, 181);
             this.Controls.Add(this.groupControl1);
             this.Name = "frmAddCoin";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Thêm Coin";
             ((System.ComponentModel.ISupportInitialize)(this.groupControl1)).EndInit();
             this.groupControl1.ResumeLayout(false);
             this.groupControl1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nmValue.Properties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nmBuy.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.cmbCoin.Properties)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.searchLookUpEdit1View)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmBuy.Properties)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nmValue.Properties)).EndInit();
             this.ResumeLayout(false);
 
         }

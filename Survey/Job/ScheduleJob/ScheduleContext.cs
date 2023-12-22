@@ -36,7 +36,7 @@ namespace Survey.Job.ScheduleJob
         /// </summary>
         public void Stop()
         {
-            if (!Scheduler.IsShutdown)
+            if (Scheduler != null && !Scheduler.IsShutdown)
             {
                 Scheduler.Shutdown();
                 Scheduler = null;
@@ -49,7 +49,7 @@ namespace Survey.Job.ScheduleJob
         /// </summary>
         public void WaitAndStop()
         {
-            if (!Scheduler.IsShutdown)
+            if (Scheduler != null && !Scheduler.IsShutdown)
             {
                 Scheduler.Shutdown(true);
                 Scheduler = null;

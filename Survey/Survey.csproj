@@ -203,6 +203,7 @@
     <Compile Include="Job\ScheduleJob\ScheduleJobListener.cs" />
     <Compile Include="Job\ScheduleJob\ScheduleMng.cs" />
     <Compile Include="Job\SubcribeJob.cs" />
+    <Compile Include="Job\UpdateDataJob.cs" />
     <Compile Include="Models\MyModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="Utils\Data.cs" />
     <Compile Include="Utils\EnumMng.cs" />
     <Compile Include="Utils\ExtensionMethod.cs" />
+    <Compile Include="Utils\Helper.cs" />
     <Compile Include="Utils\NLogLogger.cs" />
     <Compile Include="Utils\WebClass.cs" />
     <EmbeddedResource Include="GUI\frmAddCoin.resx">
@@ -222,6 +224,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="GUI\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\frmTrace.resx">
+      <DependentUpon>frmTrace.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Properties\Resources.resx">
