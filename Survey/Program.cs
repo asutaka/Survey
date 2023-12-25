@@ -22,7 +22,6 @@ namespace Survey
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             Startup.Instance();
-            //Application.Run(new frmTrace());
             Application.Run(new frmMain());
         }
     }

@@ -1,7 +1,5 @@
 ﻿using DevExpress.XtraBars;
-using Newtonsoft.Json;
-using Survey.Job;
-using Survey.Models;
+using DevExpress.XtraEditors;
 using Survey.Utils;
 using System;
 using System.Collections.Generic;
@@ -15,39 +13,46 @@ using System.Windows.Forms;
 
 namespace Survey.GUI
 {
-    /// <summary>
-    /// Form này show ra các C có tín hiệu tốt, sắp xếp theo mức gia tăng giá, có nút thêm C trace
-    /// </summary>
-    public partial class frmMain : Form
+    public partial class frmMain : DevExpress.XtraEditors.XtraForm
     {
         public frmMain()
         {
             InitializeComponent();
         }
 
-        private void frmMain_Resize(object sender, EventArgs e)
+        private void btnFollow_Click(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Minimized)
-            {
-                Hide();
-                notifyIcon.Visible = true;
-            }
+            new frmTrace().ShowDialog();
         }
 
-        private void notifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void btnItem_ItemClick(object sender, ItemClickEventArgs e)
         {
-            if(e.Button == MouseButtons.Right)
+            HelperUtils.OpenLink(e.Item.Tag.ToString());
+        }
+
+        private void btnExit_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            if (Startup._jMng != null)
+            {
+                Startup._jMng.Stop();
+            }
+            Application.Exit();
+        }
+
+        private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
             {
                 return;
-            }    
+            }
             Show();
             this.WindowState = FormWindowState.Normal;
-            notifyIcon.Visible = false;
+            notifyIcon1.Visible = false;
         }
 
-        private void notifyIcon_MouseDown(object sender, MouseEventArgs e)
+        private void notifyIcon1_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button != MouseButtons.Right)
+            if (e.Button != MouseButtons.Right)
             {
                 return;
             }
@@ -73,26 +78,21 @@ namespace Survey.GUI
             popup.ShowPopup(MousePosition);
         }
 
-        private void btnItem_ItemClick(object sender, ItemClickEventArgs e)
-        {
-            new frmChart(e.Item.Tag.ToString()).Show();
-        }
-
-        private void btnExit_ItemClick(object sender, ItemClickEventArgs e)
+        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (Startup._jMng != null)
             {
                 Startup._jMng.Stop();
             }
-            Application.Exit();
         }
 
-        private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
+        private void frmMain_Resize(object sender, EventArgs e)
         {
-            if(Startup._jMng != null)
+            if (this.WindowState == FormWindowState.Minimized)
             {
-                Startup._jMng.Stop();
-            }    
+                Hide();
+                notifyIcon1.Visible = true;
+            }
         }
     }
 }

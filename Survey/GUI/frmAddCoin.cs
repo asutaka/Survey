@@ -60,7 +60,7 @@ namespace Survey.GUI
                 });
             }
             userData.UpdateJson("userdata");
-            Utils.Helper.MesSuccess();
+            Utils.HelperUtils.MesSuccess();
             DialogResult = DialogResult.OK;
             this.Close();
         }
