@@ -51,29 +51,25 @@ namespace Survey.GUI
             {
                 return;
             }
-
-            var resources = new ComponentResourceManager(typeof(frmMain));
-            PopupMenu popup = new PopupMenu();
-            popup.Manager = barManager1;
-
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////
-            var userData = 0.LoadJsonFile<UserDataModel>("userdata");
-            foreach (var item in userData.FOLLOW)
+            var popup = new PopupMenu
+            {
+                Manager = barManager1
+            };
+            foreach (var item in Startup._lTrace)
             {
                 var btnItem = new BarStaticItem();
-                btnItem.Caption = item.Coin;
+                btnItem.Caption = $"{item.Coin}({item.RatioValue})";
                 btnItem.Tag = item.Coin;
                 btnItem.ItemClick += new ItemClickEventHandler(this.btnItem_ItemClick);
                 popup.ItemLinks.Add(btnItem);
             }
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////
             //btnExit
+            var resources = new ComponentResourceManager(typeof(frmMain));
             var itemExit = new BarStaticItem { Caption = "Exit" };
             itemExit.ImageOptions.Image = ((Image)(resources.GetObject("btnExit.ImageOptions.Image")));
             itemExit.ImageOptions.LargeImage = ((Image)(resources.GetObject("btnExit.ImageOptions.LargeImage")));
             itemExit.ItemClick += new ItemClickEventHandler(this.btnExit_ItemClick);
             popup.ItemLinks.Add(itemExit);
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////
             popup.ShowPopup(MousePosition);
         }
 

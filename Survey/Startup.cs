@@ -16,6 +16,7 @@ namespace Survey
     {
         public static ScheduleMng _jMng = ScheduleMng.Instance();
         public static List<CryptonDetailDataModel> _lCoin;
+        public static List<TraceCoinModel> _lTrace = new List<TraceCoinModel>();
 
         private static Startup _instance = null;
         public static Startup Instance()
@@ -36,9 +37,28 @@ namespace Survey
                                    && !x.S.EndsWith("DOWNUSDT"))
                            .OrderBy(x => x.S).ToList();
             }
+            LoadlTrace();
 
             _jMng.AddSchedule(new ScheduleMember(ScheduleMng.Instance().GetScheduler(), JobBuilder.Create<SubcribeJob>(), "0/10 * * * * ?", nameof(SubcribeJob)));
+            _jMng.AddSchedule(new ScheduleMember(ScheduleMng.Instance().GetScheduler(), JobBuilder.Create<UpdateDataJob>(), "* * * * * ?", nameof(UpdateDataJob)));
             _jMng.StartAllJob();
+        }
+
+        public static void LoadlTrace()
+        {
+            var userData = 0.LoadJsonFile<UserDataModel>("userdata");
+            var index = 1;
+            _lTrace.Clear();
+            foreach (var item in userData.FOLLOW)
+            {
+                _lTrace.Add(new TraceCoinModel
+                {
+                    STT = index++,
+                    Coin = item.Coin,
+                    Buy = item.Buy,
+                    Value = item.Value
+                });
+            }
         }
     }
 }

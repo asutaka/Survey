@@ -19,8 +19,6 @@ namespace Survey.GUI
     /// </summary>
     public partial class frmTrace : XtraForm
     {
-        public static List<TraceCoinModel> _lTrace = new List<TraceCoinModel>();
-        private static ScheduleMember _traceJob = new ScheduleMember(ScheduleMng.Instance().GetScheduler(), JobBuilder.Create<UpdateDataTraceJob>(), "* * * * * ?", nameof(UpdateDataTraceJob));
         public frmTrace()
         {
             InitializeComponent();
@@ -29,7 +27,6 @@ namespace Survey.GUI
             timer1.Tick += timer1_Tick;
             timer1.Interval = 1000;
             timer1.Start();
-            _traceJob.Start();
         }
 
         public void ShowForm()
@@ -39,22 +36,8 @@ namespace Survey.GUI
 
         public void InitData()
         {
-            var userData = 0.LoadJsonFile<UserDataModel>("userdata");
-            var index = 1;
-            _lTrace.Clear();
-            foreach (var item in userData.FOLLOW)
-            {
-                _lTrace.Add(new TraceCoinModel
-                {
-                    STT = index++,
-                    Coin = item.Coin,
-                    Buy = item.Buy,
-                    Value = item.Value
-                });
-            }
-
             grid.BeginUpdate();
-            grid.DataSource = _lTrace;
+            grid.DataSource = Startup._lTrace;
             grid.EndUpdate();
         }
 
@@ -65,14 +48,9 @@ namespace Survey.GUI
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
-            foreach (var item in _lTrace)
-            {
-                item.CurValue = 9;
-                break;
-            }
             if(new frmAddCoin().ShowDialog() == DialogResult.OK)
             {
-                InitData();
+               Startup.LoadlTrace();
             }
         }
 
@@ -92,7 +70,7 @@ namespace Survey.GUI
                     {
                         userData.FOLLOW.Remove(entity);
                         userData.UpdateJson("userdata");
-                        InitData();
+                        Startup.LoadlTrace();
                     }
                     Utils.Helper.MesSuccess();
                 }
@@ -121,32 +99,6 @@ namespace Survey.GUI
 
         private void frmTrace_FormClosing(object sender, FormClosingEventArgs e)
         {
-            _traceJob.Pause();
-        }
-    }
-
-    [DisallowConcurrentExecution]
-    public class UpdateDataTraceJob : IJob
-    {
-        public void Execute(IJobExecutionContext context)
-        {
-            if (frmTrace._lTrace == null
-                || !frmTrace._lTrace.Any()
-                || SubcribeJob._binanceTicks == null 
-                || !SubcribeJob._binanceTicks.Any())
-                return;
-
-            var lBinance = SubcribeJob._binanceTicks;
-            foreach (var item in frmTrace._lTrace)
-            {
-                var entity = lBinance.FirstOrDefault(x => x.Symbol == item.Coin);
-                if (entity == null)
-                    continue;
-                var price = entity.LastPrice;
-                item.CurValue = price;
-                item.DivValue = price - item.Buy;
-                item.RatioValue = Math.Round(item.DivValue * 100 / item.Buy, 1).ToString();
-            }
         }
     }
 }
