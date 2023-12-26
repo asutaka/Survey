@@ -14,18 +14,17 @@ namespace Survey.Utils
         /// </summary>
         /// <returns></returns>
         /// 
-        private static IEnumerable<TicketModel> _lCoin = null;
         public static IEnumerable<TicketModel> GetCoins(int top = 0)
         {
-            if (_lCoin != null)
-                return _lCoin;
-
+            IEnumerable<TicketModel> _lCoin = null;
             var settings = 0.LoadJsonFile<AppsettingModel>("appsettings"); 
             var content = WebClass.GetWebContent(settings.API.API24hr).GetAwaiter().GetResult();
             if (!string.IsNullOrWhiteSpace(content))
             {
                 _lCoin = JsonConvert.DeserializeObject<IEnumerable<TicketModel>>(content)
-                            .Where(x => x.symbol.EndsWith("USDT"))
+                            .Where(x => x.symbol.EndsWith("USDT")
+                                    && !x.symbol.EndsWith("UPUSDT")
+                                    && !x.symbol.EndsWith("DOWNUSDT"))
                             .OrderByDescending(x => x.priceChangePercent)
                             .ToList();
 

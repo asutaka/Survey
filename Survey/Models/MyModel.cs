@@ -105,4 +105,11 @@ namespace Survey.Models
         public string S { get; set; }
         public string AN { get; set; }
     }
+
+    public class TraceViewModel
+    {
+        public string symbol { get; set; }
+        public double RSI { get; set; }
+        public string MACD { get; set; }
+    }
 }

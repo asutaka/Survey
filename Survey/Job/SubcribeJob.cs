@@ -18,7 +18,6 @@ namespace Survey.Job
         private static BinanceSocketClient _socket;
         public void Execute(IJobExecutionContext context)
         {
-            Console.WriteLine($"access Job: {SocketInstance().IncomingKbps}; Time: {DateTime.Now}");
             if (SocketInstance().IncomingKbps == 0)
             {
                 NLogLogger.LogInfo($"retry Job: {DateTime.Now}");
@@ -42,7 +41,6 @@ namespace Survey.Job
                         binanceTick.AddRange(lData);
                         _binanceTicks = binanceTick;
                         isLock = false;
-                        Console.WriteLine(JsonConvert.SerializeObject(lData));
                     }
                 }).GetAwaiter().GetResult();
 

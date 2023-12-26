@@ -68,7 +68,7 @@ namespace Survey.Utils
             try
             {
                 // Thực hiện truy vấn GET
-                HttpResponseMessage response = HttpGetInstance().GetAsync(url).GetAwaiter().GetResult();
+                HttpResponseMessage response = await HttpGetInstance().GetAsync(url);
 
                 // Hiện thị thông tin header trả về
                 //ShowHeaders(response.Headers);

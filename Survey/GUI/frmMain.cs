@@ -1,5 +1,6 @@
 ﻿using DevExpress.XtraBars;
 using DevExpress.XtraEditors;
+using Survey.Models;
 using Survey.Utils;
 using System;
 using System.Collections.Generic;
@@ -93,6 +94,11 @@ namespace Survey.GUI
                 Hide();
                 notifyIcon1.Visible = true;
             }
+        }
+
+        private void btnAnalyze_Click(object sender, EventArgs e)
+        {
+            Analyze.AnalyzeViaIchimoku();
         }
     }
 }
