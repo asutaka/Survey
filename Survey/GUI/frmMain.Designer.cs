@@ -45,11 +45,8 @@ namespace Survey.GUI
             this.gridView1 = new DevExpress.XtraGrid.Views.Grid.GridView();
             this.STT = new DevExpress.XtraGrid.Columns.GridColumn();
             this.Coin = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.Value = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.Buy = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.CurValue = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.DivValue = new DevExpress.XtraGrid.Columns.GridColumn();
-            this.RatioValue = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.Rsi = new DevExpress.XtraGrid.Columns.GridColumn();
+            this.Macd = new DevExpress.XtraGrid.Columns.GridColumn();
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
             this.barManager1 = new DevExpress.XtraBars.BarManager(this.components);
             this.bar1 = new DevExpress.XtraBars.Bar();
@@ -59,6 +56,7 @@ namespace Survey.GUI
             this.barDockControlLeft = new DevExpress.XtraBars.BarDockControl();
             this.barDockControlRight = new DevExpress.XtraBars.BarDockControl();
             this.btnAnalyze = new DevExpress.XtraEditors.SimpleButton();
+            this.lblProgress = new DevExpress.XtraEditors.LabelControl();
             ((System.ComponentModel.ISupportInitialize)(this.grid)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.gridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.barManager1)).BeginInit();
@@ -92,11 +90,8 @@ namespace Survey.GUI
             this.gridView1.Columns.AddRange(new DevExpress.XtraGrid.Columns.GridColumn[] {
             this.STT,
             this.Coin,
-            this.Value,
-            this.Buy,
-            this.CurValue,
-            this.DivValue,
-            this.RatioValue});
+            this.Rsi,
+            this.Macd});
             gridFormatRule1.Name = "FormatRate";
             formatConditionRuleIconSet1.AllowAnimation = DevExpress.Utils.DefaultBoolean.True;
             formatConditionIconSet1.CategoryName = "Directional";
@@ -158,6 +153,7 @@ namespace Survey.GUI
             this.gridView1.OptionsBehavior.Editable = false;
             this.gridView1.OptionsSelection.EnableAppearanceFocusedRow = false;
             this.gridView1.OptionsView.ShowGroupPanel = false;
+            this.gridView1.DoubleClick += new System.EventHandler(this.gridView1_DoubleClick);
             // 
             // STT
             // 
@@ -198,99 +194,30 @@ namespace Survey.GUI
             this.Coin.VisibleIndex = 1;
             this.Coin.Width = 90;
             // 
-            // Value
+            // Rsi
             // 
-            this.Value.AppearanceCell.Options.UseTextOptions = true;
-            this.Value.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.Value.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.Value.AppearanceHeader.Options.UseTextOptions = true;
-            this.Value.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.Value.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.Value.Caption = "Giá trị";
-            this.Value.FieldName = "Value";
-            this.Value.MaxWidth = 75;
-            this.Value.MinWidth = 75;
-            this.Value.Name = "Value";
-            this.Value.Visible = true;
-            this.Value.VisibleIndex = 2;
+            this.Rsi.AppearanceCell.Options.UseTextOptions = true;
+            this.Rsi.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
+            this.Rsi.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.Rsi.AppearanceHeader.Options.UseTextOptions = true;
+            this.Rsi.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.Rsi.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.Rsi.Caption = "RSI";
+            this.Rsi.FieldName = "RSI";
+            this.Rsi.Name = "Rsi";
+            this.Rsi.Visible = true;
+            this.Rsi.VisibleIndex = 2;
             // 
-            // Buy
+            // Macd
             // 
-            this.Buy.AppearanceCell.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.Buy.AppearanceCell.Options.UseBackColor = true;
-            this.Buy.AppearanceCell.Options.UseTextOptions = true;
-            this.Buy.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.Buy.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.Buy.AppearanceHeader.Options.UseTextOptions = true;
-            this.Buy.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.Buy.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.Buy.Caption = "Giá mua";
-            this.Buy.DisplayFormat.FormatString = "#,##0.0";
-            this.Buy.FieldName = "Buy";
-            this.Buy.MaxWidth = 75;
-            this.Buy.MinWidth = 75;
-            this.Buy.Name = "Buy";
-            this.Buy.OptionsColumn.AllowEdit = false;
-            this.Buy.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-            this.Buy.Visible = true;
-            this.Buy.VisibleIndex = 3;
-            // 
-            // CurValue
-            // 
-            this.CurValue.AppearanceCell.Options.UseTextOptions = true;
-            this.CurValue.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.CurValue.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.CurValue.AppearanceHeader.Options.UseTextOptions = true;
-            this.CurValue.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.CurValue.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.CurValue.Caption = "Giá hiện tại";
-            this.CurValue.DisplayFormat.FormatString = "\"#,##0.0\"";
-            this.CurValue.FieldName = "CurValue";
-            this.CurValue.MaxWidth = 75;
-            this.CurValue.MinWidth = 75;
-            this.CurValue.Name = "CurValue";
-            this.CurValue.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-            this.CurValue.Visible = true;
-            this.CurValue.VisibleIndex = 4;
-            // 
-            // DivValue
-            // 
-            this.DivValue.AppearanceCell.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.DivValue.AppearanceCell.Options.UseBackColor = true;
-            this.DivValue.AppearanceCell.Options.UseTextOptions = true;
-            this.DivValue.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Far;
-            this.DivValue.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.DivValue.AppearanceHeader.Options.UseTextOptions = true;
-            this.DivValue.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.DivValue.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.DivValue.Caption = "Thay đổi";
-            this.DivValue.DisplayFormat.FormatString = "\"#,##0.0\"";
-            this.DivValue.FieldName = "DivValue";
-            this.DivValue.MaxWidth = 80;
-            this.DivValue.MinWidth = 80;
-            this.DivValue.Name = "DivValue";
-            this.DivValue.UnboundType = DevExpress.Data.UnboundColumnType.Decimal;
-            this.DivValue.Width = 80;
-            // 
-            // RatioValue
-            // 
-            this.RatioValue.AppearanceCell.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.RatioValue.AppearanceCell.Options.UseBackColor = true;
-            this.RatioValue.AppearanceCell.Options.UseTextOptions = true;
-            this.RatioValue.AppearanceCell.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.RatioValue.AppearanceCell.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.RatioValue.AppearanceHeader.Options.UseTextOptions = true;
-            this.RatioValue.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
-            this.RatioValue.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
-            this.RatioValue.Caption = "Gia tăng(%)";
-            this.RatioValue.FieldName = "RatioValue";
-            this.RatioValue.MaxWidth = 85;
-            this.RatioValue.MinWidth = 85;
-            this.RatioValue.Name = "RatioValue";
-            this.RatioValue.UnboundType = DevExpress.Data.UnboundColumnType.Integer;
-            this.RatioValue.Visible = true;
-            this.RatioValue.VisibleIndex = 5;
-            this.RatioValue.Width = 85;
+            this.Macd.AppearanceHeader.Options.UseTextOptions = true;
+            this.Macd.AppearanceHeader.TextOptions.HAlignment = DevExpress.Utils.HorzAlignment.Center;
+            this.Macd.AppearanceHeader.TextOptions.VAlignment = DevExpress.Utils.VertAlignment.Center;
+            this.Macd.Caption = "MACD";
+            this.Macd.FieldName = "MACD";
+            this.Macd.Name = "Macd";
+            this.Macd.Visible = true;
+            this.Macd.VisibleIndex = 3;
             // 
             // notifyIcon1
             // 
@@ -374,11 +301,21 @@ namespace Survey.GUI
             this.btnAnalyze.Text = "Phân tích";
             this.btnAnalyze.Click += new System.EventHandler(this.btnAnalyze_Click);
             // 
+            // lblProgress
+            // 
+            this.lblProgress.Appearance.ForeColor = System.Drawing.Color.Red;
+            this.lblProgress.Appearance.Options.UseForeColor = true;
+            this.lblProgress.Location = new System.Drawing.Point(163, 21);
+            this.lblProgress.Name = "lblProgress";
+            this.lblProgress.Size = new System.Drawing.Size(0, 13);
+            this.lblProgress.TabIndex = 18;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(653, 396);
+            this.Controls.Add(this.lblProgress);
             this.Controls.Add(this.btnAnalyze);
             this.Controls.Add(this.btnFollow);
             this.Controls.Add(this.grid);
@@ -406,11 +343,6 @@ namespace Survey.GUI
         private DevExpress.XtraGrid.Views.Grid.GridView gridView1;
         private DevExpress.XtraGrid.Columns.GridColumn STT;
         private DevExpress.XtraGrid.Columns.GridColumn Coin;
-        private DevExpress.XtraGrid.Columns.GridColumn Value;
-        private DevExpress.XtraGrid.Columns.GridColumn Buy;
-        private DevExpress.XtraGrid.Columns.GridColumn CurValue;
-        private DevExpress.XtraGrid.Columns.GridColumn DivValue;
-        private DevExpress.XtraGrid.Columns.GridColumn RatioValue;
         private System.Windows.Forms.NotifyIcon notifyIcon1;
         private DevExpress.XtraBars.BarManager barManager1;
         private DevExpress.XtraBars.Bar bar1;
@@ -420,5 +352,8 @@ namespace Survey.GUI
         private DevExpress.XtraBars.BarDockControl barDockControlLeft;
         private DevExpress.XtraBars.BarDockControl barDockControlRight;
         private DevExpress.XtraEditors.SimpleButton btnAnalyze;
+        private DevExpress.XtraGrid.Columns.GridColumn Rsi;
+        private DevExpress.XtraGrid.Columns.GridColumn Macd;
+        private DevExpress.XtraEditors.LabelControl lblProgress;
     }
 }

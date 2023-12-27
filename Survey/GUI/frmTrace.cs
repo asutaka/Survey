@@ -11,9 +11,11 @@ namespace Survey.GUI
 {
     public partial class frmTrace : XtraForm
     {
-        public frmTrace()
+        private frmMain _frmMain = null;
+        public frmTrace(frmMain frm)
         {
             InitializeComponent();
+            _frmMain = frm;
             InitData();
             timer1 = new Timer();
             timer1.Tick += timer1_Tick;
@@ -80,6 +82,11 @@ namespace Survey.GUI
             {
                 NLogLogger.PublishException(ex, $"frmTrace.gridView1_DoubleClick|EXCEPTION| {ex.Message}");
             }
+        }
+
+        private void frmTrace_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _frmMain.Show();
         }
     }
 }

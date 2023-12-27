@@ -28,7 +28,7 @@ namespace Survey
         private Startup()
         {
             var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
-            var content = WebClass.GetWebContent(settings.API.Coin).GetAwaiter().GetResult();
+            var content = HelperUtils.GetContent(settings.API.Coin);
             if (!string.IsNullOrWhiteSpace(content))
             {
                 _lCoin = JsonConvert.DeserializeObject<CryptonDataModel>(content).Data

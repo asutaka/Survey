@@ -108,7 +108,8 @@ namespace Survey.Models
 
     public class TraceViewModel
     {
-        public string symbol { get; set; }
+        public int STT { get; set; }
+        public string Coin { get; set; }
         public double RSI { get; set; }
         public string MACD { get; set; }
     }

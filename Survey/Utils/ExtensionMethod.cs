@@ -3,7 +3,10 @@ using Newtonsoft.Json;
 using Skender.Stock.Indicators;
 using Survey.Models;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 
 namespace Survey.Utils
 {
@@ -64,6 +67,21 @@ namespace Survey.Utils
             {
                 NLogLogger.PublishException(ex, $"ExtensionMethod.UpdateJson|EXCEPTION|INPUT: fileName: {fileName}| {ex.Message}");
                 return false;
+            }
+        }
+        public static string GetDisplayName(this Enum enumValue)
+        {
+            try
+            {
+                return enumValue.GetType()
+                            .GetMember(enumValue.ToString())
+                            .First()
+                            .GetCustomAttribute<DisplayAttribute>()
+                            .GetName();
+            }
+            catch
+            {
+                return string.Empty;
             }
         }
     }

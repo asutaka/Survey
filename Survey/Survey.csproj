@@ -214,7 +214,7 @@
     <Compile Include="Utils\ExtensionMethod.cs" />
     <Compile Include="Utils\HelperUtils.cs" />
     <Compile Include="Utils\NLogLogger.cs" />
-    <Compile Include="Utils\WebClass.cs" />
+    <Compile Include="Utils\StaticVal.cs" />
     <EmbeddedResource Include="GUI\frmAddCoin.resx">
       <DependentUpon>frmAddCoin.cs</DependentUpon>
     </EmbeddedResource>

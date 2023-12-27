@@ -1,29 +1,46 @@
-﻿using DevExpress.XtraBars;
-using DevExpress.XtraEditors;
+﻿using DevExpress.Utils;
+using DevExpress.XtraBars;
 using Survey.Models;
 using Survey.Utils;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Survey.GUI
 {
     public partial class frmMain : DevExpress.XtraEditors.XtraForm
     {
+        private DateTime? _dtPrev = null;
+        private BackgroundWorker _bkgr = new BackgroundWorker();
+        private List<TraceViewModel> _lView = new List<TraceViewModel>();
+        private Timer _timer = new Timer();
         public frmMain()
         {
             InitializeComponent();
+            _bkgr.DoWork += bkgrConfig_DoWork;
+            _bkgr.RunWorkerCompleted += bkgrConfig_RunWorkerCompleted;
+        }
+
+        private void bkgrConfig_DoWork(object sender, DoWorkEventArgs e)
+        {
+            _lView = Analyze.AnalyzeViaIchimoku();
+        }
+
+        private void bkgrConfig_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            grid.BeginUpdate();
+            grid.DataSource = _lView;
+            grid.EndUpdate();
+            _timer.Stop();
+            lblProgress.Text = StaticVal._strProgressMain;
         }
 
         private void btnFollow_Click(object sender, EventArgs e)
         {
-            new frmTrace().ShowDialog();
+            new frmTrace(this).Show();
+            Hide();
         }
 
         private void btnItem_ItemClick(object sender, ItemClickEventArgs e)
@@ -98,7 +115,42 @@ namespace Survey.GUI
 
         private void btnAnalyze_Click(object sender, EventArgs e)
         {
-            Analyze.AnalyzeViaIchimoku();
+            if(_dtPrev != null 
+                && (DateTime.Now - _dtPrev).Value.TotalMinutes < 5)
+            {
+                HelperUtils.MesError("Chỉ phân tích cách nhau tối thiểu 5 phút!");
+                return;
+            }
+            _timer.Tick += timer1_Tick;
+            _timer.Interval = 1000;
+            _timer.Start();
+
+            StaticVal._strProgressMain = EProgress.Start.GetDisplayName();
+            //background worker
+            _bkgr.RunWorkerAsync();
+        }
+
+        private void gridView1_DoubleClick(object sender, EventArgs e)
+        {
+            try
+            {
+                var ea = e as DXMouseEventArgs;
+                var info = gridView1.CalcHitInfo(ea.Location);
+                if (info.InRow || info.InRowCell)
+                {
+                    var cellValue = gridView1.GetRowCellValue(info.RowHandle, "Coin").ToString();
+                    HelperUtils.OpenLink(cellValue);
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogLogger.PublishException(ex, $"frmMain.gridView1_DoubleClick|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            lblProgress.Text = StaticVal._strProgressMain;
         }
     }
 }

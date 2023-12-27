@@ -18,7 +18,7 @@ namespace Survey.Utils
         {
             IEnumerable<TicketModel> _lCoin = null;
             var settings = 0.LoadJsonFile<AppsettingModel>("appsettings"); 
-            var content = WebClass.GetWebContent(settings.API.API24hr).GetAwaiter().GetResult();
+            var content = HelperUtils.GetContent(settings.API.API24hr);
             if (!string.IsNullOrWhiteSpace(content))
             {
                 _lCoin = JsonConvert.DeserializeObject<IEnumerable<TicketModel>>(content)
@@ -48,11 +48,9 @@ namespace Survey.Utils
             {
                 var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
                 var url = (interval == EInterval.I15M) ? settings.API.History15M : settings.API.History1H;
-                var content = WebClass.GetWebContent(string.Format(url, symbol.ToUpper())).GetAwaiter().GetResult();
-                if (!string.IsNullOrWhiteSpace(content))
-                {
-                    var arr = JArray.Parse(content);
-                    lData.AddRange(arr.Select(x =>
+                //var content = WebClass.GetWebContent(string.Format(url, symbol.ToUpper())).GetAwaiter().GetResult();
+                var content = HelperUtils.GetJsonArray(string.Format(url, symbol.ToUpper()));
+                lData.AddRange(content.Select(x =>
                     new FinancialDataPoint((((long)x[0]) / 1000).UnixTimeStampToDateTime(),
                                             double.Parse(x[1].ToString()),
                                             double.Parse(x[2].ToString()),
@@ -60,7 +58,6 @@ namespace Survey.Utils
                                             double.Parse(x[4].ToString()),
                                             double.Parse(x[5].ToString())))
                                                 .ToList());
-                }
             }
             catch (Exception ex)
             {

@@ -8,12 +8,13 @@ namespace Survey.Utils
 {
     public static class Analyze
     {
-        public static void AnalyzeViaIchimoku()
+        public static List<TraceViewModel> AnalyzeViaIchimoku()
         {
             var dicOutput = new Dictionary<string, IEnumerable<FinancialDataPoint>>();
             //150 coin 
             var lCoin = Data.GetCoins(150);
             //data of 150
+            StaticVal._strProgressMain = EProgress.GetData.GetDisplayName();
             var dicData = new Dictionary<string, IEnumerable<FinancialDataPoint>>();
             foreach (var item in lCoin)
             {
@@ -25,7 +26,9 @@ namespace Survey.Utils
                 }
                 Thread.Sleep(500);
             }
+
             //ichimoku
+            StaticVal._strProgressMain = EProgress.Analyze.GetDisplayName();
             foreach (var item in dicData)
             {
                 var lData = item.Value;
@@ -53,14 +56,30 @@ namespace Survey.Utils
                 var lDataQuote = lData.Select(x => x.To<Quote>());
                 var lRsi = lDataQuote.GetRsi();
                 var lMACD = lDataQuote.GetMacd();
-                lResult.Add(new TraceViewModel { 
-                    symbol = item.Key,
-                    RSI = lRsi.Last().Rsi??0
-                });
+                var macd = lMACD.Last();
+                lResult.Add(new TraceViewModel
+                {
+                    Coin = item.Key,
+                    RSI = lRsi.Last().Rsi ?? 0,
+                    MACD = GetMACDStr(macd)
+                }); 
             }
+            var index = 1;
+            foreach (var item in lResult)
+            {
+                item.STT = index++;
+            }
+            StaticVal._strProgressMain = EProgress.Idle.GetDisplayName();
+            return lResult;
         }
 
         #region AnalyzeViaIchimoku
+        private static string GetMACDStr(MacdResult macd)
+        {
+            var result = string.Empty;
+            result += macd.Histogram > 0 ? "MACD cắt lên" : "MACD cắt xuống";
+            return result;
+        }
         private static bool PassCondition(Quote item, IchimokuResult ichimoku)
         {
             var spanTop = ichimoku.SenkouSpanA > ichimoku.SenkouSpanB ? ichimoku.SenkouSpanA : ichimoku.SenkouSpanB;

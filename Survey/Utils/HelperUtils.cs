@@ -1,6 +1,9 @@
-﻿using Survey.Models;
+﻿using Newtonsoft.Json.Linq;
+using Survey.Models;
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Net;
 using System.Windows.Forms;
 
 namespace Survey.Utils
@@ -50,6 +53,57 @@ namespace Survey.Utils
             {
                 NLogLogger.PublishException(ex, $"Helper.OpenLink|EXCEPTION| {ex.Message}");
             }
+        }
+
+        public static JArray GetJsonArray(string url)
+        {
+            if (WebRequest.Create(url) is HttpWebRequest webRequest)
+            {
+                webRequest.ContentType = "application/json";
+                webRequest.UserAgent = "Nothing";
+                try
+                {
+                    using (var s = webRequest.GetResponse().GetResponseStream())
+                    {
+                        using (var sr = new StreamReader(s))
+                        {
+                            var contributorsAsJson = sr.ReadToEnd();
+                            var contributors = JArray.Parse(contributorsAsJson);
+                            return contributors;
+                        }
+                    }
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return null;
+        }
+
+        public static string GetContent(string url)
+        {
+            if (WebRequest.Create(url) is HttpWebRequest webRequest)
+            {
+                webRequest.ContentType = "application/json";
+                webRequest.UserAgent = "Nothing";
+                try
+                {
+                    using (var s = webRequest.GetResponse().GetResponseStream())
+                    {
+                        using (var sr = new StreamReader(s))
+                        {
+                            var contributorsAsJson = sr.ReadToEnd();
+                            return contributorsAsJson;
+                        }
+                    }
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+            return null;
         }
     }
 }
