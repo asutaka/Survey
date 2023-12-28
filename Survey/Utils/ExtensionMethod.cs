@@ -27,6 +27,13 @@ namespace Survey.Utils
             return MapperConfig.Map<T>(model);
         }
 
+        public static T To<T>(this Quote model)
+        {
+            if (model == null)
+                return default(T);
+            return MapperConfig.Map<T>(model);
+        }
+
         public static T LoadJsonFile<T>(this int val, string fileName)
         {
             try
@@ -96,6 +103,10 @@ namespace Survey.Utils
                 //.ForMember(dest => dest.High, opt => opt.MapFrom(src => (decimal)src.High))
                 //.ForMember(dest => dest.Low, opt => opt.MapFrom(src => (decimal)src.Low))
                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateTimeStamp));
+            CreateMap<FinancialDataPoint, QuoteEx>()
+                 .ForMember(dest => dest.Date, opt => opt.MapFrom(src => src.DateTimeStamp)); 
         }
     }
+
+    
 }

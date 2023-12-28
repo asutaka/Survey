@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Skender.Stock.Indicators;
+using System;
 using System.Collections.Generic;
 
 namespace Survey.Models
@@ -112,5 +113,16 @@ namespace Survey.Models
         public string Coin { get; set; }
         public double RSI { get; set; }
         public string MACD { get; set; }
+    }
+
+    public class QuoteEx : Quote
+    {
+        public string Coin { get; set; }
+        public decimal Max { get; set; }
+        public int SoNenViTriMax { get; set; }// vị trí nến kể từ lúc mua đến nến max
+        public decimal PhanTramMax { get; set; }
+        public decimal Min { get; set; }
+        public int SoNenViTriMin { get; set; }// vị trí nến kể từ lúc mua đến nến min
+        public decimal PhanTramMin { get; set; }
     }
 }

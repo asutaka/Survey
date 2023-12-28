@@ -18,11 +18,13 @@ namespace Survey
         static void Main()
         {
             //new Test14122023().HandleData();
-            //Test25122023.Test1();
+            Test28122023.MainFunc();
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
-            Startup.Instance();
-            Application.Run(new frmMain());
+
+
+            //Startup.Instance();
+            //Application.Run(new frmMain());
         }
     }
 }
