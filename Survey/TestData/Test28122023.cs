@@ -26,11 +26,6 @@ namespace Survey.TestData
             //Print();
         }
 
-        private static bool CheckRSI(RsiResult param, Quote item = null)
-        {
-            return (param.Rsi > 30 && param.Rsi < 70) && (item == null || item.Close > item.Open);
-        }
-
         private static bool CheckMA4_12(SmaResult param1, SmaResult param2, Quote item = null)
         {
             return (param1.Sma - param2.Sma) > 0 && (item == null || item.Close > item.Open);
@@ -41,57 +36,62 @@ namespace Survey.TestData
             return (param1.Ema - param2.Ema) > 0 && (item == null || item.Close > item.Open);
         }
 
-        private static bool CheckIchimoku(IchimokuResult param, Quote item = null)
+        private static bool CheckIchimoku(IchimokuResult param, Quote item)
         {
             if (param.SenkouSpanA == null || param.SenkouSpanB == null)
                 return false;
-            var spanTop = param.SenkouSpanA > param.SenkouSpanB ? param.SenkouSpanA : param.SenkouSpanB;
-            var spanBottom = param.SenkouSpanA > param.SenkouSpanB ? param.SenkouSpanB : param.SenkouSpanA;
-            return item.Close > spanTop && item.Open < spanTop && item.Open > spanBottom && (item == null || item.Close > item.Open);
-        }
-
-        private static bool CheckMacd(MacdResult param, Quote item = null)
-        {
-            return param.Macd > param.Signal && (item == null || item.Close > item.Open);
+            var spanTop = param.SenkouSpanA > param.SenkouSpanB ? param.SenkouSpanA ?? 0 : param.SenkouSpanB ?? 0;
+            var spanBottom = param.SenkouSpanA > param.SenkouSpanB ? param.SenkouSpanB ?? 0 : param.SenkouSpanA ?? 0;
+            return item.Close > spanBottom && item.Close < spanTop * (decimal)1.03;
         }
 
         public static void Handle(string coin)
         {
             var lDataQuote = Data.GetData(coin, EInterval.I1H).Select(x => x.To<QuoteEx>());
             var count = lDataQuote.Count();
-            var lMa4 = lDataQuote.GetSma(4);
-            var lMa12 = lDataQuote.GetSma(12);
             var lEma4 = lDataQuote.GetEma(4);
             var lEma12 = lDataQuote.GetEma(12);
-            var lMacd = lDataQuote.GetMacd();
             var lIchimoku = lDataQuote.GetIchimoku();
             var lRSI = lDataQuote.GetRsi();
 
-            //Giữ tối đa 24 nến và 48 nến
+            //Giữ tối đa 24 nến 
             var lSave = new List<QuoteEx>();
             bool hasBuy = false;
             var index = 0;
             decimal minVal = 0, maxVal = 0;
             int indexMin = 0, indexMax = 0;
+            QuoteEx elementPrev = null;
             for (int i = 0; i < count; i++)
             {
+                if(i > 0)
+                {
+                    elementPrev = lDataQuote.ElementAt(i - 1);
+                }    
                 var item = lDataQuote.ElementAt(i);
-                var ma4 = lMa4.ElementAt(i);
-                var ma12 = lMa12.ElementAt(i);
-                if (ma12.Sma is null || ma12.Sma <= 0)
+                var ma4 = lEma4.ElementAt(i);
+                var ma12 = lEma12.ElementAt(i);
+                if (ma12.Ema is null || ma12.Ema <= 0)
                     continue;
 
                 if(!hasBuy)
-                {
-                    var chkMa4_12 = CheckMA4_12(ma4, ma12);
+                { 
+                    var chkMa4_12 = CheckEMA4_12(ma4, ma12);
                     if (chkMa4_12)
                     {
-                        //buy
-                        hasBuy = true;
-                        lSave.Add(item.To<QuoteEx>());
-                        lSave.Last().Coin = coin;
-                        minVal = item.Close;
-                        maxVal = item.Close;
+                        var ichimoku = lIchimoku.ElementAt(i);
+                        var chkIchimoku = CheckIchimoku(ichimoku, item);
+                        if (chkIchimoku)
+                        {
+                            if (item.Volume < 10 * elementPrev.Volume)
+                            {
+                                //buy
+                                hasBuy = true;
+                                lSave.Add(item.To<QuoteEx>());
+                                lSave.Last().Coin = coin;
+                                minVal = item.Close;
+                                maxVal = item.Close;
+                            }
+                        }
                     }
                 }
                 else
