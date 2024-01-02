@@ -18,6 +18,8 @@ namespace Survey.Models
         public string History15M { get; set; }
         public string History1HTime { get; set; }
         public string History15MTime { get; set; }
+        public string History4H { get; set; }
+        public string History1D { get; set; }
     }
 
     public class ViewWebModel
@@ -124,5 +126,8 @@ namespace Survey.Models
         public decimal Min { get; set; }
         public int SoNenViTriMin { get; set; }// vị trí nến kể từ lúc mua đến nến min
         public decimal PhanTramMin { get; set; }
+
+        public decimal DownRate { get; set; }
+        public decimal SignalRate { get; set; }
     }
 }

@@ -47,7 +47,16 @@ namespace Survey.Utils
             try
             {
                 var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
-                var url = (interval == EInterval.I15M) ? settings.API.History15M : settings.API.History1H;
+                var url = string.Empty;
+                if (interval == EInterval.I15M)
+                    url = settings.API.History15M;
+                else if (interval == EInterval.I1H)
+                    url = settings.API.History1H;
+                else if (interval == EInterval.I4H)
+                    url = settings.API.History4H;
+                else if (interval == EInterval.I1D)
+                    url = settings.API.History1D;
+                
                 //var content = WebClass.GetWebContent(string.Format(url, symbol.ToUpper())).GetAwaiter().GetResult();
                 var content = HelperUtils.GetJsonArray(string.Format(url, symbol.ToUpper()));
                 lData.AddRange(content.Select(x =>
