@@ -13,8 +13,8 @@ namespace Survey.TestData
         public static void MainFunc()
         {
             Console.WriteLine("Coin, Rate Max, Num Max, Rate Min, Num Min");
-            var lCoin = Data.GetCoins(50);
-            //var lCoin = new List<TicketModel> { new TicketModel { symbol = "axsusdt" } };
+            //var lCoin = Data.GetCoins(10);
+            var lCoin = new List<TicketModel> { new TicketModel { symbol = "lskusdt" } };
             foreach (var item in lCoin)
             {
                 Handle(item.symbol.ToLower());
@@ -55,7 +55,14 @@ namespace Survey.TestData
                 if (rsi.Rsi is null || rsi.Rsi <= 0)
                     continue;
 
-                if(hasBuy)
+                var tmp = CheckRSI(rsi);
+                if(tmp)
+                {
+                    Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy HH")}|RSI: {rsi.Rsi}");
+                }
+
+
+                if (hasBuy)
                 {
                     index++;
                     if (item.Close > maxVal)
@@ -98,7 +105,7 @@ namespace Survey.TestData
                 }
 
                 if(item.Close > item.Open 
-                    && item.Volume > 100000)
+                    && item.Volume > 100000)//60k?
                 {
                     hasBuy = true;
                     flagFollow = false;
@@ -130,6 +137,7 @@ namespace Survey.TestData
 
                     item.DownRate = Math.Round((Top - Bot) * 100 / Bot, 2);
                     item.SignalRate = Math.Round((item.Close - item.Open) * 100 / item.Open, 2);
+                    //item.Date = item.Date.AddHours(-7);
                     lSave.Add(item);
                 }
             }
@@ -146,26 +154,11 @@ namespace Survey.TestData
             }
         }
 
-        private static void Print(List<QuoteEx> param)
-        {
-            foreach (var item in param)
-            {
-                var formatCoin = item.Coin.Replace("USDT", "_USDT");
-                var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
-                var link = $"{settings.ViewWeb.Single}/{formatCoin}";
-
-                var print = $"{item.Coin},{item.Date.ToString("dd/MM/yyyy HH")},{item.DownRate}%,{item.SignalRate}%,{item.PhanTramMax}%,{item.SoNenViTriMax},{item.PhanTramMin}%,{item.SoNenViTriMin},{item.Volume},{link}";
-                //var print = $"COIN: {item.Coin},TIME: {item.Date.ToString("dd/MM/yyyy HH")},BUY: {item.Close},MAX: {item.Max},RATE: {item.PhanTramMax}%,NUM: {item.SoNenViTriMax},MIN: {item.Min},RATE: {item.PhanTramMin}%,NUM: {item.SoNenViTriMin}";
-                Console.WriteLine(print);
-            }
-        }
-
         private static void Print(QuoteEx item)
         {
             var formatCoin = item.Coin.Replace("USDT", "_USDT");
             var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
             var link = $"{settings.ViewWeb.Single}/{formatCoin}";
-
             var print = $"{item.Coin},{item.Date.ToString("dd/MM/yyyy HH")},{item.DownRate}%,{item.SignalRate}%,{item.PhanTramMax}%,{item.SoNenViTriMax},{item.PhanTramMin}%,{item.SoNenViTriMin},{item.Volume},{link}";
             Console.WriteLine(print);
         }
