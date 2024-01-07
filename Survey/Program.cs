@@ -18,7 +18,7 @@ namespace Survey
         static void Main()
         {
             //new Test14122023().HandleData();
-            Test02012024.MainFunc();
+            Test06012024.MainFunc();
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
 
