@@ -191,7 +191,6 @@ namespace Survey.GUI
 
         private void chart_MouseDoubleClick(object sender, MouseEventArgs e)
         {
-            chart.RuntimeHitTesting = true;
             ChartHitInfo hit = chart.CalcHitInfo(e.Location);
             SeriesPoint point = hit.SeriesPoint;
             if (point != null)
@@ -211,12 +210,6 @@ namespace Survey.GUI
                 }
                 MessageBox.Show(argument + "\n" + values, "SeriesPoint Data");
             }
-            //var tmp = dataGenerator._lstCalculate;
-
-            //if (hi.InAnnotation)
-            //{
-            //    Annotation an = hi.Annotation;
-            //}
         }
     }
 }
