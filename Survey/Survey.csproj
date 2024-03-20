@@ -180,6 +180,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterData\RealTimeFinancialDataGenerator.cs" />
+    <Compile Include="GUI\FinancialChartingCustom_New.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\FinancialChartingCustom_New.Designer.cs">
+      <DependentUpon>FinancialChartingCustom_New.cs</DependentUpon>
+    </Compile>
     <Compile Include="GUI\FinancialChartingCustom.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -232,8 +238,9 @@
     <Compile Include="Utils\LogM.cs" />
     <Compile Include="Utils\NLogLogger.cs" />
     <Compile Include="Utils\StaticVal.cs" />
-    <Content Include="Resource\media_16x16.png" />
-    <Content Include="Resource\pause_16x16.png" />
+    <EmbeddedResource Include="GUI\FinancialChartingCustom_New.resx">
+      <DependentUpon>FinancialChartingCustom_New.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="GUI\FinancialChartingCustom.resx">
       <DependentUpon>FinancialChartingCustom.cs</DependentUpon>
     </EmbeddedResource>
@@ -283,6 +290,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\media_16x16.png" />
+    <None Include="Resources\pause_16x16.png" />
     <Content Include="Resource\find.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -97,7 +97,7 @@ namespace Survey.Utils
                 var contentM = HelperUtils.GetJsonArray(string.Format(settings.API.History1M, symbol.ToUpper()));
                 if (contentM != null && contentM.Any())
                 {
-                    var time = ((long)contentM[0]) / 1000;
+                    var time = ((long)contentM[0][0]) / 1000;
                     JArray content = null;
                     do
                     {
@@ -113,7 +113,7 @@ namespace Survey.Utils
                                                                     double.Parse(x[4].ToString()),
                                                                     double.Parse(x[5].ToString())))
                                                                         .ToList());
-                            time = (countArr > 0) ? (long)content[countArr-1] : 0;
+                            time = (countArr > 0) ? (long)content[countArr-1][0] : 0;
                             if (max > 0 && lData.Count() >= max)
                                 break;
                         }

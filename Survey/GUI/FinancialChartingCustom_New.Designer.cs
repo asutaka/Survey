@@ -2,7 +2,7 @@
 
 namespace Survey.GUI
 {
-    partial class FinancialChartingCustom
+    partial class FinancialChartingCustom_New
     {
         System.ComponentModel.IContainer components = null;
 
@@ -39,10 +39,6 @@ namespace Survey.GUI
             DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem5 = new DevExpress.XtraCharts.ChartIntervalItem();
             DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem6 = new DevExpress.XtraCharts.ChartIntervalItem();
             DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem7 = new DevExpress.XtraCharts.ChartIntervalItem();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FinancialChartingCustom));
-            DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem8 = new DevExpress.XtraCharts.ChartIntervalItem();
-            DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem9 = new DevExpress.XtraCharts.ChartIntervalItem();
-            DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem10 = new DevExpress.XtraCharts.ChartIntervalItem();
             this.layoutControl = new DevExpress.XtraLayout.LayoutControl();
             this.layoutControlGroupRoot = new DevExpress.XtraLayout.LayoutControlGroup();
             this.layoutControlGroupIndicators = new DevExpress.XtraLayout.LayoutControlGroup();
@@ -157,8 +153,8 @@ namespace Survey.GUI
             xyDiagram1.AxisX.VisualRange.Auto = false;
             xyDiagram1.AxisX.VisualRange.AutoSideMargins = false;
             xyDiagram1.AxisX.VisualRange.EndSideMargin = 2D;
-            xyDiagram1.AxisX.VisualRange.MaxValueSerializable = "03/20/2024 13:54:00.000";
-            xyDiagram1.AxisX.VisualRange.MinValueSerializable = "03/20/2024 13:45:00.000";
+            xyDiagram1.AxisX.VisualRange.MaxValueSerializable = "03/20/2024 17:07:00.000";
+            xyDiagram1.AxisX.VisualRange.MinValueSerializable = "03/20/2024 16:58:00.000";
             xyDiagram1.AxisX.VisualRange.StartSideMargin = 2D;
             xyDiagram1.AxisX.WholeRange.AutoSideMargins = false;
             xyDiagram1.AxisX.WholeRange.EndSideMargin = 2D;
@@ -293,6 +289,8 @@ namespace Survey.GUI
             this.chart.Zoom += new DevExpress.XtraCharts.ChartZoomEventHandler(this.chart_Zoom);
             this.chart.BeforeZoom += new DevExpress.XtraCharts.ChartBeforeZoomEventHandler(this.chart_BeforeZoom);
             this.chart.BoundDataChanged += new DevExpress.XtraCharts.BoundDataChangedEventHandler(this.chart_BoundDataChanged);
+            this.chart.DoubleClick += new System.EventHandler(this.chart_DoubleClick);
+            this.chart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chart_MouseDoubleClick);
             this.chart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.chart_MouseUp);
             // 
             // chartBarController1
@@ -393,7 +391,7 @@ namespace Survey.GUI
             this.barEditInterval,
             this.bartxtSymbol});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 82;
+            this.ribbonControl1.MaxItemId = 87;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.createFinancialChartRibbonPage1});
@@ -419,34 +417,23 @@ namespace Survey.GUI
             this.selectAxisMeasureUnitRepositoryItemComboBox1.AutoHeight = false;
             this.selectAxisMeasureUnitRepositoryItemComboBox1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            chartIntervalItem1.Caption = "1 minute";
+            chartIntervalItem1.Caption = "15 minutes";
             chartIntervalItem1.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Minute;
-            chartIntervalItem2.Caption = "5 minutes";
-            chartIntervalItem2.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Minute;
-            chartIntervalItem2.MeasureUnitMultiplier = 5;
-            chartIntervalItem3.Caption = "15 minutes";
-            chartIntervalItem3.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Minute;
-            chartIntervalItem3.MeasureUnitMultiplier = 15;
-            chartIntervalItem4.Caption = "1 hours";
-            chartIntervalItem4.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Hour;
-            chartIntervalItem5.Caption = "4 hours";
-            chartIntervalItem5.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Hour;
-            chartIntervalItem5.MeasureUnitMultiplier = 4;
-            chartIntervalItem6.Caption = "1 day";
-            chartIntervalItem6.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Day;
-            chartIntervalItem7.Caption = "1 week";
-            chartIntervalItem7.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Week;
+            chartIntervalItem1.MeasureUnitMultiplier = 15;
+            chartIntervalItem2.Caption = "1 hours";
+            chartIntervalItem2.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Hour;
+            chartIntervalItem3.Caption = "4 hours";
+            chartIntervalItem3.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Hour;
+            chartIntervalItem3.MeasureUnitMultiplier = 4;
+            chartIntervalItem4.Caption = "1 day";
+            chartIntervalItem4.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Day;
             this.selectAxisMeasureUnitRepositoryItemComboBox1.Items.AddRange(new object[] {
             chartIntervalItem1,
             chartIntervalItem2,
             chartIntervalItem3,
-            chartIntervalItem4,
-            chartIntervalItem5,
-            chartIntervalItem6,
-            chartIntervalItem7});
+            chartIntervalItem4});
             this.selectAxisMeasureUnitRepositoryItemComboBox1.Name = "selectAxisMeasureUnitRepositoryItemComboBox1";
             this.selectAxisMeasureUnitRepositoryItemComboBox1.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
-            this.selectAxisMeasureUnitRepositoryItemComboBox1.SelectedIndexChanged += new System.EventHandler(this.selectChartMeasureUnitRepositoryItemComboBox1_SelectedIndexChanged);
             this.selectAxisMeasureUnitRepositoryItemComboBox1.CloseUp += new DevExpress.XtraEditors.Controls.CloseUpEventHandler(this.CloseUp);
             this.selectAxisMeasureUnitRepositoryItemComboBox1.BeforePopup += new System.EventHandler(this.BeforePopup);
             // 
@@ -454,8 +441,7 @@ namespace Survey.GUI
             // 
             this.barBtnStart.Caption = "Start";
             this.barBtnStart.Id = 63;
-            this.barBtnStart.ImageOptions.Image = ((System.Drawing.Image)(resources.GetObject("barBtnStart.ImageOptions.Image")));
-            this.barBtnStart.ImageOptions.LargeImage = ((System.Drawing.Image)(resources.GetObject("barBtnStart.ImageOptions.LargeImage")));
+            this.barBtnStart.ImageOptions.Image = global::Survey.Properties.Resources.media_16x16;
             this.barBtnStart.Name = "barBtnStart";
             this.barBtnStart.ItemClick += new DevExpress.XtraBars.ItemClickEventHandler(this.barBtnStart_ItemClick);
             // 
@@ -497,7 +483,7 @@ namespace Survey.GUI
             // bartxtSymbol
             // 
             this.bartxtSymbol.Edit = this.repositoryItemTextEdit1;
-            this.bartxtSymbol.EditValue = "BTC";
+            this.bartxtSymbol.EditValue = "TWT";
             this.bartxtSymbol.Id = 73;
             this.bartxtSymbol.Name = "bartxtSymbol";
             // 
@@ -557,22 +543,22 @@ namespace Survey.GUI
             this.selectPeriodRepositoryItemComboBox1.AutoHeight = false;
             this.selectPeriodRepositoryItemComboBox1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
             new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
-            chartIntervalItem8.Caption = "6 month";
-            chartIntervalItem8.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Month;
-            chartIntervalItem8.MeasureUnitMultiplier = 6;
-            chartIntervalItem9.Caption = "1 year";
-            chartIntervalItem9.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Year;
-            chartIntervalItem10.Caption = "2 year";
-            chartIntervalItem10.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Year;
-            chartIntervalItem10.MeasureUnitMultiplier = 2;
+            chartIntervalItem5.Caption = "6 month";
+            chartIntervalItem5.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Month;
+            chartIntervalItem5.MeasureUnitMultiplier = 6;
+            chartIntervalItem6.Caption = "1 year";
+            chartIntervalItem6.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Year;
+            chartIntervalItem7.Caption = "2 year";
+            chartIntervalItem7.MeasureUnit = DevExpress.XtraCharts.DateTimeMeasureUnit.Year;
+            chartIntervalItem7.MeasureUnitMultiplier = 2;
             this.selectPeriodRepositoryItemComboBox1.Items.AddRange(new object[] {
-            chartIntervalItem8,
-            chartIntervalItem9,
-            chartIntervalItem10});
+            chartIntervalItem5,
+            chartIntervalItem6,
+            chartIntervalItem7});
             this.selectPeriodRepositoryItemComboBox1.Name = "selectPeriodRepositoryItemComboBox1";
             this.selectPeriodRepositoryItemComboBox1.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
             // 
-            // FinancialChartingCustom
+            // FinancialChartingCustom_New
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -580,7 +566,7 @@ namespace Survey.GUI
             this.Controls.Add(this.chart);
             this.Controls.Add(this.ribbonControl1);
             this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.Name = "FinancialChartingCustom";
+            this.Name = "FinancialChartingCustom_New";
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroupRoot)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroupIndicators)).EndInit();
