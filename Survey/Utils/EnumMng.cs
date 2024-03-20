@@ -7,7 +7,9 @@ namespace Survey.Utils
         I15M = 1,
         I1H = 2,
         I4H = 3,
-        I1D = 4
+        I1D = 4,
+        //I1W = 5,
+        I1M = 6
     }
 
     public enum EProgress

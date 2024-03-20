@@ -14,12 +14,16 @@ namespace Survey.Models
     {
         public string API24hr { get; set; }
         public string Coin { get; set; }
-        public string History1H { get; set; }
         public string History15M { get; set; }
-        public string History1HTime { get; set; }
-        public string History15MTime { get; set; }
+        public string History1H { get; set; }
         public string History4H { get; set; }
         public string History1D { get; set; }
+        public string History1M { get; set; }
+
+        public string History15MTime { get; set; }
+        public string History1HTime { get; set; }
+        public string History4HTime { get; set; }
+        public string History1DTime { get; set; }
     }
 
     public class ViewWebModel

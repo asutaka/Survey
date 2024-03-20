@@ -25,7 +25,7 @@ namespace Survey.TestData
 
         public static void Test2(string coin)
         {
-            var lData = Data.GetData(coin, EInterval.I4H);
+            var lData = Data.GetDataAll(coin, EInterval.I4H);
             var lDataQuote = lData.Select(x => x.To<Quote>());
             var lMA5 = lDataQuote.GetEma(5);
             var lMA12 = lDataQuote.GetEma(12);

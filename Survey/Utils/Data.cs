@@ -74,5 +74,58 @@ namespace Survey.Utils
             }
             return lData;
         }
+
+        public static IEnumerable<FinancialDataPoint> GetDataAll(string symbol, EInterval interval, int max = 0)
+        {
+            var lData = new List<FinancialDataPoint>();
+
+            try
+            {
+                var settings = 0.LoadJsonFile<AppsettingModel>("appsettings");
+                var url = string.Empty;
+                if (interval == EInterval.I15M)
+                    url = settings.API.History15MTime;
+                else if (interval == EInterval.I1H)
+                    url = settings.API.History1HTime;
+                else if (interval == EInterval.I4H)
+                    url = settings.API.History4HTime;
+                else if (interval == EInterval.I1D)
+                    url = settings.API.History1DTime;
+                if (string.IsNullOrWhiteSpace(url))
+                    return lData;
+
+                var contentM = HelperUtils.GetJsonArray(string.Format(settings.API.History1M, symbol.ToUpper()));
+                if (contentM != null && contentM.Any())
+                {
+                    var time = ((long)contentM[0]) / 1000;
+                    JArray content = null;
+                    do
+                    {
+                        content = HelperUtils.GetJsonArray(string.Format(url, symbol.ToUpper(), time));
+                        if (content != null && content.Any())
+                        {
+                            int countArr = content.Count;
+                            lData.AddRange(content.Select(x =>
+                                            new FinancialDataPoint((((long)x[0]) / 1000).UnixTimeStampToDateTime(),
+                                                                    double.Parse(x[1].ToString()),
+                                                                    double.Parse(x[2].ToString()),
+                                                                    double.Parse(x[3].ToString()),
+                                                                    double.Parse(x[4].ToString()),
+                                                                    double.Parse(x[5].ToString())))
+                                                                        .ToList());
+                            time = (countArr > 0) ? (long)content[countArr-1] : 0;
+                            if (max > 0 && lData.Count() >= max)
+                                break;
+                        }
+                    }
+                    while (content != null && content.Count() >= 500);
+                }
+            }
+            catch (Exception ex)
+            {
+                NLogLogger.PublishException(ex, $"Data.GetDataAll|EXCEPTION| {ex.Message}");
+            }
+            return lData;
+        }
     }
 }
