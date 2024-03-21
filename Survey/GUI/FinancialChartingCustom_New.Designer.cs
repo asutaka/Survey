@@ -32,6 +32,8 @@ namespace Survey.GUI
             DevExpress.XtraCharts.BollingerBands bollingerBands1 = new DevExpress.XtraCharts.BollingerBands();
             DevExpress.XtraCharts.MovingAverageConvergenceDivergence movingAverageConvergenceDivergence1 = new DevExpress.XtraCharts.MovingAverageConvergenceDivergence();
             DevExpress.XtraCharts.ChaikinsVolatility chaikinsVolatility1 = new DevExpress.XtraCharts.ChaikinsVolatility();
+            DevExpress.XtraCharts.ExponentialMovingAverage exponentialMovingAverage1 = new DevExpress.XtraCharts.ExponentialMovingAverage();
+            DevExpress.XtraCharts.ExponentialMovingAverage exponentialMovingAverage2 = new DevExpress.XtraCharts.ExponentialMovingAverage();
             DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem1 = new DevExpress.XtraCharts.ChartIntervalItem();
             DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem2 = new DevExpress.XtraCharts.ChartIntervalItem();
             DevExpress.XtraCharts.ChartIntervalItem chartIntervalItem3 = new DevExpress.XtraCharts.ChartIntervalItem();
@@ -89,6 +91,8 @@ namespace Survey.GUI
             ((System.ComponentModel.ISupportInitialize)(bollingerBands1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(movingAverageConvergenceDivergence1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(chaikinsVolatility1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(exponentialMovingAverage1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(exponentialMovingAverage2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.chartBarController1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.commandBarGalleryDropDown8)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ribbonControl1)).BeginInit();
@@ -161,8 +165,8 @@ namespace Survey.GUI
             xyDiagram1.AxisX.VisualRange.Auto = false;
             xyDiagram1.AxisX.VisualRange.AutoSideMargins = false;
             xyDiagram1.AxisX.VisualRange.EndSideMargin = 2D;
-            xyDiagram1.AxisX.VisualRange.MaxValueSerializable = "03/21/2024 16:04:00.000";
-            xyDiagram1.AxisX.VisualRange.MinValueSerializable = "03/21/2024 15:55:00.000";
+            xyDiagram1.AxisX.VisualRange.MaxValueSerializable = "03/21/2024 16:58:00.000";
+            xyDiagram1.AxisX.VisualRange.MinValueSerializable = "03/21/2024 16:49:00.000";
             xyDiagram1.AxisX.VisualRange.StartSideMargin = 2D;
             xyDiagram1.AxisX.WholeRange.AutoSideMargins = false;
             xyDiagram1.AxisX.WholeRange.EndSideMargin = 2D;
@@ -281,10 +285,20 @@ namespace Survey.GUI
             chaikinsVolatility1.PaneName = "Pane 2";
             chaikinsVolatility1.ShowInLegend = true;
             chaikinsVolatility1.Tag = "Chaikin\'s Volatility";
+            exponentialMovingAverage1.Color = System.Drawing.Color.LimeGreen;
+            exponentialMovingAverage1.Name = "Exponential Moving Average 1";
+            exponentialMovingAverage1.PointsCount = 5;
+            exponentialMovingAverage1.ValueLevel = DevExpress.XtraCharts.ValueLevel.Close;
+            exponentialMovingAverage2.Color = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            exponentialMovingAverage2.Name = "Exponential Moving Average 2";
+            exponentialMovingAverage2.PointsCount = 12;
+            exponentialMovingAverage2.ValueLevel = DevExpress.XtraCharts.ValueLevel.Close;
             candleStickSeriesView1.Indicators.AddRange(new DevExpress.XtraCharts.Indicator[] {
             bollingerBands1,
             movingAverageConvergenceDivergence1,
-            chaikinsVolatility1});
+            chaikinsVolatility1,
+            exponentialMovingAverage1,
+            exponentialMovingAverage2});
             candleStickSeriesView1.LineThickness = 1;
             candleStickSeriesView1.ReductionOptions.Color = System.Drawing.Color.Red;
             candleStickSeriesView1.Shadow.Color = System.Drawing.Color.Coral;
@@ -398,7 +412,7 @@ namespace Survey.GUI
             this.bartxtSymbol,
             this.dtFind});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 92;
+            this.ribbonControl1.MaxItemId = 93;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.createFinancialChartRibbonPage1});
@@ -624,6 +638,8 @@ namespace Survey.GUI
             ((System.ComponentModel.ISupportInitialize)(bollingerBands1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(movingAverageConvergenceDivergence1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(chaikinsVolatility1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(exponentialMovingAverage1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(exponentialMovingAverage2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(candleStickSeriesView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(series2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
