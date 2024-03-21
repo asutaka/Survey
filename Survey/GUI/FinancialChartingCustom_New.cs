@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows.Forms;
 using DevExpress.Utils;
 using DevExpress.XtraCharts;
 using Survey.AdapterData;
 using Survey.Utils;
+using System.Linq;
 
 namespace Survey.GUI
 {
@@ -49,6 +51,10 @@ namespace Survey.GUI
             chart.RuntimeHitTesting = true;
             _bkgr.DoWork += bkgrConfig_DoWork;
             _bkgr.RunWorkerCompleted += bkgrConfig_RunWorkerCompleted;
+
+            chart.SelectionMode = ElementSelectionMode.Single;
+            chart.SeriesSelectionMode = SeriesSelectionMode.Point;
+            chart.CustomDrawSeriesPoint += OnCustomDrawSeriesPoint;
         }
 
         private void bkgrConfig_DoWork(object sender, DoWorkEventArgs e)
@@ -185,30 +191,32 @@ namespace Survey.GUI
             }
         }
 
-        private void chart_DoubleClick(object sender, EventArgs e)
+        private void OnCustomDrawSeriesPoint(object sender, CustomDrawSeriesPointEventArgs e)
         {
+            if (e.SelectionState == SelectionState.Selected)
+            {
+                e.SeriesDrawOptions.Color = Color.Yellow;
+            }
         }
 
-        private void chart_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void dtFind_EditValueChanged(object sender, EventArgs e)
         {
-            ChartHitInfo hit = chart.CalcHitInfo(e.Location);
-            SeriesPoint point = hit.SeriesPoint;
-            if (point != null)
+            var dt = (DateTime)dtFind.EditValue;
+            var count = chart.Series[0].Points.Count();
+            if (dt != null && dt > DateTime.MinValue && count > 0)
             {
-                // Obtain the series point argument.
-                string argument = "Argument: " + point.Argument.ToString();
-
-                // Obtain series point values.
-                string values = "Value(s): " + point.Values[0].ToString();
-
-                if (point.Values.Length > 1)
+                for (int i = 0; i < count; i++)
                 {
-                    for (int i = 1; i < point.Values.Length; i++)
+                    var item = chart.Series[0].Points[i];
+                    var itemDate = item.DateTimeArgument;
+                    if(itemDate.Year == dt.Year
+                        && itemDate.Month == dt.Month
+                        && itemDate.Day == dt.Day)
                     {
-                        values = values + ", " + point.Values[i].ToString();
+                        chart.SetObjectSelection(item);
+                        break;
                     }
                 }
-                MessageBox.Show(argument + "\n" + values, "SeriesPoint Data");
             }
         }
     }

@@ -61,12 +61,16 @@ namespace Survey.GUI
             this.repositoryItemSpinEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit();
             this.bartxtSymbol = new DevExpress.XtraBars.BarEditItem();
             this.repositoryItemTextEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemTextEdit();
+            this.dtFind = new DevExpress.XtraBars.BarEditItem();
+            this.repositoryItemDateEdit2 = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
             this.createFinancialChartRibbonPage1 = new DevExpress.XtraCharts.UI.CreateFinancialChartRibbonPage();
             this.chartFinancialSeriesRibbonPageGroup1 = new DevExpress.XtraCharts.UI.ChartFinancialSeriesRibbonPageGroup();
             this.chartFinancialIndicatorsRibbonPageGroup1 = new DevExpress.XtraCharts.UI.ChartFinancialIndicatorsRibbonPageGroup();
             this.chartAnnotationsRibbonPageGroup1 = new DevExpress.XtraCharts.UI.ChartAnnotationsRibbonPageGroup();
+            this.ribbonPageGroup1 = new DevExpress.XtraBars.Ribbon.RibbonPageGroup();
             this.selectSeriesRepositoryItemComboBox1 = new DevExpress.XtraCharts.UI.SelectSeriesRepositoryItemComboBox();
             this.selectPeriodRepositoryItemComboBox1 = new DevExpress.XtraCharts.UI.SelectPeriodRepositoryItemComboBox();
+            this.repositoryItemDateEdit1 = new DevExpress.XtraEditors.Repository.RepositoryItemDateEdit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControl)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroupRoot)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.layoutControlGroupIndicators)).BeginInit();
@@ -91,8 +95,12 @@ namespace Survey.GUI
             ((System.ComponentModel.ISupportInitialize)(this.selectAxisMeasureUnitRepositoryItemComboBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemSpinEdit1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemTextEdit1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit2.CalendarTimeProperties)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectSeriesRepositoryItemComboBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectPeriodRepositoryItemComboBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit1.CalendarTimeProperties)).BeginInit();
             this.SuspendLayout();
             // 
             // layoutControl
@@ -153,8 +161,8 @@ namespace Survey.GUI
             xyDiagram1.AxisX.VisualRange.Auto = false;
             xyDiagram1.AxisX.VisualRange.AutoSideMargins = false;
             xyDiagram1.AxisX.VisualRange.EndSideMargin = 2D;
-            xyDiagram1.AxisX.VisualRange.MaxValueSerializable = "03/20/2024 17:07:00.000";
-            xyDiagram1.AxisX.VisualRange.MinValueSerializable = "03/20/2024 16:58:00.000";
+            xyDiagram1.AxisX.VisualRange.MaxValueSerializable = "03/21/2024 16:04:00.000";
+            xyDiagram1.AxisX.VisualRange.MinValueSerializable = "03/21/2024 15:55:00.000";
             xyDiagram1.AxisX.VisualRange.StartSideMargin = 2D;
             xyDiagram1.AxisX.WholeRange.AutoSideMargins = false;
             xyDiagram1.AxisX.WholeRange.EndSideMargin = 2D;
@@ -289,8 +297,6 @@ namespace Survey.GUI
             this.chart.Zoom += new DevExpress.XtraCharts.ChartZoomEventHandler(this.chart_Zoom);
             this.chart.BeforeZoom += new DevExpress.XtraCharts.ChartBeforeZoomEventHandler(this.chart_BeforeZoom);
             this.chart.BoundDataChanged += new DevExpress.XtraCharts.BoundDataChangedEventHandler(this.chart_BoundDataChanged);
-            this.chart.DoubleClick += new System.EventHandler(this.chart_DoubleClick);
-            this.chart.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.chart_MouseDoubleClick);
             this.chart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.chart_MouseUp);
             // 
             // chartBarController1
@@ -389,9 +395,10 @@ namespace Survey.GUI
             this.barBtnStart,
             this.barHeaderItem1,
             this.barEditInterval,
-            this.bartxtSymbol});
+            this.bartxtSymbol,
+            this.dtFind});
             this.ribbonControl1.Location = new System.Drawing.Point(0, 0);
-            this.ribbonControl1.MaxItemId = 87;
+            this.ribbonControl1.MaxItemId = 92;
             this.ribbonControl1.Name = "ribbonControl1";
             this.ribbonControl1.Pages.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPage[] {
             this.createFinancialChartRibbonPage1});
@@ -400,7 +407,9 @@ namespace Survey.GUI
             this.selectSeriesRepositoryItemComboBox1,
             this.selectPeriodRepositoryItemComboBox1,
             this.repositoryItemSpinEdit1,
-            this.repositoryItemTextEdit1});
+            this.repositoryItemTextEdit1,
+            this.repositoryItemDateEdit1,
+            this.repositoryItemDateEdit2});
             this.ribbonControl1.Size = new System.Drawing.Size(1443, 150);
             // 
             // selectAxisMeasureUnitBarItem1
@@ -492,12 +501,30 @@ namespace Survey.GUI
             this.repositoryItemTextEdit1.AutoHeight = false;
             this.repositoryItemTextEdit1.Name = "repositoryItemTextEdit1";
             // 
+            // dtFind
+            // 
+            this.dtFind.Edit = this.repositoryItemDateEdit2;
+            this.dtFind.EditWidth = 100;
+            this.dtFind.Id = 90;
+            this.dtFind.Name = "dtFind";
+            this.dtFind.EditValueChanged += new System.EventHandler(this.dtFind_EditValueChanged);
+            // 
+            // repositoryItemDateEdit2
+            // 
+            this.repositoryItemDateEdit2.AutoHeight = false;
+            this.repositoryItemDateEdit2.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.repositoryItemDateEdit2.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.repositoryItemDateEdit2.Name = "repositoryItemDateEdit2";
+            // 
             // createFinancialChartRibbonPage1
             // 
             this.createFinancialChartRibbonPage1.Groups.AddRange(new DevExpress.XtraBars.Ribbon.RibbonPageGroup[] {
             this.chartFinancialSeriesRibbonPageGroup1,
             this.chartFinancialIndicatorsRibbonPageGroup1,
-            this.chartAnnotationsRibbonPageGroup1});
+            this.chartAnnotationsRibbonPageGroup1,
+            this.ribbonPageGroup1});
             this.createFinancialChartRibbonPage1.Name = "createFinancialChartRibbonPage1";
             // 
             // chartFinancialSeriesRibbonPageGroup1
@@ -526,6 +553,12 @@ namespace Survey.GUI
             this.chartAnnotationsRibbonPageGroup1.ItemLinks.Add(this.bartxtSymbol);
             this.chartAnnotationsRibbonPageGroup1.Name = "chartAnnotationsRibbonPageGroup1";
             this.chartAnnotationsRibbonPageGroup1.Text = "";
+            // 
+            // ribbonPageGroup1
+            // 
+            this.ribbonPageGroup1.ItemLinks.Add(this.dtFind);
+            this.ribbonPageGroup1.Name = "ribbonPageGroup1";
+            this.ribbonPageGroup1.Text = "Find";
             // 
             // selectSeriesRepositoryItemComboBox1
             // 
@@ -557,6 +590,15 @@ namespace Survey.GUI
             chartIntervalItem7});
             this.selectPeriodRepositoryItemComboBox1.Name = "selectPeriodRepositoryItemComboBox1";
             this.selectPeriodRepositoryItemComboBox1.TextEditStyle = DevExpress.XtraEditors.Controls.TextEditStyles.DisableTextEditor;
+            // 
+            // repositoryItemDateEdit1
+            // 
+            this.repositoryItemDateEdit1.AutoHeight = false;
+            this.repositoryItemDateEdit1.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.repositoryItemDateEdit1.CalendarTimeProperties.Buttons.AddRange(new DevExpress.XtraEditors.Controls.EditorButton[] {
+            new DevExpress.XtraEditors.Controls.EditorButton(DevExpress.XtraEditors.Controls.ButtonPredefines.Combo)});
+            this.repositoryItemDateEdit1.Name = "repositoryItemDateEdit1";
             // 
             // FinancialChartingCustom_New
             // 
@@ -591,8 +633,12 @@ namespace Survey.GUI
             ((System.ComponentModel.ISupportInitialize)(this.selectAxisMeasureUnitRepositoryItemComboBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemSpinEdit1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.repositoryItemTextEdit1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit2.CalendarTimeProperties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectSeriesRepositoryItemComboBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.selectPeriodRepositoryItemComboBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit1.CalendarTimeProperties)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.repositoryItemDateEdit1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -627,5 +673,10 @@ namespace Survey.GUI
         private DevExpress.XtraEditors.Repository.RepositoryItemSpinEdit repositoryItemSpinEdit1;
         private DevExpress.XtraBars.BarEditItem bartxtSymbol;
         private DevExpress.XtraEditors.Repository.RepositoryItemTextEdit repositoryItemTextEdit1;
+        private DevExpress.XtraCharts.XYDiagram xyDiagram1;
+        private DevExpress.XtraEditors.Repository.RepositoryItemDateEdit repositoryItemDateEdit1;
+        private DevExpress.XtraBars.BarEditItem dtFind;
+        private DevExpress.XtraEditors.Repository.RepositoryItemDateEdit repositoryItemDateEdit2;
+        private DevExpress.XtraBars.Ribbon.RibbonPageGroup ribbonPageGroup1;
     }
 }
