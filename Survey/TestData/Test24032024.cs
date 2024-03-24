@@ -25,7 +25,7 @@ namespace Survey.TestData
             printDetail(lTrenMa20, "Tren MA20");
             printDetail(lDuoiMa20, "Duoi MA20");
             printDetail(lCatMa20Xanh, "Cat MA20 Xanh");
-            printDetail(lCatMa20Do, "Cat MA20 Do");
+            printDetail(lCatMa20Do, "Cat MA20 Do");//ti le xanh/do < 1
         }
 
         public static void printLoc2()
@@ -36,8 +36,16 @@ namespace Survey.TestData
             var l30 = _lResult.Where(x => x.Loc2 == ELoc2.RSI30);
             printDetail(l70, "RSI tren 70");
             printDetail(l50_70, "RSI tu 50 den 70");
-            printDetail(l30_50, "RSI tu 30 den 50");
-            printDetail(l30, "RSI nho hon 30");
+            printDetail(l30_50, "RSI tu 30 den 50");//ti le xanh/do < 1
+            printDetail(l30, "RSI nho hon 30");//xanh/do < 1
+        }
+
+        public static void printLoc3()
+        {
+            var lUp = _lResult.Where(x => x.Loc3 == ELoc3.EMA512Up);
+            var lDown = _lResult.Where(x => x.Loc3 == ELoc3.EMA512Down);
+            printDetail(lUp, "EMA5_12 cat lên");
+            printDetail(lDown, "EMA5_12 cat xuống");//ti le xanh/do < 1
         }
 
         private static void printDetail(IEnumerable<cls24032024> lInput, string title)
@@ -201,6 +209,14 @@ namespace Survey.TestData
                 else
                 {
                     loc2 = ELoc2.RSI30;//ti le xanh/do < 1
+                }
+                #endregion
+
+                #region Lọc 3
+                ELoc3 loc3 = ELoc3.EMA512Down;
+                if (itemEMA5.Ema - itemEMA12.Ema >= 0)
+                {
+                    loc3 = ELoc3.EMA512Up;
                 } 
                 #endregion
 
@@ -213,12 +229,14 @@ namespace Survey.TestData
                     DoDaiThanNen = doDaiThanNen,
                     HinhDangNen = hinhDangNen,
                     Loc1 = loc1,
-                    Loc2 = loc2
+                    Loc2 = loc2,
+                    Loc3 = loc3
                 });
                 itemCur = item;
             }
-            printLoc1();
-            printLoc2();
+            //printLoc1();
+            //printLoc2();
+            printLoc3();
         }
     }
 
@@ -239,6 +257,8 @@ namespace Survey.TestData
         public ELoc1 Loc1 { get; set; }
         //Lọc 2: Check RSI
         public ELoc2 Loc2 { get; set; }
+        //Lọc 3: Check EMA5 cross EMA12
+        public ELoc3 Loc3 { get; set; }
     }
 
     public enum ETrangThaiNen
@@ -283,5 +303,12 @@ namespace Survey.TestData
         RSI30_50 = 2,
         RSI50_70 = 3,
         RSI70 = 4
+    }
+
+    //Lọc 3
+    public enum ELoc3
+    {
+        EMA512Up = 1,
+        EMA512Down = 2
     }
 }
