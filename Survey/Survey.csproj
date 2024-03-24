@@ -227,6 +227,7 @@
     <Compile Include="TestData\Test12122023.cs" />
     <Compile Include="TestData\Test14122023.cs" />
     <Compile Include="TestData\Test19032024.cs" />
+    <Compile Include="TestData\Test24032024.cs" />
     <Compile Include="TestData\Test25122023.cs" />
     <Compile Include="TestData\Test28122023.cs" />
     <Compile Include="Utils\Analyze.cs" />
