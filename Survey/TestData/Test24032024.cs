@@ -16,7 +16,7 @@ namespace Survey.TestData
             Test2("btcusdt");
         }
 
-        public static void print()
+        public static void printLoc1()
         {
             var lTrenMa20 = _lResult.Where(x => x.Loc1 == ELoc1.TrenMa20);
             var lDuoiMa20 = _lResult.Where(x => x.Loc1 == ELoc1.DuoiMa20);
@@ -26,6 +26,18 @@ namespace Survey.TestData
             printDetail(lDuoiMa20, "Duoi MA20");
             printDetail(lCatMa20Xanh, "Cat MA20 Xanh");
             printDetail(lCatMa20Do, "Cat MA20 Do");
+        }
+
+        public static void printLoc2()
+        {
+            var l70 = _lResult.Where(x => x.Loc2 == ELoc2.RSI70);
+            var l50_70 = _lResult.Where(x => x.Loc2 == ELoc2.RSI50_70);
+            var l30_50 = _lResult.Where(x => x.Loc2 == ELoc2.RSI30_50);
+            var l30 = _lResult.Where(x => x.Loc2 == ELoc2.RSI30);
+            printDetail(l70, "RSI tren 70");
+            printDetail(l50_70, "RSI tu 50 den 70");
+            printDetail(l30_50, "RSI tu 30 den 50");
+            printDetail(l30, "RSI nho hon 30");
         }
 
         private static void printDetail(IEnumerable<cls24032024> lInput, string title)
@@ -168,9 +180,30 @@ namespace Survey.TestData
                 }
                 else
                 {
-                    loc1 = ELoc1.CatMa20Do;
+                    loc1 = ELoc1.CatMa20Do;// ti le xanh/do < 1
+                }
+                #endregion
+
+                #region Lọc 2
+                ELoc2 loc2;
+                if (itemRsi.Rsi > 70)
+                {
+                    loc2 = ELoc2.RSI70;
+                }
+                else if (itemRsi.Rsi > 50)
+                {
+                    loc2 = ELoc2.RSI50_70;
+                }
+                else if (itemRsi.Rsi > 30)
+                {
+                    loc2 = ELoc2.RSI30_50;//ti le xanh/do < 1
+                }
+                else
+                {
+                    loc2 = ELoc2.RSI30;//ti le xanh/do < 1
                 } 
                 #endregion
+
 
                 _lResult.Add(new cls24032024
                 {
@@ -179,11 +212,13 @@ namespace Survey.TestData
                     TrangThaiNen = trangThaiNen,
                     DoDaiThanNen = doDaiThanNen,
                     HinhDangNen = hinhDangNen,
-                    Loc1 = loc1
+                    Loc1 = loc1,
+                    Loc2 = loc2
                 });
                 itemCur = item;
             }
-            print();
+            printLoc1();
+            printLoc2();
         }
     }
 
@@ -202,6 +237,8 @@ namespace Survey.TestData
         ////////////////////////////////////////////////
         //Lọc 1: Check thân nến hiện tại > MA20 , cắt MA20 xanh, cắt MA20 đỏ, < MA20 (chỉ tính thân nến) thì nến kế tiếp xanh hay đỏ
         public ELoc1 Loc1 { get; set; }
+        //Lọc 2: Check RSI
+        public ELoc2 Loc2 { get; set; }
     }
 
     public enum ETrangThaiNen
@@ -237,5 +274,14 @@ namespace Survey.TestData
         CatMa20Xanh = 2,
         CatMa20Do = 3,
         DuoiMa20 = 4
+    }
+
+    //Lọc 2
+    public enum ELoc2
+    {
+        RSI30 = 1,
+        RSI30_50 = 2,
+        RSI50_70 = 3,
+        RSI70 = 4
     }
 }
