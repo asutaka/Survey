@@ -48,6 +48,14 @@ namespace Survey.TestData
             printDetail(lDown, "EMA5_12 cat xuống");//ti le xanh/do < 1
         }
 
+        public static void printLoc4()
+        {
+            var lUp = _lResult.Where(x => x.Loc4 == ELoc4.MACD_Up);
+            var lDown = _lResult.Where(x => x.Loc4 == ELoc4.MACD_Down);
+            printDetail(lUp, "MACD cat lên");
+            printDetail(lDown, "MACD cat xuống");//ti le xanh/do < 1
+        }
+
         private static void printDetail(IEnumerable<cls24032024> lInput, string title)
         {
             var total = _lResult.Count();
@@ -72,6 +80,7 @@ namespace Survey.TestData
             var lRsi = lDataQuote.GetRsi();
             var lBB = lDataQuote.GetBollingerBands();
             var lIchi = lDataQuote.GetIchimoku();
+            var lMACD = lDataQuote.GetMacd();
             var count = lDataQuote.Count();
 
             Quote itemCur = null;
@@ -83,12 +92,14 @@ namespace Survey.TestData
                 var itemRsi = lRsi.ElementAt(i);
                 var itemBB = lBB.ElementAt(i);
                 var itemIchi = lIchi.ElementAt(i);
+                var itemMACD = lMACD.ElementAt(i);
 
                 if (itemEMA5.Ema is null
                     || itemEMA12.Ema is null
                     || itemRsi.Rsi is null
                     || itemBB.LowerBand is null
                     || itemIchi.SenkouSpanA is null
+                    || itemMACD.Histogram is null
                 )
                     continue;
 
@@ -217,7 +228,15 @@ namespace Survey.TestData
                 if (itemEMA5.Ema - itemEMA12.Ema >= 0)
                 {
                     loc3 = ELoc3.EMA512Up;
-                } 
+                }
+                #endregion
+
+                #region Lọc 4
+                ELoc4 loc4 = ELoc4.MACD_Down;
+                if (itemMACD.Histogram >= 0)
+                {
+                    loc4 = ELoc4.MACD_Up;
+                }
                 #endregion
 
 
@@ -230,13 +249,15 @@ namespace Survey.TestData
                     HinhDangNen = hinhDangNen,
                     Loc1 = loc1,
                     Loc2 = loc2,
-                    Loc3 = loc3
+                    Loc3 = loc3,
+                    Loc4 = loc4
                 });
                 itemCur = item;
             }
             //printLoc1();
             //printLoc2();
-            printLoc3();
+            //printLoc3();
+            printLoc4();
         }
     }
 
@@ -259,6 +280,8 @@ namespace Survey.TestData
         public ELoc2 Loc2 { get; set; }
         //Lọc 3: Check EMA5 cross EMA12
         public ELoc3 Loc3 { get; set; }
+        //Lọc 4: Check MACD
+        public ELoc4 Loc4 { get; set; }
     }
 
     public enum ETrangThaiNen
@@ -310,5 +333,12 @@ namespace Survey.TestData
     {
         EMA512Up = 1,
         EMA512Down = 2
+    }
+
+    //Lọc 4
+    public enum ELoc4
+    {
+        MACD_Up = 1,
+        MACD_Down = 2
     }
 }
