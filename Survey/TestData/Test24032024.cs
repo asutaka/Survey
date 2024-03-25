@@ -318,9 +318,9 @@ namespace Survey.TestData
             }
             //printLoc1();
             //printLoc2();
-            //printLoc3();
+            printLoc3();
             //printLoc4();
-            printLoc5();
+            //printLoc5();
         }
     }
 
