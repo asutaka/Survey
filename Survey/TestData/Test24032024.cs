@@ -25,7 +25,7 @@ namespace Survey.TestData
             printDetail(lTrenMa20, "Tren MA20");
             printDetail(lDuoiMa20, "Duoi MA20");
             printDetail(lCatMa20Xanh, "Cat MA20 Xanh");
-            printDetail(lCatMa20Do, "Cat MA20 Do");//ti le xanh/do < 1
+            printDetail(lCatMa20Do, "Cat MA20 Do");//xanh/do < 1
         }
 
         public static void printLoc2()
@@ -36,8 +36,8 @@ namespace Survey.TestData
             var l30 = _lResult.Where(x => x.Loc2 == ELoc2.RSI30);
             printDetail(l70, "RSI tren 70");
             printDetail(l50_70, "RSI tu 50 den 70");
-            printDetail(l30_50, "RSI tu 30 den 50");//ti le xanh/do < 1
-            printDetail(l30, "RSI nho hon 30");//xanh/do < 1
+            printDetail(l30_50, "RSI tu 30 den 50");
+            printDetail(l30, "RSI nho hon 30");
         }
 
         public static void printLoc3()
@@ -45,7 +45,7 @@ namespace Survey.TestData
             var lUp = _lResult.Where(x => x.Loc3 == ELoc3.EMA512Up);
             var lDown = _lResult.Where(x => x.Loc3 == ELoc3.EMA512Down);
             printDetail(lUp, "EMA5_12 cat lên");
-            printDetail(lDown, "EMA5_12 cat xuống");//ti le xanh/do < 1
+            printDetail(lDown, "EMA5_12 cat xuống");
         }
 
         public static void printLoc4()
@@ -53,7 +53,26 @@ namespace Survey.TestData
             var lUp = _lResult.Where(x => x.Loc4 == ELoc4.MACD_Up);
             var lDown = _lResult.Where(x => x.Loc4 == ELoc4.MACD_Down);
             printDetail(lUp, "MACD cat lên");
-            printDetail(lDown, "MACD cat xuống");//ti le xanh/do < 1
+            printDetail(lDown, "MACD cat xuống");
+        }
+
+        public static void printLoc5()
+        {
+            var lTrenIchi = _lResult.Where(x => x.Loc5 == ELoc5.TrenIchi);
+            var lDuoiIchi = _lResult.Where(x => x.Loc5 == ELoc5.DuoiIchi);
+            var lNamTrongIchi = _lResult.Where(x => x.Loc5 == ELoc5.NamTrongIchi);
+            var lCatIchiTren_Xanh = _lResult.Where(x => x.Loc5 == ELoc5.CatIchiTren_Xanh);
+            var lCatIchiTren_Do = _lResult.Where(x => x.Loc5 == ELoc5.CatIchiTren_Do);
+            var lCatIchiDuoi_Xanh = _lResult.Where(x => x.Loc5 == ELoc5.CatIchiDuoi_Xanh);
+            var lCatIchiDuoi_Do = _lResult.Where(x => x.Loc5 == ELoc5.CatIchiDuoi_Do);
+
+            printDetail(lTrenIchi, "Tren Ichi");
+            printDetail(lDuoiIchi, "Duoi Ichi");
+            printDetail(lNamTrongIchi, "Nam Trong Ichi");
+            printDetail(lCatIchiTren_Xanh, "Cat Ichi Tren Xanh");
+            printDetail(lCatIchiTren_Do, "Cat Ichi Tren Do");
+            printDetail(lCatIchiDuoi_Xanh, "Cat Ichi Duoi Xanh");
+            printDetail(lCatIchiDuoi_Do, "Cat Ichi Duoi Do");
         }
 
         private static void printDetail(IEnumerable<cls24032024> lInput, string title)
@@ -84,28 +103,33 @@ namespace Survey.TestData
             var count = lDataQuote.Count();
 
             Quote itemCur = null;
+            RsiResult itemRsi = null;
+            EmaResult itemEma5 = null, itemEma12 = null;
+            BollingerBandsResult itemBB = null;
+            MacdResult itemMACD = null;
+            IchimokuResult itemIchi = null;
             for (int i = 0; i < count; i++)
             {
                 var item = lDataQuote.ElementAt(i);
-                var itemEMA5 = lEMA5.ElementAt(i);
-                var itemEMA12 = lEMA12.ElementAt(i);
-                var itemRsi = lRsi.ElementAt(i);
-                var itemBB = lBB.ElementAt(i);
-                var itemIchi = lIchi.ElementAt(i);
-                var itemMACD = lMACD.ElementAt(i);
 
-                if (itemEMA5.Ema is null
-                    || itemEMA12.Ema is null
-                    || itemRsi.Rsi is null
-                    || itemBB.LowerBand is null
-                    || itemIchi.SenkouSpanA is null
-                    || itemMACD.Histogram is null
+                if (lEMA5.ElementAt(i).Ema is null
+                    || lEMA12.ElementAt(i).Ema is null
+                    || lRsi.ElementAt(i).Rsi is null
+                    || lBB.ElementAt(i).LowerBand is null
+                    || lIchi.ElementAt(i).SenkouSpanA is null
+                    || lMACD.ElementAt(i).Histogram is null
                 )
                     continue;
 
                 if (itemCur == null)
                 {
                     itemCur = item;
+                    itemRsi = lRsi.ElementAt(i);
+                    itemEma5 = lEMA5.ElementAt(i);
+                    itemEma12 = lEMA12.ElementAt(i);
+                    itemBB = lBB.ElementAt(i);
+                    itemMACD = lMACD.ElementAt(i);
+                    itemIchi = lIchi.ElementAt(i);
                     continue;
                 }
 
@@ -215,17 +239,17 @@ namespace Survey.TestData
                 }
                 else if (itemRsi.Rsi > 30)
                 {
-                    loc2 = ELoc2.RSI30_50;//ti le xanh/do < 1
+                    loc2 = ELoc2.RSI30_50;
                 }
                 else
                 {
-                    loc2 = ELoc2.RSI30;//ti le xanh/do < 1
+                    loc2 = ELoc2.RSI30;
                 }
                 #endregion
 
                 #region Lọc 3
                 ELoc3 loc3 = ELoc3.EMA512Down;
-                if (itemEMA5.Ema - itemEMA12.Ema >= 0)
+                if (itemEma5.Ema - itemEma12.Ema >= 0)
                 {
                     loc3 = ELoc3.EMA512Up;
                 }
@@ -238,7 +262,37 @@ namespace Survey.TestData
                     loc4 = ELoc4.MACD_Up;
                 }
                 #endregion
-
+                ELoc5 loc5;
+                var spanUp = itemIchi.SenkouSpanA > itemIchi.SenkouSpanB ? itemIchi.SenkouSpanA : itemIchi.SenkouSpanB;
+                var spanDown = itemIchi.SenkouSpanA < itemIchi.SenkouSpanB ? itemIchi.SenkouSpanA : itemIchi.SenkouSpanB;
+                if(itemCurDown > spanUp)
+                {
+                    loc5 = ELoc5.TrenIchi;
+                }    
+                else if(itemCurUp < spanDown)
+                {
+                    loc5 = ELoc5.DuoiIchi;
+                }
+                else if(itemCurUp <= spanUp && itemCurDown >= spanDown)
+                {
+                    loc5 = ELoc5.NamTrongIchi;
+                }
+                else if(itemCurUp >= spanUp && itemCurDown >= spanDown && itemCur.Close >= itemCur.Open)
+                {
+                    loc5 = ELoc5.CatIchiTren_Xanh;
+                }
+                else if (itemCurUp >= spanUp && itemCurDown >= spanDown && itemCur.Close < itemCur.Open)
+                {
+                    loc5 = ELoc5.CatIchiTren_Do;
+                }
+                else if (itemCurUp < spanUp && itemCurDown < spanDown && itemCur.Close >= itemCur.Open)
+                {
+                    loc5 = ELoc5.CatIchiDuoi_Xanh;
+                }
+                else
+                {
+                    loc5 = ELoc5.CatIchiDuoi_Do;
+                }
 
                 _lResult.Add(new cls24032024
                 {
@@ -250,14 +304,23 @@ namespace Survey.TestData
                     Loc1 = loc1,
                     Loc2 = loc2,
                     Loc3 = loc3,
-                    Loc4 = loc4
+                    Loc4 = loc4,
+                    Loc5 = loc5
                 });
+                //Gán lại
                 itemCur = item;
+                itemRsi = lRsi.ElementAt(i);
+                itemEma5 = lEMA5.ElementAt(i);
+                itemEma12 = lEMA12.ElementAt(i);
+                itemBB = lBB.ElementAt(i);
+                itemMACD = lMACD.ElementAt(i);
+                itemIchi = lIchi.ElementAt(i);
             }
             //printLoc1();
             //printLoc2();
             //printLoc3();
-            printLoc4();
+            //printLoc4();
+            printLoc5();
         }
     }
 
@@ -282,6 +345,8 @@ namespace Survey.TestData
         public ELoc3 Loc3 { get; set; }
         //Lọc 4: Check MACD
         public ELoc4 Loc4 { get; set; }
+        //Lọc 5: Check Ichi
+        public ELoc5 Loc5 { get; set; }
     }
 
     public enum ETrangThaiNen
@@ -340,5 +405,17 @@ namespace Survey.TestData
     {
         MACD_Up = 1,
         MACD_Down = 2
+    }
+
+    //Lọc 5
+    public enum ELoc5
+    {
+        TrenIchi = 1,
+        DuoiIchi = 2,
+        NamTrongIchi = 3,
+        CatIchiTren_Xanh = 4,
+        CatIchiTren_Do = 5,
+        CatIchiDuoi_Xanh = 6,
+        CatIchiDuoi_Do = 7
     }
 }
