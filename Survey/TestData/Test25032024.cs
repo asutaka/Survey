@@ -19,9 +19,15 @@ namespace Survey.TestData
 
         public static void print()
         {
+            var tmp = _lResult.Count(x => x.DoDaiNen >= 9);
+            var rate = tmp * 100 / _lResult.Count();
+            Console.WriteLine(rate);
+            _lResult = _lResult.Where(x => x.DoDaiNen >= 8).ToList() ;
+
+
             foreach (var item in _lResult)
             {
-                Console.WriteLine($"Ngay: {item.Ngay.ToString("dd/MM/yyyy")}\t" +
+                Console.WriteLine($"Ngay: {item.Ngay.ToString("dd/MM/yyyy")}\tDo dai nen: {item.DoDaiNen}%\t" +
                                 $"Index UP: {item.IndexUp}; Rate UP: {item.RateUp}%\t" +
                                 $"Index DOWN: {item.IndexDown}; Rate DOWN: {item.RateDown}%");
             }
@@ -108,13 +114,15 @@ namespace Survey.TestData
                     var itemDown = item.Close < item.Open ? item.Close : item.Open;
                     var rateUp = Math.Round((high - itemUp) * 100 / itemUp, 1);
                     var rateDown = Math.Round((low - itemDown) * 100 / itemDown, 1);
+                    var doDaiNen = Math.Round((itemUp - itemDown) * 100 / itemDown, 1);
                     _lResult.Add(new cls25032024
                     {
                         Ngay = item.Date,
                         RateUp = rateUp,
                         RateDown = rateDown,
                         IndexUp = indexHigh,
-                        IndexDown = indexLow
+                        IndexDown = indexLow,
+                        DoDaiNen = doDaiNen
                     });
 
                     //var lTake11 = lDataQuote.Skip(i).Take(11);
@@ -126,6 +134,7 @@ namespace Survey.TestData
     public class cls25032024
     {
         public DateTime Ngay { get; set; }
+        public decimal DoDaiNen { get; set; }
         public decimal RateUp { get; set; }
         public decimal RateDown { get; set; }
         public int IndexUp { get; set; }
