@@ -126,13 +126,45 @@ namespace Survey.TestData
                 _check2Sell = true;
             }
         }
+
+        public static double GetBottomValue(IEnumerable<Quote> lInput, Quote itemCur)
+        {
+            var count = lInput.Count();
+            double min = double.Parse(arrData[0][3].ToString());
+            var countConfirm = 0;
+            for (int i = 1; i < count; i++)
+            {
+                var val = double.Parse(arrData[i][3].ToString());
+                if (min <= val)
+                {
+                    if (++countConfirm == 3)
+                    {
+                        return min;
+                    }
+                }
+                else
+                {
+                    countConfirm = 0;
+                    min = val;
+                }
+            }
+            return min;
+        }
+
     }
 
     public class Info29032024
     {
-        public Quote ItemSig { get; set; }
-        public Quote ItemSell { get; set; }
-        public Quote ItemBot { get; set; }
+        public Quote Item_Sig { get; set; }
+        public Quote Item_Sell { get; set; }
+        public Quote Item_Bot { get; set; }
+        //
+        public bool HasEMA5_12 { get; set; }
+        public decimal RsiVal { get; set; }
+        public bool HasOpenLessMA20 { get; set; }
+        public decimal BBWidth_Sig { get; set; }
+        public decimal BBWidth_Sell { get; set; }
+        public decimal BBWidth_Bot { get; set; }
     }
 }
 
