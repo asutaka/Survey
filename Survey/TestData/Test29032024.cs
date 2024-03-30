@@ -12,28 +12,41 @@ namespace Survey.TestData
     {
         public static void MainFunc()
         {
-            Console.WriteLine("Coin, Rate Max, Num Max, Rate Min, Num Min");
+            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%), , Do Dai Nen(%), Do Dai Rau Nen(%), Gia Mo Cua < Ma20, KC Tu Close Den Ma20(%), Do Rong BB(%), , EMA5_12, Goc Tang, KC Day Den Ma20(%), Do Dai Nen Ban(%), Day Ngay");
             Test2("btcusdt");
             print();
         }
 
         public static void print()
         {
-            //var tmp = _lResult.Count(x => x.DoDaiNen >= 9);
-            //var rate = tmp * 100 / _lResult.Count();
-            //Console.WriteLine(rate);
-            //_lResult = _lResult.Where(x => x.DoDaiNen >= 8).ToList();
+            //var tmp = _lResult.Sum(x => Math.Round((x.Item_Sell.Close - x.Item_Sig.Close) * 100 / x.Item_Sig.Close, 2));
+            //Console.WriteLine(tmp);
+            foreach (var item in _lResult)
+            {
+                var itemSig = item.Item_Sig;
+                var itemSell = item.Item_Sell;
 
-
-            //foreach (var item in _lResult)
-            //{
-            //    Console.WriteLine($"Ngay: {item.Ngay.ToString("dd/MM/yyyy")}\tDo dai nen: {item.DoDaiNen}%\t" +
-            //                    $"Index UP: {item.IndexUp}; Rate UP: {item.RateUp}%\t" +
-            //                    $"Index DOWN: {item.IndexDown}; Rate DOWN: {item.RateDown}%");
-            //}
+                Console.WriteLine($"{itemSig.Date.ToString("dd/MM/yyyy")}," + //Ngày mua 
+                                    $"{itemSell.Date.ToString("dd/MM/yyyy")}," +//Ngày bán
+                                    $"{(itemSell.Date - itemSig.Date).TotalDays}," +//Số nến nắm giữ
+                                    $"{Math.Round((itemSell.Close - itemSig.Close) * 100 / itemSig.Close, 2)}," + //Take Profit
+                                    $"," +
+                                    $"{Math.Round((itemSig.Close - itemSig.Open) * 100 / itemSell.Open, 1)}," +//Độ dài thân nến
+                                    $"{(Math.Max((itemSig.High - Math.Max(itemSig.Open, itemSig.Close)), (Math.Min(itemSig.Open, itemSig.Close) - itemSig.Low)) * 100 / (itemSig.High - itemSig.Low))}," +//Độ dài râu nến
+                                    $"{(item.HasOpenLessMA20 ? "CO" : "KHONG")}," +//Giá mở cửa < Ma20
+                                    $"{item.KCTuCloseDenMa20}," +//Khoảng cách từ giá đóng cửa đến Ma20
+                                    $"{item.BBWidth_Sig}," +//Độ rộng dải BB
+                                    $"," +
+                                    $"{(item.HasEMA5_12 ? "CO" : "KHONG")}," +//EMA5 cắt trên EMA12
+                                    $"{item.GocDay_TinHieu}," +//Góc từ đáy lên tín hiệu
+                                    $"{item.KCTuDayDenMa20}," +//Khoảng cách từ đáy đến Ma20
+                                    $"{Math.Round((itemSell.Close - itemSell.Open) * 100 / itemSell.Open, 1)}," +//Độ dài nến bán
+                                    $"{item.Item_Bot.Date.ToString("dd/MM/yyyy")}"//Đáy ngày
+                               );
+            }
         }
 
-        public static List<cls25032024> _lResult = new List<cls25032024>();
+        public static List<Info29032024> _lResult = new List<Info29032024>();
         private static Quote _ItemCheckCur = null;
         private static bool _check2Sell = false;
         private static bool Sell(Quote item, EmaResult ema5, EmaResult ema12, BollingerBandsResult bb)
@@ -51,13 +64,13 @@ namespace Survey.TestData
                 - Giá giảm xuống Close cuả nến tín hiệu
              */
 
-            //CASE 1: 
-            if (ema5.Ema < ema12.Ema)
-                return true;
-
-            ////CASE 2: 
-            //if (item.Close < (decimal)bb.Sma)
+            ////CASE 1: 
+            //if (ema5.Ema < ema12.Ema)
             //    return true;
+
+            //CASE 2: 
+            if (item.Close < (decimal)bb.Sma)
+                return true;
 
             ////CASE 3: 
             //if (ema5.Ema < ema12.Ema
@@ -65,17 +78,16 @@ namespace Survey.TestData
             //    return true;
 
             //CUTLOSS
-            if (item.Close < _ItemCheckCur.Close)
+            if (item.Close < _ItemCheckCur.Open)
                 return true;
 
             return false;
         }
         public static void Test2(string coin)
         {
-            var lDataQuote = Data.GetDataAll(coin, EInterval.I1D).Select(x => x.To<Quote>());
+            var lDataQuote = Data.GetDataAll(coin, EInterval.I1D).Select(x => x.To<Quote>()).ToList();
             var lEMA5 = lDataQuote.GetEma(5);
             var lEMA12 = lDataQuote.GetEma(12);
-            var lRsi = lDataQuote.GetRsi();
             var lBB = lDataQuote.GetBollingerBands();
             var count = lDataQuote.Count();
 
@@ -86,7 +98,6 @@ namespace Survey.TestData
 
                 if (lEMA5.ElementAt(i).Ema is null
                     || lEMA12.ElementAt(i).Ema is null
-                    || lRsi.ElementAt(i).Rsi is null
                     || lBB.ElementAt(i).LowerBand is null
                 )
                     continue;
@@ -95,7 +106,7 @@ namespace Survey.TestData
                     && item.Close > (decimal)lBB.ElementAt(i).Sma)
                 {
                     var item_1 = lDataQuote.ElementAt(i - 1);
-                    if(item_1.Close < (decimal)lBB.ElementAt(i - 1).Sma)
+                    if(lBB.ElementAt(i - 1).Sma != null && item_1.Close < (decimal)lBB.ElementAt(i - 1).Sma)
                     {
                         lSig.Add(item);
                     }
@@ -108,11 +119,30 @@ namespace Survey.TestData
 
                 if(_check2Sell)
                 {
-                    var result = Sell(item, lEMA12.ElementAt(i), lEMA12.ElementAt(i), lBB.ElementAt(i));
+                    var result = Sell(item, lEMA5.ElementAt(i), lEMA12.ElementAt(i), lBB.ElementAt(i));
                     if (!result)
                         continue;
 
                     //Tính toán các thông số
+                    var indexCheckCur = lDataQuote.ToList().IndexOf(_ItemCheckCur);
+                    var itemBot = GetBottomValue(lDataQuote, _ItemCheckCur);
+                    var indexBot = lDataQuote.ToList().IndexOf(itemBot);
+                    var objPrint = new Info29032024
+                    {
+                        Item_Sig = _ItemCheckCur,
+                        Item_Sell = item,
+                        Item_Bot = itemBot,
+                        HasEMA5_12 = lEMA5.ElementAt(indexCheckCur).Ema >= lEMA12.ElementAt(indexCheckCur).Ema,
+                        HasOpenLessMA20 = _ItemCheckCur.Open < (decimal)lBB.ElementAt(indexCheckCur).Sma,
+                        BBWidth_Sig = 100 * (lBB.ElementAt(indexCheckCur).UpperBand - lBB.ElementAt(indexCheckCur).LowerBand) / lBB.ElementAt(indexCheckCur).LowerBand,
+                        SoNenTuDayDenTinHieu = indexCheckCur - indexBot,
+                        KCTuDayDenMa20 = Math.Round(((decimal)lBB.ElementAt(indexCheckCur).Sma - Math.Min(itemBot.Open, itemBot.Close)) * 100 / Math.Min(itemBot.Open, itemBot.Close), 2),
+                        KCTuCloseDenMa20 = Math.Round((_ItemCheckCur.Close - (decimal)lBB.ElementAt(indexCheckCur).Sma) * 100 / (decimal)lBB.ElementAt(indexCheckCur).Sma, 2),
+                        GocDay_TinHieu = TinhGoc(_ItemCheckCur, itemBot, indexCheckCur - indexBot)
+                    };
+                    _lResult.Add(objPrint);
+
+                    //reset
                     _ItemCheckCur = null;
                     _check2Sell = false;
                     continue;
@@ -127,28 +157,46 @@ namespace Survey.TestData
             }
         }
 
-        public static double GetBottomValue(IEnumerable<Quote> lInput, Quote itemCur)
+        public static Quote GetBottomValue(List<Quote> lInput, Quote itemCur)
         {
-            var count = lInput.Count();
-            double min = double.Parse(arrData[0][3].ToString());
-            var countConfirm = 0;
-            for (int i = 1; i < count; i++)
+            var index = lInput.IndexOf(itemCur);
+            var bot = itemCur.Close;
+            var itemBot = itemCur;
+            for (int i = index - 10; i < index; i++)
             {
-                var val = double.Parse(arrData[i][3].ToString());
-                if (min <= val)
+                var item = lInput.ElementAt(i);
+                var low = Math.Min(item.Open, item.Close);
+                if (low < bot)
                 {
-                    if (++countConfirm == 3)
-                    {
-                        return min;
-                    }
-                }
-                else
-                {
-                    countConfirm = 0;
-                    min = val;
+                    bot = low;
+                    itemBot = item;
                 }
             }
-            return min;
+            return itemBot;
+        }
+        public static int TinhGoc(Quote itemCur, Quote itemBot, int div)
+        {
+            var low = Math.Min(itemBot.Close, itemBot.Open);
+            decimal divVal = 100 * (itemCur.Close - low) / low;
+            var res = div / Math.Sqrt((double)(divVal * divVal + div * div));
+
+            if (res > 0.985)
+                return 10;
+            if (res > 0.94)
+                return 20;
+            if (res > 0.866)
+                return 30;
+            if (res > 0.766)
+                return 40;
+            if (res > 0.64)
+                return 50;
+            if (res > 0.5)
+                return 60;
+            if (res > 0.34)
+                return 70;
+            if (res > 0.17)
+                return 80;
+            return 90;
         }
 
     }
@@ -159,12 +207,13 @@ namespace Survey.TestData
         public Quote Item_Sell { get; set; }
         public Quote Item_Bot { get; set; }
         //
-        public bool HasEMA5_12 { get; set; }
-        public decimal RsiVal { get; set; }
-        public bool HasOpenLessMA20 { get; set; }
-        public decimal BBWidth_Sig { get; set; }
-        public decimal BBWidth_Sell { get; set; }
-        public decimal BBWidth_Bot { get; set; }
+        public bool HasEMA5_12 { get; set; }//EMA 5 cắt lên EMA 12
+        public bool HasOpenLessMA20 { get; set; }//Nến tín hiệu có giá Open < Ma20
+        public double? BBWidth_Sig { get; set; }//Độ rộng BB tại tín hiệu
+        public int SoNenTuDayDenTinHieu { get; set; }//Số nến từ đáy đến tín hiệu
+        public decimal KCTuDayDenMa20 { get; set; }//Khoảng cách giữa giá thấp nhất của thân nến đáy đến MA20
+        public decimal KCTuCloseDenMa20 { get; set; }//Khoảng cách giữa giá Close của nến tín hiệu đến MA20
+        public int GocDay_TinHieu { get; set; }//Góc giữa giá thấp nhất của thân nến đáy và giá thấp nhất của thân nến tín hiệu
     }
 }
 
