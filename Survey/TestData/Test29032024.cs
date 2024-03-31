@@ -21,6 +21,8 @@ namespace Survey.TestData
         {
             //var tmp = _lResult.Sum(x => Math.Round((x.Item_Sell.Close - x.Item_Sig.Close) * 100 / x.Item_Sig.Close, 2));
             //Console.WriteLine(tmp);
+            //_lResult = _lResult.Where(x => Math.Round((x.Item_Sig.Close - x.Item_Sig.Open) * 100 / x.Item_Sig.Open, 1) > 10).ToList();
+            //_lResult = _lResult.Where(x => x.BBWidth_Sig >= 30 && x.BBWidth_Sig < 40).ToList();
             foreach (var item in _lResult)
             {
                 var itemSig = item.Item_Sig;
@@ -31,7 +33,7 @@ namespace Survey.TestData
                                     $"{(itemSell.Date - itemSig.Date).TotalDays}," +//Số nến nắm giữ
                                     $"{Math.Round((itemSell.Close - itemSig.Close) * 100 / itemSig.Close, 2)}," + //Take Profit
                                     $"," +
-                                    $"{Math.Round((itemSig.Close - itemSig.Open) * 100 / itemSell.Open, 1)}," +//Độ dài thân nến
+                                    $"{Math.Round((itemSig.Close - itemSig.Open) * 100 / itemSig.Open, 1)}," +//Độ dài thân nến
                                     $"{(Math.Max((itemSig.High - Math.Max(itemSig.Open, itemSig.Close)), (Math.Min(itemSig.Open, itemSig.Close) - itemSig.Low)) * 100 / (itemSig.High - itemSig.Low))}," +//Độ dài râu nến
                                     $"{(item.HasOpenLessMA20 ? "CO" : "KHONG")}," +//Giá mở cửa < Ma20
                                     $"{item.KCTuCloseDenMa20}," +//Khoảng cách từ giá đóng cửa đến Ma20
