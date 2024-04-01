@@ -33,7 +33,8 @@ namespace Survey.TestData
                 KCTuDayDenMa20 = x.KCTuDayDenMa20,
                 DoDaiNenBan = Math.Round((x.Item_Sell.Close - x.Item_Sell.Open) * 100 / x.Item_Sell.Open, 1),
                 DayNgay = x.Item_Bot.Date.ToString("dd/MM/yyyy"),
-                SoNenTuDayDenTinHieu = (x.Item_Sig.Date - x.Item_Bot.Date).TotalDays
+                SoNenTuDayDenTinHieu = (x.Item_Sig.Date - x.Item_Bot.Date).TotalDays,
+                CompareVolumeMa20 = x.CompareVolumeMa20
             });
 
             //var tmp1 = lPrint.Count(x => x.TakeProfit > 0);
@@ -50,7 +51,7 @@ namespace Survey.TestData
             //lPrint = lPrint.Where(x => x.GocDayTinHieu <= 50).ToList();
             //var tmp21 = lPrint.Sum(x => x.TakeProfit);
             //var tmp2 = 1;
-            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%), , Do Dai Nen(%), Do Dai Rau Nen(%), KC Tu Close Den Ma20(%), Do Rong BB(%), , Goc Tang, KC Day Den Ma20(%), Do Dai Nen Ban(%), Day Ngay, So Nen Tu Day");
+            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%), , Do Dai Nen(%), Do Dai Rau Nen(%), KC Tu Close Den Ma20(%), Do Rong BB(%), , Goc Tang, KC Day Den Ma20(%), Do Dai Nen Ban(%), Day Ngay, So Nen Tu Day, So Sanh Vol");
             foreach (var item in lPrint)
             {
                 Console.WriteLine($"{item.NgayMua}," +
@@ -69,7 +70,8 @@ namespace Survey.TestData
                                 $"{item.KCTuDayDenMa20}," +
                                 $"{item.DoDaiNenBan}," +
                                 $"{item.DayNgay}," +
-                                $"{item.SoNenTuDayDenTinHieu}"); 
+                                $"{item.SoNenTuDayDenTinHieu}," +
+                                $"{item.CompareVolumeMa20}"); 
             }
 
             //var tmp = _lResult.Sum(x => Math.Round((x.Item_Sell.Close - x.Item_Sig.Close) * 100 / x.Item_Sig.Close, 2));
@@ -146,6 +148,13 @@ namespace Survey.TestData
             var lBB = lDataQuote.GetBollingerBands();
             var count = lDataQuote.Count();
 
+            var lVol = Data.GetDataAll(coin, EInterval.I1D).Select(x => x.To<Quote>()).ToList();
+            foreach (var item in lVol)
+            {
+                item.Close = item.Volume;
+            }
+            var lMA20Vol = lVol.GetSma(20);
+
             List<Quote> lSig = new List<Quote>();
             for (int i = 0; i < count; i++)
             {
@@ -202,7 +211,8 @@ namespace Survey.TestData
                         SoNenTuDayDenTinHieu = indexCheckCur - indexBot,
                         KCTuDayDenMa20 = Math.Round(((decimal)lBB.ElementAt(indexCheckCur).Sma - Math.Min(itemBot.Open, itemBot.Close)) * 100 / Math.Min(itemBot.Open, itemBot.Close), 2),
                         KCTuCloseDenMa20 = Math.Round((_ItemCheckCur.Close - (decimal)lBB.ElementAt(indexCheckCur).Sma) * 100 / (decimal)lBB.ElementAt(indexCheckCur).Sma, 2),
-                        GocDay_TinHieu = TinhGoc(_ItemCheckCur, itemBot, indexCheckCur - indexBot)
+                        GocDay_TinHieu = TinhGoc(_ItemCheckCur, itemBot, indexCheckCur - indexBot),
+                        CompareVolumeMa20 = Math.Round(_ItemCheckCur.Volume / (decimal)lMA20Vol.ElementAt(indexCheckCur).Sma, 2)
                     };
                     _lResult.Add(objPrint);
 
@@ -278,6 +288,7 @@ namespace Survey.TestData
         public decimal KCTuDayDenMa20 { get; set; }//Khoảng cách giữa giá thấp nhất của thân nến đáy đến MA20
         public decimal KCTuCloseDenMa20 { get; set; }//Khoảng cách giữa giá Close của nến tín hiệu đến MA20
         public int GocDay_TinHieu { get; set; }//Góc giữa giá thấp nhất của thân nến đáy và giá thấp nhất của thân nến tín hiệu
+        public decimal CompareVolumeMa20 { get; set; }//So sánh volumne với Ma20
     }
 
     public class Info29032024VM
@@ -297,6 +308,7 @@ namespace Survey.TestData
         public decimal DoDaiNenBan { get; set; }
         public string DayNgay { get; set; }
         public double SoNenTuDayDenTinHieu { get; set; }
+        public decimal CompareVolumeMa20 { get; set; }
     }
 }
 
