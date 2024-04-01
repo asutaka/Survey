@@ -506,7 +506,7 @@ namespace Survey.GUI
             // bartxtSymbol
             // 
             this.bartxtSymbol.Edit = this.repositoryItemTextEdit1;
-            this.bartxtSymbol.EditValue = "TWT";
+            this.bartxtSymbol.EditValue = "BTC";
             this.bartxtSymbol.Id = 73;
             this.bartxtSymbol.Name = "bartxtSymbol";
             // 

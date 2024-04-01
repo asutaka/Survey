@@ -12,40 +12,93 @@ namespace Survey.TestData
     {
         public static void MainFunc()
         {
-            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%), , Do Dai Nen(%), Do Dai Rau Nen(%), Gia Mo Cua < Ma20, KC Tu Close Den Ma20(%), Do Rong BB(%), , EMA5_12, Goc Tang, KC Day Den Ma20(%), Do Dai Nen Ban(%), Day Ngay");
             Test2("btcusdt");
             print();
         }
 
         public static void print()
         {
+            var lPrint = _lResult.Select(x => new Info29032024VM { 
+                NgayMua = x.Item_Sig.Date.ToString("dd/MM/yyyy"),
+                NgayBan = x.Item_Sell.Date.ToString("dd/MM/yyyy"),
+                SoNenNamGiu = (x.Item_Sell.Date - x.Item_Sig.Date).TotalDays,
+                TakeProfit = Math.Round((x.Item_Sell.Close - x.Item_Sig.Close) * 100 / x.Item_Sig.Close, 2),
+                DoDaiThanNen = Math.Round((x.Item_Sig.Close - x.Item_Sig.Open) * 100 / x.Item_Sig.Open, 1),
+                DoDaiRauNen = (Math.Max((x.Item_Sig.High - Math.Max(x.Item_Sig.Open, x.Item_Sig.Close)), (Math.Min(x.Item_Sig.Open, x.Item_Sig.Close) - x.Item_Sig.Low)) * 100 / (x.Item_Sig.High - x.Item_Sig.Low)),
+                //GiaMoCuaNhoHonMa20 = x.HasOpenLessMA20 ? "CO" : "KHONG",
+                KCTuGiaDongCuaDenMa20 = x.KCTuCloseDenMa20,
+                DoRongBB = x.BBWidth_Sig??0,
+                //Ema512 = (x.HasEMA5_12 ? "CO" : "KHONG"),
+                GocDayTinHieu = x.GocDay_TinHieu,
+                KCTuDayDenMa20 = x.KCTuDayDenMa20,
+                DoDaiNenBan = Math.Round((x.Item_Sell.Close - x.Item_Sell.Open) * 100 / x.Item_Sell.Open, 1),
+                DayNgay = x.Item_Bot.Date.ToString("dd/MM/yyyy"),
+                SoNenTuDayDenTinHieu = (x.Item_Sig.Date - x.Item_Bot.Date).TotalDays
+            });
+
+            //var tmp1 = lPrint.Count(x => x.TakeProfit > 0);
+            //lPrint = lPrint.Where(x => x.GocDayTinHieu >= 50
+            //                        && x.SoNenTuDayDenTinHieu <= 5
+            //                        && x.KCTuDayDenMa20 < 10
+            //                        && x.DoRongBB < 20
+            //                        && x.KCTuGiaDongCuaDenMa20 < 5
+            //                        && x.DoDaiThanNen < 6
+            //                    ).ToList();
+
+            //var tmp1 = lPrint.Sum(x => x.TakeProfit);
+            //var tmp2 = 1;
+            //lPrint = lPrint.Where(x => x.GocDayTinHieu <= 50).ToList();
+            //var tmp21 = lPrint.Sum(x => x.TakeProfit);
+            //var tmp2 = 1;
+            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%), , Do Dai Nen(%), Do Dai Rau Nen(%), KC Tu Close Den Ma20(%), Do Rong BB(%), , Goc Tang, KC Day Den Ma20(%), Do Dai Nen Ban(%), Day Ngay, So Nen Tu Day");
+            foreach (var item in lPrint)
+            {
+                Console.WriteLine($"{item.NgayMua}," +
+                                $"{item.NgayBan}," +
+                                $"{item.SoNenNamGiu}," +
+                                $"{item.TakeProfit}," +
+                                $"," +
+                                $"{item.DoDaiThanNen}," +
+                                $"{item.DoDaiRauNen}," +
+                                //$"{item.GiaMoCuaNhoHonMa20}," +
+                                $"{item.KCTuGiaDongCuaDenMa20}," +
+                                $"{item.DoRongBB}," +
+                                $"," +
+                                //$"{item.Ema512}," +
+                                $"{item.GocDayTinHieu}," +
+                                $"{item.KCTuDayDenMa20}," +
+                                $"{item.DoDaiNenBan}," +
+                                $"{item.DayNgay}," +
+                                $"{item.SoNenTuDayDenTinHieu}"); 
+            }
+
             //var tmp = _lResult.Sum(x => Math.Round((x.Item_Sell.Close - x.Item_Sig.Close) * 100 / x.Item_Sig.Close, 2));
             //Console.WriteLine(tmp);
             //_lResult = _lResult.Where(x => Math.Round((x.Item_Sig.Close - x.Item_Sig.Open) * 100 / x.Item_Sig.Open, 1) > 10).ToList();
             //_lResult = _lResult.Where(x => x.BBWidth_Sig >= 30 && x.BBWidth_Sig < 40).ToList();
-            foreach (var item in _lResult)
-            {
-                var itemSig = item.Item_Sig;
-                var itemSell = item.Item_Sell;
+            //foreach (var item in _lResult)
+            //{
+            //    var itemSig = item.Item_Sig;
+            //    var itemSell = item.Item_Sell;
 
-                Console.WriteLine($"{itemSig.Date.ToString("dd/MM/yyyy")}," + //Ngày mua 
-                                    $"{itemSell.Date.ToString("dd/MM/yyyy")}," +//Ngày bán
-                                    $"{(itemSell.Date - itemSig.Date).TotalDays}," +//Số nến nắm giữ
-                                    $"{Math.Round((itemSell.Close - itemSig.Close) * 100 / itemSig.Close, 2)}," + //Take Profit
-                                    $"," +
-                                    $"{Math.Round((itemSig.Close - itemSig.Open) * 100 / itemSig.Open, 1)}," +//Độ dài thân nến
-                                    $"{(Math.Max((itemSig.High - Math.Max(itemSig.Open, itemSig.Close)), (Math.Min(itemSig.Open, itemSig.Close) - itemSig.Low)) * 100 / (itemSig.High - itemSig.Low))}," +//Độ dài râu nến
-                                    $"{(item.HasOpenLessMA20 ? "CO" : "KHONG")}," +//Giá mở cửa < Ma20
-                                    $"{item.KCTuCloseDenMa20}," +//Khoảng cách từ giá đóng cửa đến Ma20
-                                    $"{item.BBWidth_Sig}," +//Độ rộng dải BB
-                                    $"," +
-                                    $"{(item.HasEMA5_12 ? "CO" : "KHONG")}," +//EMA5 cắt trên EMA12
-                                    $"{item.GocDay_TinHieu}," +//Góc từ đáy lên tín hiệu
-                                    $"{item.KCTuDayDenMa20}," +//Khoảng cách từ đáy đến Ma20
-                                    $"{Math.Round((itemSell.Close - itemSell.Open) * 100 / itemSell.Open, 1)}," +//Độ dài nến bán
-                                    $"{item.Item_Bot.Date.ToString("dd/MM/yyyy")}"//Đáy ngày
-                               );
-            }
+            //    Console.WriteLine($"{itemSig.Date.ToString("dd/MM/yyyy")}," + //Ngày mua 
+            //                        $"{itemSell.Date.ToString("dd/MM/yyyy")}," +//Ngày bán
+            //                        $"{(itemSell.Date - itemSig.Date).TotalDays}," +//Số nến nắm giữ
+            //                        $"{Math.Round((itemSell.Close - itemSig.Close) * 100 / itemSig.Close, 2)}," + //Take Profit
+            //                        $"," +
+            //                        $"{Math.Round((itemSig.Close - itemSig.Open) * 100 / itemSig.Open, 1)}," +//Độ dài thân nến
+            //                        $"{(Math.Max((itemSig.High - Math.Max(itemSig.Open, itemSig.Close)), (Math.Min(itemSig.Open, itemSig.Close) - itemSig.Low)) * 100 / (itemSig.High - itemSig.Low))}," +//Độ dài râu nến
+            //                        $"{(item.HasOpenLessMA20 ? "CO" : "KHONG")}," +//Giá mở cửa < Ma20
+            //                        $"{item.KCTuCloseDenMa20}," +//Khoảng cách từ giá đóng cửa đến Ma20
+            //                        $"{item.BBWidth_Sig}," +//Độ rộng dải BB
+            //                        $"," +
+            //                        $"{(item.HasEMA5_12 ? "CO" : "KHONG")}," +//EMA5 cắt trên EMA12
+            //                        $"{item.GocDay_TinHieu}," +//Góc từ đáy lên tín hiệu
+            //                        $"{item.KCTuDayDenMa20}," +//Khoảng cách từ đáy đến Ma20
+            //                        $"{Math.Round((itemSell.Close - itemSell.Open) * 100 / itemSell.Open, 1)}," +//Độ dài nến bán
+            //                        $"{item.Item_Bot.Date.ToString("dd/MM/yyyy")}"//Đáy ngày
+            //                   );
+            //}
         }
 
         public static List<Info29032024> _lResult = new List<Info29032024>();
@@ -108,7 +161,10 @@ namespace Survey.TestData
                     && item.Close > (decimal)lBB.ElementAt(i).Sma)
                 {
                     var item_1 = lDataQuote.ElementAt(i - 1);
-                    if(lBB.ElementAt(i - 1).Sma != null && item_1.Close < (decimal)lBB.ElementAt(i - 1).Sma)
+                    if(lBB.ElementAt(i - 1).Sma != null 
+                        && item_1.Close < (decimal)lBB.ElementAt(i - 1).Sma
+                        //&& item_1.Open < (decimal)lBB.ElementAt(i - 1).Sma
+                        )
                     {
                         lSig.Add(item);
                     }
@@ -125,8 +181,14 @@ namespace Survey.TestData
                     if (!result)
                         continue;
 
+                    //if(_ItemCheckCur.Date.Day == 10 && _ItemCheckCur.Date.Month == 1)
+                    //{
+                    //    var tmp = 1;
+                    //}
+
                     //Tính toán các thông số
                     var indexCheckCur = lDataQuote.ToList().IndexOf(_ItemCheckCur);
+                    //var tmp1 = lBB.ElementAt(indexCheckCur).Sma;
                     var itemBot = GetBottomValue(lDataQuote, _ItemCheckCur);
                     var indexBot = lDataQuote.ToList().IndexOf(itemBot);
                     var objPrint = new Info29032024
@@ -216,6 +278,25 @@ namespace Survey.TestData
         public decimal KCTuDayDenMa20 { get; set; }//Khoảng cách giữa giá thấp nhất của thân nến đáy đến MA20
         public decimal KCTuCloseDenMa20 { get; set; }//Khoảng cách giữa giá Close của nến tín hiệu đến MA20
         public int GocDay_TinHieu { get; set; }//Góc giữa giá thấp nhất của thân nến đáy và giá thấp nhất của thân nến tín hiệu
+    }
+
+    public class Info29032024VM
+    {
+        public string NgayMua { get; set; }
+        public string NgayBan { get; set; }
+        public double SoNenNamGiu { get; set; }
+        public decimal TakeProfit { get; set; }
+        public decimal DoDaiThanNen { get; set; }
+        public decimal DoDaiRauNen { get; set; }
+        public string GiaMoCuaNhoHonMa20 { get; set; }
+        public decimal KCTuGiaDongCuaDenMa20 { get; set; }
+        public double DoRongBB { get; set; }
+        public string Ema512 { get; set; }
+        public decimal GocDayTinHieu { get; set; }
+        public decimal KCTuDayDenMa20 { get; set; }
+        public decimal DoDaiNenBan { get; set; }
+        public string DayNgay { get; set; }
+        public double SoNenTuDayDenTinHieu { get; set; }
     }
 }
 
