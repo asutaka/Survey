@@ -18,13 +18,14 @@ namespace Survey
         static void Main()
         {
             //new Test14122023().HandleData();
-            Test29032024.MainFunc();
+            //Test29032024.MainFunc();
+            //Test20240403.MainFunc();
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
 
 
             //Startup.Instance();
-            //Application.Run(new FinancialChartingCustom_New());
+            Application.Run(new FinancialChartingCustom_New());
         }
     }
 }

@@ -83,7 +83,8 @@ namespace Survey.GUI
             
             chart.BeginInit();
             dataGenerator = new RealTimeFinancialDataGenerator();
-            dataGenerator.InitialDataFastAll(symbol, GetInterval());
+            //dataGenerator.InitialDataFastAll(symbol, GetInterval());
+            dataGenerator.InitialDataFastAllFakeHL(symbol, GetInterval());
             InitChartControl();
             chart.EndInit();
             dataGenerator.Start();

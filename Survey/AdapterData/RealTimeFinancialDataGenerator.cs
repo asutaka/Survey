@@ -241,6 +241,22 @@ namespace Survey.AdapterData
             dataSource.AddRange(_lstCalculate);
             currentAggregatingPoint = prevPoint;
         }
+        internal void InitialDataFastAllFakeHL(string symbol, EInterval interval, int max = 0)
+        {
+            lResult.Clear();
+            lResult = Data.GetDataAll(symbol, interval, max).ToList();
+            foreach (var item in lResult)
+            {
+                item.High = Math.Max(item.Close, item.Open);
+                item.Low = Math.Min(item.Close, item.Open);
+            }
+            _AVG = lResult.Sum(x => x.Close) / lResult.Count();
+            prevPoint = lResult.Last();
+            index = count;
+            _lstCalculate = lResult.ToList();
+            dataSource.AddRange(_lstCalculate);
+            currentAggregatingPoint = prevPoint;
+        }
 
         public double MCDX(IEnumerable<FinancialDataPoint> data)
         {
