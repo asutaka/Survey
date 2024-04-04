@@ -10,6 +10,7 @@ namespace Survey.TestData
     {
         private static List<Quote> _lDataQuote = Data.GetDataAll("btcusdt", EInterval.I1D).Select(x => x.To<Quote>()).ToList();
         private static int _count = 0;
+        private const decimal _minWidthCandle = (decimal)0.5;//nếu thân nến < 0.5% thì không tính
         public static void MainFunc()
         {
             _count = _lDataQuote.Count();
@@ -38,12 +39,17 @@ namespace Survey.TestData
                 }
 
                 var item = _lDataQuote.ElementAt(i);
+                //if (item.Date.Year == 2017 && item.Date.Month == 12 && item.Date.Day == 24)
+                //{
+                //    var tmp = 1;
+                //}
                 if (item.Close > item.Open
                        && !flagCheck)
                 {
                     var item_1 = _lDataQuote.ElementAt(i - 1);
                     if (item_1.Close < item_1.Open
-                        && item_1.Open < item.Close)
+                        && item_1.Open < item.Close
+                        && Math.Round(Math.Abs(item_1.Open - item_1.Close) * 100 / item_1.Close, 2) > _minWidthCandle)
                     {
                         quoteCheck = FindRedCandle(i - 1, item_1);
                         if (quoteCheck is null)
@@ -76,7 +82,7 @@ namespace Survey.TestData
                     && item.Open > quote.Open)
                 {
                     var rate = Math.Round(Math.Abs(item.Open - item.Close) * 100 / item.Close, 2);
-                    if (rate < (decimal)0.5) //nếu thân nến < 0.5% thì không tính
+                    if (rate < _minWidthCandle) 
                         continue;
                     return item;
                 }
@@ -141,12 +147,15 @@ namespace Survey.TestData
 
                 _ItemCheckCur = entitySignal;
                 _check2Sell = true;
+                _hasAboveMa20 = false;
             }
         }
         public static void print()
         {
             var tmp = _lResult.Count(x => x.Tile >= 0);
             var tmp1 = _lResult.Count(x => x.Tile >= 10);
+            var tmp2 = _lResult.Sum(x => x.Tile);
+            var tmp3 = _lResult.Sum(x => x.SoNenNamGiu);
             Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%)");
             foreach (var item in _lResult)
             {
