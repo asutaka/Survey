@@ -247,8 +247,8 @@ namespace Survey.AdapterData
             lResult = Data.GetDataAll(symbol, interval, max).ToList();
             foreach (var item in lResult)
             {
-                item.High = Math.Max(item.Close, item.Open);
-                item.Low = Math.Min(item.Close, item.Open);
+                //item.High = Math.Max(item.Close, item.Open);
+                //item.Low = Math.Min(item.Close, item.Open);
                 item.Volume = Math.Round(Math.Abs(item.Open - item.Close) * 100 / Math.Min(item.Open, item.Close), 2);
             }
             _AVG = lResult.Sum(x => x.Close) / lResult.Count();

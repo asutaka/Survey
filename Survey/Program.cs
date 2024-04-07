@@ -25,7 +25,7 @@ namespace Survey
 
 
             //Startup.Instance();
-            //Application.Run(new FinancialChartingCustom_New());
+            Application.Run(new FinancialChartingCustom_New());
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Survey.TestData
             _count = _lDataQuote.Count();
             Check2Buy();
             Analyze();
+            Mapping();
             print();
         }
         private static List<(Quote, Quote)> _lSig = new List<(Quote, Quote)>();
@@ -159,27 +160,58 @@ namespace Survey.TestData
         {
             foreach (var item in _lResult)
             {
-                _lMapping.Add(new Info20240405VM { 
+                _lMapping.Add(new Info20240405VM {
                     NgayMua = item.NenMua.Date,
                     NgayBan = item.NenBan.Date,
                     SoNenNamGiu = (item.NenBan.Date - item.NenMua.Date).TotalDays,
-                    Tile = Math.Round((item.NenBan.Close - item.NenMua.Close) * 100 / item.NenMua.Close, 2)
+                    Tile = Math.Round((item.NenBan.Close - item.NenMua.Close) * 100 / item.NenMua.Close, 2),
+                    KCTuDay = Math.Round((item.NenMua.Close - item.NenDay.Close) * 100 / item.NenDay.Close, 2),
+                    Goc = TinhGoc(item.NenMua, item.NenDay)
                 });
             }
         }
+
+        public static int TinhGoc(Quote itemCur, Quote itemBot)
+        {
+            var low = Math.Min(itemBot.Close, itemBot.Open);
+            decimal divVal = 100 * (itemCur.Close - low) / low;
+            var div = (itemCur.Date - itemBot.Date).TotalDays;
+            var res = div / Math.Sqrt((double)(divVal * divVal + (decimal)(div * div)));
+
+            if (res > 0.985)
+                return 10;
+            if (res > 0.94)
+                return 20;
+            if (res > 0.866)
+                return 30;
+            if (res > 0.766)
+                return 40;
+            if (res > 0.64)
+                return 50;
+            if (res > 0.5)
+                return 60;
+            if (res > 0.34)
+                return 70;
+            if (res > 0.17)
+                return 80;
+            return 90;
+        }
+
         public static void print()
         {
             var tmp = _lMapping.Count(x => x.Tile >= 0);
             var tmp1 = _lMapping.Count(x => x.Tile >= 10);
             var tmp2 = _lMapping.Sum(x => x.Tile);
             var tmp3 = _lMapping.Sum(x => x.SoNenNamGiu);
-            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Take Profit(%)");
+            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Goc, KC, Take Profit(%)");
             foreach (var item in _lMapping)
             {
                 Console.WriteLine($"{item.NgayMua.ToString("dd/MM/yyyy")}," +
                                 $"{item.NgayBan.ToString("dd/MM/yyyy")}," +
                                 $"{item.SoNenNamGiu}," +
-                                $"{item.Tile}");
+                                $"{item.Goc}," +
+                                $"{item.KCTuDay}%," +
+                                $"{item.Tile}%");
             }
         }
     }
@@ -196,6 +228,8 @@ namespace Survey.TestData
         public DateTime NgayMua { get; set; }
         public DateTime NgayBan { get; set; }
         public double SoNenNamGiu { get; set; }
+        public double Goc { get; set; }
+        public decimal KCTuDay { get; set; }
         public decimal Tile { get; set; }
     }
 }
