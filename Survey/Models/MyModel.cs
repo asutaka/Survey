@@ -134,4 +134,11 @@ namespace Survey.Models
         public decimal DownRate { get; set; }
         public decimal SignalRate { get; set; }
     }
+
+    public class SymbolCustom
+    {
+        public int Priority { get; set; }
+        public string Symbol { get; set; }
+        public double HieuSuat { get; set; }//Tỉ lệ gia tăng %/Tháng
+    }
 }

@@ -227,6 +227,8 @@
     <Compile Include="TestData\Test12122023.cs" />
     <Compile Include="TestData\Test14122023.cs" />
     <Compile Include="TestData\Test19032024.cs" />
+    <Compile Include="TestData\Test20240409.cs" />
+    <Compile Include="TestData\Test20240408.cs" />
     <Compile Include="TestData\Test20240405.cs" />
     <Compile Include="TestData\Test20240404.cs" />
     <Compile Include="TestData\Test20240403.cs" />

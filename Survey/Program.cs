@@ -19,13 +19,13 @@ namespace Survey
         {
             //new Test14122023().HandleData();
             //Test29032024.MainFunc();
-            Test20240405.MainFunc();
+            Test20240409.MainFunc();
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
 
 
             //Startup.Instance();
-            Application.Run(new FinancialChartingCustom_New());
+            //Application.Run(new FinancialChartingCustom_New());
         }
     }
 }
