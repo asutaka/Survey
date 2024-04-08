@@ -1,32 +1,23 @@
 ﻿using Skender.Stock.Indicators;
-using Survey.Models;
 using Survey.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 
 namespace Survey.TestData
 {
-    public class Test20240409
+    public class Test20240410
     {
-        //Hiệu suất/tháng
-        private static List<Quote> _lDataQuote = Data.GetDataAll("btcusdt", EInterval.I1D).Select(x => x.To<Quote>()).ToList();
+        private static List<Quote> _lDataQuote = Data.GetDataAll("vanryusdt", EInterval.I4H).Select(x => x.To<Quote>()).ToList();
         private static int _count = 0;
         private const decimal _minWidthCandle = (decimal)0.5;//nếu thân nến < 0.5% thì không tính
         public static void MainFunc()
         {
-            foreach (var item in StaticVal._lSymbol)
-            {
-                _lDataQuote = Data.GetDataAll(item.Symbol, EInterval.I1D).Select(x => x.To<Quote>()).ToList();
-                _count = _lDataQuote.Count();
-                Check2Buy();
-                Analyze();
-                Mapping();
-                print(item.Symbol);
-                Thread.Sleep(500);
-            }
-            printTotal();
+            _count = _lDataQuote.Count();
+            Check2Buy();
+            Analyze();
+            Mapping();
+            print();
         }
         private static List<(Quote, Quote)> _lSig = new List<(Quote, Quote)>();
         private static void Check2Buy()
@@ -88,8 +79,6 @@ namespace Survey.TestData
 
         private static Quote FindRedCandle(int index, Quote quote)
         {
-            if (index < 6)
-                return null;
             for (int i = index - 1; i > index - 6; i--)
             {
                 var item = _lDataQuote.ElementAt(i);
@@ -105,7 +94,7 @@ namespace Survey.TestData
             return null;
         }
 
-        public static List<Info20240409> _lResult = new List<Info20240409>();
+        public static List<Info20240410> _lResult = new List<Info20240410>();
         private static (Quote, Quote) _ItemCheckCur;
         private static bool _check2Sell = false;
         private static bool _hasAboveMa20 = false;
@@ -144,7 +133,7 @@ namespace Survey.TestData
                     if (!result)
                         continue;
 
-                    var objPrint = new Info20240409
+                    var objPrint = new Info20240410
                     {
                         NenMua = _ItemCheckCur.Item1,
                         NenDay = _ItemCheckCur.Item2,
@@ -169,16 +158,16 @@ namespace Survey.TestData
             }
         }
 
-        private static List<Info20240409VM> _lMapping = new List<Info20240409VM>();
+        private static List<Info20240410VM> _lMapping = new List<Info20240410VM>();
         public static void Mapping()
         {
             foreach (var item in _lResult)
             {
-                _lMapping.Add(new Info20240409VM
+                _lMapping.Add(new Info20240410VM
                 {
                     NgayMua = item.NenMua.Date,
                     NgayBan = item.NenBan.Date,
-                    SoNenNamGiu = (item.NenBan.Date - item.NenMua.Date).TotalDays,
+                    SoNenNamGiu = (item.NenBan.Date - item.NenMua.Date).TotalHours / 4,
                     Tile = Math.Round((item.NenBan.Close - item.NenMua.Close) * 100 / item.NenMua.Close, 2),
                     KCTuDay = Math.Round((item.NenMua.Close - item.NenDay.Close) * 100 / item.NenDay.Close, 2),
                     Goc = TinhGoc(item.NenMua, item.NenDay)
@@ -190,7 +179,7 @@ namespace Survey.TestData
         {
             var low = Math.Min(itemBot.Close, itemBot.Open);
             decimal divVal = 100 * (itemCur.Close - low) / low;
-            var div = (itemCur.Date - itemBot.Date).TotalDays;
+            var div = (itemCur.Date - itemBot.Date).TotalHours / 4;
             var res = div / Math.Sqrt((double)(divVal * divVal + (decimal)(div * div)));
 
             if (res > 0.985)
@@ -212,95 +201,34 @@ namespace Survey.TestData
             return 90;
         }
 
-        private static List<Info20240409VM> _lTotal = new List<Info20240409VM>();
-        public static void print(string symbol)
+        public static void print()
         {
+            var tmp = _lMapping.Count(x => x.Tile >= 0);
+            var tmp1 = _lMapping.Count(x => x.Tile >= 10);
+            var tmp2 = _lMapping.Sum(x => x.Tile);
+            var tmp3 = _lMapping.Sum(x => x.SoNenNamGiu);
+            Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Goc, KC, Take Profit(%)");
             foreach (var item in _lMapping)
             {
-                item.Symbol = StaticVal._lSymbol.First(x => x.Symbol == symbol);
-            }
-            _lTotal.AddRange(_lMapping.ToList());
-
-            //var tmp = _lMapping.Count(x => x.Tile >= 0);
-            //var tmp1 = _lMapping.Count(x => x.Tile >= 10);
-            //Console.WriteLine($"{symbol}|So nen: { _lMapping.Sum(x => x.SoNenNamGiu)}| Ti le: {_lMapping.Sum(x => x.Tile)}");
-            _lResult.Clear();
-            _lMapping.Clear();
-            _lSig.Clear();
-            _ItemCheckCur.Item1 = null;
-            _ItemCheckCur.Item2 = null;
-            _check2Sell = false;
-            _hasAboveMa20 = false;
-            //var tmp2 = _lMapping.Sum(x => x.Tile);
-            //var tmp3 = _lMapping.Sum(x => x.SoNenNamGiu);
-            //Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Goc, KC, Take Profit(%)");
-            //foreach (var item in _lMapping)
-            //{
-            //    Console.WriteLine($"{item.NgayMua.ToString("dd/MM/yyyy")}," +
-            //                    $"{item.NgayBan.ToString("dd/MM/yyyy")}," +
-            //                    $"{item.SoNenNamGiu}," +
-            //                    $"{item.Goc}," +
-            //                    $"{item.KCTuDay}%," +
-            //                    $"{item.Tile}%");
-            //}
-        }
-
-        public static void printTotal()
-        {
-            _lTotal = _lTotal.OrderBy(x => x.NgayMua.Date).ThenBy(x => x.Symbol.Priority).ToList();
-            var lCheck = new List<Info20240409VM>();
-            DateTime dtCheck = DateTime.MinValue;
-            int priority = 1000;
-
-            foreach (var item in _lTotal)
-            {
-                if(item.NgayMua.Date < dtCheck)
-                {
-                    if(item.Symbol.Priority < priority)
-                    {
-                        var last = lCheck.Last();
-                        lCheck.Remove(last);
-                        lCheck.Add(item);
-                        priority = item.Symbol.Priority;
-                        dtCheck = item.NgayBan.Date;
-                    }
-                    //Console.WriteLine($"--{item.Symbol.Symbol}, {item.Symbol.Priority}," +
-                    //            $"{item.NgayMua.ToString("dd/MM/yyyy")}," +
-                    //            $"{item.NgayBan.ToString("dd/MM/yyyy")}," +
-                    //            $"{item.SoNenNamGiu}," +
-                    //            $"{item.Goc}," +
-                    //            $"{item.KCTuDay}%," +
-                    //            $"{item.Tile}%");
-                    continue;
-                }
-                dtCheck = item.NgayBan;
-                priority = item.Symbol.Priority;
-
-                lCheck.Add(item);
-                Console.WriteLine($"{item.Symbol.Symbol}, {item.Symbol.Priority}," +
-                                $"{item.NgayMua.ToString("dd/MM/yyyy")}," +
-                                $"{item.NgayBan.ToString("dd/MM/yyyy")}," +
+                Console.WriteLine($"{item.NgayMua.ToString("dd/MM/yyyy HH")}," +
+                                $"{item.NgayBan.ToString("dd/MM/yyyy HH")}," +
                                 $"{item.SoNenNamGiu}," +
                                 $"{item.Goc}," +
                                 $"{item.KCTuDay}%," +
                                 $"{item.Tile}%");
             }
-
-            Console.WriteLine($"Tile: {lCheck.Sum(x => x.Tile)}");
-            Console.WriteLine($"SoNen: {lCheck.Sum(x => x.SoNenNamGiu)}");
         }
     }
 
-    public class Info20240409
+    public class Info20240410
     {
         public Quote NenDay { get; set; }
         public Quote NenMua { get; set; }
         public Quote NenBan { get; set; }
     }
 
-    public class Info20240409VM
+    public class Info20240410VM
     {
-        public SymbolCustom Symbol { get; set; }
         public DateTime NgayMua { get; set; }
         public DateTime NgayBan { get; set; }
         public double SoNenNamGiu { get; set; }
