@@ -8,7 +8,7 @@ namespace Survey.TestData
 {
     public class Test20240410
     {
-        private static List<Quote> _lDataQuote = Data.GetDataAll("vanryusdt", EInterval.I4H).Select(x => x.To<Quote>()).ToList();
+        private static List<Quote> _lDataQuote = Data.GetDataAll("hntusdt", EInterval.I4H).Select(x => x.To<Quote>()).ToList();
         private static int _count = 0;
         private const decimal _minWidthCandle = (decimal)0.5;//nếu thân nến < 0.5% thì không tính
         public static void MainFunc()
@@ -79,6 +79,8 @@ namespace Survey.TestData
 
         private static Quote FindRedCandle(int index, Quote quote)
         {
+            if (index < 6)
+                return null;
             for (int i = index - 1; i > index - 6; i--)
             {
                 var item = _lDataQuote.ElementAt(i);
@@ -207,6 +209,7 @@ namespace Survey.TestData
             var tmp1 = _lMapping.Count(x => x.Tile >= 10);
             var tmp2 = _lMapping.Sum(x => x.Tile);
             var tmp3 = _lMapping.Sum(x => x.SoNenNamGiu);
+            var tmp4 = Math.Round(tmp2 / (decimal)tmp3, 2);
             Console.WriteLine("Ngay Mua, Ngay Ban, So Nen, Goc, KC, Take Profit(%)");
             foreach (var item in _lMapping)
             {
