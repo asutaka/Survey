@@ -217,6 +217,13 @@ namespace SurveyStock.DAL
             cmd.ExecuteNonQuery();
         }
 
+        public static void DeleteByTime(string code, decimal time, SQLiteConnection con)
+        {
+            var sql = $"DELETE from {code.ToUpper()} WHERE t = {time}";
+            var cmd = new SQLiteCommand(sql, con);
+            cmd.ExecuteNonQuery();
+        }
+
         public static List<DataModel> GetData(string code, SQLiteConnection con)
         {
             var lResult = new List<DataModel>();
@@ -260,6 +267,11 @@ namespace SurveyStock.DAL
         {
             return sqlite.GetData(code, sqlite.Connect(_con, _conStr));
         }
+
+        public static void DeleteByTime(string code, decimal time)
+        {
+            sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
+        }
     }
 
     public static class sqliteDayDB
@@ -281,6 +293,11 @@ namespace SurveyStock.DAL
         {
             return sqlite.GetData(code, sqlite.Connect(_con, _conStr));
         }
+
+        public static void DeleteByTime(string code, decimal time)
+        {
+            sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
+        }
     }
 
     public static class sqliteHourDB
@@ -301,6 +318,11 @@ namespace SurveyStock.DAL
         public static List<DataModel> GetData(string code)
         {
             return sqlite.GetData(code, sqlite.Connect(_con, _conStr));
+        }
+
+        public static void DeleteByTime(string code, decimal time)
+        {
+            sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
         }
     }
 }

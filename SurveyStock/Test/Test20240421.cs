@@ -11,7 +11,7 @@ namespace SurveyStock.Test
     {
         public static void MainFunc()
         {
-            WebHandle.SyncDataDay();
+            WebHandle.SyncDataHour();
         }
     }
 }

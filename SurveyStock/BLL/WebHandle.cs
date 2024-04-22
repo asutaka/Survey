@@ -50,6 +50,7 @@ namespace SurveyStock.BLL
         {
             var year = 2005;
             var lData = sqliteComDB.GetData_Company();
+            int dem = 1;
             foreach (var item in lData)
             {
                 if (item.status <= 0)
@@ -57,6 +58,7 @@ namespace SurveyStock.BLL
                 year = 2005;
                 try
                 {
+                    Console.WriteLine($"{dem++}: {item.stock_code}");
                     DateTime dtLast = DateTime.MinValue;
                     var ldataDb = sqliteDayDB.GetData(item.stock_code);
                     if (ldataDb.Any())
@@ -120,12 +122,14 @@ namespace SurveyStock.BLL
         public static void SyncDataHour()
         {
             var lData = sqliteComDB.GetData_Company();
+            int dem = 1;
             foreach (var item in lData)
             {
                 if (item.status <= 0)
                     continue;
                 try
                 {
+                    Console.WriteLine($"{dem++}: {item.stock_code}");
                     DateTime dtLast = DateTime.MinValue;
                     var ldataDb = sqliteHourDB.GetData(item.stock_code);
                     if (ldataDb.Any())
