@@ -7,6 +7,7 @@
         public string stock_code { get; set; }
         public int stock_exchange { get; set; }
         public decimal cap { get; set; }
+        public int status { get; set; }
     }
 
     public class WhaleModel

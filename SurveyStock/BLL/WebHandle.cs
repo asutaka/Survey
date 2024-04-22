@@ -6,10 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace SurveyStock.BLL
 {
@@ -24,15 +21,16 @@ namespace SurveyStock.BLL
             var responseMessage = client.GetAsync("", HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();
             var resultArray = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
             var lData = JsonConvert.DeserializeObject<List<string>>(resultArray);
-            int index = 724;
+            int index = sqliteComDB.GetData_Company().Count() + 1;
             foreach (var item in lData)
             {
-                sqliteComDB.Insert_Company(new Model.CompanyModel { 
+                sqliteComDB.Insert_Company(new CompanyModel { 
                     id = index++,
                     company_name = string.Empty,
                     stock_code = item,
-                    stock_exchange = 2,
-                    cap = 0
+                    stock_exchange = 3,
+                    cap = 0,
+                    status = 0
                 });
             }
         }
@@ -47,13 +45,15 @@ namespace SurveyStock.BLL
             }
         }
 
-        private const string _url1D = "https://histdatafeed.vps.com.vn/tradingview/history?symbol={0}&resolution={1}&from={2}&to={3}";
+        private const string _urlData = "https://histdatafeed.vps.com.vn/tradingview/history?symbol={0}&resolution={1}&from={2}&to={3}";
         public static void SyncDataDay()
         {
             var year = 2005;
             var lData = sqliteComDB.GetData_Company();
             foreach (var item in lData)
             {
+                if (item.status <= 0)
+                    continue;
                 year = 2005;
                 try
                 {
@@ -78,7 +78,7 @@ namespace SurveyStock.BLL
                         }
                         var dtOffsetPrev = new DateTimeOffset(dt).ToUnixTimeSeconds();
                         var dtOffsetNext = new DateTimeOffset(dtNext).ToUnixTimeSeconds();
-                        var url = string.Format(_url1D, item.stock_code, "1D", dtOffsetPrev, dtOffsetNext);
+                        var url = string.Format(_urlData, item.stock_code, "1D", dtOffsetPrev, dtOffsetNext);
 
                         var client = new HttpClient { BaseAddress = new Uri(url) };
                         var responseMessage = client.GetAsync("", HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();
@@ -106,7 +106,7 @@ namespace SurveyStock.BLL
                                 });
                             }
                         }
-                        Thread.Sleep(200);
+                        Thread.Sleep(100);
                     }
                     while (dt < DateTime.Now);
                 }
@@ -122,6 +122,8 @@ namespace SurveyStock.BLL
             var lData = sqliteComDB.GetData_Company();
             foreach (var item in lData)
             {
+                if (item.status <= 0)
+                    continue;
                 try
                 {
                     DateTime dtLast = DateTime.MinValue;
@@ -144,7 +146,7 @@ namespace SurveyStock.BLL
                         }
                         var dtOffsetPrev = new DateTimeOffset(dt).ToUnixTimeSeconds();
                         var dtOffsetNext = new DateTimeOffset(dtNext).ToUnixTimeSeconds();
-                        var url = string.Format(_url1D, item.stock_code, "60", dtOffsetPrev, dtOffsetNext);
+                        var url = string.Format(_urlData, item.stock_code, "60", dtOffsetPrev, dtOffsetNext);
 
                         var client = new HttpClient { BaseAddress = new Uri(url) };
                         var responseMessage = client.GetAsync("", HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();

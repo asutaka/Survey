@@ -46,7 +46,8 @@ namespace SurveyStock.DAL
                         company_name = rdr.GetString(1),
                         stock_code = rdr.GetString(2),
                         cap = rdr.GetDecimal(3),
-                        stock_exchange = rdr.GetInt32(4)
+                        stock_exchange = rdr.GetInt32(4),
+                        status = rdr.GetInt32(5)
                     });
                 }
             }
@@ -137,8 +138,8 @@ namespace SurveyStock.DAL
         public static void Insert_Company(CompanyModel param)
         {
             var sql = $"INSERT INTO Company " +
-                $"(id, company_name, stock_code, cap, stock_exchange) " +
-                $"VALUES({param.id}, '{param.company_name}', '{param.stock_code}', {param.cap}, {param.stock_exchange})";
+                $"(id, company_name, stock_code, cap, stock_exchange, status) " +
+                $"VALUES({param.id}, '{param.company_name}', '{param.stock_code}', {param.cap}, {param.stock_exchange}, {param.status})";
             var cmd = new SQLiteCommand(sql, Connect());
             cmd.ExecuteNonQuery();
         }
