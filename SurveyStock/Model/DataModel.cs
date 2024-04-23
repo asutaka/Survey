@@ -1,4 +1,6 @@
-﻿namespace SurveyStock.Model
+﻿using Skender.Stock.Indicators;
+
+namespace SurveyStock.Model
 {
     public class DataModel
     {
@@ -8,5 +10,10 @@
         public decimal l { get; set; }
         public decimal c { get; set; }
         public decimal v { get; set; }
+    }
+
+    public class QuoteEx : Quote
+    {
+        public double Ma20 { get; set; }
     }
 }

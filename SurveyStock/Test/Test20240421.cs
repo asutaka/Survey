@@ -11,7 +11,11 @@ namespace SurveyStock.Test
     {
         public static void MainFunc()
         {
-            WebHandle.SyncDataHour();
+            //WebHandle.SyncDataHour();
+            PrepareData.Instance();
+            PrepareIndicator.Instance();
+
+            CalMng.Ma20RateAboveBelow();
         }
     }
 }
