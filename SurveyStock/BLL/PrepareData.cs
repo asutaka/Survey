@@ -9,21 +9,11 @@ namespace SurveyStock.BLL
 {
     public static class PrepareData
     {
-        public static Dictionary<string, List<Quote>> _dicHose1d = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dicHNX1d = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dicUpcom1d = new Dictionary<string, List<Quote>>();
-
-        public static Dictionary<string, List<Quote>> _dicHose1w = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dicHNX1w = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dicUpcom1w = new Dictionary<string, List<Quote>>();
-
-        public static Dictionary<string, List<Quote>> _dicHose1h = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dicHNX1h = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dicUpcom1h = new Dictionary<string, List<Quote>>();
+        public static Dictionary<string, List<Quote>> _dic1d = new Dictionary<string, List<Quote>>();
+        public static Dictionary<string, List<Quote>> _dic1w = new Dictionary<string, List<Quote>>();
+        public static Dictionary<string, List<Quote>> _dic1h = new Dictionary<string, List<Quote>>();
         //Ex
-        public static Dictionary<string, List<QuoteEx>> _dicHoseEx1d = new Dictionary<string, List<QuoteEx>>();
-        public static Dictionary<string, List<QuoteEx>> _dicHNXEx1d = new Dictionary<string, List<QuoteEx>>();
-        public static Dictionary<string, List<QuoteEx>> _dicUpcomEx1d = new Dictionary<string, List<QuoteEx>>();
+        public static Dictionary<string, List<QuoteEx>> _dicEx1d = new Dictionary<string, List<QuoteEx>>();
 
         public static void Instance()
         {
@@ -41,7 +31,7 @@ namespace SurveyStock.BLL
                     continue;
                 if (item.stock_exchange == (int)EStockExchange.Hose)
                 {
-                    _dicHose1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
+                    _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
                     {
                         Date = x.t.UnixTimeStampToDateTime(),
                         Open = x.o,
@@ -53,7 +43,7 @@ namespace SurveyStock.BLL
                 }
                 else if (item.stock_exchange == (int)EStockExchange.HNX)
                 {
-                    _dicHNX1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
+                    _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
                     {
                         Date = x.t.UnixTimeStampToDateTime(),
                         Open = x.o,
@@ -65,7 +55,7 @@ namespace SurveyStock.BLL
                 }
                 else
                 {
-                    _dicUpcom1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
+                    _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
                     {
                         Date = x.t.UnixTimeStampToDateTime(),
                         Open = x.o,
@@ -87,7 +77,7 @@ namespace SurveyStock.BLL
                     continue;
                 if (item.stock_exchange == (int)EStockExchange.Hose)
                 {
-                    _dicHose1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote { 
+                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote { 
                         Date = x.t.UnixTimeStampToDateTime(),
                         Open = x.o,
                         Close = x.c,
@@ -98,7 +88,7 @@ namespace SurveyStock.BLL
                 }
                 else if (item.stock_exchange == (int)EStockExchange.HNX)
                 {
-                    _dicHNX1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
+                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
                     {
                         Date = x.t.UnixTimeStampToDateTime(),
                         Open = x.o,
@@ -110,7 +100,7 @@ namespace SurveyStock.BLL
                 }
                 else
                 {
-                    _dicUpcom1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
+                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
                     {
                         Date = x.t.UnixTimeStampToDateTime(),
                         Open = x.o,
@@ -125,9 +115,7 @@ namespace SurveyStock.BLL
 
         private static void LoadData1W()
         {
-            _dicHose1w = LoadData1wPartial(_dicHose1d);
-            _dicHNX1w = LoadData1wPartial(_dicHNX1d);
-            _dicUpcom1w = LoadData1wPartial(_dicUpcom1d);
+            _dic1w = LoadData1wPartial(_dic1d);
         }
 
         private static Dictionary<string, List<Quote>> LoadData1wPartial(Dictionary<string, List<Quote>> dicDay)
@@ -184,10 +172,10 @@ namespace SurveyStock.BLL
         }
         private static void Ma20_1d()
         {
-            foreach (var item in PrepareData._dicHose1d)
+            foreach (var item in PrepareData._dic1d)
             {
                 var lsma20 = item.Value.GetSma(20);
-                PrepareData._dicHoseEx1d.Add(item.Key, item.Value.Select((x, index) => new QuoteEx {
+                PrepareData._dicEx1d.Add(item.Key, item.Value.Select((x, index) => new QuoteEx {
                    Date = x.Date,
                    Open = x.Open,
                    High = x.High,
@@ -195,34 +183,6 @@ namespace SurveyStock.BLL
                    Close = x.Close,
                    Volume = x.Volume,
                    Ma20 = lsma20.ElementAt(index).Sma??0
-                }).ToList());
-            }
-            foreach (var item in PrepareData._dicHNX1d)
-            {
-                var lsma20 = item.Value.GetSma(20);
-                PrepareData._dicHNXEx1d.Add(item.Key, item.Value.Select((x, index) => new QuoteEx
-                {
-                    Date = x.Date,
-                    Open = x.Open,
-                    High = x.High,
-                    Low = x.Low,
-                    Close = x.Close,
-                    Volume = x.Volume,
-                    Ma20 = lsma20.ElementAt(index).Sma ?? 0
-                }).ToList());
-            }
-            foreach (var item in PrepareData._dicUpcom1d)
-            {
-                var lsma20 = item.Value.GetSma(20);
-                PrepareData._dicUpcomEx1d.Add(item.Key, item.Value.Select((x, index) => new QuoteEx
-                {
-                    Date = x.Date,
-                    Open = x.Open,
-                    High = x.High,
-                    Low = x.Low,
-                    Close = x.Close,
-                    Volume = x.Volume,
-                    Ma20 = lsma20.ElementAt(index).Sma ?? 0
                 }).ToList());
             }
         }

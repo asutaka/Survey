@@ -190,8 +190,10 @@ namespace SurveyStock.DAL
                 if (con == null)
                     con = new SQLiteConnection(connectionString);
                 if (con.State == ConnectionState.Closed)
+                {
                     con.Open();
-                Console.WriteLine("Connection is Opened ! ");
+                    Console.WriteLine("Connection is Opened ! ");
+                }
                 return con;
             }
             catch (Exception ex)
@@ -227,50 +229,34 @@ namespace SurveyStock.DAL
         public static List<DataModel> GetData(string code, SQLiteConnection con)
         {
             var lResult = new List<DataModel>();
-            using (var ds = new DataSet())
+            try
             {
-                var sql = $"Select * from {code.ToUpper()}";
-                var cmd = new SQLiteCommand(sql, con);
-                var rdr = cmd.ExecuteReader();
-                while (rdr.Read())
+                using (var ds = new DataSet())
                 {
-                    lResult.Add(new DataModel { 
-                        t = rdr.GetDecimal(0),
-                        o = rdr.GetDecimal(1),
-                        h = rdr.GetDecimal(2),
-                        l = rdr.GetDecimal(3),
-                        c = rdr.GetDecimal(4),
-                        v = rdr.GetDecimal(5)
-                    });
+                    var sql = $"Select * from {code.ToUpper()}";
+                    var cmd = new SQLiteCommand(sql, con);
+                    var rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        lResult.Add(new DataModel
+                        {
+                            t = rdr.GetDecimal(0),
+                            o = rdr.GetDecimal(1),
+                            h = rdr.GetDecimal(2),
+                            l = rdr.GetDecimal(3),
+                            c = rdr.GetDecimal(4),
+                            v = rdr.GetDecimal(5)
+                        });
+                    }
                 }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<DataModel>();
+            }
+            
             return lResult;
-        }
-    }
-
-    public static class sqliteWeekDB
-    {
-        private static SQLiteConnection _con;
-        private static string _conStr = $"Data Source={Directory.GetCurrentDirectory()}//db//weekdb.db;Version=3;datetimeformat=CurrentCulture";
-
-        public static void CreateTable(string code)
-        {
-            sqlite.CreateTable(code, sqlite.Connect(_con, _conStr));
-        }
-
-        public static void Insert(string code, DataModel dat)
-        {
-            sqlite.Insert(code, dat, sqlite.Connect(_con, _conStr));
-        }
-
-        public static List<DataModel> GetData(string code)
-        {
-            return sqlite.GetData(code, sqlite.Connect(_con, _conStr));
-        }
-
-        public static void DeleteByTime(string code, decimal time)
-        {
-            sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
         }
     }
 

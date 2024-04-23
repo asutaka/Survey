@@ -54,7 +54,10 @@ namespace SurveyStock.BLL
             foreach (var item in lData)
             {
                 if (item.status <= 0)
+                {
                     continue;
+                }
+
                 year = 2005;
                 try
                 {
