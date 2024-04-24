@@ -14,6 +14,7 @@ namespace SurveyStock.BLL
         public static Dictionary<string, List<Quote>> _dic1h = new Dictionary<string, List<Quote>>();
         //Ex
         public static Dictionary<string, List<QuoteEx>> _dicEx1d = new Dictionary<string, List<QuoteEx>>();
+        public static Dictionary<string, List<QuoteEx>> _dicEx1w = new Dictionary<string, List<QuoteEx>>();
 
         public static void Instance()
         {
@@ -29,42 +30,15 @@ namespace SurveyStock.BLL
             {
                 if (item.status <= 0)
                     continue;
-                if (item.stock_exchange == (int)EStockExchange.Hose)
+                _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
                 {
-                    _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
-                    {
-                        Date = x.t.UnixTimeStampToDateTime(),
-                        Open = x.o,
-                        Close = x.c,
-                        High = x.h,
-                        Low = x.l,
-                        Volume = x.v
-                    }).ToList());
-                }
-                else if (item.stock_exchange == (int)EStockExchange.HNX)
-                {
-                    _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
-                    {
-                        Date = x.t.UnixTimeStampToDateTime(),
-                        Open = x.o,
-                        Close = x.c,
-                        High = x.h,
-                        Low = x.l,
-                        Volume = x.v
-                    }).ToList());
-                }
-                else
-                {
-                    _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
-                    {
-                        Date = x.t.UnixTimeStampToDateTime(),
-                        Open = x.o,
-                        Close = x.c,
-                        High = x.h,
-                        Low = x.l,
-                        Volume = x.v
-                    }).ToList());
-                }
+                    Date = x.t.UnixTimeStampToDateTime(),
+                    Open = x.o,
+                    Close = x.c,
+                    High = x.h,
+                    Low = x.l,
+                    Volume = x.v
+                }).ToList());
             }
         }
 
@@ -75,41 +49,15 @@ namespace SurveyStock.BLL
             {
                 if (item.status <= 0)
                     continue;
-                if (item.stock_exchange == (int)EStockExchange.Hose)
+                _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
                 {
-                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote { 
-                        Date = x.t.UnixTimeStampToDateTime(),
-                        Open = x.o,
-                        Close = x.c,
-                        High = x.h,
-                        Low = x.l,
-                        Volume = x.v
-                    }).ToList());
-                }
-                else if (item.stock_exchange == (int)EStockExchange.HNX)
-                {
-                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
-                    {
-                        Date = x.t.UnixTimeStampToDateTime(),
-                        Open = x.o,
-                        Close = x.c,
-                        High = x.h,
-                        Low = x.l,
-                        Volume = x.v
-                    }).ToList());
-                }
-                else
-                {
-                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
-                    {
-                        Date = x.t.UnixTimeStampToDateTime(),
-                        Open = x.o,
-                        Close = x.c,
-                        High = x.h,
-                        Low = x.l,
-                        Volume = x.v
-                    }).ToList());
-                }
+                    Date = x.t.UnixTimeStampToDateTime(),
+                    Open = x.o,
+                    Close = x.c,
+                    High = x.h,
+                    Low = x.l,
+                    Volume = x.v
+                }).ToList());
             }
         }
 
@@ -169,6 +117,7 @@ namespace SurveyStock.BLL
         public static void Instance()
         {
             Ma20_1d();
+            Ma20_1w();
         }
         private static void Ma20_1d()
         {
@@ -183,6 +132,24 @@ namespace SurveyStock.BLL
                    Close = x.Close,
                    Volume = x.Volume,
                    Ma20 = lsma20.ElementAt(index).Sma??0
+                }).ToList());
+            }
+        }
+
+        private static void Ma20_1w()
+        {
+            foreach (var item in PrepareData._dic1w)
+            {
+                var lsma20 = item.Value.GetSma(20);
+                PrepareData._dicEx1w.Add(item.Key, item.Value.Select((x, index) => new QuoteEx
+                {
+                    Date = x.Date,
+                    Open = x.Open,
+                    High = x.High,
+                    Low = x.Low,
+                    Close = x.Close,
+                    Volume = x.Volume,
+                    Ma20 = lsma20.ElementAt(index).Sma ?? 0
                 }).ToList());
             }
         }
