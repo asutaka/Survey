@@ -13,9 +13,9 @@ namespace SurveyStock.Test
         {
             //WebHandle.SyncDataDay();
             //WebHandle.SyncDataHour();
-            PrepareData.Instance();
-            PrepareIndicator.Instance();
-            CalMng.Ma20RateAboveBelow_1d();
+            //PrepareData.Instance();
+            //PrepareIndicator.Instance();
+            CalMng.BuySellByMa20("SZC");
         }
     }
 }
