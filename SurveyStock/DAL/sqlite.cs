@@ -285,30 +285,4 @@ namespace SurveyStock.DAL
             sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
         }
     }
-
-    public static class sqliteHourDB
-    {
-        private static SQLiteConnection _con;
-        private static string _conStr = $"Data Source={Directory.GetCurrentDirectory()}//db//hourdb.db;Version=3;datetimeformat=CurrentCulture";
-
-        public static void CreateTable(string code)
-        {
-            sqlite.CreateTable(code, sqlite.Connect(_con, _conStr));
-        }
-
-        public static void Insert(string code, DataModel dat)
-        {
-            sqlite.Insert(code, dat, sqlite.Connect(_con, _conStr));
-        }
-
-        public static List<DataModel> GetData(string code)
-        {
-            return sqlite.GetData(code, sqlite.Connect(_con, _conStr));
-        }
-
-        public static void DeleteByTime(string code, decimal time)
-        {
-            sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
-        }
-    }
 }

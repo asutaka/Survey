@@ -16,6 +16,11 @@ namespace SurveyStock.BLL
         /// </summary>
         public static void Ma20RateAboveBelow_1d()
         {
+            if(!PrepareData._dic1d.Any())
+            {
+                PrepareData.LoadData1d();
+                PrepareIndicator.Ma20_1d();
+            }
             //Lay ma co ngay len san som nhat
             var dic = PrepareData._dicEx1d.OrderByDescending(x => x.Value.Count());
             var itemOldest = dic.First();
@@ -48,6 +53,11 @@ namespace SurveyStock.BLL
         /// </summary>
         public static void Ma20RateAboveBelow_1w()
         {
+            if (!PrepareData._dicEx1w.Any())
+            {
+                PrepareData.LoadData1W();
+                PrepareIndicator.Ma20_1w();
+            }
             //Lay ma co ngay len san som nhat
             var dic = PrepareData._dicEx1w.OrderByDescending(x => x.Value.Count());
             var itemOldest = dic.First();

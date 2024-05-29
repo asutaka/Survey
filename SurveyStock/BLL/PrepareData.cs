@@ -2,6 +2,7 @@
 using SurveyStock.DAL;
 using SurveyStock.Model;
 using SurveyStock.Util;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,57 +12,37 @@ namespace SurveyStock.BLL
     {
         public static Dictionary<string, List<Quote>> _dic1d = new Dictionary<string, List<Quote>>();
         public static Dictionary<string, List<Quote>> _dic1w = new Dictionary<string, List<Quote>>();
-        public static Dictionary<string, List<Quote>> _dic1h = new Dictionary<string, List<Quote>>();
         //Ex
         public static Dictionary<string, List<QuoteEx>> _dicEx1d = new Dictionary<string, List<QuoteEx>>();
         public static Dictionary<string, List<QuoteEx>> _dicEx1w = new Dictionary<string, List<QuoteEx>>();
 
-        public static void Instance()
-        {
-            LoadData1d();
-            LoadData1W();
-            LoadData1h();
-        }
-
-        private static void LoadData1h()
+        public static void LoadData1d()
         {
             var lData = sqliteComDB.GetData_Company();
             foreach (var item in lData)
             {
                 if (item.status <= 0)
                     continue;
-                _dic1h.Add(item.stock_code, sqliteHourDB.GetData(item.stock_code).Select(x => new Quote
+                try
                 {
-                    Date = x.t.UnixTimeStampToDateTime(),
-                    Open = x.o,
-                    Close = x.c,
-                    High = x.h,
-                    Low = x.l,
-                    Volume = x.v
-                }).ToList());
+                    _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
+                    {
+                        Date = x.t.UnixTimeStampToDateTime(),
+                        Open = x.o,
+                        Close = x.c,
+                        High = x.h,
+                        Low = x.l,
+                        Volume = x.v
+                    }).ToList());
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
             }
         }
 
-        private static void LoadData1d()
-        {
-            var lData = sqliteComDB.GetData_Company();
-            foreach (var item in lData)
-            {
-                if (item.status <= 0)
-                    continue;
-                _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
-                {
-                    Date = x.t.UnixTimeStampToDateTime(),
-                    Open = x.o,
-                    Close = x.c,
-                    High = x.h,
-                    Low = x.l,
-                    Volume = x.v
-                }).ToList());
-            }
-        }
-
-        private static void LoadData1W()
+        public static void LoadData1W()
         {
             _dic1w = LoadData1wPartial(_dic1d);
         }
@@ -114,12 +95,7 @@ namespace SurveyStock.BLL
 
     public static class PrepareIndicator
     {
-        public static void Instance()
-        {
-            Ma20_1d();
-            Ma20_1w();
-        }
-        private static void Ma20_1d()
+        public static void Ma20_1d()
         {
             foreach (var item in PrepareData._dic1d)
             {
@@ -136,7 +112,7 @@ namespace SurveyStock.BLL
             }
         }
 
-        private static void Ma20_1w()
+        public static void Ma20_1w()
         {
             foreach (var item in PrepareData._dic1w)
             {

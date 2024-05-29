@@ -11,11 +11,15 @@ namespace SurveyStock.Test
     {
         public static void MainFunc()
         {
-            //WebHandle.SyncDataDay();
-            //WebHandle.SyncDataHour();
-            //PrepareData.Instance();
-            //PrepareIndicator.Instance();
-            CalMng.BuySellByMa20("SZC");
+            //var dt = DateTime.Now;
+            //if(dt.Hour <= 8 || dt.Hour >= 15)
+            //{
+            //    WebHandle.SyncDataDay();
+            //}
+
+            CalMng.BuySellByMa20("BCG");
+            //Tính tỉ lệ TP rank cổ phiếu
+            //CalMng.Ma20RateAboveBelow_1d();
         }
     }
 }

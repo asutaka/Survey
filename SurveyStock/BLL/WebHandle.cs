@@ -41,7 +41,6 @@ namespace SurveyStock.BLL
             foreach (var item in lData)
             {
                 sqliteDayDB.CreateTable(item.stock_code);
-                sqliteHourDB.CreateTable(item.stock_code);
             }
         }
 
@@ -112,76 +111,6 @@ namespace SurveyStock.BLL
                             }
                         }
                         Thread.Sleep(100);
-                    }
-                    while (dt < DateTime.Now);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-            }
-        }
-
-        public static void SyncDataHour()
-        {
-            var lData = sqliteComDB.GetData_Company();
-            int dem = 1;
-            foreach (var item in lData)
-            {
-                if (item.status <= 0)
-                    continue;
-                try
-                {
-                    Console.WriteLine($"{dem++}: {item.stock_code}");
-                    DateTime dtLast = DateTime.MinValue;
-                    var ldataDb = sqliteHourDB.GetData(item.stock_code);
-                    if (ldataDb.Any())
-                    {
-                        var last = ldataDb.Last();
-                        dtLast = last.t.UnixTimeStampToDateTime();
-                    }
-
-                    var dt = new DateTime(2004, 9, 1); ;
-                    do
-                    {
-                        dt = dt.AddMonths(3);
-                        var dtNext = dt.AddMonths(3).AddSeconds(-1);
-                        if (dt < dtLast)
-                        {
-                            dt = dtLast.AddSeconds(1);
-                            dtNext = dt.AddMonths(3).AddSeconds(-1);
-                        }
-                        var dtOffsetPrev = new DateTimeOffset(dt).ToUnixTimeSeconds();
-                        var dtOffsetNext = new DateTimeOffset(dtNext).ToUnixTimeSeconds();
-                        var url = string.Format(_urlData, item.stock_code, "60", dtOffsetPrev, dtOffsetNext);
-
-                        var client = new HttpClient { BaseAddress = new Uri(url) };
-                        var responseMessage = client.GetAsync("", HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();
-                        var resultArray = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-                        var responseModel = JsonConvert.DeserializeObject<ResponseDataModel>(resultArray);
-                        if (responseModel.t.Any())
-                        {
-                            var count = responseModel.t.Count();
-                            for (int i = 0; i < count; i++)
-                            {
-                                var t = responseModel.t.ElementAt(i);
-                                var o = responseModel.o.ElementAt(i);
-                                var c = responseModel.c.ElementAt(i);
-                                var h = responseModel.h.ElementAt(i);
-                                var l = responseModel.l.ElementAt(i);
-                                var v = responseModel.v.ElementAt(i);
-                                sqliteHourDB.Insert(item.stock_code, new DataModel
-                                {
-                                    t = t,
-                                    o = o,
-                                    c = c,
-                                    h = h,
-                                    l = l,
-                                    v = v
-                                });
-                            }
-                        }
-                        Thread.Sleep(200);
                     }
                     while (dt < DateTime.Now);
                 }
