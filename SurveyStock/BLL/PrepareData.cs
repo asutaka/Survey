@@ -5,6 +5,7 @@ using SurveyStock.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SurveyStock.BLL
 {
@@ -15,14 +16,19 @@ namespace SurveyStock.BLL
         //Ex
         public static Dictionary<string, List<QuoteEx>> _dicEx1d = new Dictionary<string, List<QuoteEx>>();
         public static Dictionary<string, List<QuoteEx>> _dicEx1w = new Dictionary<string, List<QuoteEx>>();
+        private readonly static int _numThread = 50;
 
         public static void LoadData1d()
         {
+            var dtStart = DateTime.Now;
+            Console.WriteLine($"PrepareData.LoadData1d|INFO(START)|{dtStart}");
             var lData = sqliteComDB.GetData_Company();
-            foreach (var item in lData)
+            Parallel.ForEach(lData, new ParallelOptions { MaxDegreeOfParallelism = _numThread },
+                item =>
             {
                 if (item.status <= 0)
-                    continue;
+                    return;
+
                 try
                 {
                     _dic1d.Add(item.stock_code, sqliteDayDB.GetData(item.stock_code).Select(x => new Quote
@@ -35,11 +41,13 @@ namespace SurveyStock.BLL
                         Volume = x.v
                     }).ToList());
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-            }
+            });
+            Console.WriteLine($"PrepareData.LoadData1d|INFO(END)|{DateTime.Now}");
+            Console.WriteLine($"PrepareData.LoadData1d|INFO(Total Time)|{(DateTime.Now - dtStart).TotalSeconds}");
         }
 
         public static void LoadData1W()
@@ -95,21 +103,28 @@ namespace SurveyStock.BLL
 
     public static class PrepareIndicator
     {
+        private readonly static int _numThread = 50;
         public static void Ma20_1d()
         {
-            foreach (var item in PrepareData._dic1d)
-            {
-                var lsma20 = item.Value.GetSma(20);
-                PrepareData._dicEx1d.Add(item.Key, item.Value.Select((x, index) => new QuoteEx {
-                   Date = x.Date,
-                   Open = x.Open,
-                   High = x.High,
-                   Low = x.Low,
-                   Close = x.Close,
-                   Volume = x.Volume,
-                   Ma20 = lsma20.ElementAt(index).Sma??0
-                }).ToList());
-            }
+            var dtStart = DateTime.Now;
+            Console.WriteLine($"PrepareIndicator.Ma20_1d|INFO(START)|{dtStart}");
+            Parallel.ForEach(PrepareData._dic1d, new ParallelOptions { MaxDegreeOfParallelism = _numThread },
+               item =>
+               {
+                   var lsma20 = item.Value.GetSma(20);
+                   PrepareData._dicEx1d.Add(item.Key, item.Value.Select((x, index) => new QuoteEx
+                   {
+                       Date = x.Date,
+                       Open = x.Open,
+                       High = x.High,
+                       Low = x.Low,
+                       Close = x.Close,
+                       Volume = x.Volume,
+                       Ma20 = lsma20.ElementAt(index).Sma ?? 0
+                   }).ToList());
+               });
+            Console.WriteLine($"PrepareIndicator.Ma20_1d|INFO(END)|{DateTime.Now}");
+            Console.WriteLine($"PrepareIndicator.Ma20_1d|INFO(Total Time)|{(DateTime.Now - dtStart).TotalSeconds}");
         }
 
         public static void Ma20_1w()

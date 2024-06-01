@@ -1,4 +1,5 @@
-﻿using SurveyStock.Test;
+﻿using SurveyStock.DAL;
+using SurveyStock.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace SurveyStock
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            sqliteDayDB.Instance();
+
             Test20240421.MainFunc();
 
             //Application.Run(new Form1());

@@ -1,9 +1,11 @@
 ﻿using SurveyStock.Model;
+using SurveyStock.Util;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Linq;
 
 namespace SurveyStock.DAL
 {
@@ -181,8 +183,82 @@ namespace SurveyStock.DAL
         }
     }
 
+    public static class sqliteDayDB
+    {
+        private static Dictionary<EStockExchange, SQLiteConnection> _dicConnection = new Dictionary<EStockExchange, SQLiteConnection>();
+        private static List<CompanyModel> _lCom = sqliteComDB.GetData_Company();
+
+        public static void Instance()
+        {
+            var conHose = sqlite.Connect(null, $"Data Source={Directory.GetCurrentDirectory()}//db//hsxdb.db;Version=3;datetimeformat=CurrentCulture");
+            var conHNX = sqlite.Connect(null, $"Data Source={Directory.GetCurrentDirectory()}//db//hnxdb.db;Version=3;datetimeformat=CurrentCulture");
+            var conUpcom = sqlite.Connect(null, $"Data Source={Directory.GetCurrentDirectory()}//db//upcomdb.db;Version=3;datetimeformat=CurrentCulture");
+            _dicConnection.Add(EStockExchange.Hose, conHose);
+            _dicConnection.Add(EStockExchange.HNX, conHNX);
+            _dicConnection.Add(EStockExchange.Upcom, conUpcom);
+        }
+
+        public static void CreateTable(string code, int type)
+        {
+            var itemConn = _dicConnection.First(x => x.Key == (EStockExchange)type);
+            sqlite.CreateTable(code, itemConn.Value);
+        }
+
+        public static bool CheckTableExists(string code, int type)
+        {
+            var itemConn = _dicConnection.First(x => x.Key == (EStockExchange)type);
+            return sqlite.CheckTableExists(code, itemConn.Value);
+        }
+
+        public static void Insert(string code, DataModel dat, int type)
+        {
+            try
+            {
+                var itemConn = _dicConnection.First(x => x.Key == (EStockExchange)type);
+                sqlite.Insert(code, dat, itemConn.Value);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public static List<DataModel> GetData(string code)
+        {
+            var entityCom = _lCom.FirstOrDefault(x => x.stock_code.ToUpper().Equals(code.ToUpper()));
+            var itemConn = _dicConnection.First(x => x.Key == (EStockExchange)entityCom.stock_exchange);
+            return sqlite.GetData(code, itemConn.Value);
+        }
+
+        public static void DeleteByTime(string code, decimal time, int type)
+        {
+            var itemConn = _dicConnection.First(x => x.Key == (EStockExchange)type);
+            sqlite.DeleteByTime(code, time, itemConn.Value);
+        }
+    }
+
     public static class sqlite
     {
+        public static SQLiteConnection Connect(string connectionString)
+        {
+            SQLiteConnection con = null;
+            try
+            {
+                if (con == null)
+                    con = new SQLiteConnection(connectionString);
+                if (con.State == ConnectionState.Closed)
+                {
+                    con.Open();
+                    Console.WriteLine("Connection is Opened ! ");
+                }
+                return con;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Connection is not Open ! ");
+                throw;
+            }
+        }
         public static SQLiteConnection Connect(SQLiteConnection con, string connectionString)
         {
             try
@@ -201,6 +277,29 @@ namespace SurveyStock.DAL
                 Console.WriteLine("Connection is not Open ! ");
                 throw;
             }
+        }
+
+        public static bool CheckTableExists(string code, SQLiteConnection con)
+        {
+            try
+            {
+                using (var ds = new DataSet())
+                {
+                    //var sql = $"SELECT name FROM sqlite_master WHERE type='table' AND name='AAA'";
+                    var sql = $"SELECT name FROM sqlite_master WHERE type='table' AND name='{code}'";
+                    var cmd = new SQLiteCommand(sql, con);
+                    var rdr = cmd.ExecuteReader();
+                    while (rdr.Read())
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return false;
         }
 
         public static void CreateTable(string code, SQLiteConnection con)
@@ -257,32 +356,6 @@ namespace SurveyStock.DAL
             }
             
             return lResult;
-        }
-    }
-
-    public static class sqliteDayDB
-    {
-        private static SQLiteConnection _con;
-        private static string _conStr = $"Data Source={Directory.GetCurrentDirectory()}//db//daydb.db;Version=3;datetimeformat=CurrentCulture";
-
-        public static void CreateTable(string code)
-        {
-            sqlite.CreateTable(code, sqlite.Connect(_con, _conStr));
-        }
-
-        public static void Insert(string code, DataModel dat)
-        {
-            sqlite.Insert(code, dat, sqlite.Connect(_con, _conStr));
-        }
-
-        public static List<DataModel> GetData(string code)
-        {
-            return sqlite.GetData(code, sqlite.Connect(_con, _conStr));
-        }
-
-        public static void DeleteByTime(string code, decimal time)
-        {
-            sqlite.DeleteByTime(code, time, sqlite.Connect(_con, _conStr));
         }
     }
 }

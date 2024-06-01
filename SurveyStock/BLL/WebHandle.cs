@@ -12,27 +12,40 @@ namespace SurveyStock.BLL
 {
     public static class WebHandle
     {
-        private const string _hose = "https://bgapidatafeed.vps.com.vn/getlistckindex/hose";
-        private const string _hnx = "https://bgapidatafeed.vps.com.vn/getlistckindex/hnx";
-        private const string _upcom = "https://bgapidatafeed.vps.com.vn/getlistckindex/upcom";
         public static void SyncCompany()
         {
-            var client = new HttpClient { BaseAddress = new Uri(_upcom) };
-            var responseMessage = client.GetAsync("", HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();
-            var resultArray = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-            var lData = JsonConvert.DeserializeObject<List<string>>(resultArray);
-            int index = sqliteComDB.GetData_Company().Count() + 1;
-            foreach (var item in lData)
+            //EStockExchange
+            var dicLink = new Dictionary<EStockExchange, string>();
+            dicLink.Add(EStockExchange.Hose, "https://bgapidatafeed.vps.com.vn/getlistckindex/hose");
+            dicLink.Add(EStockExchange.HNX, "https://bgapidatafeed.vps.com.vn/getlistckindex/hnx");
+            dicLink.Add(EStockExchange.Upcom, "https://bgapidatafeed.vps.com.vn/getlistckindex/upcom");
+
+            var lCom = sqliteComDB.GetData_Company();
+            foreach (var itemType in dicLink)
             {
-                sqliteComDB.Insert_Company(new CompanyModel { 
-                    id = index++,
-                    company_name = string.Empty,
-                    stock_code = item,
-                    stock_exchange = 3,
-                    cap = 0,
-                    status = 0
-                });
+                var client = new HttpClient { BaseAddress = new Uri(itemType.Value) };
+                var responseMessage = client.GetAsync("", HttpCompletionOption.ResponseContentRead).GetAwaiter().GetResult();
+                var resultArray = responseMessage.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+                var lData = JsonConvert.DeserializeObject<List<string>>(resultArray);
+                int index = lCom.Count() + 1;
+                foreach (var itemData in lData)
+                {
+                    if (lCom.Any(x => x.stock_code.Equals(itemData)))
+                        continue;
+
+                    sqliteComDB.Insert_Company(new CompanyModel
+                    {
+                        id = index++,
+                        company_name = string.Empty,
+                        stock_code = itemData,
+                        stock_exchange = (int)itemType.Key,
+                        cap = 0,
+                        status = 0
+                    });
+                }
             }
+
+            SyncTable();
         }
 
         public static void SyncTable()
@@ -40,7 +53,11 @@ namespace SurveyStock.BLL
             var lData = sqliteComDB.GetData_Company();
             foreach (var item in lData)
             {
-                sqliteDayDB.CreateTable(item.stock_code);
+                var checkExist = sqliteDayDB.CheckTableExists(item.stock_code, item.stock_exchange);
+                if(!checkExist)
+                {
+                    sqliteDayDB.CreateTable(item.stock_code, item.stock_exchange);
+                }
             }
         }
 
@@ -107,7 +124,7 @@ namespace SurveyStock.BLL
                                     h = h,
                                     l = l,
                                     v = v
-                                });
+                                }, item.stock_exchange);
                             }
                         }
                         Thread.Sleep(100);
