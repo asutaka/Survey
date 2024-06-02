@@ -13,4 +13,10 @@
         Listen = 1,
         Buy = 2,
     }
+
+    public enum EmaType
+    {
+        MA = 1,
+        EMA = 2
+    }
 }

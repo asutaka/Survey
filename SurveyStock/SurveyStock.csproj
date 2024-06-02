@@ -87,6 +87,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\CalMng.RankStock.cs" />
+    <Compile Include="BLL\CalMng.BuySellMa.cs" />
     <Compile Include="BLL\CalMng.cs" />
     <Compile Include="BLL\PrepareData.cs" />
     <Compile Include="BLL\WebHandle.cs" />

@@ -1,5 +1,6 @@
 ﻿using SurveyStock.BLL;
 using SurveyStock.DAL;
+using SurveyStock.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,11 @@ namespace SurveyStock.Test
 
             //CalMng.BuySellByMa20("BCG");
             //Tính tỉ lệ TP rank cổ phiếu
-            CalMng.Ma20RateAboveBelow_1d();
+            //CalMng.Ma20RateAboveBelow_1d();
+
+            //Survey 1 cổ phiếu
+            //CalMng.BuySellByMa("dpg");
+            CalMng.RankStock(EmaType.MA, 20);
         }
     }
 }
