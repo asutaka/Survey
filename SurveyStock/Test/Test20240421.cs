@@ -29,6 +29,16 @@ namespace SurveyStock.Test
             //Survey 1 cổ phiếu
             //CalMng.BuySellByMa("dpg");
             CalMng.RankStock(EmaType.MA, 20);
+            //var lst = new List<string>
+            //                        {
+            //                            "PYU",
+            //                            "ROS"
+            //                        };
+
+            //foreach (var item in lst)
+            //{
+            //    sqliteComDB.UpdateStatus_Company(item, false);
+            //}
         }
     }
 }

@@ -15,11 +15,13 @@ namespace SurveyStock.BLL
         public static void RankStock(EmaType type, int period)
         {
             _dicRate.Clear();
-            int _numThread = 20;
+            int _numThread = 10;
             var lData = sqliteComDB.GetData_Company();
             Parallel.ForEach(lData, new ParallelOptions { MaxDegreeOfParallelism = _numThread },
                 item =>
                 {
+                    if (string.IsNullOrWhiteSpace(item.stock_code))
+                        return;
                     CalculateResult(item.stock_code, type, period);
                 });
             var dicSort = _dicRate.OrderByDescending(x => x.Value);
@@ -96,7 +98,7 @@ namespace SurveyStock.BLL
                 Console.WriteLine($"BuySellMa|EXCEPTION| {ex.Message}");
             }
             //
-            var group = dic.GroupBy(x => x.Key.Year).Select(y => new { Year = y.Key, Rate = y.Sum(z => z.Value) });
+            var group = dic.GroupBy(x => x.Key.Year).Select(y => new { Year = y.Key, Rate = y.Sum(z => z.Value) > 150 ? 150 : y.Sum(z => z.Value) });
             var avg = group.Any() ? Math.Round(group.Average(x => x.Rate),2) : 0;
             _dicRate.Add(code, avg);
 
@@ -170,15 +172,15 @@ namespace SurveyStock.BLL
                 Console.WriteLine($"BuySellEMa|EXCEPTION| {ex.Message}");
             }
             //
-            var group = dic.GroupBy(x => x.Key.Year).Select(y => new { Year = y.Key, Rate = y.Average(z => z.Value) });
-            var avg = group.Any() ? group.Average(x => x.Rate) : 0;
+            var group = dic.GroupBy(x => x.Key.Year).Select(y => new { Year = y.Key, Rate = y.Sum(z => z.Value) > 150 ? 150 : y.Sum(z => z.Value) });
+            var avg = group.Any() ? Math.Round(group.Average(x => x.Rate), 2) : 0;
             _dicRate.Add(code, avg);
 
             void TakeProfit(Quote buy, Quote sell)
             {
                 try
                 {
-                    var rate = Math.Round((sell.Close - buy.Open) * 100 / buy.Open, 1);
+                    var rate = buy.Open <= 0 ? 0 : Math.Round((sell.Close - buy.Open) * 100 / buy.Open, 1);
                     dic.Add(buy.Date, rate);
                 }
                 catch (Exception ex)

@@ -37,7 +37,7 @@ namespace SurveyStock.DAL
             var lResult = new List<CompanyModel>();
             using (var ds = new DataSet())
             {
-                var sql = $"Select * from Company";
+                var sql = $"Select * from Company where status = 1";
                 var cmd = new SQLiteCommand(sql, Connect());
                 var rdr = cmd.ExecuteReader();
                 while (rdr.Read())
@@ -151,6 +151,13 @@ namespace SurveyStock.DAL
             var sql = $"INSERT INTO Category " +
                 $"(id, category_name) " +
                 $"VALUES({param.id}, '{param.category_name}')";
+            var cmd = new SQLiteCommand(sql, Connect());
+            cmd.ExecuteNonQuery();
+        }
+
+        public static void UpdateStatus_Company(string code, bool status)
+        {
+            var sql = $"UPDATE Company set status = {(status ? 1 : 0)} where stock_code = '{code}'";
             var cmd = new SQLiteCommand(sql, Connect());
             cmd.ExecuteNonQuery();
         }
