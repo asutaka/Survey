@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using SurveyStock.Model.MongoModel;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace SurveyStock.DAL.MongoDAL
 {
     public interface ITransactionMongoRepo : IMongoRepositoryBase<Transaction>
     {
+        Task<List<Transaction>> GetWithFilterAsync(int offset, int limit, string code, DateTime date, string type);
     }
 
     public class TransactionMongoRepo : MongoRepositoryBase<Transaction>, ITransactionMongoRepo
@@ -21,5 +23,44 @@ namespace SurveyStock.DAL.MongoDAL
         {
             this.logger = logger;
         }
+
+        public async Task<List<Transaction>> GetWithFilterAsync(int offset, int limit, string code, DateTime date, string type)
+        {
+            try
+            {
+                FilterDefinition<Transaction> filter = null;
+                var builder = Builders<Transaction>.Filter;
+                var lFilter = new List<FilterDefinition<Transaction>>();
+                if (string.IsNullOrWhiteSpace(code))
+                    return null;
+
+                lFilter.Add(builder.Eq(x => x.ma_ck, code));
+                lFilter.Add(builder.Eq(x => x.ngay, date));
+                lFilter.Add(builder.Eq(x => x.type, type));
+                foreach (var item in lFilter)
+                {
+                    if (filter is null)
+                    {
+                        filter = item;
+                        continue;
+                    }
+                    filter &= item;
+                }
+
+                if (filter is null)
+                    return null;
+
+                return await _collection.Find(filter)
+                        .Skip((offset - 1) * limit)
+                        .Limit(limit).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TransactionMongoRepo.GetWithFilterAsync|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
+
     }
 }

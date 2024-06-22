@@ -13,16 +13,21 @@ namespace SurveyStock.Service
     public interface IBllService
     {
         Task SyncCompany();
+        Task InsertTransaction(List<Transaction> lInput);
     }
     public class BllService : IBllService
     {
         private readonly IDataAPIService _dataService;
         private readonly IStockMongoRepo _stockRepo;
+        private readonly ITransactionMongoRepo _transRepo;
         public BllService(IDataAPIService dataService,
-                            IStockMongoRepo stockRepo)
+                            IStockMongoRepo stockRepo,
+                            ITransactionMongoRepo transRepo
+                            )
         {
             _dataService = dataService;
             _stockRepo = stockRepo;
+            _transRepo = transRepo;
         }
         public async Task SyncCompany()
         {
@@ -39,6 +44,20 @@ namespace SurveyStock.Service
             var upcom = await _dataService.GetStock(EStockExchange.Upcom);
             var lUpcomInsert = (upcom ?? new List<string>()).Except(lCompany.Select(x => x.MaCK));
             await InsertCompany(lUpcomInsert, EStockExchange.Upcom);
+        }
+
+        public async Task InsertTransaction(List<Transaction> lInput)
+        {
+            foreach (var item in lInput)
+            {
+                var tmp = await _stockRepo.GetAllAsync();
+                //Check Exists
+                var lFind = await _transRepo.GetWithFilterAsync(1, 20, item.ma_ck, item.ngay, item.type);
+                if ((lFind?? new List<Transaction>()).Any())
+                    continue;
+                item.create_at = DateTime.Now;
+                await _transRepo.InsertOneAsync(item);
+            }
         }
 
         private async Task InsertCompany(IEnumerable<string> lInsert, EStockExchange exchangeMode)

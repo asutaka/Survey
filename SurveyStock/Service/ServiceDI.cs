@@ -8,6 +8,7 @@ namespace SurveyStock.Service
         {
             services.AddSingleton<IDataAPIService, DataAPIService>();
             services.AddSingleton<IBllService, BllService>();
+            services.AddSingleton<IFileService, FileService>();
         }
     }
 }

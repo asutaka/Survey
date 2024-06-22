@@ -24,4 +24,12 @@ namespace SurveyStock.Util
         MA = 1,
         EMA = 2
     }
+
+    public enum ETransactionType
+    {
+        [Display(Name = "Tự doanh")]
+        TuDoanh = 1,
+        [Display(Name = "Nước ngoài")]
+        NuocNgoai = 2
+    }
 }
