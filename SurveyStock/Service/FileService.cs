@@ -13,6 +13,7 @@ namespace SurveyStock.Service
     {
         List<Transaction> HSX(string path);
         List<Transaction> HSX2(string path);
+        List<Transaction> HNX(string path);
     }
     public class FileService : IFileService
     {
@@ -246,6 +247,84 @@ namespace SurveyStock.Service
             }
         }
 
+        public List<Transaction> HNX(string path)
+        {
+            var content = pdfText(path);
+            return MapHNX(content);
+        }
+
+        private List<Transaction> MapHNX(string content)
+        {
+            var indexFileHNX = content.IndexOf("Sở Giao dịch Chứng khoán Hà Nội");
+            if (indexFileHNX < 0)
+                return null;
+
+            var strTieuDe = "GIAO DỊCH TỰ DOANH THEO MÃ CHỨNG KHOÁN";
+            var indexNgay = content.IndexOf(strTieuDe);
+            if (indexNgay < 0)
+                return null;
+            content = content.Substring(indexNgay);
+            var lLine = content.Split(new string[] { "\n" }, StringSplitOptions.None);
+            var dateStr = lLine.ElementAt(0).Replace(strTieuDe, "").Trim();
+            var date = dateStr.ToDateTime("dd/MM/yyyy");
+
+            var lStock = _stockRepo.GetAll();
+
+            var isRead = false;
+            var isBegin = false;
+            var lData = new List<Transaction>();
+            foreach (var item in lLine)
+            {
+                try
+                {
+                    if (item.Contains("Tổng GTGD Tự doanh"))
+                    {
+                        isRead = true;
+                    }
+
+                    if (!isRead)
+                        continue;
+
+                    var arrData = item.Split(new string[] { " " }, StringSplitOptions.None);
+                    if (!isBegin
+                        && arrData.ElementAt(0) == "1")
+                    {
+                        isBegin = true;
+                    }
+                    if (!isBegin)
+                        continue;
+                    var count = arrData.Length;
+                    if (count < 8)
+                        continue;
+
+                    var maCKCheck = arrData.ElementAt(1).Trim();
+                    var check = lStock.Any(x => x.MaCK == maCKCheck);
+                    if (check)
+                    {
+                        var model = new Transaction
+                        {
+                            stt = int.Parse(arrData.ElementAt(0)),
+                            ngay = date,
+                            type = ETransactionType.TuDoanh.ToString(),
+                            ma_ck = arrData.ElementAt(1),
+                            create_at = DateTime.Now,
+                            kl_mua = int.Parse(arrData.ElementAt(2).Replace(",", "").Replace(".", "")),
+                            giatri_mua = (int)(long.Parse(arrData.ElementAt(3).Replace(",", "").Replace(".", ""))/1000),
+                            kl_ban = int.Parse(arrData.ElementAt(4).Replace(",", "").Replace(".", "")),
+                            giatri_ban = (int)(long.Parse(arrData.ElementAt(5).Replace(",", "").Replace(".", "")) / 1000)
+                        };
+                        lData.Add(model);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            return lData;
+        }
+
         public List<Transaction> HSX2(string path)
         {
             var content = pdfText(path);
@@ -267,7 +346,7 @@ namespace SurveyStock.Service
             return text;
         }
 
-        public List<Transaction> MapHSX2(string content)
+        private List<Transaction> MapHSX2(string content)
         {
             var lIndexKeyword = content.AllIndexesOf("SỞ GIAO DỊCH CHỨNG KHOÁN TP. HỒ CHÍ MINH");
             if (!lIndexKeyword.Any())
@@ -295,7 +374,6 @@ namespace SurveyStock.Service
             var isRead = false;
             var isBegin = false;
             var lData = new List<Transaction>();
-            var lTest = new List<string>();
             foreach (var item in lLine)
             {
                 try
@@ -324,7 +402,6 @@ namespace SurveyStock.Service
                     var check = lStock.Any(x => x.MaCK == maCKCheck);
                     if(check)
                     {
-                        lTest.Add(maCKCheck);
                         var model = new Transaction
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
@@ -365,7 +442,6 @@ namespace SurveyStock.Service
                             last.giatri_ban = int.Parse(arrData.ElementAt(1).Replace(",", "").Replace(".", ""));
                         }
                     }
-                    continue;
                 }
                 catch (Exception ex)
                 {

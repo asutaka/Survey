@@ -36,11 +36,32 @@ namespace SurveyStock
 
         private void btnTuDoanhHSX2_Click(object sender, EventArgs e)
         {
+            var dialogResult = MessageBox.Show($"Đọc file tự doanh HSX bằng phương pháp này?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            if (dialogResult != DialogResult.Yes)
+                return;
+
             if (fileDialog.ShowDialog() == DialogResult.OK)
             {
                 try
                 {
                     var lData = _fileService.HSX2(fileDialog.FileName);
+                    var count = _bllService.InsertTransaction(lData);
+                    MessageBox.Show($"Đã lưu dữ liệu({fileDialog.FileName} : {count} bản ghi)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch
+                {
+                    MessageBox.Show("Lỗi không xác định", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void btnTuDoanhHNX_Click(object sender, EventArgs e)
+        {
+            if (fileDialog.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    var lData = _fileService.HNX(fileDialog.FileName);
                     var count = _bllService.InsertTransaction(lData);
                     MessageBox.Show($"Đã lưu dữ liệu({fileDialog.FileName} : {count} bản ghi)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }

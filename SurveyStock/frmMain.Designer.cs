@@ -31,9 +31,10 @@ namespace SurveyStock
         {
             this.btnReadBuySell = new DevExpress.XtraEditors.SimpleButton();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.btnTuDoanhHSX2 = new DevExpress.XtraEditors.SimpleButton();
             this.btnTuDoanhHSX1 = new DevExpress.XtraEditors.SimpleButton();
             this.fileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.btnTuDoanhHSX2 = new DevExpress.XtraEditors.SimpleButton();
+            this.btnTuDoanhHNX = new DevExpress.XtraEditors.SimpleButton();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,6 +55,7 @@ namespace SurveyStock
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.BackColor = System.Drawing.Color.AliceBlue;
+            this.groupBox1.Controls.Add(this.btnTuDoanhHNX);
             this.groupBox1.Controls.Add(this.btnTuDoanhHSX2);
             this.groupBox1.Controls.Add(this.btnTuDoanhHSX1);
             this.groupBox1.Controls.Add(this.btnReadBuySell);
@@ -63,6 +65,18 @@ namespace SurveyStock
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "thông tin";
+            // 
+            // btnTuDoanhHSX2
+            // 
+            this.btnTuDoanhHSX2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnTuDoanhHSX2.Location = new System.Drawing.Point(34, 217);
+            this.btnTuDoanhHSX2.Name = "btnTuDoanhHSX2";
+            this.btnTuDoanhHSX2.Size = new System.Drawing.Size(355, 46);
+            this.btnTuDoanhHSX2.TabIndex = 2;
+            this.btnTuDoanhHSX2.Text = "Tự doanh HSX 2";
+            this.btnTuDoanhHSX2.Click += new System.EventHandler(this.btnTuDoanhHSX2_Click);
             // 
             // btnTuDoanhHSX1
             // 
@@ -80,17 +94,17 @@ namespace SurveyStock
             // 
             this.fileDialog.Filter = "Pdf Files|*.pdf";
             // 
-            // btnTuDoanhHSX2
+            // btnTuDoanhHNX
             // 
-            this.btnTuDoanhHSX2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.btnTuDoanhHNX.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnTuDoanhHSX2.Location = new System.Drawing.Point(34, 217);
-            this.btnTuDoanhHSX2.Name = "btnTuDoanhHSX2";
-            this.btnTuDoanhHSX2.Size = new System.Drawing.Size(355, 46);
-            this.btnTuDoanhHSX2.TabIndex = 2;
-            this.btnTuDoanhHSX2.Text = "Tự doanh HSX 2";
-            this.btnTuDoanhHSX2.Click += new System.EventHandler(this.btnTuDoanhHSX2_Click);
+            this.btnTuDoanhHNX.Location = new System.Drawing.Point(34, 269);
+            this.btnTuDoanhHNX.Name = "btnTuDoanhHNX";
+            this.btnTuDoanhHNX.Size = new System.Drawing.Size(355, 46);
+            this.btnTuDoanhHNX.TabIndex = 3;
+            this.btnTuDoanhHNX.Text = "Tự doanh HNX, Upcom";
+            this.btnTuDoanhHNX.Click += new System.EventHandler(this.btnTuDoanhHNX_Click);
             // 
             // frmMain
             // 
@@ -112,5 +126,6 @@ namespace SurveyStock
         private DevExpress.XtraEditors.SimpleButton btnTuDoanhHSX1;
         private System.Windows.Forms.OpenFileDialog fileDialog;
         private DevExpress.XtraEditors.SimpleButton btnTuDoanhHSX2;
+        private DevExpress.XtraEditors.SimpleButton btnTuDoanhHNX;
     }
 }
