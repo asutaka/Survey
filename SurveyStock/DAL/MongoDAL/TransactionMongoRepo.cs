@@ -4,14 +4,12 @@ using SurveyStock.Model.MongoModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SurveyStock.DAL.MongoDAL
 {
     public interface ITransactionMongoRepo : IMongoRepositoryBase<Transaction>
     {
-        Task<List<Transaction>> GetWithFilterAsync(int offset, int limit, string code, DateTime date, string type);
+        List<Transaction> GetWithFilter(int offset, int limit, string code, DateTime date, string type);
     }
 
     public class TransactionMongoRepo : MongoRepositoryBase<Transaction>, ITransactionMongoRepo
@@ -24,7 +22,7 @@ namespace SurveyStock.DAL.MongoDAL
             this.logger = logger;
         }
 
-        public async Task<List<Transaction>> GetWithFilterAsync(int offset, int limit, string code, DateTime date, string type)
+        public List<Transaction> GetWithFilter(int offset, int limit, string code, DateTime date, string type)
         {
             try
             {
@@ -50,9 +48,9 @@ namespace SurveyStock.DAL.MongoDAL
                 if (filter is null)
                     return null;
 
-                return await _collection.Find(filter)
+                return _collection.Find(filter)
                         .Skip((offset - 1) * limit)
-                        .Limit(limit).ToListAsync();
+                        .Limit(limit).ToList();
             }
             catch (Exception ex)
             {

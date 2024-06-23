@@ -1,8 +1,10 @@
-﻿using SurveyStock.Model.MongoModel;
+﻿using SurveyStock.DAL.MongoDAL;
+using SurveyStock.Model.MongoModel;
 using SurveyStock.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 
 namespace SurveyStock.Service
@@ -10,12 +12,19 @@ namespace SurveyStock.Service
     public interface IFileService
     {
         List<Transaction> HSX(string path);
+        List<Transaction> HSX2(string path);
     }
     public class FileService : IFileService
     {
+        private readonly IStockMongoRepo _stockRepo;
+        public FileService(IStockMongoRepo stockRepo)
+        {
+            _stockRepo = stockRepo;
+        }
+
         public List<Transaction> HSX(string path)
         {
-            double posSTT = 0;
+            double posstt = 0;
             double posma_ck = 0;
 
             double posMuaKL = 0;
@@ -30,7 +39,7 @@ namespace SurveyStock.Service
             using (var document = UglyToad.PdfPig.PdfDocument.Open(path))
             {
                 var checkNgay = false;
-                var isComplete = false;
+                var setDate = false;
                 int step = 0;
 
                 var lData = new List<Transaction>();
@@ -52,32 +61,36 @@ namespace SurveyStock.Service
                         var location = letters.ElementAt(0).Location;
                         var word = string.Join("", letters.Select(x => x.Value));
                         word = word.Replace(",", "").Replace(".", "");
-                        if (!checkNgay
-                            && word.Contains("Ngày"))
+                        if(!checkNgay)
                         {
-                            if (isComplete)
-                            {
-                                lData.Add(localData);
-                                return lData;
-                            }
+                            if (!word.Contains("Ngày"))
+                                continue;
                             checkNgay = true;
                             continue;
                         }
-                        if (checkNgay)
+
+                        if (checkNgay && !setDate)
                         {
-                            checkNgay = false;
-                            isComplete = true;
-                            posSTT = location.X;
+                            posstt = location.X;
                             posma_ck = letters.ElementAt(letters.Count - 1).Location.X;
 
                             date = word.ToDateTime("dd/MM/yyyy");
-                            if ((DateTime.Now - date).TotalDays >= 1)
-                            {
-                                var result = MessageBox.Show($"Thống kê không phải của ngày hiện tại( {word} ), tiếp tục?", "Thông báo", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-                                if (result == DialogResult.No)
-                                    return lData;
-                            }
+                            setDate = true;
                             continue;
+                        }
+
+                        if (word.Contains("Ngày"))
+                        {
+                            lData.Add(localData);
+                            return lData;
+                        }
+
+                        if (!setDate)
+                            continue;
+
+                        if(date == DateTime.MinValue)
+                        {
+                            return null;
                         }
 
                         if (posMuaGiaTri_ThoaThuan <= 0)
@@ -123,10 +136,10 @@ namespace SurveyStock.Service
                             continue;
                         }
 
-                        if (location.X < posSTT)
+                        if (location.X < posstt)
                         {
-                            var isSTT = int.TryParse(word, out var stt);
-                            if (!isSTT)
+                            var isstt = int.TryParse(word, out var stt);
+                            if (!isstt)
                             {
                                 continue;
                             }
@@ -156,13 +169,12 @@ namespace SurveyStock.Service
                             localData.stt = stt;
                             continue;
                         }
-                        else if (location.X >= posSTT
+                        else if (location.X >= posstt
                             && location.X < posma_ck
                             && step == 1)
                         {
                             step = 2;
                             localData.ma_ck = word;
-                            //Console.WriteLine(word);
                         }
                         else if (location.X >= posma_ck
                             && location.X < posMuaKL
@@ -232,6 +244,136 @@ namespace SurveyStock.Service
 
                 return lData;
             }
+        }
+
+        public List<Transaction> HSX2(string path)
+        {
+            var content = pdfText(path);
+            return MapHSX2(content);
+        }
+
+        private string pdfText(string path)
+        {
+            var reader = new iTextSharp.text.pdf.PdfReader(path);
+
+            string text = string.Empty;
+            for (int page = 1; page <= reader.NumberOfPages; page++)
+            {
+                text += iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, page);
+                text += "\n";
+            }
+          
+            reader.Close();
+            return text;
+        }
+
+        public List<Transaction> MapHSX2(string content)
+        {
+            var lIndexKeyword = content.AllIndexesOf("SỞ GIAO DỊCH CHỨNG KHOÁN TP. HỒ CHÍ MINH");
+            if (!lIndexKeyword.Any())
+                return null;
+            
+            if (lIndexKeyword.Count >= 2)
+            {
+                content = content.Substring(lIndexKeyword.ElementAt(0), lIndexKeyword.ElementAt(1) - lIndexKeyword.ElementAt(0));
+            }
+            else
+            {
+                content = content.Substring(lIndexKeyword.ElementAt(0));
+            }
+
+            var indexNgay = content.IndexOf("Ngày");
+            if (indexNgay < 0)
+                return null;
+            content = content.Substring(indexNgay + 4);
+            var lLine = content.Split(new string[] { "\n" }, StringSplitOptions.None);
+            var dateStr = lLine.ElementAt(0).Trim();
+            var date = dateStr.ToDateTime("dd/MM/yyyy");
+
+            var lStock = _stockRepo.GetAll();
+
+            var isRead = false;
+            var isBegin = false;
+            var lData = new List<Transaction>();
+            var lTest = new List<string>();
+            foreach (var item in lLine)
+            {
+                try
+                {
+                    if (item.Contains("Tổng cộng"))
+                    {
+                        isRead = true;
+                    }
+
+                    if (!isRead)
+                        continue;
+
+                    var arrData = item.Split(new string[] { " " }, StringSplitOptions.None);
+                    if (!isBegin
+                        && arrData.ElementAt(0) == "1")
+                    {
+                        isBegin = true;
+                    }
+                    if (!isBegin)
+                        continue;
+                    var count = arrData.Length;
+                    if (count < 2)
+                        continue;
+
+                    var maCKCheck = arrData.ElementAt(1).Trim();
+                    var check = lStock.Any(x => x.MaCK == maCKCheck);
+                    if(check)
+                    {
+                        lTest.Add(maCKCheck);
+                        var model = new Transaction
+                        {
+                            stt = int.Parse(arrData.ElementAt(0)),
+                            ngay = date,
+                            type = ETransactionType.TuDoanh.ToString(),
+                            ma_ck = arrData.ElementAt(1),
+                            create_at = DateTime.Now,
+                            recheck = true
+                        };
+
+                        if (count >= 6)
+                        {
+                            model.kl_mua = int.Parse(arrData.ElementAt(2).Replace(",", "").Replace(".", ""));
+                            model.kl_ban = int.Parse(arrData.ElementAt(3).Replace(",", "").Replace(".", ""));
+                            model.giatri_mua = int.Parse(arrData.ElementAt(4).Replace(",", "").Replace(".", ""));
+                            model.giatri_ban = int.Parse(arrData.ElementAt(5).Replace(",", "").Replace(".", ""));
+                        }
+                        else if (count >= 4)
+                        {
+                            model.kl_ban = int.Parse(arrData.ElementAt(2).Replace(",", "").Replace(".", ""));
+                            model.giatri_ban = int.Parse(arrData.ElementAt(3).Replace(",", "").Replace(".", ""));
+                        }
+                        lData.Add(model);
+                    }
+                    else
+                    {
+                        var last = lData.Last();
+                        if (count >= 4)
+                        {
+                            last.kl_mua = int.Parse(arrData.ElementAt(0).Replace(",", "").Replace(".", ""));
+                            last.kl_ban = int.Parse(arrData.ElementAt(1).Replace(",", "").Replace(".", ""));
+                            last.giatri_mua = int.Parse(arrData.ElementAt(2).Replace(",", "").Replace(".", ""));
+                            last.giatri_ban = int.Parse(arrData.ElementAt(3).Replace(",", "").Replace(".", ""));
+                        }
+                        else if (count >= 2)
+                        {
+                            last.kl_ban = int.Parse(arrData.ElementAt(0).Replace(",", "").Replace(".", ""));
+                            last.giatri_ban = int.Parse(arrData.ElementAt(1).Replace(",", "").Replace(".", ""));
+                        }
+                    }
+                    continue;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            return lData;
         }
     }
 }

@@ -19,5 +19,6 @@ namespace SurveyStock.Model.MongoModel
         public int giatri_mua { get; set; }
         public int giatri_ban { get; set; }
         public DateTime create_at { get; set; }
+        public bool recheck { get; set; }
     }
 }

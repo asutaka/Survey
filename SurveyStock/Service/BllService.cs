@@ -13,7 +13,7 @@ namespace SurveyStock.Service
     public interface IBllService
     {
         Task SyncCompany();
-        Task InsertTransaction(List<Transaction> lInput);
+        int InsertTransaction(List<Transaction> lInput);
     }
     public class BllService : IBllService
     {
@@ -31,7 +31,7 @@ namespace SurveyStock.Service
         }
         public async Task SyncCompany()
         {
-            var lCompany = await _stockRepo.GetAllAsync();
+            var lCompany = _stockRepo.GetAll();
 
             var hose = await _dataService.GetStock(EStockExchange.Hose);
             var lHoseInsert = (hose ?? new List<string>()).Except(lCompany.Select(x => x.MaCK));
@@ -46,18 +46,20 @@ namespace SurveyStock.Service
             await InsertCompany(lUpcomInsert, EStockExchange.Upcom);
         }
 
-        public async Task InsertTransaction(List<Transaction> lInput)
+        public int InsertTransaction(List<Transaction> lInput)
         {
+            var count = 0;
             foreach (var item in lInput)
             {
-                var tmp = await _stockRepo.GetAllAsync();
                 //Check Exists
-                var lFind = await _transRepo.GetWithFilterAsync(1, 20, item.ma_ck, item.ngay, item.type);
+                var lFind = _transRepo.GetWithFilter(1, 20, item.ma_ck, item.ngay, item.type);
                 if ((lFind?? new List<Transaction>()).Any())
                     continue;
                 item.create_at = DateTime.Now;
-                await _transRepo.InsertOneAsync(item);
+                _transRepo.InsertOne(item);
+                count++;
             }
+            return count;
         }
 
         private async Task InsertCompany(IEnumerable<string> lInsert, EStockExchange exchangeMode)
@@ -74,7 +76,7 @@ namespace SurveyStock.Service
                 };
                 model.profile = await _dataService.GetCompanyInfo(itemStock);
                 model.share_holders = await _dataService.GetShareHolderCompany(itemStock);
-                await _stockRepo.InsertOneAsync(model);
+                _stockRepo.InsertOne(model);
             }
         }
     }

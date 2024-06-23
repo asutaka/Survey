@@ -21,7 +21,7 @@ namespace SurveyStock.DAL.MongoDAL
         /// Get all entities in collection
         /// </summary>
         /// <returns>collection of entities</returns>
-        Task<List<T>> GetAllAsync();
+        List<T> GetAll();
 
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace SurveyStock.DAL.MongoDAL
         /// </summary>
         /// <param name="id">Identifier</param>
         /// <returns>Entity</returns>
-        Task<T> GetByIdAsync(string id);
+        T GetById(string id);
 
         IQueryable<T> Table { get; }
 
@@ -41,18 +41,12 @@ namespace SurveyStock.DAL.MongoDAL
         T Update(T entity);
 
         /// <summary>
-        /// Async Update entity
-        /// </summary>
-        /// <param name="entity">Entity</param>
-        Task<T> UpdateAsync(T entity);
-
-        /// <summary>
         /// Async Update one field entity
         /// </summary>
         /// <param name="entity">Entity</param>
-        Task<bool> UpdateOneFieldAsync(string fieldName, dynamic value, FilterDefinition<T> filter);
-        Task InsertOneAsync(T entity);
-        Task DeleteOneAsync(FilterDefinition<T> filter);
+        bool UpdateOneField(string fieldName, dynamic value, FilterDefinition<T> filter);
+        void InsertOne(T entity);
+        void DeleteOne(FilterDefinition<T> filter);
 
     }
 
@@ -118,11 +112,11 @@ namespace SurveyStock.DAL.MongoDAL
         /// Get all entities in collection
         /// </summary>
         /// <returns>collection of entities</returns>
-        public virtual async Task<List<T>> GetAllAsync()
+        public virtual List<T> GetAll()
         {
             try
             {
-                var enties = await _collection.AsQueryable().ToListAsync();
+                var enties = _collection.AsQueryable().ToList();
 
                 return enties;
             }
@@ -139,9 +133,9 @@ namespace SurveyStock.DAL.MongoDAL
         /// </summary>
         /// <param name="id">Identifier</param>
         /// <returns>Entity</returns>
-        public virtual Task<T> GetByIdAsync(string id)
+        public virtual T GetById(string id)
         {
-            return _collection.Find(e => e.ObjectId == id).FirstOrDefaultAsync();
+            return _collection.Find(e => e.ObjectId == id).FirstOrDefault();
         }
 
         public virtual T Update(T entity)
@@ -157,28 +151,14 @@ namespace SurveyStock.DAL.MongoDAL
             return entity;
         }
 
-        public virtual async Task<T> UpdateAsync(T entity)
-        {
-            try
-            {
-                await _collection.ReplaceOneAsync(x => x.ObjectId == entity.ObjectId, entity, new ReplaceOptions() { IsUpsert = false });
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"IMongoRepositoryBase.UpdateAsync|REPOSITORY: {typeof(T).Name.ToUpper()}Repository|EXCEPTION| {ex.Message}");
-            }
-            return entity;
-        }
-
-        public async Task<bool> UpdateOneFieldAsync(string fieldName, dynamic value, FilterDefinition<T> filter)
+        public bool UpdateOneField(string fieldName, dynamic value, FilterDefinition<T> filter)
         {
             var result = false;
             try
             {
                 var update = Builders<T>.Update.Set(fieldName, value);
 
-                UpdateResult updateResult = await _collection.UpdateOneAsync(filter, update);
+                UpdateResult updateResult = _collection.UpdateOne(filter, update);
                 result = updateResult.IsAcknowledged;
             }
             catch (Exception ex)
@@ -191,11 +171,11 @@ namespace SurveyStock.DAL.MongoDAL
         }
 
 
-        public async Task InsertOneAsync(T entity)
+        public async void InsertOne(T entity)
         {
             try
             {
-                await _collection.InsertOneAsync(entity);
+                _collection.InsertOne(entity);
             }
             catch (Exception ex)
             {
@@ -203,11 +183,11 @@ namespace SurveyStock.DAL.MongoDAL
             }
         }
 
-        public async Task DeleteOneAsync(FilterDefinition<T> filter)
+        public async void DeleteOne(FilterDefinition<T> filter)
         {
             try
             {
-                await _collection.DeleteOneAsync(filter);
+                _collection.DeleteOne(filter);
             }
             catch (Exception ex)
             {
