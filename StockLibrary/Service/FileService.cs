@@ -9,9 +9,9 @@ namespace StockLibrary.Service
 {
     public interface IFileService
     {
-        List<Transaction> HSX(string path);
-        List<Transaction> HSX2(string path);
-        List<Transaction> HNX(string path);
+        List<TuDoanh> HSX(string path);
+        List<TuDoanh> HSX2(string path);
+        List<TuDoanh> HNX(string path);
     }
     public class FileService : IFileService
     {
@@ -21,7 +21,7 @@ namespace StockLibrary.Service
             _stockRepo = stockRepo;
         }
 
-        public List<Transaction> HSX(string path)
+        public List<TuDoanh> HSX(string path)
         {
             double posstt = 0;
             double posma_ck = 0;
@@ -41,8 +41,8 @@ namespace StockLibrary.Service
                 var setDate = false;
                 int step = 0;
 
-                var lData = new List<Transaction>();
-                var localData = new Transaction();
+                var lData = new List<TuDoanh>();
+                var localData = new TuDoanh();
                 DateTime date = DateTime.MinValue;
                 for (int i = 0; i < document.NumberOfPages; i++)
                 {
@@ -147,7 +147,7 @@ namespace StockLibrary.Service
 
                             if (localData.stt > 0)
                             {
-                                lData.Add(new Transaction
+                                lData.Add(new TuDoanh
                                 {
                                     stt = localData.stt,
                                     ngay = date,
@@ -245,13 +245,13 @@ namespace StockLibrary.Service
             }
         }
 
-        public List<Transaction> HNX(string path)
+        public List<TuDoanh> HNX(string path)
         {
             var content = pdfText(path);
             return MapHNX(content);
         }
 
-        private List<Transaction> MapHNX(string content)
+        private List<TuDoanh> MapHNX(string content)
         {
             var indexFileHNX = content.IndexOf("Sở Giao dịch Chứng khoán Hà Nội");
             if (indexFileHNX < 0)
@@ -270,7 +270,7 @@ namespace StockLibrary.Service
 
             var isRead = false;
             var isBegin = false;
-            var lData = new List<Transaction>();
+            var lData = new List<TuDoanh>();
             foreach (var item in lLine)
             {
                 try
@@ -299,7 +299,7 @@ namespace StockLibrary.Service
                     var check = lStock.Any(x => x.MaCK == maCKCheck);
                     if (check)
                     {
-                        var model = new Transaction
+                        var model = new TuDoanh
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
                             ngay = date,
@@ -323,7 +323,7 @@ namespace StockLibrary.Service
             return lData;
         }
 
-        public List<Transaction> HSX2(string path)
+        public List<TuDoanh> HSX2(string path)
         {
             var content = pdfText(path);
             return MapHSX2(content);
@@ -344,7 +344,7 @@ namespace StockLibrary.Service
             return text;
         }
 
-        private List<Transaction> MapHSX2(string content)
+        private List<TuDoanh> MapHSX2(string content)
         {
             var lIndexKeyword = content.AllIndexesOf("SỞ GIAO DỊCH CHỨNG KHOÁN TP. HỒ CHÍ MINH");
             if (!lIndexKeyword.Any())
@@ -371,7 +371,7 @@ namespace StockLibrary.Service
 
             var isRead = false;
             var isBegin = false;
-            var lData = new List<Transaction>();
+            var lData = new List<TuDoanh>();
             foreach (var item in lLine)
             {
                 try
@@ -400,7 +400,7 @@ namespace StockLibrary.Service
                     var check = lStock.Any(x => x.MaCK == maCKCheck);
                     if(check)
                     {
-                        var model = new Transaction
+                        var model = new TuDoanh
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
                             ngay = date,

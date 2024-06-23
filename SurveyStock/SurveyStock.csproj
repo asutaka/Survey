@@ -340,7 +340,7 @@
     <Compile Include="Model\MongoModel\Category.cs" />
     <Compile Include="Model\MongoModel\Stock.cs" />
     <Compile Include="Model\MongoModel\StringOrInt32Serializer.cs" />
-    <Compile Include="Model\MongoModel\Transaction.cs" />
+    <Compile Include="Model\MongoModel\TuDoanh.cs" />
     <Compile Include="Model\ResponseDataModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

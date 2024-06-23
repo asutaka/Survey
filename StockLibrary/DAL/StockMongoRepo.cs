@@ -9,12 +9,8 @@ namespace StockLibrary.DAL
 
     public class StockMongoRepo : MongoRepositoryBase<Stock>, IStockMongoRepo
     {
-
-        private readonly ILogger<StockMongoRepo> logger;
-
-        public StockMongoRepo(ILogger<StockMongoRepo> logger)
+        public StockMongoRepo()
         {
-            this.logger = logger;
         }
     }
 }

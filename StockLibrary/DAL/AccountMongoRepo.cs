@@ -9,12 +9,7 @@ namespace StockLibrary.DAL
 
     public class AccountMongoRepo : MongoRepositoryBase<Account>, IAccountMongoRepo
     {
-
-        private readonly ILogger<AccountMongoRepo> logger;
-
-        public AccountMongoRepo(ILogger<AccountMongoRepo> logger)
-        {
-            this.logger = logger;
-        }
+        public AccountMongoRepo()
+        {}
     }
 }

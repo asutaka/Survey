@@ -1,14 +1,10 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SurveyStock.Model.MongoModel
+namespace StockLibrary.Model
 {
     [BsonIgnoreExtraElements]
-    public class Transaction : BaseMongoDTO
+    public class TuDoanh : BaseMongoDTO
     {
         public int stt { get; set; }
         public DateTime ngay { get; set; }

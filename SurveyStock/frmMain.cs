@@ -24,7 +24,7 @@ namespace SurveyStock
                 try
                 {
                     var lData = _fileService.HSX(fileDialog.FileName);
-                    var count = _bllService.InsertTransaction(lData);
+                    var count = _bllService.InsertTuDoanh(lData);
                     MessageBox.Show($"Đã lưu dữ liệu({fileDialog.FileName} : {count} bản ghi)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch
@@ -45,7 +45,7 @@ namespace SurveyStock
                 try
                 {
                     var lData = _fileService.HSX2(fileDialog.FileName);
-                    var count = _bllService.InsertTransaction(lData);
+                    var count = _bllService.InsertTuDoanh(lData);
                     MessageBox.Show($"Đã lưu dữ liệu({fileDialog.FileName} : {count} bản ghi)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch
@@ -62,7 +62,7 @@ namespace SurveyStock
                 try
                 {
                     var lData = _fileService.HNX(fileDialog.FileName);
-                    var count = _bllService.InsertTransaction(lData);
+                    var count = _bllService.InsertTuDoanh(lData);
                     MessageBox.Show($"Đã lưu dữ liệu({fileDialog.FileName} : {count} bản ghi)", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch

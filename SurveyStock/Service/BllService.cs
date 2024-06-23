@@ -13,7 +13,7 @@ namespace SurveyStock.Service
     public interface IBllService
     {
         Task SyncCompany();
-        int InsertTransaction(List<Transaction> lInput);
+        int InsertTuDoanh(List<TuDoanh> lInput);
     }
     public class BllService : IBllService
     {
@@ -46,14 +46,14 @@ namespace SurveyStock.Service
             await InsertCompany(lUpcomInsert, EStockExchange.Upcom);
         }
 
-        public int InsertTransaction(List<Transaction> lInput)
+        public int InsertTuDoanh(List<TuDoanh> lInput)
         {
             var count = 0;
             foreach (var item in lInput)
             {
                 //Check Exists
                 var lFind = _transRepo.GetWithFilter(1, 20, item.ma_ck, item.ngay, item.type);
-                if ((lFind?? new List<Transaction>()).Any())
+                if ((lFind?? new List<TuDoanh>()).Any())
                     continue;
                 item.create_at = DateTime.Now;
                 _transRepo.InsertOne(item);

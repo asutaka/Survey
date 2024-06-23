@@ -7,28 +7,23 @@ using System.Linq;
 
 namespace StockLibrary.DAL
 {
-    public interface ITransactionMongoRepo : IMongoRepositoryBase<Transaction>
+    public interface ITuDoanhMongoRepo : IMongoRepositoryBase<TuDoanh>
     {
-        List<Transaction> GetWithFilter(int offset, int limit, string code, DateTime date, string type);
+        List<TuDoanh> GetWithFilter(int offset, int limit, string code, DateTime date, string type);
     }
 
-    public class TransactionMongoRepo : MongoRepositoryBase<Transaction>, ITransactionMongoRepo
+    public class TuDoanhMongoRepo : MongoRepositoryBase<TuDoanh>, ITuDoanhMongoRepo
     {
+        public TuDoanhMongoRepo()
+        {}
 
-        private readonly ILogger<TransactionMongoRepo> logger;
-
-        public TransactionMongoRepo(ILogger<TransactionMongoRepo> logger)
-        {
-            this.logger = logger;
-        }
-
-        public List<Transaction> GetWithFilter(int offset, int limit, string code, DateTime date, string type)
+        public List<TuDoanh> GetWithFilter(int offset, int limit, string code, DateTime date, string type)
         {
             try
             {
-                FilterDefinition<Transaction> filter = null;
-                var builder = Builders<Transaction>.Filter;
-                var lFilter = new List<FilterDefinition<Transaction>>();
+                FilterDefinition<TuDoanh> filter = null;
+                var builder = Builders<TuDoanh>.Filter;
+                var lFilter = new List<FilterDefinition<TuDoanh>>();
                 if (string.IsNullOrWhiteSpace(code))
                     return null;
 
@@ -54,7 +49,7 @@ namespace StockLibrary.DAL
             }
             catch (Exception ex)
             {
-                _logger.LogError($"TransactionMongoRepo.GetWithFilterAsync|EXCEPTION| {ex.Message}");
+                _logger.LogError($"TuDoanhMongoRepo.GetWithFilterAsync|EXCEPTION| {ex.Message}");
             }
 
             return null;

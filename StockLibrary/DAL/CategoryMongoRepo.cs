@@ -9,12 +9,8 @@ namespace StockLibrary.DAL
 
     public class CategoryMongoRepo : MongoRepositoryBase<Category>, ICategoryMongoRepo
     {
-
-        private readonly ILogger<CategoryMongoRepo> logger;
-
-        public CategoryMongoRepo(ILogger<CategoryMongoRepo> logger)
+        public CategoryMongoRepo()
         {
-            this.logger = logger;
         }
     }
 }
