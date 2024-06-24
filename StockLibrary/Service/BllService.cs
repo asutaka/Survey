@@ -86,15 +86,18 @@ namespace StockLibrary.Service
 
         public async Task SyncGDNuocNgoai()
         {
+            var lForeign = _foreignRepo.GetAll();
+            var lComplete = lForeign.Select(x => x.symbol).Distinct().ToList();
             var lStock = _stockRepo.GetAll();
-            lStock = lStock.Where(x => x.SanCK == "Hose").ToList();
+            lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
+                .ToList();
             foreach (var item in lStock)
             {
                 var i = 1;
                 do
                 {
                     Thread.Sleep(1000);
-                    var foreignResult = await _dataService.GetForeign(item.MaCK, i, 500, "01/01/2020", DateTime.Now.ToString("dd/MM/yyyy"));
+                    var foreignResult = await _dataService.GetForeign(item.MaCK, i, 500, "01/01/2020", "23/06/2024");
                     if (foreignResult is null)
                         continue;
 
