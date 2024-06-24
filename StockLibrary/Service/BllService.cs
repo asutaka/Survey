@@ -86,9 +86,18 @@ namespace StockLibrary.Service
 
         public async Task SyncGDNuocNgoai()
         {
-            var lForeign = _foreignRepo.GetAll();
-            var lComplete = lForeign.Select(x => x.symbol).Distinct().ToList();
             var lStock = _stockRepo.GetAll();
+            var flag = "REE";
+            var lComplete = new List<string>();
+            foreach (var itemStock in lStock)
+            {
+                lComplete.Add(itemStock.MaCK);
+                if (itemStock.MaCK.Equals(flag))
+                {
+                    break;
+                }
+            }
+            
             lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
                 .ToList();
             foreach (var item in lStock)
