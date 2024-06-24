@@ -6,12 +6,15 @@ namespace BridgeStock
     {
         private readonly IFileService _fileService;
         private readonly IBllService _bllService;
+        private readonly ITelegramService _telegramService;
         public frmMain(IFileService fileService,
-                       IBllService bllService)
+                       IBllService bllService,
+                       ITelegramService telegramService)
         {
             InitializeComponent();
             _fileService = fileService;
             _bllService = bllService;
+            _telegramService = telegramService;
         }
 
         private void btnMuaBanNN_Click(object sender, EventArgs e)
@@ -72,6 +75,11 @@ namespace BridgeStock
                     MessageBox.Show("Lỗi không xác định", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            _telegramService.BotSyncUpdate();
         }
     }
 }

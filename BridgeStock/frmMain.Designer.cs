@@ -34,12 +34,14 @@
             btnTuDoanhHSX = new Button();
             btnMuaBanNN = new Button();
             fileDialog = new OpenFileDialog();
+            button1 = new Button();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // groupBox1
             // 
             groupBox1.BackColor = Color.AliceBlue;
+            groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(btnTuDoanhHNX);
             groupBox1.Controls.Add(btnTuDoanhHSX2);
             groupBox1.Controls.Add(btnTuDoanhHSX);
@@ -96,6 +98,17 @@
             btnMuaBanNN.UseVisualStyleBackColor = true;
             btnMuaBanNN.Click += btnMuaBanNN_Click;
             // 
+            // button1
+            // 
+            button1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            button1.Location = new Point(53, 391);
+            button1.Name = "button1";
+            button1.Size = new Size(320, 47);
+            button1.TabIndex = 4;
+            button1.Text = "Test";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -118,5 +131,6 @@
         private Button btnTuDoanhHSX;
         private Button btnMuaBanNN;
         private OpenFileDialog fileDialog;
+        private Button button1;
     }
 }
