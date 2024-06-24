@@ -107,8 +107,8 @@ namespace StockLibrary.Service
                 {
                     Thread.Sleep(1000);
                     var foreignResult = await _dataService.GetForeign(item.MaCK, i, 500, "01/01/2020", "23/06/2024");
-                    if (foreignResult is null)
-                        continue;
+                    if (foreignResult is null || foreignResult.data is null)
+                        break;
 
                     InsertGDNuocNgoai(foreignResult.data);
                     var totalRecord = foreignResult.paging.page * foreignResult.paging.pageSize;
