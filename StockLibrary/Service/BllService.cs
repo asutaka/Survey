@@ -56,7 +56,7 @@ namespace StockLibrary.Service
             foreach (var item in lInput)
             {
                 //Check Exists
-                var lFind = _tudoanhRepo.GetWithFilter(1, 20, item.ma_ck, item.ngay, item.type);
+                var lFind = _tudoanhRepo.GetWithFilter(1, 20, item.ma_ck, item.ngay);
                 if ((lFind?? new List<TuDoanh>()).Any())
                     continue;
                 item.create_at = DateTime.Now;
@@ -87,7 +87,7 @@ namespace StockLibrary.Service
         public async Task SyncGDNuocNgoai()
         {
             var lStock = _stockRepo.GetAll();
-            var flag = "REE";
+            var flag = "KSF";
             var lComplete = new List<string>();
             foreach (var itemStock in lStock)
             {
