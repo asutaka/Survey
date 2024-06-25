@@ -111,9 +111,6 @@ namespace StockLibrary.Service
                     break;
 
                 InsertGDNuocNgoai(foreignResult.ToForeign());
-                var totalRecord = foreignResult.paging.page * foreignResult.paging.pageSize;
-                if (foreignResult.paging.total < totalRecord)
-                    break;
             }
         }
 
