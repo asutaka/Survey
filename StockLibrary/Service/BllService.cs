@@ -60,10 +60,9 @@ namespace StockLibrary.Service
             foreach (var item in lInput)
             {
                 //Check Exists
-                var lFind = _tudoanhRepo.GetWithFilter(1, 20, item.ma_ck, item.ngay);
+                var lFind = _tudoanhRepo.GetWithFilter(1, 20, item.ma_ck, item.d);
                 if ((lFind?? new List<TuDoanh>()).Any())
                     continue;
-                item.create_at = DateTime.Now;
                 _tudoanhRepo.InsertOne(item);
                 count++;
             }
@@ -91,36 +90,30 @@ namespace StockLibrary.Service
         public async Task SyncGDNuocNgoai()
         {
             var lStock = _stockRepo.GetAll();
-            var flag = "LBE";
-            var lComplete = new List<string>();
-            foreach (var itemStock in lStock)
-            {
-                lComplete.Add(itemStock.MaCK);
-                if (itemStock.MaCK.Equals(flag))
-                {
-                    break;
-                }
-            }
+            //var flag = "PDB";
+            //var lComplete = new List<string>();
+            //foreach (var itemStock in lStock)
+            //{
+            //    lComplete.Add(itemStock.MaCK);
+            //    if (itemStock.MaCK.Equals(flag))
+            //    {
+            //        break;
+            //    }
+            //}
 
-            lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
-                .ToList();
+            //lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
+            //    .ToList();
             foreach (var item in lStock)
             {
-                var i = 1;
-                do
-                {
-                    Thread.Sleep(1000);
-                    var foreignResult = await _dataService.GetForeign(item.MaCK, i, 500, "01/01/2023", "23/06/2024");
-                    if (foreignResult is null || foreignResult.data is null)
-                        break;
+                Thread.Sleep(1000);
+                var foreignResult = await _dataService.GetForeign(item.MaCK, 1, 3, "24/06/2024", "25/06/2024");
+                if (foreignResult is null || foreignResult.data is null)
+                    break;
 
-                    InsertGDNuocNgoai(foreignResult.ToForeign());
-                    var totalRecord = foreignResult.paging.page * foreignResult.paging.pageSize;
-                    if (foreignResult.paging.total < totalRecord)
-                        break;
-                    i++;
-                }
-                while (true);
+                InsertGDNuocNgoai(foreignResult.ToForeign());
+                var totalRecord = foreignResult.paging.page * foreignResult.paging.pageSize;
+                if (foreignResult.paging.total < totalRecord)
+                    break;
             }
         }
 
@@ -130,9 +123,9 @@ namespace StockLibrary.Service
             foreach (var item in lInput)
             {
                 //Check Exists
-                var lFind = _foreignRepo.GetWithFilter(1, 20, item.s, item.d);
-                if ((lFind ?? new List<Foreign>()).Any())
-                    continue;
+                //var lFind = _foreignRepo.GetWithFilter(1, 20, item.s, item.d);
+                //if ((lFind ?? new List<Foreign>()).Any())
+                //    continue;
                 _foreignRepo.InsertOne(item);
                 count++;
             }

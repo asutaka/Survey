@@ -9,16 +9,16 @@ namespace StockLibrary.DAL
 {
     public interface ITuDoanhMongoRepo : IMongoRepositoryBase<TuDoanh>
     {
-        List<TuDoanh> GetWithFilter(int offset, int limit, string code, DateTime date);
-        List<TuDoanh> GetWithCodeOrderby(int offset, int limit, string code);
+        List<TuDoanh> GetWithFilter(int offset, int limit, string code, long date);
+        List<TuDoanh> GetWithCodeOrderby(int offset, int limit, string code, long date);
     }
 
     public class TuDoanhMongoRepo : MongoRepositoryBase<TuDoanh>, ITuDoanhMongoRepo
     {
         public TuDoanhMongoRepo()
-        {}
+        { }
 
-        public List<TuDoanh> GetWithFilter(int offset, int limit, string code, DateTime date)
+        public List<TuDoanh> GetWithFilter(int offset, int limit, string code, long date)
         {
             try
             {
@@ -29,7 +29,7 @@ namespace StockLibrary.DAL
                     return null;
 
                 lFilter.Add(builder.Eq(x => x.ma_ck, code));
-                lFilter.Add(builder.Eq(x => x.ngay, date));
+                lFilter.Add(builder.Eq(x => x.d, date));
                 foreach (var item in lFilter)
                 {
                     if (filter is null)
@@ -55,17 +55,22 @@ namespace StockLibrary.DAL
             return null;
         }
 
-        public List<TuDoanh> GetWithCodeOrderby(int offset, int limit, string code)
+        public List<TuDoanh> GetWithCodeOrderby(int offset, int limit, string code, long date)
         {
             try
             {
                 FilterDefinition<TuDoanh> filter = null;
                 var builder = Builders<TuDoanh>.Filter;
                 var lFilter = new List<FilterDefinition<TuDoanh>>();
-                if (string.IsNullOrWhiteSpace(code))
-                    return null;
-
-                lFilter.Add(builder.Eq(x => x.ma_ck, code));
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    lFilter.Add(builder.Eq(x => x.ma_ck, code));
+                }
+                if(date > 0)
+                {
+                    lFilter.Add(builder.Eq(x => x.d, date));
+                }
+                
                 foreach (var item in lFilter)
                 {
                     if (filter is null)
@@ -80,7 +85,7 @@ namespace StockLibrary.DAL
                     return null;
 
                 return _collection.Find(filter)
-                    .SortByDescending(x => x.ngay)
+                    .SortByDescending(x => x.d)
                         .Skip((offset - 1) * limit)
                         .Limit(limit).ToList();
             }

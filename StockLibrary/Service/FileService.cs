@@ -150,13 +150,14 @@ namespace StockLibrary.Service
                                 lData.Add(new TuDoanh
                                 {
                                     stt = localData.stt,
-                                    ngay = date,
+                                    d = new DateTimeOffset(date).ToUnixTimeSeconds(),
                                     type = ETransactionType.TuDoanh.ToString(),
                                     ma_ck = localData.ma_ck,
                                     kl_mua = localData.kl_mua,
                                     kl_ban = localData.kl_ban,
                                     giatri_mua = localData.giatri_mua,
-                                    giatri_ban = localData.giatri_ban
+                                    giatri_ban = localData.giatri_ban,
+                                    t = DateTimeOffset.Now.ToUnixTimeSeconds()
                                 });
                                 localData.ma_ck = string.Empty;
                                 localData.kl_mua = 0;
@@ -302,14 +303,14 @@ namespace StockLibrary.Service
                         var model = new TuDoanh
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
-                            ngay = date,
+                            d = new DateTimeOffset(date).ToUnixTimeSeconds(),
                             type = ETransactionType.TuDoanh.ToString(),
                             ma_ck = arrData.ElementAt(1),
-                            create_at = DateTime.Now,
                             kl_mua = int.Parse(arrData.ElementAt(2).Replace(",", "").Replace(".", "")),
                             giatri_mua = (int)(long.Parse(arrData.ElementAt(3).Replace(",", "").Replace(".", ""))/1000),
                             kl_ban = int.Parse(arrData.ElementAt(4).Replace(",", "").Replace(".", "")),
-                            giatri_ban = (int)(long.Parse(arrData.ElementAt(5).Replace(",", "").Replace(".", "")) / 1000)
+                            giatri_ban = (int)(long.Parse(arrData.ElementAt(5).Replace(",", "").Replace(".", "")) / 1000),
+                            t = DateTimeOffset.Now.ToUnixTimeSeconds()
                         };
                         lData.Add(model);
                     }
@@ -403,10 +404,10 @@ namespace StockLibrary.Service
                         var model = new TuDoanh
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
-                            ngay = date,
+                            d = new DateTimeOffset(date).ToUnixTimeSeconds(),
                             type = ETransactionType.TuDoanh.ToString(),
                             ma_ck = arrData.ElementAt(1),
-                            create_at = DateTime.Now,
+                            t = DateTimeOffset.Now.ToUnixTimeSeconds(),
                             recheck = true
                         };
 

@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver.Core.Events;
 using StockLibrary.DAL;
 using StockLibrary.Model;
+using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,26 +119,64 @@ namespace StockLibrary.Service
                 return output.ToString();
             }
 
-            var lTuDoanh = _tuDoanhRepo.GetWithCodeOrderby(1, 1, input);
-            if (lTuDoanh is null || !lTuDoanh.Any())
+            output.AppendLine($"Mã cổ phiếu: {input}");
+            output.AppendLine();
+            output.AppendLine(TuDoanhBuildStr(input));
+
+            return output.ToString();
+        }
+
+        private string TuDoanhBuildStr(string input)
+        {
+            var output = new StringBuilder();
+            try
             {
-                output.Append("Không có dữ liệu tự doanh đối với mã cổ phiếu này");
-                return output.ToString();
-            }
+                var lTuDoanh = _tuDoanhRepo.GetWithCodeOrderby(1, 1, input, 0);
+                if (lTuDoanh is null
+                    || !lTuDoanh.Any()
+                    || (DateTimeOffset.Now.ToUnixTimeSeconds() - lTuDoanh.FirstOrDefault().d) / 3600 > 36)// cũ hơn một một nhất định
+                {
+                    output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
+                    return output.ToString();
+                }
 
-            var entityTuDoanh = lTuDoanh.FirstOrDefault();
-            var div = entityTuDoanh.kl_mua - entityTuDoanh.kl_ban;
-            if((DateTime.Now - entityTuDoanh.ngay).TotalDays > 3)
+                var entity = lTuDoanh.FirstOrDefault();
+                var div = entity.kl_mua - entity.kl_ban;
+                var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($"[Tự doanh ngày {entity.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+                output.AppendLine($"(MUA: {entity.kl_mua.ToString("#,##0")}|BÁN: {entity.kl_ban.ToString("#,##0")}) ==> {mode} {Math.Abs(div).ToString("#,##0")} cổ phiếu");
+            }
+            catch(Exception ex)
             {
-                output.Append("Không có dữ liệu tự doanh đối với mã cổ phiếu này");
-                return output.ToString();
+                Console.WriteLine($"TelegramService.TuDoanhBuildStr|EXCEPTION| {ex.Message}");
             }
+            return output.ToString();
+        }
 
-            var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
-            output.Append($"Mã cổ phiếu: {input}" +
-                $"\n[Tự doanh {entityTuDoanh.ngay.ToString("dd/MM/yyyy")}]" +
-                $"\n|MUA: {entityTuDoanh.kl_mua.ToString("#,##0")}|BÁN: {entityTuDoanh.kl_ban.ToString("#,##0")}| ==> {mode} {Math.Abs(div).ToString("#,##0")} cổ phiếu");
+        private string ForeignBuildStr(string input)
+        {
+            var output = new StringBuilder();
+            //try
+            //{
+            //    var lForeign = _foreignRepo.GetWithCodeOrderby(1, 1, input, 0);
+            //    if (lTuDoanh is null
+            //        || !lTuDoanh.Any()
+            //        || (DateTimeOffset.Now.ToUnixTimeSeconds() - lTuDoanh.FirstOrDefault().d) / 3600 > 36)// cũ hơn một một nhất định
+            //    {
+            //        output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
+            //        return output.ToString();
+            //    }
 
+            //    var entity = lTuDoanh.FirstOrDefault();
+            //    var div = entity.kl_mua - entity.kl_ban;
+            //    var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
+            //    output.AppendLine($"[Tự doanh ngày {entity.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+            //    output.AppendLine($"(MUA: {entity.kl_mua.ToString("#,##0")}|BÁN: {entity.kl_ban.ToString("#,##0")}) ==> {mode} {Math.Abs(div).ToString("#,##0")} cổ phiếu");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"TelegramService.ForeignBuildStr|EXCEPTION| {ex.Message}");
+            //}
             return output.ToString();
         }
 
