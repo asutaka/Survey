@@ -9,14 +9,14 @@ namespace StockLibrary.DAL
 {
     public interface IForeignMongoRepo : IMongoRepositoryBase<Foreign>
     {
-        List<Foreign> GetWithFilter(int offset, int limit, string code, string date);
+        List<Foreign> GetWithFilter(int offset, int limit, string code, long date);
     }
 
-    public class ForeignMongoRepo : MongoRepositoryBase<Foreign>, IForeignMongoRepo
+    public class ForeignMongoRepo : MongoRepositoryBaseForeign<Foreign>, IForeignMongoRepo
     {
         public ForeignMongoRepo(){}
 
-        public List<Foreign> GetWithFilter(int offset, int limit, string code, string date)
+        public List<Foreign> GetWithFilter(int offset, int limit, string code, long date)
         {
             try
             {
@@ -26,8 +26,8 @@ namespace StockLibrary.DAL
                 if (string.IsNullOrWhiteSpace(code))
                     return null;
 
-                lFilter.Add(builder.Eq(x => x.symbol, code));
-                lFilter.Add(builder.Eq(x => x.tradingDate, date));
+                lFilter.Add(builder.Eq(x => x.s, code));
+                lFilter.Add(builder.Eq(x => x.d, date));
                 foreach (var item in lFilter)
                 {
                     if (filter is null)

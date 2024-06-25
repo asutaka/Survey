@@ -1,6 +1,10 @@
 ﻿using Microsoft.VisualBasic;
+using MongoDB.Driver;
+using Org.BouncyCastle.Crypto;
 using StockLibrary.DAL;
+using StockLibrary.Mapping;
 using StockLibrary.Model;
+using StockLibrary.Model.APIModel;
 using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
@@ -87,7 +91,7 @@ namespace StockLibrary.Service
         public async Task SyncGDNuocNgoai()
         {
             var lStock = _stockRepo.GetAll();
-            var flag = "KSF";
+            var flag = "LBE";
             var lComplete = new List<string>();
             foreach (var itemStock in lStock)
             {
@@ -97,7 +101,7 @@ namespace StockLibrary.Service
                     break;
                 }
             }
-            
+
             lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
                 .ToList();
             foreach (var item in lStock)
@@ -106,11 +110,11 @@ namespace StockLibrary.Service
                 do
                 {
                     Thread.Sleep(1000);
-                    var foreignResult = await _dataService.GetForeign(item.MaCK, i, 500, "01/01/2020", "23/06/2024");
+                    var foreignResult = await _dataService.GetForeign(item.MaCK, i, 500, "01/01/2023", "23/06/2024");
                     if (foreignResult is null || foreignResult.data is null)
                         break;
 
-                    InsertGDNuocNgoai(foreignResult.data);
+                    InsertGDNuocNgoai(foreignResult.ToForeign());
                     var totalRecord = foreignResult.paging.page * foreignResult.paging.pageSize;
                     if (foreignResult.paging.total < totalRecord)
                         break;
@@ -126,10 +130,9 @@ namespace StockLibrary.Service
             foreach (var item in lInput)
             {
                 //Check Exists
-                var lFind = _foreignRepo.GetWithFilter(1, 20, item.symbol, item.tradingDate);
+                var lFind = _foreignRepo.GetWithFilter(1, 20, item.s, item.d);
                 if ((lFind ?? new List<Foreign>()).Any())
                     continue;
-                item.create_at = DateTime.Now;
                 _foreignRepo.InsertOne(item);
                 count++;
             }
