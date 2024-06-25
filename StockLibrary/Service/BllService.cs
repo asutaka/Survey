@@ -90,25 +90,25 @@ namespace StockLibrary.Service
         public async Task SyncGDNuocNgoai()
         {
             var lStock = _stockRepo.GetAll();
-            //var flag = "PDB";
-            //var lComplete = new List<string>();
-            //foreach (var itemStock in lStock)
-            //{
-            //    lComplete.Add(itemStock.MaCK);
-            //    if (itemStock.MaCK.Equals(flag))
-            //    {
-            //        break;
-            //    }
-            //}
+            var flag = "DBT";
+            var lComplete = new List<string>();
+            foreach (var itemStock in lStock)
+            {
+                lComplete.Add(itemStock.MaCK);
+                if (itemStock.MaCK.Equals(flag))
+                {
+                    break;
+                }
+            }
 
-            //lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
-            //    .ToList();
+            lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
+                .ToList();
             foreach (var item in lStock)
             {
                 Thread.Sleep(1000);
                 var foreignResult = await _dataService.GetForeign(item.MaCK, 1, 3, "24/06/2024", "25/06/2024");
                 if (foreignResult is null || foreignResult.data is null)
-                    break;
+                    continue;
 
                 InsertGDNuocNgoai(foreignResult.ToForeign());
             }
