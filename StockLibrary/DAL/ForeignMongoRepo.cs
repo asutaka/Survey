@@ -23,11 +23,15 @@ namespace StockLibrary.DAL
                 FilterDefinition<Foreign> filter = null;
                 var builder = Builders<Foreign>.Filter;
                 var lFilter = new List<FilterDefinition<Foreign>>();
-                if (string.IsNullOrWhiteSpace(code))
-                    return null;
-
-                lFilter.Add(builder.Eq(x => x.s, code));
-                lFilter.Add(builder.Eq(x => x.d, date));
+                if (!string.IsNullOrWhiteSpace(code))
+                {
+                    lFilter.Add(builder.Eq(x => x.s, code));
+                }
+                if(date > 0)
+                {
+                    lFilter.Add(builder.Eq(x => x.d, date));
+                }
+                
                 foreach (var item in lFilter)
                 {
                     if (filter is null)
@@ -42,6 +46,7 @@ namespace StockLibrary.DAL
                     return null;
 
                 return _collection.Find(filter)
+                        .SortByDescending(x => x.t)
                         .Skip((offset - 1) * limit)
                         .Limit(limit).ToList();
             }

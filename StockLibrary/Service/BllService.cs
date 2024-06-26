@@ -89,24 +89,41 @@ namespace StockLibrary.Service
 
         public async Task SyncGDNuocNgoai()
         {
+            var dt = DateTime.Now;
+            if (dt.DayOfWeek == DayOfWeek.Saturday
+                || dt.DayOfWeek == DayOfWeek.Sunday
+                || dt.Hour < 16)
+                return;
+
             var lStock = _stockRepo.GetAll();
-            var flag = "DBT";
-            var lComplete = new List<string>();
-            foreach (var itemStock in lStock)
+            var dtCustom = dt.AddDays(-1);
+            var date = new DateTimeOffset(dtCustom.Year, dtCustom.Month, dtCustom.Day, 17, 0, 0, TimeSpan.FromHours(0)).ToUnixTimeSeconds();
+            var lForeign = _foreignRepo.GetWithFilter(1, 1, "", date);
+            var flag = string.Empty;
+            if(lForeign != null
+                && lForeign.Any())
             {
-                lComplete.Add(itemStock.MaCK);
-                if (itemStock.MaCK.Equals(flag))
-                {
-                    break;
-                }
+                flag = lForeign.ElementAt(0).s;
             }
 
-            lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK))
-                .ToList();
+            if(!string.IsNullOrWhiteSpace(flag))
+            {
+                var lComplete = new List<string>();
+                foreach (var itemStock in lStock)
+                {
+                    lComplete.Add(itemStock.MaCK);
+                    if (itemStock.MaCK.Equals(flag))
+                    {
+                        break;
+                    }
+                }
+                lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK)).ToList();
+            }
+
             foreach (var item in lStock)
             {
                 Thread.Sleep(1000);
-                var foreignResult = await _dataService.GetForeign(item.MaCK, 1, 3, "24/06/2024", "25/06/2024");
+                var foreignResult = await _dataService.GetForeign(item.MaCK, 1, 3, dt.ToString("dd/MM/yyyy"), dt.ToString("dd/MM/yyyy"));
                 if (foreignResult is null || foreignResult.data is null)
                     continue;
 
