@@ -327,13 +327,14 @@ namespace StockLibrary.Service
                     || !lForeign.Any())
                 {
                     output.AppendLine("[GD-NN] Không có dữ liệu Mua bán nước Ngoài");
+                    output.AppendLine("[Cung cầu] Không có dữ liệu cung cầu");
                     return output.ToString();
                 }
 
                 //Ngày gần nhất
                 var ForeignLast = lForeign.Last();
                 var modeLast = ForeignLast.nbsvo >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"[GD-NN ngày gần nhất: {ForeignLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+                output.AppendLine($"[GD-NN ngày: {ForeignLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
                 output.AppendLine($"(MUA: {ForeignLast.fbvot.ToString("#,##0")}|BÁN: {ForeignLast.fsvot.ToString("#,##0")}) ==> {modeLast} {Math.Abs(ForeignLast.nbsvo).ToString("#,##0")} cổ phiếu");
                 //Trong Tuần
                 var lForeignWeek = lForeign.Where(x => x.d >= new DateTimeOffset(new DateTime(firstWeek.Year, firstWeek.Month, firstWeek.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds());
@@ -348,6 +349,20 @@ namespace StockLibrary.Service
                 var divThang = Thang_Mua - Thang_Ban;
                 var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
                 output.AppendLine($">> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
+
+                //////////////////////////////////////////////////
+                ///Cung cầu
+                output.AppendLine();
+                output.AppendLine($"[Cung cầu ngày: {ForeignLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+                output.AppendLine($"    + SL Mua/ Bán: {ForeignLast.tbt.ToString("#,##0")}/ {ForeignLast.tst.ToString("#,##0")}");
+                output.AppendLine($"    + KL Mua/ Bán: {ForeignLast.tbtvo.ToString("#,##0")}/ {ForeignLast.tstvo.ToString("#,##0")}");
+                output.AppendLine($"    + KL Khớp/ Giá trị: {ForeignLast.tmvo.ToString("#,##0")}/ {ForeignLast.tmva.ToString("#,##0")}đ");
+                //Tuần
+                output.AppendLine($">> Trong Tuần:");
+                output.AppendLine($"    + SL Mua/ Bán: {lForeignWeek.Sum(x => x.tbt).ToString("#,##0")}/ {lForeignWeek.Sum(x => x.tst).ToString("#,##0")}");
+                output.AppendLine($"    + KL Mua/ Bán: {lForeignWeek.Sum(x => x.tbtvo).ToString("#,##0")}/ {lForeignWeek.Sum(x => x.tstvo).ToString("#,##0")}");
+                output.AppendLine($"    + KL Khớp/ Giá trị: {lForeignWeek.Sum(x => x.tmvo).ToString("#,##0")}/ {lForeignWeek.Sum(x => x.tmva).ToString("#,##0")}đ");
+
             }
             catch (Exception ex)
             {
