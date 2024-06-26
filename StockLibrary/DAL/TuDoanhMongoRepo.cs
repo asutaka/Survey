@@ -4,6 +4,7 @@ using StockLibrary.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StockLibrary.DAL
 {
@@ -11,12 +12,35 @@ namespace StockLibrary.DAL
     {
         List<TuDoanh> GetWithFilter(int offset, int limit, string code, long date);
         List<TuDoanh> GetWithCodeOrderby(int offset, int limit, string code, long date);
+        List<TuDoanh> GetWithFilter(int offset, int limit, FilterDefinition<TuDoanh> filter);
     }
 
     public class TuDoanhMongoRepo : MongoRepositoryBase<TuDoanh>, ITuDoanhMongoRepo
     {
         public TuDoanhMongoRepo()
         { }
+
+        public List<TuDoanh> GetWithFilter(int offset, int limit, FilterDefinition<TuDoanh> filter)
+        {
+            try
+            {
+                if (filter is null)
+                {
+                    return _collection.AsQueryable().Skip((offset - 1) * limit)
+                        .Take(limit).ToList();
+                }    
+
+                return _collection.Find(filter)
+                        .Skip((offset - 1) * limit)
+                        .Limit(limit).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TuDoanhMongoRepo.GetWithFilter|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
 
         public List<TuDoanh> GetWithFilter(int offset, int limit, string code, long date)
         {

@@ -92,12 +92,11 @@ namespace StockLibrary.Service
             var dt = DateTime.Now;
             if (dt.DayOfWeek == DayOfWeek.Saturday
                 || dt.DayOfWeek == DayOfWeek.Sunday
-                || dt.Hour < 16)
+                || dt.Hour < 17)
                 return;
 
             var lStock = _stockRepo.GetAll();
-            var dtCustom = dt.AddDays(-1);
-            var date = new DateTimeOffset(dtCustom.Year, dtCustom.Month, dtCustom.Day, 17, 0, 0, TimeSpan.FromHours(0)).ToUnixTimeSeconds();
+            var date = new DateTimeOffset(dt.Year, dt.Month, dt.Day, 0, 0, 0, TimeSpan.FromHours(0)).ToUnixTimeSeconds();
             var lForeign = _foreignRepo.GetWithFilter(1, 1, "", date);
             var flag = string.Empty;
             if(lForeign != null

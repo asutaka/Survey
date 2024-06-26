@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver.Core.Events;
+﻿using MongoDB.Driver;
+using MongoDB.Driver.Core.Events;
+using NLog.Filters;
 using StockLibrary.DAL;
 using StockLibrary.Model;
 using StockLibrary.Util;
@@ -10,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using static iTextSharp.text.pdf.AcroFields;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StockLibrary.Service
 {
@@ -126,25 +129,59 @@ namespace StockLibrary.Service
             return output.ToString();
         }
 
-        private string TuDoanhBuildStr(string input)
+        private string TuDoanhBuildStr(string code)
         {
             var output = new StringBuilder();
             try
             {
-                var lTuDoanh = _tuDoanhRepo.GetWithCodeOrderby(1, 1, input, 0);
+                var dt = DateTime.Now;
+                var firstMonth = new DateTime(dt.Year, dt.Month, 1);
+                var firstWeek = dt.AddDays((int)DayOfWeek.Monday - (int)dt.DayOfWeek);
+
+                FilterDefinition<TuDoanh> filter = null;
+                var builder = Builders<TuDoanh>.Filter;
+                var lFilter = new List<FilterDefinition<TuDoanh>>
+                {
+                    builder.Eq(x => x.ma_ck, code),
+                    builder.Gte(x => x.d, new DateTimeOffset(firstMonth, TimeSpan.FromHours(0)).ToUnixTimeSeconds())
+                };
+                foreach (var item in lFilter)
+                {
+                    if (filter is null)
+                    {
+                        filter = item;
+                        continue;
+                    }
+                    filter &= item;
+                }
+
+                var lTuDoanh = _tuDoanhRepo.GetWithFilter(1, 30, filter);
                 if (lTuDoanh is null
-                    || !lTuDoanh.Any()
-                    || (DateTimeOffset.Now.ToUnixTimeSeconds() - lTuDoanh.FirstOrDefault().d) / 3600 > 36)// cũ hơn một một nhất định
+                    || !lTuDoanh.Any())
                 {
                     output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
                     return output.ToString();
                 }
 
-                var entity = lTuDoanh.FirstOrDefault();
-                var div = entity.kl_mua - entity.kl_ban;
-                var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"[Tự doanh ngày {entity.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
-                output.AppendLine($"(MUA: {entity.kl_mua.ToString("#,##0")}|BÁN: {entity.kl_ban.ToString("#,##0")}) ==> {mode} {Math.Abs(div).ToString("#,##0")} cổ phiếu");
+                //Ngày gần nhất
+                var TuDoanhLast = lTuDoanh.Last();
+                var divLast = TuDoanhLast.kl_mua - TuDoanhLast.kl_ban;
+                var modeLast = divLast >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($"[Tự doanh ngày gần nhất: {TuDoanhLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+                output.AppendLine($"(MUA: {TuDoanhLast.kl_mua.ToString("#,##0")}|BÁN: {TuDoanhLast.kl_ban.ToString("#,##0")}) ==> {modeLast} {Math.Abs(divLast).ToString("#,##0")} cổ phiếu");
+                //Trong Tuần
+                var lTuDoanhWeek = lTuDoanh.Where(x => x.d >= new DateTimeOffset(new DateTime(firstWeek.Year, firstWeek.Month, firstWeek.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds());
+                var Tuan_Mua = lTuDoanhWeek.Sum(x => x.kl_mua);
+                var Tuan_Ban = lTuDoanhWeek.Sum(x => x.kl_ban);
+                var divTuan = Tuan_Mua - Tuan_Ban;
+                var modeTuan = divTuan >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($"Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
+                //Trong Tháng
+                var Thang_Mua = lTuDoanh.Sum(x => x.kl_mua);
+                var Thang_Ban = lTuDoanh.Sum(x => x.kl_ban);
+                var divThang = Thang_Mua - Thang_Ban;
+                var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($"Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
             }
             catch(Exception ex)
             {

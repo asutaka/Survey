@@ -43,12 +43,16 @@ namespace StockLibrary.DAL
                 }
 
                 if (filter is null)
-                    return null;
-
-                return _collection.Find(filter)
+                {
+                    return _collection.AsQueryable().Skip((offset - 1) * limit).Take(limit).ToList();
+                }
+                else
+                {
+                    return _collection.Find(filter)
                         .SortByDescending(x => x.t)
                         .Skip((offset - 1) * limit)
                         .Limit(limit).ToList();
+                }
             }
             catch (Exception ex)
             {
