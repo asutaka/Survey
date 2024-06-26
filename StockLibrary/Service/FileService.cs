@@ -142,7 +142,6 @@ namespace StockLibrary.Service
                             {
                                 continue;
                             }
-                            //Console.WriteLine(word);
                             step = 1;
 
                             if (localData.stt > 0)
@@ -150,7 +149,7 @@ namespace StockLibrary.Service
                                 lData.Add(new TuDoanh
                                 {
                                     stt = localData.stt,
-                                    d = new DateTimeOffset(date).ToUnixTimeSeconds(),
+                                    d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
                                     type = ETransactionType.TuDoanh.ToString(),
                                     ma_ck = localData.ma_ck,
                                     kl_mua = localData.kl_mua,
@@ -303,7 +302,7 @@ namespace StockLibrary.Service
                         var model = new TuDoanh
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
-                            d = new DateTimeOffset(date).ToUnixTimeSeconds(),
+                            d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
                             type = ETransactionType.TuDoanh.ToString(),
                             ma_ck = arrData.ElementAt(1),
                             kl_mua = int.Parse(arrData.ElementAt(2).Replace(",", "").Replace(".", "")),
@@ -404,7 +403,7 @@ namespace StockLibrary.Service
                         var model = new TuDoanh
                         {
                             stt = int.Parse(arrData.ElementAt(0)),
-                            d = new DateTimeOffset(date).ToUnixTimeSeconds(),
+                            d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
                             type = ETransactionType.TuDoanh.ToString(),
                             ma_ck = arrData.ElementAt(1),
                             t = DateTimeOffset.Now.ToUnixTimeSeconds(),

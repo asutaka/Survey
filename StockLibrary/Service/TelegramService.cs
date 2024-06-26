@@ -113,6 +113,11 @@ namespace StockLibrary.Service
         {
             var output = new StringBuilder();
             //clean
+            if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
+            {
+                output.AppendLine(TongTuDoanhStr());
+                return output.ToString();
+            }
             //find
             input = input.Trim().ToUpper();
             var entityStock = _lStock.FirstOrDefault(x => x.MaCK.Equals(input));
@@ -125,6 +130,56 @@ namespace StockLibrary.Service
             output.AppendLine($"Mã cổ phiếu: {input}");
             output.AppendLine();
             output.AppendLine(TuDoanhBuildStr(input));
+
+            return output.ToString();
+        }
+
+        private string TongTuDoanhStr()
+        {
+            var output = new StringBuilder();
+            var dt = DateTime.Now;
+            if(dt.Hour < 20)
+            {
+                dt = dt.AddDays(-1);
+            }
+
+            FilterDefinition<TuDoanh> filter = null;
+            var builder = Builders<TuDoanh>.Filter;
+            var lFilter = new List<FilterDefinition<TuDoanh>>
+                {
+                    builder.Eq(x => x.d, new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds())
+                };
+            foreach (var item in lFilter)
+            {
+                if (filter is null)
+                {
+                    filter = item;
+                    continue;
+                }
+                filter &= item;
+            }
+            var lTuDoanh = _tuDoanhRepo.GetWithFilter(1, 1000, filter);
+            if (lTuDoanh is null
+                || !lTuDoanh.Any())
+            {
+                output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
+                return output.ToString();
+            }
+
+            var TongMua = lTuDoanh.Sum(x => x.giatri_mua);
+            var TongBan = lTuDoanh.Sum(x => x.giatri_ban);
+            var div = TongMua - TongBan;
+            var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
+            output.AppendLine($"[Tổng tự doanh({dt.ToString("dd/MM/yyyy")})] {mode} {Math.Abs((decimal)div * 1000).ToString("#,##0")}đ");
+            var lCal = lTuDoanh.Select(x => new
+            {
+                MaCK = x.ma_ck,
+                GiaTri = (x.giatri_mua - x.giatri_ban)
+            });
+            var MuaDongStr = string.Join(", ", lCal.OrderByDescending(x => x.GiaTri).Take(5).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri*1000).ToString("#,##0")}đ)"));
+            var BanDongStr = string.Join(", ", lCal.OrderBy(x => x.GiaTri).Take(5).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri*1000).ToString("#,##0")}đ)"));
+            output.AppendLine($"==> Top 5 mua ròng: {MuaDongStr}");
+            output.AppendLine($"==> Top 5 bán ròng: {BanDongStr}");
 
             return output.ToString();
         }
@@ -175,13 +230,13 @@ namespace StockLibrary.Service
                 var Tuan_Ban = lTuDoanhWeek.Sum(x => x.kl_ban);
                 var divTuan = Tuan_Mua - Tuan_Ban;
                 var modeTuan = divTuan >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
+                output.AppendLine($"==> Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
                 //Trong Tháng
                 var Thang_Mua = lTuDoanh.Sum(x => x.kl_mua);
                 var Thang_Ban = lTuDoanh.Sum(x => x.kl_ban);
                 var divThang = Thang_Mua - Thang_Ban;
                 var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
+                output.AppendLine($"==> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
             }
             catch(Exception ex)
             {
