@@ -118,6 +118,11 @@ namespace StockLibrary.Service
                 output.AppendLine(TongTuDoanhStr());
                 return output.ToString();
             }
+            if (input.Equals("[tnn]", StringComparison.OrdinalIgnoreCase))
+            {
+                output.AppendLine(TongGDNNStr());
+                return output.ToString();
+            }
             //find
             input = input.Trim().ToUpper();
             var entityStock = _lStock.FirstOrDefault(x => x.MaCK.Equals(input));
@@ -130,6 +135,7 @@ namespace StockLibrary.Service
             output.AppendLine($"Mã cổ phiếu: {input}");
             output.AppendLine();
             output.AppendLine(TuDoanhBuildStr(input));
+            output.AppendLine(ForeignBuildStr(input));
 
             return output.ToString();
         }
@@ -176,10 +182,55 @@ namespace StockLibrary.Service
                 MaCK = x.ma_ck,
                 GiaTri = (x.giatri_mua - x.giatri_ban)
             });
-            var MuaDongStr = string.Join(", ", lCal.OrderByDescending(x => x.GiaTri).Take(5).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri*1000).ToString("#,##0")}đ)"));
-            var BanDongStr = string.Join(", ", lCal.OrderBy(x => x.GiaTri).Take(5).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri*1000).ToString("#,##0")}đ)"));
-            output.AppendLine($"==> Top 5 mua ròng: {MuaDongStr}");
-            output.AppendLine($"==> Top 5 bán ròng: {BanDongStr}");
+            var MuaDongStr = string.Join(", ", lCal.OrderByDescending(x => x.GiaTri).Take(10).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri*1000).ToString("#,##0")}đ)"));
+            var BanDongStr = string.Join(", ", lCal.OrderBy(x => x.GiaTri).Take(10).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri*1000).ToString("#,##0")}đ)"));
+            output.AppendLine($">> Top 10 mua ròng: {MuaDongStr}");
+            output.AppendLine($">> Top 10 bán ròng: {BanDongStr}");
+
+            return output.ToString();
+        }
+
+        private string TongGDNNStr()
+        {
+            var output = new StringBuilder();
+            var dt = DateTime.Now;
+            if (dt.Hour < 20)
+            {
+                dt = dt.AddDays(-1);
+            }
+
+            FilterDefinition<Foreign> filter = null;
+            var builder = Builders<Foreign>.Filter;
+            var lFilter = new List<FilterDefinition<Foreign>>
+                {
+                    builder.Eq(x => x.d, new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds())
+                };
+            foreach (var item in lFilter)
+            {
+                if (filter is null)
+                {
+                    filter = item;
+                    continue;
+                }
+                filter &= item;
+            }
+            var lGDNN = _foreignRepo.GetWithFilter(1, 1000, filter);
+            if (lGDNN is null
+                || !lGDNN.Any())
+            {
+                output.AppendLine("[GD-NN] Không có dữ liệu giao dịch nước ngoài");
+                return output.ToString();
+            }
+
+            var TongMua = lGDNN.Sum(x => x.fbvat);
+            var TongBan = lGDNN.Sum(x => x.fsvat);
+            var div = TongMua - TongBan;
+            var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
+            output.AppendLine($"[Tổng GDNN({dt.ToString("dd/MM/yyyy")})] {mode} {Math.Abs(div).ToString("#,##0")}đ");
+            var MuaDongStr = string.Join(", ", lGDNN.OrderByDescending(x => x.nbsva).Take(10).Select(x => $"{x.s}({Math.Abs(x.nbsva).ToString("#,##0")}đ)"));
+            var BanDongStr = string.Join(", ", lGDNN.OrderBy(x => x.nbsva).Take(10).Select(x => $"{x.s}({Math.Abs(x.nbsva).ToString("#,##0")}đ)"));
+            output.AppendLine($">> Top 10 mua ròng: {MuaDongStr}");
+            output.AppendLine($">> Top 10 bán ròng: {BanDongStr}");
 
             return output.ToString();
         }
@@ -230,13 +281,13 @@ namespace StockLibrary.Service
                 var Tuan_Ban = lTuDoanhWeek.Sum(x => x.kl_ban);
                 var divTuan = Tuan_Mua - Tuan_Ban;
                 var modeTuan = divTuan >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"==> Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
+                output.AppendLine($">> Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
                 //Trong Tháng
                 var Thang_Mua = lTuDoanh.Sum(x => x.kl_mua);
                 var Thang_Ban = lTuDoanh.Sum(x => x.kl_ban);
                 var divThang = Thang_Mua - Thang_Ban;
                 var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"==> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
+                output.AppendLine($">> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
             }
             catch(Exception ex)
             {
@@ -245,30 +296,63 @@ namespace StockLibrary.Service
             return output.ToString();
         }
 
-        private string ForeignBuildStr(string input)
+        private string ForeignBuildStr(string code)
         {
             var output = new StringBuilder();
-            //try
-            //{
-            //    var lForeign = _foreignRepo.GetWithCodeOrderby(1, 1, input, 0);
-            //    if (lTuDoanh is null
-            //        || !lTuDoanh.Any()
-            //        || (DateTimeOffset.Now.ToUnixTimeSeconds() - lTuDoanh.FirstOrDefault().d) / 3600 > 36)// cũ hơn một một nhất định
-            //    {
-            //        output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
-            //        return output.ToString();
-            //    }
+            try
+            {
+                var dt = DateTime.Now;
+                var firstMonth = new DateTime(dt.Year, dt.Month, 1);
+                var firstWeek = dt.AddDays((int)DayOfWeek.Monday - (int)dt.DayOfWeek);
 
-            //    var entity = lTuDoanh.FirstOrDefault();
-            //    var div = entity.kl_mua - entity.kl_ban;
-            //    var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
-            //    output.AppendLine($"[Tự doanh ngày {entity.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
-            //    output.AppendLine($"(MUA: {entity.kl_mua.ToString("#,##0")}|BÁN: {entity.kl_ban.ToString("#,##0")}) ==> {mode} {Math.Abs(div).ToString("#,##0")} cổ phiếu");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine($"TelegramService.ForeignBuildStr|EXCEPTION| {ex.Message}");
-            //}
+                FilterDefinition<Foreign> filter = null;
+                var builder = Builders<Foreign>.Filter;
+                var lFilter = new List<FilterDefinition<Foreign>>
+                {
+                    builder.Eq(x => x.s, code),
+                    builder.Gte(x => x.d, new DateTimeOffset(firstMonth, TimeSpan.FromHours(0)).ToUnixTimeSeconds())
+                };
+                foreach (var item in lFilter)
+                {
+                    if (filter is null)
+                    {
+                        filter = item;
+                        continue;
+                    }
+                    filter &= item;
+                }
+
+                var lForeign = _foreignRepo.GetWithFilter(1, 30, filter);
+                if (lForeign is null
+                    || !lForeign.Any())
+                {
+                    output.AppendLine("[GD-NN] Không có dữ liệu Mua bán nước Ngoài");
+                    return output.ToString();
+                }
+
+                //Ngày gần nhất
+                var ForeignLast = lForeign.Last();
+                var modeLast = ForeignLast.nbsvo >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($"[GD-NN ngày gần nhất: {ForeignLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+                output.AppendLine($"(MUA: {ForeignLast.fbvot.ToString("#,##0")}|BÁN: {ForeignLast.fsvot.ToString("#,##0")}) ==> {modeLast} {Math.Abs(ForeignLast.nbsvo).ToString("#,##0")} cổ phiếu");
+                //Trong Tuần
+                var lForeignWeek = lForeign.Where(x => x.d >= new DateTimeOffset(new DateTime(firstWeek.Year, firstWeek.Month, firstWeek.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds());
+                var Tuan_Mua = lForeignWeek.Sum(x => x.fbvot);
+                var Tuan_Ban = lForeignWeek.Sum(x => x.fsvot);
+                var divTuan = Tuan_Mua - Tuan_Ban;
+                var modeTuan = divTuan >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($">> Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
+                //Trong Tháng
+                var Thang_Mua = lForeign.Sum(x => x.fbvot);
+                var Thang_Ban = lForeign.Sum(x => x.fsvot);
+                var divThang = Thang_Mua - Thang_Ban;
+                var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
+                output.AppendLine($">> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"TelegramService.ForeignBuildStr|EXCEPTION| {ex.Message}");
+            }
             return output.ToString();
         }
 

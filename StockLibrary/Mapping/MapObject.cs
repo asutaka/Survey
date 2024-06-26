@@ -12,7 +12,7 @@ namespace StockLibrary.Mapping
         {
             return new Foreign
             {
-                d = new DateTimeOffset(item.tradingDate.ToDateTime("dd/MM/yyyy HH:mm:ss"), TimeSpan.FromHours(7)).ToUnixTimeSeconds(),
+                d = new DateTimeOffset(item.tradingDate.ToDateTime("dd/MM/yyyy HH:mm:ss"), TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
                 pc = item.priceChange,
                 ppc = item.perPriceChange,
                 cp = item.ceilingPrice,
@@ -57,7 +57,7 @@ namespace StockLibrary.Mapping
             {
                 lForeign.Add(new Foreign
                 {
-                    d = new DateTimeOffset(item.tradingDate.ToDateTime("dd/MM/yyyy HH:mm:ss"), TimeSpan.FromHours(7)).ToUnixTimeSeconds(),
+                    d = new DateTimeOffset(item.tradingDate.ToDateTime("dd/MM/yyyy HH:mm:ss"), TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
                     pc = item.priceChange,
                     ppc = item.perPriceChange,
                     cp = item.ceilingPrice,
