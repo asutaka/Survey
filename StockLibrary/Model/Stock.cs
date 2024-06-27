@@ -13,5 +13,7 @@ namespace StockLibrary.Model
         public string SanCK { get; set; }
         public CompanyProfileDataModel profile { get; set; }
         public List<ShareHolderDataModel> share_holders { get; set; }
+        public List<string> cat { get; set; }
+        public List<string> cat_leader { get; set; }
     }
 }
