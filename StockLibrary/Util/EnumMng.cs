@@ -19,4 +19,10 @@ namespace StockLibrary.Util
         [Display(Name = "Nước ngoài")]
         NuocNgoai = 2
     }
+
+    public enum ETimeMode
+    {
+        Day = 1,
+        Week = 2
+    }
 }

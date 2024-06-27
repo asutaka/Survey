@@ -81,5 +81,10 @@ namespace BridgeStock
         {
             _telegramService.BotSyncUpdate();
         }
+
+        private void btnTinhToan_Click(object sender, EventArgs e)
+        {
+            _bllService.BackgroundWork();
+        }
     }
 }

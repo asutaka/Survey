@@ -11,6 +11,7 @@ namespace StockLibrary.DAL
             services.AddSingleton<IStockMongoRepo, StockMongoRepo>();
             services.AddSingleton<ITuDoanhMongoRepo, TuDoanhMongoRepo>();
             services.AddSingleton<IForeignMongoRepo, ForeignMongoRepo>();
+            services.AddSingleton<IReportMongoRepo, ReportMongoRepo>();
         }
     }
 }

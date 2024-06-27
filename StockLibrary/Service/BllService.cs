@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualBasic;
-using MongoDB.Driver;
-using Org.BouncyCastle.Crypto;
+﻿using MongoDB.Driver;
 using StockLibrary.DAL;
 using StockLibrary.Mapping;
 using StockLibrary.Model;
-using StockLibrary.Model.APIModel;
 using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
@@ -19,16 +16,24 @@ namespace StockLibrary.Service
         Task SyncCompany();
         int InsertTuDoanh(List<TuDoanh> lInput);
         Task SyncGDNuocNgoai();
+
+        string TongTuDoanhStr();
+        string TongGDNNStr();
+        string TuDoanhBuildStr(string code);
+        string ForeignBuildStr(string code);
+        void BackgroundWork();
     }
-    public class BllService : IBllService
+    public partial class BllService : IBllService
     {
         private readonly IDataAPIService _dataService;
         private readonly IStockMongoRepo _stockRepo;
         private readonly ITuDoanhMongoRepo _tudoanhRepo;
         private readonly IForeignMongoRepo _foreignRepo;
+        private readonly IReportMongoRepo _reportRepo;
         public BllService(IDataAPIService dataService,
                             IStockMongoRepo stockRepo,
                             ITuDoanhMongoRepo tudoanhRepo,
+                            IReportMongoRepo reportRepo,
                             IForeignMongoRepo foreignRepo
                             )
         {
@@ -36,6 +41,7 @@ namespace StockLibrary.Service
             _stockRepo = stockRepo;
             _tudoanhRepo = tudoanhRepo;
             _foreignRepo = foreignRepo;
+            _reportRepo = reportRepo;
         }
         public async Task SyncCompany()
         {

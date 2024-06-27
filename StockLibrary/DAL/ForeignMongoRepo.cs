@@ -67,7 +67,7 @@ namespace StockLibrary.DAL
 
                 if (filter is null)
                 {
-                    return _collection.AsQueryable().Skip((offset - 1) * limit).Take(limit).ToList();
+                    return _collection.AsQueryable().OrderByDescending(x => x.t).Skip((offset - 1) * limit).Take(limit).ToList();
                 }
                 else
                 {

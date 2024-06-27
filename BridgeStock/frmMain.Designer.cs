@@ -29,18 +29,20 @@
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
+            button1 = new Button();
             btnTuDoanhHNX = new Button();
             btnTuDoanhHSX2 = new Button();
             btnTuDoanhHSX = new Button();
             btnMuaBanNN = new Button();
             fileDialog = new OpenFileDialog();
-            button1 = new Button();
+            btnTinhToan = new Button();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // groupBox1
             // 
             groupBox1.BackColor = Color.AliceBlue;
+            groupBox1.Controls.Add(btnTinhToan);
             groupBox1.Controls.Add(button1);
             groupBox1.Controls.Add(btnTuDoanhHNX);
             groupBox1.Controls.Add(btnTuDoanhHSX2);
@@ -49,15 +51,26 @@
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(0, 0);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(426, 450);
+            groupBox1.Size = new Size(426, 503);
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Thông tin";
             // 
+            // button1
+            // 
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            button1.Location = new Point(53, 414);
+            button1.Name = "button1";
+            button1.Size = new Size(320, 47);
+            button1.TabIndex = 4;
+            button1.Text = "Test";
+            button1.UseVisualStyleBackColor = true;
+            button1.Click += button1_Click;
+            // 
             // btnTuDoanhHNX
             // 
             btnTuDoanhHNX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnTuDoanhHNX.Location = new Point(53, 308);
+            btnTuDoanhHNX.Location = new Point(53, 361);
             btnTuDoanhHNX.Name = "btnTuDoanhHNX";
             btnTuDoanhHNX.Size = new Size(320, 47);
             btnTuDoanhHNX.TabIndex = 3;
@@ -68,7 +81,7 @@
             // btnTuDoanhHSX2
             // 
             btnTuDoanhHSX2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnTuDoanhHSX2.Location = new Point(53, 255);
+            btnTuDoanhHSX2.Location = new Point(53, 308);
             btnTuDoanhHSX2.Name = "btnTuDoanhHSX2";
             btnTuDoanhHSX2.Size = new Size(320, 47);
             btnTuDoanhHSX2.TabIndex = 2;
@@ -79,7 +92,7 @@
             // btnTuDoanhHSX
             // 
             btnTuDoanhHSX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnTuDoanhHSX.Location = new Point(53, 202);
+            btnTuDoanhHSX.Location = new Point(53, 255);
             btnTuDoanhHSX.Name = "btnTuDoanhHSX";
             btnTuDoanhHSX.Size = new Size(320, 47);
             btnTuDoanhHSX.TabIndex = 1;
@@ -98,23 +111,23 @@
             btnMuaBanNN.UseVisualStyleBackColor = true;
             btnMuaBanNN.Click += btnMuaBanNN_Click;
             // 
-            // button1
+            // btnTinhToan
             // 
-            button1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            button1.Location = new Point(53, 391);
-            button1.Name = "button1";
-            button1.Size = new Size(320, 47);
-            button1.TabIndex = 4;
-            button1.Text = "Test";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
+            btnTinhToan.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnTinhToan.Location = new Point(53, 119);
+            btnTinhToan.Name = "btnTinhToan";
+            btnTinhToan.Size = new Size(320, 47);
+            btnTinhToan.TabIndex = 5;
+            btnTinhToan.Text = "Tính toán";
+            btnTinhToan.UseVisualStyleBackColor = true;
+            btnTinhToan.Click += btnTinhToan_Click;
             // 
             // frmMain
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.AliceBlue;
-            ClientSize = new Size(426, 450);
+            ClientSize = new Size(426, 503);
             Controls.Add(groupBox1);
             Name = "frmMain";
             StartPosition = FormStartPosition.CenterScreen;
@@ -132,5 +145,6 @@
         private Button btnMuaBanNN;
         private OpenFileDialog fileDialog;
         private Button button1;
+        private Button btnTinhToan;
     }
 }
