@@ -21,6 +21,9 @@ namespace StockLibrary.Service
         string TongGDNNStr();
         string TuDoanhBuildStr(string code);
         string ForeignBuildStr(string code);
+        string ThongKeThiTruongStr();
+
+
         void BackgroundWork();
     }
     public partial class BllService : IBllService

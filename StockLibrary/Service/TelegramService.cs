@@ -1,13 +1,18 @@
 ﻿using MongoDB.Driver;
+using Skender.Stock.Indicators;
 using StockLibrary.DAL;
 using StockLibrary.Model;
+using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using Telegram.Bot.Types;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StockLibrary.Service
 {
@@ -24,13 +29,16 @@ namespace StockLibrary.Service
         private readonly int _numThread = 1;
         private readonly IStockMongoRepo _stockRepo;
         private readonly IBllService _bllService;
+        private readonly IDataAPIService _apiService;
 
         public TelegramService(IStockMongoRepo stockRepo,
-                                IBllService bllService)
+                                IBllService bllService,
+                                IDataAPIService apiService)
         {
             _stockRepo = stockRepo;
             StockInstance();
             _bllService = bllService;
+            _apiService = apiService;
         }
 
         private TelegramBotClient BotInstance()
@@ -57,51 +65,120 @@ namespace StockLibrary.Service
 
         public async Task BotSyncUpdate()
         {
-            var lUpdate = await BotInstance().GetUpdatesAsync();
-            if (!lUpdate.Any())
-                return;
+            while (true)
+            {
+                await func();
+                Thread.Sleep(2000);
+            }
 
-            Parallel.ForEach(lUpdate, new ParallelOptions { MaxDegreeOfParallelism = _numThread },
-               async item =>
-               {
-                   try
+            async Task func()
+            {
+                var lUpdate = await BotInstance().GetUpdatesAsync();
+                if (!lUpdate.Any())
+                    return;
+
+                var lUpdateClean = new List<Update>();
+                var lGroup = lUpdate.GroupBy(x => x.Message.From.Id);
+                foreach (var item in lGroup)
+                {
+                    var lItem = item.ToList().OrderByDescending(x => x.Message.Date);
+                    lUpdateClean.Add(lItem.First());
+                }
+
+                Parallel.ForEach(lUpdateClean, new ParallelOptions { MaxDegreeOfParallelism = _numThread },
+                   async item =>
                    {
-                       if (item.Type != Telegram.Bot.Types.Enums.UpdateType.Message)
+                       try
                        {
-                           return;
-                       }
-
-                       Monitor.TryEnter(objLock, TimeSpan.FromSeconds(1));
-                       var entityUser = _lMessage.FirstOrDefault(x => x.UserId == item.Message.From.Id);
-                       if (entityUser is not null)
-                       {
-                           if (entityUser.CreateAt >= item.Message.Date)
-                               return;
-
-                           entityUser.CreateAt = item.Message.Date;
-                       }
-                       else
-                       {
-
-                           _lMessage.Add(new TelegramModel
+                           if (item.Type != Telegram.Bot.Types.Enums.UpdateType.Message)
                            {
-                               UserId = item.Message.From.Id,
-                               CreateAt = item.Message.Date
-                           });
+                               return;
+                           }
+
+                           Monitor.TryEnter(objLock, TimeSpan.FromSeconds(1));
+                           var entityUser = _lMessage.FirstOrDefault(x => x.UserId == item.Message.From.Id);
+                           if (entityUser is not null)
+                           {
+                               if (entityUser.CreateAt >= item.Message.Date)
+                                   return;
+
+                               entityUser.CreateAt = item.Message.Date;
+                           }
+                           else
+                           {
+
+                               _lMessage.Add(new TelegramModel
+                               {
+                                   UserId = item.Message.From.Id,
+                                   CreateAt = item.Message.Date
+                               });
+                           }
+                           Monitor.Exit(objLock);
+                           //action
+                           var mesResult = await Analyze(item.Message.Text);
+                           await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
+                           if(mesResult.Item1 == EMessageMode.OnlyStock)
+                           {
+                               await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeFA(item.Message.Text));
+                               await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeTA(item.Message.Text));
+                           }
                        }
-                       Monitor.Exit(objLock);
-                       //action
-                       var mes = await Analyze(item.Message.Text);
-                       await BotInstance().SendTextMessageAsync(item.Message.From.Id, mes);
-                   }
-                   catch (Exception ex)
-                   {
-                       Console.WriteLine($"TelegramService.BotSyncUpdate|EXCEPTION| {ex.Message}");
-                   }
-               });
+                       catch (Exception ex)
+                       {
+                           Console.WriteLine($"TelegramService.BotSyncUpdate|EXCEPTION| {ex.Message}");
+                       }
+                   });
+            }
         }
 
-        private async Task<string> Analyze(string input)
+        private async Task<string> AnalyzeFA(string input)
+        {
+            var output = new StringBuilder();
+            try
+            {
+                output.AppendLine("[Góc nhìn phân tích cơ bản]");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"TelegramService.AnalyzeFA|EXCEPTION| {ex.Message}");
+            }
+            return output.ToString();
+        }
+
+        private async Task<string> AnalyzeTA(string input)
+        {
+            var output = new StringBuilder();
+            try
+            {
+                var lData = await _apiService.GetDataStock(input);
+                var ema10 = lData.GetEma(10).Last();
+                var ichi = lData.GetIchimoku().Last();
+                var bb = lData.GetBollingerBands().Last();
+                var macd = lData.GetMacd().Last();
+
+                var entityData = lData.Last();
+                output.AppendLine("[Góc nhìn phân tích kỹ thuật]");
+                output.AppendLine($"Giá hiện tại: {entityData.Close}");
+                output.AppendLine($"EMA10: {(entityData.Close >= (decimal)ema10.Ema? "Nằm phía trên" : "Nằm phía dưới")}");
+                output.AppendLine($"MA20: {(entityData.Close >= (decimal)bb.Sma ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Ichimoku: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Bollinger Band: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"MACD: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Giá so với đầu quý: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Giá so với ngày ra BCTC quý: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Giá so với đáy gần nhất: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Giá so với đỉnh gần nhất: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Giá so với tín hiệu mua: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+                //output.AppendLine($"Giá so với tín hiệu bán: {(entityData.Close >= (decimal)ema10.Ema ? "Nằm phía trên" : "Nằm phía dưới")}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"TelegramService.AnalyzeTA|EXCEPTION| {ex.Message}");
+            }
+            return output.ToString();
+        }
+
+        private async Task<(EMessageMode,string)> Analyze(string input)
         {
             var output = new StringBuilder();
             //clean
@@ -109,22 +186,27 @@ namespace StockLibrary.Service
             input = input.Trim().ToUpper();
             if(input.Length == 3)
             {
-                return OnlyStock(input);
+                return (EMessageMode.OnlyStock, OnlyStock(input));
             }
 
             //
             if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
             {
                 output.AppendLine(_bllService.TongTuDoanhStr());
-                return output.ToString();
+                return (EMessageMode.Other, output.ToString());
             }
             if (input.Equals("[tnn]", StringComparison.OrdinalIgnoreCase))
             {
                 output.AppendLine(_bllService.TongGDNNStr());
-                return output.ToString();
+                return (EMessageMode.Other, output.ToString());
+            }
+            if (input.Equals("[tttt]", StringComparison.OrdinalIgnoreCase))
+            {
+                output.AppendLine(_bllService.ThongKeThiTruongStr());
+                return (EMessageMode.Other, output.ToString());
             }
 
-            return output.ToString();
+            return (EMessageMode.Other, output.ToString());
         }
 
         private string OnlyStock(string input)

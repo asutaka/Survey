@@ -25,4 +25,10 @@ namespace StockLibrary.Util
         Day = 1,
         Week = 2
     }
+
+    public enum EMessageMode
+    {
+        OnlyStock = 1,
+        Other = 10
+    }
 }

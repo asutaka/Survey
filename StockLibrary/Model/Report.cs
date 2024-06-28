@@ -14,6 +14,7 @@ namespace StockLibrary.Model
         public IchimokuResult ichi { get; set; }
         public MacdResult macd { get; set; }
         public BollingerBandsResult bb { get; set; }
+        public Quote stock { get; set; }
         public long t { get; set; }
 
     }

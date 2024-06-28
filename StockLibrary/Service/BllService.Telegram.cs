@@ -240,5 +240,31 @@ namespace StockLibrary.Service
             }
             return output.ToString();
         }
+
+        public string ThongKeThiTruongStr()
+        {
+            var output = new StringBuilder();
+            try
+            {
+                var lReport = _reportRepo.GetAll();
+                //day
+                var lReportDay = lReport.Where(x => x.mode == (int)ETimeMode.Day);
+                var countDayPositive = lReportDay.Count(x => x.stock.Close >= (decimal)(x.bb.Sma));
+                var countDay = lReportDay.Count();
+                output.AppendLine($"[Thống kê thị trường ngày: {lReportDay.Last().d.ToString("dd/MM/yyyy")}]");
+                output.AppendLine($">> Số cp trên MA20 Ngày: {Math.Round((float)countDayPositive*100/countDay, 1)}%");
+                //week
+                var lReportWeek = lReport.Where(x => x.mode == (int)ETimeMode.Week);
+                var countWeekPositive = lReportWeek.Count(x => x.stock.Close >= (decimal)(x.bb.Sma));
+                var countWeek = lReportWeek.Count();
+                output.AppendLine($">> Số cp trên MA20 Tuần: {Math.Round((float)countWeekPositive * 100 / countWeek, 1)}%");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"TelegramService.ThongKeThiTruongStr|EXCEPTION| {ex.Message}");
+            }
+
+            return output.ToString();
+        }
     }
 }

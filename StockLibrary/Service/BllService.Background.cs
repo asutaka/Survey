@@ -60,47 +60,13 @@ namespace StockLibrary.Service
                        //Ngay
                        if(lForeignConvert.Count() >= 30)
                        {
-                           var lEma10 = lForeignConvert.GetEma(10);
-                           var lIchi = lForeignConvert.GetIchimoku();
-                           var lBB = lForeignConvert.GetBollingerBands();
-                           var lMacd = lForeignConvert.GetMacd();
-
-                           var model = new Report
-                           {
-                               mode = (int)ETimeMode.Day,
-                               s = itemStock.MaCK,
-                               d = lForeignConvert.Max(x => x.Date),
-                               ema10 = lEma10.Last(),
-                               ichi = lIchi.Last(),
-                               bb = lBB.Last(),
-                               macd = lMacd.Last(),
-                               t = DateTimeOffset.Now.ToUnixTimeSeconds()
-                           };
-                           //insert
-                           _reportRepo.InsertOne(model);
+                           InsertData(lForeignConvert, ETimeMode.Day, itemStock.MaCK);
                        }
                        
                        //Tuan
                        if(lWeek.Count() >= 30)
                        {
-                           var lEma10 = lWeek.GetEma(10);
-                           var lIchi = lWeek.GetIchimoku();
-                           var lBB = lWeek.GetBollingerBands();
-                           var lMacd = lWeek.GetMacd();
-
-                           var model = new Report
-                           {
-                               mode = (int)ETimeMode.Week,
-                               s = itemStock.MaCK,
-                               d = lWeek.Max(x => x.Date),
-                               ema10 = lEma10.Last(),
-                               ichi = lIchi.Last(),
-                               bb = lBB.Last(),
-                               macd = lMacd.Last(),
-                               t = DateTimeOffset.Now.ToUnixTimeSeconds()
-                           };
-                           //insert
-                           _reportRepo.InsertOne(model);
+                           InsertData(lWeek, ETimeMode.Week, itemStock.MaCK);
                        }
                    }
                    catch(Exception ex)
@@ -108,6 +74,29 @@ namespace StockLibrary.Service
                        Console.WriteLine(ex.ToString());
                    }
                });
+
+            void InsertData(IEnumerable<Quote> lData, ETimeMode mode, string code)
+            {
+                var lEma10 = lData.GetEma(10);
+                var lIchi = lData.GetIchimoku();
+                var lBB = lData.GetBollingerBands();
+                var lMacd = lData.GetMacd();
+
+                var model = new Report
+                {
+                    mode = (int)mode,
+                    s = code,
+                    d = lData.Max(x => x.Date),
+                    ema10 = lEma10.Last(),
+                    ichi = lIchi.Last(),
+                    bb = lBB.Last(),
+                    macd = lMacd.Last(),
+                    stock = lData.Last(),
+                    t = DateTimeOffset.Now.ToUnixTimeSeconds()
+                };
+                //insert
+                _reportRepo.InsertOne(model);
+            }
 
 
             List<Quote> BuildlWeek(IEnumerable<IGrouping<int, Quote>> lInput)
