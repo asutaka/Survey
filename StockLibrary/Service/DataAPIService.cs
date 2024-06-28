@@ -103,20 +103,20 @@ namespace StockLibrary.Service
                 var client = new HttpClient { BaseAddress = new Uri(url) };
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
-                var responseModel = JsonConvert.DeserializeObject<StockDataModel>(resultArray);
-                if (responseModel.t.Any())
+                var responseModel = JsonConvert.DeserializeObject<StockDataSurroundModel>(resultArray);
+                if (responseModel.data.t.Any())
                 {
-                    var count = responseModel.t.Count();
+                    var count = responseModel.data.t.Count();
                     for (int i = 0; i < count; i++)
                     {
                         lOutput.Add(new Quote
                         {
-                            Date = responseModel.t.ElementAt(i).UnixTimeStampToDateTime(),
-                            Open = responseModel.o.ElementAt(i),
-                            Close = responseModel.c.ElementAt(i),
-                            High = responseModel.h.ElementAt(i),
-                            Low = responseModel.l.ElementAt(i),
-                            Volume = responseModel.v.ElementAt(i)
+                            Date = responseModel.data.t.ElementAt(i).UnixTimeStampToDateTime(),
+                            Open = responseModel.data.o.ElementAt(i),
+                            Close = responseModel.data.c.ElementAt(i),
+                            High = responseModel.data.h.ElementAt(i),
+                            Low = responseModel.data.l.ElementAt(i),
+                            Volume = responseModel.data.v.ElementAt(i)
                         });
                     }
                 }

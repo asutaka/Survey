@@ -2,6 +2,11 @@
 
 namespace StockLibrary.Model.APIModel
 {
+
+    public class StockDataSurroundModel
+    {
+        public StockDataModel data { get; set; }
+    }
     public class StockDataModel
     {
         public IEnumerable<decimal> t { get; set; }
