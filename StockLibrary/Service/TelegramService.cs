@@ -12,7 +12,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StockLibrary.Service
 {
