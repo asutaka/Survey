@@ -9,7 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurveyStock", "SurveyStock\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockLibrary", "StockLibrary\StockLibrary.csproj", "{9E4B67E3-F402-401C-80DC-5248C4D58AAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockBridge", "BridgeStock\StockBridge.csproj", "{75EE64F5-0768-422C-9BB3-30039F60199A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockBridge", "BridgeStock\StockBridge.csproj", "{75EE64F5-0768-422C-9BB3-30039F60199A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockBridgeAPI", "StockBridgeAPI\StockBridgeAPI.csproj", "{072E9D11-F627-42E0-9EF3-6EBAAE509E29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{75EE64F5-0768-422C-9BB3-30039F60199A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75EE64F5-0768-422C-9BB3-30039F60199A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{75EE64F5-0768-422C-9BB3-30039F60199A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

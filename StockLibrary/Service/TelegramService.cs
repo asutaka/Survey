@@ -18,6 +18,7 @@ namespace StockLibrary.Service
     public interface ITelegramService
     {
         Task BotSyncUpdate();
+        TelegramBotClient BotInstance();
     }
     public class TelegramService : ITelegramService
     {
@@ -40,7 +41,7 @@ namespace StockLibrary.Service
             _apiService = apiService;
         }
 
-        private TelegramBotClient BotInstance()
+        public TelegramBotClient BotInstance()
         {
             try
             {
@@ -64,11 +65,7 @@ namespace StockLibrary.Service
 
         public async Task BotSyncUpdate()
         {
-            while (true)
-            {
-                await func();
-                Thread.Sleep(2000);
-            }
+            await func();
 
             async Task func()
             {
