@@ -3,6 +3,7 @@ using StockLibrary.Model;
 using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace StockLibrary.Service
@@ -12,6 +13,7 @@ namespace StockLibrary.Service
         List<TuDoanh> HSX(string path);
         List<TuDoanh> HSX2(string path);
         List<TuDoanh> HNX(string path);
+        List<TuDoanh> HNX(Stream data);
     }
     public class FileService : IFileService
     {
@@ -243,6 +245,27 @@ namespace StockLibrary.Service
 
                 return lData;
             }
+        }
+
+        public List<TuDoanh> HNX(Stream data)
+        {
+            var content = pdfText(data);
+            return MapHNX(content);
+        }
+
+        private string pdfText(Stream data)
+        {
+            var reader = new iTextSharp.text.pdf.PdfReader(data);
+
+            string text = string.Empty;
+            for (int page = 1; page <= reader.NumberOfPages; page++)
+            {
+                text += iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, page);
+                text += "\n";
+            }
+
+            reader.Close();
+            return text;
         }
 
         public List<TuDoanh> HNX(string path)

@@ -22,6 +22,8 @@ namespace StockLibrary.DAL
         /// <returns>collection of entities</returns>
         List<T> GetAll();
 
+        List<T> GetByFilter(FilterDefinition<T> filter);
+
 
         /// <summary>
         /// Get async entity by identifier 
@@ -46,6 +48,7 @@ namespace StockLibrary.DAL
         bool UpdateOneField(string fieldName, dynamic value, FilterDefinition<T> filter);
         void InsertOne(T entity);
         void DeleteOne(FilterDefinition<T> filter);
+        void DeleteMany(FilterDefinition<T> filter);
 
     }
 
@@ -194,6 +197,23 @@ namespace StockLibrary.DAL
             }
         }
 
+        public void DeleteMany(FilterDefinition<T> filter)
+        {
+            try
+            {
+                _collection.DeleteMany(filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"IMongoRepositoryBase.DeleteMany|REPOSITORY: {typeof(T).Name.ToUpper()}Repository|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        public List<T> GetByFilter(FilterDefinition<T> filter)
+        {
+            return _collection.Find(filter).ToList();
+        }
+
 
         #endregion
     }
@@ -340,6 +360,23 @@ namespace StockLibrary.DAL
             {
                 _logger.LogError($"MongoRepositoryBaseForeign.DeleteOneAsync|REPOSITORY: {typeof(T).Name.ToUpper()}Repository|EXCEPTION| {ex.Message}");
             }
+        }
+
+        public void DeleteMany(FilterDefinition<T> filter)
+        {
+            try
+            {
+                _collection.DeleteMany(filter);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"IMongoRepositoryBase.DeleteMany|REPOSITORY: {typeof(T).Name.ToUpper()}Repository|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        public List<T> GetByFilter(FilterDefinition<T> filter)
+        {
+            return _collection.Find(filter).ToList();
         }
 
 

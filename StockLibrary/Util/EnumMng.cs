@@ -12,6 +12,20 @@ namespace StockLibrary.Util
         [Display(Name = "upcom")]
         Upcom = 3
     }
+
+    public enum EHnxExchange
+    {
+        NY = 1,
+        UP = 2
+    }
+
+    public enum EConfigDataType
+    {
+        TuDoanhHNX = 1,
+        TuDoanhUpcom = 2,
+        TuDoanhHose = 3
+    }
+
     public enum ETransactionType
     {
         [Display(Name = "Tự doanh")]

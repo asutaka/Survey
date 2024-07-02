@@ -66,6 +66,12 @@ namespace StockLibrary.Util
                 indexes.Add(index);
             }
         }
+        public static string To2Digit(this int val)
+        {
+            if (val > 9)
+                return val.ToString();
+            return $"0{val}";
+        }
 
         public static DateTime ToDateTime(this string val, string format)
         {

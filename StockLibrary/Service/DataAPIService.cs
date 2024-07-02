@@ -4,6 +4,7 @@ using StockLibrary.Model.APIModel;
 using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Encodings.Web;
@@ -18,7 +19,7 @@ namespace StockLibrary.Service
         Task<List<ShareHolderDataModel>> GetShareHolderCompany(string code);
         Task<ForeignModel> GetForeign(string code, int page, int pageSize, string fromDate, string toDate);
         Task<List<Quote>> GetDataStock(string code);
-
+        Task<Stream> GetTuDoanhHNX(EHnxExchange mode);
     }
     public class DataAPIService : IDataAPIService
     {
@@ -126,6 +127,25 @@ namespace StockLibrary.Service
                 Console.WriteLine(ex.Message);
             }
             return lOutput;
+        }
+
+        public async Task<Stream> GetTuDoanhHNX(EHnxExchange mode)
+        {
+            var lOutput = new List<Quote>();
+            try
+            {
+                var dt = DateTime.Now;
+                var strDate = $"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}";
+                var url = string.Format(ServiceSetting._tudoanhHNX, strDate, mode.ToString());
+                var client = new HttpClient { BaseAddress = new Uri(url) };
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                return await responseMessage.Content.ReadAsStreamAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
         }
     }
 }

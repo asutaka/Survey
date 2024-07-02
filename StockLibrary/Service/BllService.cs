@@ -13,6 +13,10 @@ namespace StockLibrary.Service
 {
     public interface IBllService
     {
+        Task<(int, string)> SyncTuDoanhHNX();
+        Task<(int, string)> SyncTuDoanhUp();
+
+
         Task SyncCompany();
         int InsertTuDoanh(List<TuDoanh> lInput);
         Task SyncGDNuocNgoai();
@@ -30,21 +34,27 @@ namespace StockLibrary.Service
     {
         private readonly IDataAPIService _dataService;
         private readonly IStockMongoRepo _stockRepo;
+        private readonly IConfigDataMongoRepo _configRepo;
         private readonly ITuDoanhMongoRepo _tudoanhRepo;
         private readonly IForeignMongoRepo _foreignRepo;
         private readonly IReportMongoRepo _reportRepo;
+        private readonly IFileService _fileService;
         public BllService(IDataAPIService dataService,
                             IStockMongoRepo stockRepo,
+                            IConfigDataMongoRepo configRepo,
                             ITuDoanhMongoRepo tudoanhRepo,
                             IReportMongoRepo reportRepo,
-                            IForeignMongoRepo foreignRepo
+                            IForeignMongoRepo foreignRepo,
+                            IFileService fileService
                             )
         {
             _dataService = dataService;
             _stockRepo = stockRepo;
+            _configRepo = configRepo;
             _tudoanhRepo = tudoanhRepo;
             _foreignRepo = foreignRepo;
             _reportRepo = reportRepo;
+            _fileService = fileService;
         }
         public async Task SyncCompany()
         {
@@ -61,21 +71,6 @@ namespace StockLibrary.Service
             var upcom = await _dataService.GetStock(EStockExchange.Upcom);
             var lUpcomInsert = (upcom ?? new List<string>()).Except(lCompany.Select(x => x.MaCK));
             await InsertCompany(lUpcomInsert, EStockExchange.Upcom);
-        }
-
-        public int InsertTuDoanh(List<TuDoanh> lInput)
-        {
-            var count = 0;
-            foreach (var item in lInput)
-            {
-                //Check Exists
-                var lFind = _tudoanhRepo.GetWithFilter(1, 20, item.ma_ck, item.d);
-                if ((lFind?? new List<TuDoanh>()).Any())
-                    continue;
-                _tudoanhRepo.InsertOne(item);
-                count++;
-            }
-            return count;
         }
 
         private async Task InsertCompany(IEnumerable<string> lInsert, EStockExchange exchangeMode)

@@ -12,8 +12,8 @@ namespace StockLibrary.Model
         public string ma_ck { get; set; }
         public int kl_mua { get; set; }
         public int kl_ban { get; set; }
-        public int giatri_mua { get; set; }
-        public int giatri_ban { get; set; }
+        public decimal giatri_mua { get; set; }
+        public decimal giatri_ban { get; set; }
         public long t { get; set; }
         public bool recheck { get; set; }
     }

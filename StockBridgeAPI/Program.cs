@@ -50,10 +50,11 @@ namespace StockBridgeAPI
                     {
                         // Use a Scoped container to create jobs. I'll touch on this later
                         q.UseMicrosoftDependencyInjectionScopedJobFactory();
-                        q.UseDefaultThreadPool(tp => { tp.MaxConcurrency = 1; });
+                        q.UseDefaultThreadPool(tp => { tp.MaxConcurrency = 2; });
 
                         // Register the job, loading the schedule from configuration
                         q.AddJobAndTrigger<TelegramJob>(hostContext.Configuration);
+                        q.AddJobAndTrigger<BackgroundJob>(hostContext.Configuration);
                     });
 
                     // Add the Quartz.NET hosted service
