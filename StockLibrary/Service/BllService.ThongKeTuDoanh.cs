@@ -30,6 +30,10 @@ namespace StockLibrary.Service
 
                 var strOutput = new StringBuilder();
                 var stream = await _dataService.GetTuDoanhHNX(EHnxExchange.NY);
+                if(stream is null 
+                    || stream.Length < 1000)
+                    return (0, string.Empty);
+
                 var lData = _fileService.HNX(stream);
                 var count = InsertTuDoanh(lData);
 
@@ -79,6 +83,10 @@ namespace StockLibrary.Service
 
                 var strOutput = new StringBuilder();
                 var stream = await _dataService.GetTuDoanhHNX(EHnxExchange.UP);
+                if (stream is null
+                    || stream.Length < 1000)
+                    return (0, string.Empty);
+
                 var lData = _fileService.HNX(stream);
                 var count = InsertTuDoanh(lData);
 
