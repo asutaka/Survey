@@ -15,10 +15,10 @@ namespace StockLibrary.Service
     {
         Task<(int, string)> SyncTuDoanhHNX();
         Task<(int, string)> SyncTuDoanhUp();
+        Task<(int, List<string>)> SyncTuDoanhHSX();
 
 
         Task SyncCompany();
-        int InsertTuDoanh(List<TuDoanh> lInput);
         Task SyncGDNuocNgoai();
 
         string TongTuDoanhStr();

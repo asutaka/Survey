@@ -29,13 +29,10 @@
         private void InitializeComponent()
         {
             groupBox1 = new GroupBox();
+            btnTinhToan = new Button();
             button1 = new Button();
-            btnTuDoanhHNX = new Button();
-            btnTuDoanhHSX2 = new Button();
-            btnTuDoanhHSX = new Button();
             btnMuaBanNN = new Button();
             fileDialog = new OpenFileDialog();
-            btnTinhToan = new Button();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -44,9 +41,6 @@
             groupBox1.BackColor = Color.AliceBlue;
             groupBox1.Controls.Add(btnTinhToan);
             groupBox1.Controls.Add(button1);
-            groupBox1.Controls.Add(btnTuDoanhHNX);
-            groupBox1.Controls.Add(btnTuDoanhHSX2);
-            groupBox1.Controls.Add(btnTuDoanhHSX);
             groupBox1.Controls.Add(btnMuaBanNN);
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(0, 0);
@@ -55,6 +49,17 @@
             groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Thông tin";
+            // 
+            // btnTinhToan
+            // 
+            btnTinhToan.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnTinhToan.Location = new Point(53, 119);
+            btnTinhToan.Name = "btnTinhToan";
+            btnTinhToan.Size = new Size(320, 47);
+            btnTinhToan.TabIndex = 5;
+            btnTinhToan.Text = "Tính toán";
+            btnTinhToan.UseVisualStyleBackColor = true;
+            btnTinhToan.Click += btnTinhToan_Click;
             // 
             // button1
             // 
@@ -67,39 +72,6 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
-            // btnTuDoanhHNX
-            // 
-            btnTuDoanhHNX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnTuDoanhHNX.Location = new Point(53, 361);
-            btnTuDoanhHNX.Name = "btnTuDoanhHNX";
-            btnTuDoanhHNX.Size = new Size(320, 47);
-            btnTuDoanhHNX.TabIndex = 3;
-            btnTuDoanhHNX.Text = "Tự doanh HNX, Upcom";
-            btnTuDoanhHNX.UseVisualStyleBackColor = true;
-            btnTuDoanhHNX.Click += btnTuDoanhHNX_Click;
-            // 
-            // btnTuDoanhHSX2
-            // 
-            btnTuDoanhHSX2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnTuDoanhHSX2.Location = new Point(53, 308);
-            btnTuDoanhHSX2.Name = "btnTuDoanhHSX2";
-            btnTuDoanhHSX2.Size = new Size(320, 47);
-            btnTuDoanhHSX2.TabIndex = 2;
-            btnTuDoanhHSX2.Text = "Tự doanh HSX 2";
-            btnTuDoanhHSX2.UseVisualStyleBackColor = true;
-            btnTuDoanhHSX2.Click += btnTuDoanhHSX2_Click;
-            // 
-            // btnTuDoanhHSX
-            // 
-            btnTuDoanhHSX.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            btnTuDoanhHSX.Location = new Point(53, 255);
-            btnTuDoanhHSX.Name = "btnTuDoanhHSX";
-            btnTuDoanhHSX.Size = new Size(320, 47);
-            btnTuDoanhHSX.TabIndex = 1;
-            btnTuDoanhHSX.Text = "Tự doanh HSX";
-            btnTuDoanhHSX.UseVisualStyleBackColor = true;
-            btnTuDoanhHSX.Click += btnTuDoanhHSX_Click;
-            // 
             // btnMuaBanNN
             // 
             btnMuaBanNN.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -110,17 +82,6 @@
             btnMuaBanNN.Text = "Lấy mua bán NN";
             btnMuaBanNN.UseVisualStyleBackColor = true;
             btnMuaBanNN.Click += btnMuaBanNN_Click;
-            // 
-            // btnTinhToan
-            // 
-            btnTinhToan.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            btnTinhToan.Location = new Point(53, 119);
-            btnTinhToan.Name = "btnTinhToan";
-            btnTinhToan.Size = new Size(320, 47);
-            btnTinhToan.TabIndex = 5;
-            btnTinhToan.Text = "Tính toán";
-            btnTinhToan.UseVisualStyleBackColor = true;
-            btnTinhToan.Click += btnTinhToan_Click;
             // 
             // frmMain
             // 
@@ -139,9 +100,6 @@
         #endregion
 
         private GroupBox groupBox1;
-        private Button btnTuDoanhHNX;
-        private Button btnTuDoanhHSX2;
-        private Button btnTuDoanhHSX;
         private Button btnMuaBanNN;
         private OpenFileDialog fileDialog;
         private Button button1;

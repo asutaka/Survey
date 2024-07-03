@@ -1,5 +1,6 @@
 ﻿using Quartz;
 using StockLibrary.Service;
+using StockLibrary.Util;
 using Telegram.Bot;
 
 namespace StockBridgeAPI.Jobs
@@ -23,16 +24,46 @@ namespace StockBridgeAPI.Jobs
             {
                 if (dt.Hour >= 16 && dt.Hour <= 18)
                 {
-                    var hnx = await _bllService.SyncTuDoanhHNX();
-                    if (hnx.Item1 > 0)
+                    try
                     {
-                        await _telegramService.BotInstance().SendTextMessageAsync(_idMain, hnx.Item2);
+                        var hnx = await _bllService.SyncTuDoanhHNX();
+                        if (hnx.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, hnx.Item2);
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        NLogLogger.PublishException(ex, ex.Message);
                     }
 
-                    var up = await _bllService.SyncTuDoanhUp();
-                    if (up.Item1 > 0)
+                    try
                     {
-                        await _telegramService.BotInstance().SendTextMessageAsync(_idMain, up.Item2);
+                        var up = await _bllService.SyncTuDoanhUp();
+                        if (up.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, up.Item2);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        NLogLogger.PublishException(ex, ex.Message);
+                    }
+
+                    try
+                    {
+                        var hose = await _bllService.SyncTuDoanhHSX();
+                        if (hose.Item1 > 0)
+                        {
+                            foreach (var item in hose.Item2)
+                            {
+                                await _telegramService.BotInstance().SendTextMessageAsync(_idMain, item);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        NLogLogger.PublishException(ex, ex.Message);
                     }
                 }
             }
