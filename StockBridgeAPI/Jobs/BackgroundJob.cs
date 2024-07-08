@@ -9,7 +9,6 @@ namespace StockBridgeAPI.Jobs
     public class BackgroundJob : IJob
     {
         private const long _idMain = -1002247826353;
-        //private const long _idMain = 1066022551;
         private readonly ITelegramService _telegramService;
         private readonly IBllService _bllService;
         public BackgroundJob(ITelegramService telegramService, IBllService bllService)
@@ -23,8 +22,9 @@ namespace StockBridgeAPI.Jobs
             var dt = DateTime.Now;
             if ((int)dt.DayOfWeek >= 1 && (int)dt.DayOfWeek <= 5)
             {
-                if (dt.Hour >= 16 && dt.Hour <= 18)
+                if (dt.Hour >= 16 && dt.Hour <= 23)
                 {
+                    //Tự doanh HNX
                     try
                     {
                         var hnx = await _bllService.SyncTuDoanhHNX();
@@ -37,7 +37,7 @@ namespace StockBridgeAPI.Jobs
                     {
                         NLogLogger.PublishException(ex, ex.Message);
                     }
-
+                    //Tự doanh Upcom
                     try
                     {
                         var up = await _bllService.SyncTuDoanhUp();
@@ -50,7 +50,7 @@ namespace StockBridgeAPI.Jobs
                     {
                         NLogLogger.PublishException(ex, ex.Message);
                     }
-
+                    //Tự doanh HSX
                     try
                     {
                         var hose = await _bllService.SyncTuDoanhHSX();
@@ -66,21 +66,17 @@ namespace StockBridgeAPI.Jobs
                     {
                         NLogLogger.PublishException(ex, ex.Message);
                     }
+                    //GDNN
+                    try
+                    {
+                        await _bllService.SyncGDNuocNgoai();
+                    }
+                    catch (Exception ex)
+                    {
+                        NLogLogger.PublishException(ex, ex.Message);
+                    }
                 }
             }
-
-
-
-            //if(dt.Minute %15 == 0
-            ////if(dt.Minute == 0
-            //    && dt.Second == 0
-            //    && dt.Hour > 8
-            //    && dt.Hour < 18)
-            //{
-            //    await _telegramService.BotInstance().SendTextMessageAsync(_idMain, "Working!!!");
-            //}
-
-            //await _telegramService.BotSyncUpdate();
         }
     }
 }
