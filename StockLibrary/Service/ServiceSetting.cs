@@ -11,7 +11,7 @@
 
         public const string _tudoanhHNX = "https://owa.hnx.vn/ftp//PORTALNEW/HEADER_IMAGES/{0}/{0}_Chi_tiet_gd_tu_doanh_theo_ma_ck%20{1}.pdf";
 
-        public const string _botToken = "5087420296:AAHVCnwFdVxdLFJsxgg8unqYN17rVWqFZfs";
+        public const string _botToken = "7422438658:AAEPzAwq-5rA-5dLEFRpPrdOBt9yMfnkBxA";
     }
 }
 

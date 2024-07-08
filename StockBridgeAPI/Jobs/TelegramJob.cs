@@ -7,7 +7,8 @@ namespace StockBridgeAPI.Jobs
     [DisallowConcurrentExecution]
     public class TelegramJob : IJob
     {
-        private const long _idMain = 1066022551;
+        private const long _idMain = -1002247826353;
+        //private const long _idMain = 1066022551;
         private readonly ITelegramService _telegramService;
         private readonly IDataAPIService _apiService;
         public TelegramJob(ITelegramService telegramService, IDataAPIService apiService)

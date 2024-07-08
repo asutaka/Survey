@@ -8,7 +8,8 @@ namespace StockBridgeAPI.Jobs
     [DisallowConcurrentExecution]
     public class BackgroundJob : IJob
     {
-        private const long _idMain = 1066022551;
+        private const long _idMain = -1002247826353;
+        //private const long _idMain = 1066022551;
         private readonly ITelegramService _telegramService;
         private readonly IBllService _bllService;
         public BackgroundJob(ITelegramService telegramService, IBllService bllService)
