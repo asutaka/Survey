@@ -30,6 +30,7 @@ namespace StockLibrary.Service
         private readonly IStockMongoRepo _stockRepo;
         private readonly IBllService _bllService;
         private readonly IDataAPIService _apiService;
+        private const long _idMain = -1002247826353;
 
         public TelegramService(IStockMongoRepo stockRepo,
                                 IBllService bllService,
@@ -74,7 +75,7 @@ namespace StockLibrary.Service
                     return;
 
                 var lUpdateClean = new List<Update>();
-                var lGroup = lUpdate.GroupBy(x => x.Message.From.Id);
+                var lGroup = lUpdate.Where(x => x.Message.From.Id != _idMain).GroupBy(x => x.Message.From.Id);
                 foreach (var item in lGroup)
                 {
                     var lItem = item.ToList().OrderByDescending(x => x.Message.Date);
