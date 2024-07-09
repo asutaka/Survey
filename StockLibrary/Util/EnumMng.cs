@@ -23,7 +23,8 @@ namespace StockLibrary.Util
     {
         TuDoanhHNX = 1,
         TuDoanhUpcom = 2,
-        TuDoanhHose = 3
+        TuDoanhHose = 3,
+        GDNN = 4
     }
 
     public enum ETransactionType

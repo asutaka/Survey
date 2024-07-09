@@ -1,13 +1,8 @@
-﻿using MongoDB.Driver;
-using Skender.Stock.Indicators;
-using StockLibrary.DAL;
-using StockLibrary.Mapping;
+﻿using StockLibrary.DAL;
 using StockLibrary.Model;
 using StockLibrary.Util;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace StockLibrary.Service
@@ -18,9 +13,11 @@ namespace StockLibrary.Service
         Task<(int, string)> SyncTuDoanhUp();
         Task<(int, List<string>)> SyncTuDoanhHSX();
 
+        Task<(int, List<string>)> SyncGDNuocNgoai();
+
+
 
         Task SyncCompany();
-        Task<int> SyncGDNuocNgoai();
 
         string TongTuDoanhStr();
         string TongGDNNStr();
@@ -89,66 +86,6 @@ namespace StockLibrary.Service
                 model.share_holders = await _dataService.GetShareHolderCompany(itemStock);
                 _stockRepo.InsertOne(model);
             }
-        }
-
-        public async Task<int> SyncGDNuocNgoai()
-        {
-            var dt = DateTime.Now;
-            if (dt.DayOfWeek == DayOfWeek.Saturday
-                || dt.DayOfWeek == DayOfWeek.Sunday
-                || dt.Hour < 17)
-                return -1;
-
-            var lStock = _stockRepo.GetAll();
-            var date = new DateTimeOffset(dt.Year, dt.Month, dt.Day, 0, 0, 0, TimeSpan.FromHours(0)).ToUnixTimeSeconds();
-            var lForeign = _foreignRepo.GetWithFilter(1, 1, "", date);
-            var flag = string.Empty;
-            if(lForeign != null
-                && lForeign.Any())
-            {
-                flag = lForeign.ElementAt(0).s;
-            }
-
-            if(!string.IsNullOrWhiteSpace(flag))
-            {
-                var lComplete = new List<string>();
-                foreach (var itemStock in lStock)
-                {
-                    lComplete.Add(itemStock.MaCK);
-                    if (itemStock.MaCK.Equals(flag))
-                    {
-                        break;
-                    }
-                }
-                lStock = lStock.Where(x => !lComplete.Any(y => y == x.MaCK)).ToList();
-            }
-
-            foreach (var item in lStock)
-            {
-                Thread.Sleep(1000);
-                var foreignResult = await _dataService.GetForeign(item.MaCK, 1, 3, dt.ToString("dd/MM/yyyy"), dt.ToString("dd/MM/yyyy"));
-                if (foreignResult is null || foreignResult.data is null)
-                    continue;
-
-                InsertGDNuocNgoai(foreignResult.ToForeign());
-            }
-
-            return 1;
-        }
-
-        private int InsertGDNuocNgoai(List<Foreign> lInput)
-        {
-            var count = 0;
-            foreach (var item in lInput)
-            {
-                //Check Exists
-                //var lFind = _foreignRepo.GetWithFilter(1, 20, item.s, item.d);
-                //if ((lFind ?? new List<Foreign>()).Any())
-                //    continue;
-                _foreignRepo.InsertOne(item);
-                count++;
-            }
-            return count;
         }
     }
 }

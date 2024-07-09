@@ -22,7 +22,7 @@ namespace StockLibrary.DAL
         /// <returns>collection of entities</returns>
         List<T> GetAll();
 
-        List<T> GetByFilter(FilterDefinition<T> filter);
+        List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0);
 
 
         /// <summary>
@@ -209,9 +209,29 @@ namespace StockLibrary.DAL
             }
         }
 
-        public List<T> GetByFilter(FilterDefinition<T> filter)
+        public List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0)
         {
-            return _collection.Find(filter).ToList();
+            if (filter is null)
+            {
+
+                if (offset > 0)
+                {
+                    return _collection.AsQueryable().Skip((offset - 1) * limit)
+                    .Take(limit).ToList();
+                }
+
+                return _collection.AsQueryable().ToList();
+            }
+            else
+            {
+                if (offset > 0)
+                {
+                    return _collection.Find(filter).Skip((offset - 1) * limit)
+                            .Limit(limit).ToList();
+                }
+
+                return _collection.Find(filter).ToList();
+            }
         }
 
 
@@ -374,9 +394,29 @@ namespace StockLibrary.DAL
             }
         }
 
-        public List<T> GetByFilter(FilterDefinition<T> filter)
+        public List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0)
         {
-            return _collection.Find(filter).ToList();
+            if (filter is null)
+            {
+                
+                if (offset > 0)
+                {
+                    return _collection.AsQueryable().Skip((offset - 1) * limit)
+                    .Take(limit).ToList();
+                }
+
+                return _collection.AsQueryable().ToList();
+            }
+            else
+            {
+                if (offset > 0)
+                {
+                    return _collection.Find(filter).Skip((offset - 1) * limit)
+                            .Limit(limit).ToList();
+                }
+
+                return _collection.Find(filter).ToList();
+            }
         }
 
 

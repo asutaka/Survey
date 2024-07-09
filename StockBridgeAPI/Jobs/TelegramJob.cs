@@ -14,7 +14,7 @@ namespace StockBridgeAPI.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            await _telegramService.BotSyncUpdate();
+            //await _telegramService.BotSyncUpdate();
         }
     }
 }

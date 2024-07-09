@@ -1,4 +1,5 @@
-﻿using Quartz;
+﻿using Microsoft.Extensions.Hosting;
+using Quartz;
 using StockLibrary.Service;
 using StockLibrary.Util;
 using Telegram.Bot;
@@ -70,9 +71,12 @@ namespace StockBridgeAPI.Jobs
                     try
                     {
                         var nn = await _bllService.SyncGDNuocNgoai();
-                        if(nn > 0)
+                        if(nn.Item1 > 0)
                         {
-                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, $"Đã cập nhật giao dịch nước ngoài ngày {DateTime.Now.ToString("dd/MM/yyyy")}");
+                            foreach (var item in nn.Item2)
+                            {
+                                await _telegramService.BotInstance().SendTextMessageAsync(_idMain, item);
+                            }
                         }    
                     }
                     catch (Exception ex)

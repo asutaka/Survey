@@ -84,7 +84,7 @@ namespace StockLibrary.Service
                 }
                 filter &= item;
             }
-            var lGDNN = _foreignRepo.GetWithFilter(1, 1000, filter);
+            var lGDNN = _foreignRepo.GetByFilter(filter, 1, 1000);
             if (lGDNN is null
                 || !lGDNN.Any())
             {
@@ -193,7 +193,7 @@ namespace StockLibrary.Service
                     filter &= item;
                 }
 
-                var lForeign = _foreignRepo.GetWithFilter(1, 30, filter);
+                var lForeign = _foreignRepo.GetByFilter(filter, 1, 30);
                 if (lForeign is null
                     || !lForeign.Any())
                 {
