@@ -54,7 +54,7 @@ namespace StockBridgeAPI
 
                         // Register the job, loading the schedule from configuration
                         q.AddJobAndTrigger<TelegramJob>(hostContext.Configuration);
-                        //q.AddJobAndTrigger<BackgroundJob>(hostContext.Configuration);
+                        q.AddJobAndTrigger<BackgroundJob>(hostContext.Configuration);
                     });
 
                     // Add the Quartz.NET hosted service
