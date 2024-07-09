@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using Skender.Stock.Indicators;
 using StockLibrary.Model;
 using StockLibrary.Util;
@@ -109,15 +110,19 @@ namespace StockLibrary.Service
                     || !lQuote.Any())
                         continue;
 
-                    lWeek.Add(new Quote
+                    var dtMin = lQuote.Min(x => x.Date);
+                    var dtMax = lQuote.Max(x => x.Date);
+                    var quote = new Quote
                     {
-                        Date = lQuote.Min(x => x.Date),
-                        Open = lQuote.MinBy(x => x.Date).Open,
-                        Close = lQuote.MaxBy(x => x.Date).Close,
+                        Date = dtMin,
+                        Open = lQuote.FirstOrDefault(x => x.Date <= dtMin).Open,
+                        Close = lQuote.FirstOrDefault(x => x.Date >= dtMax).Close,
                         High = lQuote.Max(x => x.High),
                         Low = lQuote.Min(x => x.Low),
                         Volume = lQuote.Sum(x => x.Volume)
-                    });
+                    };
+
+                    lWeek.Add(quote);
                 }
                 return lWeek;
             }

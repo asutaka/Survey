@@ -6,10 +6,10 @@ namespace BridgeStock
     {
         private readonly IFileService _fileService;
         private readonly IBllService _bllService;
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramLibService _telegramService;
         public frmMain(IFileService fileService,
                        IBllService bllService,
-                       ITelegramService telegramService)
+                       ITelegramLibService telegramService)
         {
             InitializeComponent();
             _fileService = fileService;

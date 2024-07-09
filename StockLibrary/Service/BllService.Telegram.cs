@@ -140,7 +140,8 @@ namespace StockLibrary.Service
                 }
 
                 //Ngày gần nhất
-                var TuDoanhLast = lTuDoanh.MaxBy(x => x.d);
+                var dtTuDoanhMax = lTuDoanh.Max(x => x.d);
+                var TuDoanhLast = lTuDoanh.FirstOrDefault(x => x.d >= dtTuDoanhMax);
                 var divLast = TuDoanhLast.kl_mua - TuDoanhLast.kl_ban;
                 var modeLast = divLast >= 0 ? "Mua ròng" : "Bán ròng";
                 output.AppendLine($"[Tự doanh ngày gần nhất: {TuDoanhLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
@@ -202,7 +203,8 @@ namespace StockLibrary.Service
                 }
 
                 //Ngày gần nhất
-                var ForeignLast = lForeign.MaxBy(x => x.d);
+                var dtForeignMax = lForeign.Max(x => x.d);
+                var ForeignLast = lForeign.FirstOrDefault(x => x.d >= dtForeignMax);
                 var modeLast = ForeignLast.nbsvo >= 0 ? "Mua ròng" : "Bán ròng";
                 output.AppendLine($"[GD-NN ngày: {ForeignLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
                 output.AppendLine($"(MUA: {ForeignLast.fbvot.ToString("#,##0")}|BÁN: {ForeignLast.fsvot.ToString("#,##0")}) ==> {modeLast} {Math.Abs(ForeignLast.nbsvo).ToString("#,##0")} cổ phiếu");

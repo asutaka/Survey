@@ -6,8 +6,8 @@ namespace StockBridgeAPI.Jobs
     [DisallowConcurrentExecution]
     public class TelegramJob : IJob
     {
-        private readonly ITelegramService _telegramService;
-        public TelegramJob(ITelegramService telegramService)
+        private readonly ITelegramLibService _telegramService;
+        public TelegramJob(ITelegramLibService telegramService)
         {
             _telegramService = telegramService;
         }

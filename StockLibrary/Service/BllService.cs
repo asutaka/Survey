@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using Skender.Stock.Indicators;
 using StockLibrary.DAL;
 using StockLibrary.Mapping;
 using StockLibrary.Model;
@@ -19,14 +20,13 @@ namespace StockLibrary.Service
 
 
         Task SyncCompany();
-        Task SyncGDNuocNgoai();
+        Task<int> SyncGDNuocNgoai();
 
         string TongTuDoanhStr();
         string TongGDNNStr();
         string TuDoanhBuildStr(string code);
         string ForeignBuildStr(string code);
         string ThongKeThiTruongStr();
-
 
         void BackgroundWork();
     }
@@ -91,13 +91,13 @@ namespace StockLibrary.Service
             }
         }
 
-        public async Task SyncGDNuocNgoai()
+        public async Task<int> SyncGDNuocNgoai()
         {
             var dt = DateTime.Now;
             if (dt.DayOfWeek == DayOfWeek.Saturday
                 || dt.DayOfWeek == DayOfWeek.Sunday
                 || dt.Hour < 17)
-                return;
+                return -1;
 
             var lStock = _stockRepo.GetAll();
             var date = new DateTimeOffset(dt.Year, dt.Month, dt.Day, 0, 0, 0, TimeSpan.FromHours(0)).ToUnixTimeSeconds();
@@ -132,6 +132,8 @@ namespace StockLibrary.Service
 
                 InsertGDNuocNgoai(foreignResult.ToForeign());
             }
+
+            return 1;
         }
 
         private int InsertGDNuocNgoai(List<Foreign> lInput)

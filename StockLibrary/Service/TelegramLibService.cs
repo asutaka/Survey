@@ -5,7 +5,6 @@ using StockLibrary.Model;
 using StockLibrary.Util;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -15,12 +14,12 @@ using Telegram.Bot.Types;
 
 namespace StockLibrary.Service
 {
-    public interface ITelegramService
+    public interface ITelegramLibService
     {
         Task BotSyncUpdate();
         TelegramBotClient BotInstance();
     }
-    public class TelegramService : ITelegramService
+    public class TelegramLibService : ITelegramLibService
     {
         private static TelegramBotClient _bot;
         private static List<TelegramModel> _lMessage = new List<TelegramModel>();
@@ -32,7 +31,7 @@ namespace StockLibrary.Service
         private readonly IDataAPIService _apiService;
         private const long _idMain = -1002247826353;
 
-        public TelegramService(IStockMongoRepo stockRepo,
+        public TelegramLibService(IStockMongoRepo stockRepo,
                                 IBllService bllService,
                                 IDataAPIService apiService)
         {
@@ -94,7 +93,7 @@ namespace StockLibrary.Service
 
                            Monitor.TryEnter(objLock, TimeSpan.FromSeconds(1));
                            var entityUser = _lMessage.FirstOrDefault(x => x.UserId == item.Message.From.Id);
-                           if (entityUser is not null)
+                           if (entityUser != null)
                            {
                                if (entityUser.CreateAt >= item.Message.Date)
                                    return;

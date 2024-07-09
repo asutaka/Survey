@@ -9,7 +9,7 @@ namespace StockLibrary.Service
             services.AddSingleton<IDataAPIService, DataAPIService>();
             services.AddSingleton<IBllService, BllService>();
             services.AddSingleton<IFileService, FileService>();
-            services.AddSingleton<ITelegramService, TelegramService>();
+            services.AddSingleton<ITelegramLibService, TelegramLibService>();
         }
     }
 }

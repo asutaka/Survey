@@ -9,9 +9,9 @@ namespace StockBridgeAPI.Jobs
     public class BackgroundJob : IJob
     {
         private const long _idMain = -1002247826353;
-        private readonly ITelegramService _telegramService;
+        private readonly ITelegramLibService _telegramService;
         private readonly IBllService _bllService;
-        public BackgroundJob(ITelegramService telegramService, IBllService bllService)
+        public BackgroundJob(ITelegramLibService telegramService, IBllService bllService)
         {
             _telegramService = telegramService;
             _bllService = bllService;
@@ -69,7 +69,11 @@ namespace StockBridgeAPI.Jobs
                     //GDNN
                     try
                     {
-                        await _bllService.SyncGDNuocNgoai();
+                        var nn = await _bllService.SyncGDNuocNgoai();
+                        if(nn > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, $"Đã cập nhật giao dịch nước ngoài ngày {DateTime.Now.ToString("dd/MM/yyyy")}");
+                        }    
                     }
                     catch (Exception ex)
                     {
