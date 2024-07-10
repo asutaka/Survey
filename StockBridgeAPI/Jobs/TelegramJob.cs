@@ -1,5 +1,5 @@
 ﻿using Quartz;
-using StockLibrary.Service;
+using SLib.Service;
 
 namespace StockBridgeAPI.Jobs
 {

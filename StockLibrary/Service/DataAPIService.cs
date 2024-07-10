@@ -1,5 +1,4 @@
 ﻿using HtmlAgilityPack;
-using iTextSharp.text.pdf.qrcode;
 using Newtonsoft.Json;
 using Skender.Stock.Indicators;
 using StockLibrary.Model.APIModel;
@@ -10,9 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text.Encodings.Web;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace StockLibrary.Service
 {

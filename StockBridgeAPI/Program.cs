@@ -1,4 +1,3 @@
-using NLog.Web;
 using Quartz;
 using StockBridgeAPI.Jobs;
 using StockBridgeAPI.Utils;
@@ -21,10 +20,10 @@ namespace StockBridgeAPI
                 //logger.Error(ex, "Error in init");
                 throw;
             }
-            finally
-            {
-                NLog.LogManager.Shutdown();
-            }
+            //finally
+            //{
+            //    NLog.LogManager.Shutdown();
+            //}
         }
 
         [Obsolete]
@@ -34,14 +33,14 @@ namespace StockBridgeAPI
                 {
                     webBuilder
                     .ConfigureAppConfiguration((hostingContext, config) =>
-                    {})
+                    { })
                     .UseStartup<Startup>()
                     .ConfigureLogging(logging =>
                     {
                         logging.ClearProviders();
                         logging.SetMinimumLevel(LogLevel.Information);
-                    })
-                    .UseNLog();
+                    });
+                    //.UseNLog();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

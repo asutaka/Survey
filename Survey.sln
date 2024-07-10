@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockLibrary", "StockLibrar
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockBridge", "BridgeStock\StockBridge.csproj", "{75EE64F5-0768-422C-9BB3-30039F60199A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockBridgeAPI", "StockBridgeAPI\StockBridgeAPI.csproj", "{072E9D11-F627-42E0-9EF3-6EBAAE509E29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockBridgeAPI", "StockBridgeAPI\StockBridgeAPI.csproj", "{072E9D11-F627-42E0-9EF3-6EBAAE509E29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SLib", "SLib\SLib.csproj", "{C5170F2B-EE61-4887-AC2E-81C021253BBD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

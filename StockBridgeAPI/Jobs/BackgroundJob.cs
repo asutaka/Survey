@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Quartz;
-using StockLibrary.Service;
-using StockLibrary.Util;
+using SLib.Service;
 using Telegram.Bot;
 
 namespace StockBridgeAPI.Jobs
@@ -36,7 +35,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch(Exception ex)
                     {
-                        NLogLogger.PublishException(ex, ex.Message);
+                        Console.WriteLine(ex.Message);
                     }
                     //Tự doanh Upcom
                     try
@@ -49,7 +48,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch (Exception ex)
                     {
-                        NLogLogger.PublishException(ex, ex.Message);
+                        Console.WriteLine(ex.Message);
                     }
                     //Tự doanh HSX
                     try
@@ -65,23 +64,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch (Exception ex)
                     {
-                        NLogLogger.PublishException(ex, ex.Message);
-                    }
-                    //GDNN
-                    try
-                    {
-                        var nn = await _bllService.SyncGDNuocNgoai();
-                        if(nn.Item1 > 0)
-                        {
-                            foreach (var item in nn.Item2)
-                            {
-                                await _telegramService.BotInstance().SendTextMessageAsync(_idMain, item);
-                            }
-                        }    
-                    }
-                    catch (Exception ex)
-                    {
-                        NLogLogger.PublishException(ex, ex.Message);
+                        Console.WriteLine(ex.Message);
                     }
                 }
             }

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.OpenApi.Models;
 using System.Net;
-using StockLibrary.Service;
-using StockLibrary.DAL;
+using SLib.Service;
+using SLib.DAL;
 
 namespace StockBridgeAPI
 {
