@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using Newtonsoft.Json;
 using Skender.Stock.Indicators;
+using SLib.Model;
 using SLib.Model.APIModel;
 using SLib.Util;
 using System;
@@ -17,6 +18,8 @@ namespace SLib.Service
         Task<Stream> GetTuDoanhHNX(EHnxExchange mode);
         Task<Stream> GetTuDoanhHSX();
         Task<List<Quote>> GetDataStock(string code);
+        Task<List<TuDoanh>> GetTuDoanh24H();
+        Task<List<Foreign>> GetGDNN24H();
     }
     public class APIService : IAPIService
     {
@@ -52,7 +55,8 @@ namespace SLib.Service
                 var link = string.Empty;
                 var dt = DateTime.Now;
                 var url = "https://www.hsx.vn";
-                var client = new HttpClient { BaseAddress = new Uri(url) };
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -102,7 +106,8 @@ namespace SLib.Service
             try
             {
                 var url = string.Format(ServiceSetting._stockData, code, "1D", DateTimeOffset.Now.AddYears(-1).ToUnixTimeSeconds(), DateTimeOffset.Now.ToUnixTimeSeconds());
-                var client = new HttpClient { BaseAddress = new Uri(url) };
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<StockDataSurroundModel>(resultArray);
@@ -121,6 +126,76 @@ namespace SLib.Service
                             Volume = responseModel.data.v.ElementAt(i)
                         });
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return lOutput;
+        }
+
+        public async Task<List<TuDoanh>> GetTuDoanh24H()
+        {
+            var lOutput = new List<TuDoanh>();
+            try
+            {
+                var url = ServiceSetting._giaodichTuDoanh_24hMoney;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<TudoanhAPI>(resultArray);
+                if (responseModel.status == 200 
+                    && responseModel.data.data.Any())
+                {
+                    var date = responseModel.data.from_date.ToDateTime("dd/MM/yyyy");
+                    return responseModel.data.data.Where(x => x.symbol.Length == 3).OrderByDescending(x => x.prop_net).Select((x, index) => new TuDoanh
+                    {
+                        no = index + 1,
+                        d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
+                        s = x.symbol,
+                        net_deal = x.prop_net_deal,
+                        net_pt = x.prop_net_pt,
+                        net = x.prop_net,
+                        t = DateTimeOffset.Now.ToUnixTimeSeconds()
+                    }).ToList(); 
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return lOutput;
+        }
+
+        public async Task<List<Foreign>> GetGDNN24H()
+        {
+            var lOutput = new List<Foreign>();
+            try
+            {
+                var url = ServiceSetting._giaodichNN_24hMoney;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<GDNNAPIModel>(resultArray);
+                if (responseModel.status == 200
+                    && responseModel.data.data.Any())
+                {
+                    var date = responseModel.data.from_date.ToDateTime("dd/MM/yyyy");
+                    return responseModel.data.data.Where(x => x.symbol.Length == 3).OrderByDescending(x => x.net_val).Select((x, index) => new Foreign
+                    {
+                        no = index + 1,
+                        d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
+                        s = x.symbol,
+                        sell_qtty = x.sell_qtty,
+                        sell_val = x.sell_val,
+                        buy_qtty = x.buy_qtty,
+                        buy_val = x.buy_val,
+                        net_val = x.net_val,
+                        t = DateTimeOffset.Now.ToUnixTimeSeconds()
+                    }).ToList();
                 }
             }
             catch (Exception ex)

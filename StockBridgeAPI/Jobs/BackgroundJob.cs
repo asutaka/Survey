@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using Quartz;
+﻿using Quartz;
 using SLib.Service;
 using Telegram.Bot;
 

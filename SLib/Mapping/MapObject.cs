@@ -8,16 +8,16 @@ namespace SLib.Mapping
 {
     public static class MapObject
     {
-        public static List<Foreign> ToForeign(this ForeignModel model)
+        public static List<ForeignTmp> ToForeign(this ForeignModel model)
         {
             if(model is null
                 || model.data is null)
                 return null;
 
-            var lForeign = new List<Foreign>();
+            var lForeign = new List<ForeignTmp>();
             foreach (var item in model.data)
             {
-                lForeign.Add(new Foreign
+                lForeign.Add(new ForeignTmp
                 {
                     d = new DateTimeOffset(item.tradingDate.ToDateTime("dd/MM/yyyy HH:mm:ss"), TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
                     pc = item.priceChange,

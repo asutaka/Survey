@@ -1,5 +1,6 @@
 ﻿using MongoDB.Driver;
 using SLib.Model;
+using SLib.Model.APIModel;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
@@ -35,18 +36,16 @@ namespace SLib.Service
                     return (0, string.Empty);
 
                 var lData = _fileService.HNX(stream);
-                var count = InsertTuDoanh(lData);
+                var lOutput = InsertTuDoanh(lData);
 
                 strOutput.AppendLine($"[Thông báo] Tự doanh HNX ngày {dt.ToString("dd/MM/yyyy")}:");
-                strOutput.AppendLine($"*Số bản ghi được lưu: {count} bản ghi");
+                strOutput.AppendLine($"*Số bản ghi được lưu: {lOutput.Count()} bản ghi");
                 strOutput.AppendLine($"*Chi tiết:");
-                lData = lData.OrderByDescending(x => x.bva - x.sva).ToList();
+                lOutput = lOutput.OrderByDescending(x => x.net).ToList();
                 var index = 1;
-                foreach (var item in lData)
+                foreach (var item in lOutput)
                 {
-                    var net = item.bva - item.sva;
-                    strOutput.AppendLine($"{index++}. {item.s} KL: {item.bvo.ToString("#,##0")}/{item.svo.ToString("#,##0")}| " +
-                        $"GT: {(item.bva * 1000).ToString("#,##0")}/{(item.sva * 1000).ToString("#,##0")}| {(net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(net * 1000).ToString("#,##0")}đ");
+                    strOutput.AppendLine($"{index++}. {item.s}({(item.net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(item.net * 1000).ToString("#,##0")}đ)");
                 }
                 _configRepo.InsertOne(new ConfigData
                 {
@@ -88,18 +87,16 @@ namespace SLib.Service
                     return (0, string.Empty);
 
                 var lData = _fileService.HNX(stream);
-                var count = InsertTuDoanh(lData);
+                var lOutput = InsertTuDoanh(lData);
 
                 strOutput.AppendLine($"[Thông báo] Tự doanh Upcom ngày {dt.ToString("dd/MM/yyyy")}:");
-                strOutput.AppendLine($"*Số bản ghi được lưu: {count} bản ghi");
+                strOutput.AppendLine($"*Số bản ghi được lưu: {lOutput.Count()} bản ghi");
                 strOutput.AppendLine($"*Chi tiết:");
-                lData = lData.OrderByDescending(x => x.bva - x.sva).ToList();
+                lOutput = lOutput.OrderByDescending(x => x.net).ToList();
                 var index = 1;
-                foreach (var item in lData)
+                foreach (var item in lOutput)
                 {
-                    var net = item.bva - item.sva;
-                    strOutput.AppendLine($"{index++}. {item.s} KL: {item.bvo.ToString("#,##0")}/{item.svo.ToString("#,##0")}| " +
-                       $"GT: {(item.bva * 1000).ToString("#,##0")}/{(item.sva * 1000).ToString("#,##0")}| {(net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(net * 1000).ToString("#,##0")}đ");
+                    strOutput.AppendLine($"{index++}. {item.s} ({(item.net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(item.net * 1000).ToString("#,##0")}đ)");
                 }
                 _configRepo.InsertOne(new ConfigData
                 {
@@ -141,13 +138,13 @@ namespace SLib.Service
                     return (0, null);
 
                 var lData = _fileService.HSX(stream);
-                var count = InsertTuDoanh(lData);
+                var lOutput = InsertTuDoanh(lData);
 
                 strOutput.AppendLine($"[Thông báo] Tự doanh HOSE ngày {dt.ToString("dd/MM/yyyy")}:");
-                strOutput.AppendLine($"*Số bản ghi được lưu: {count} bản ghi");
+                strOutput.AppendLine($"*Số bản ghi được lưu: {lOutput.Count()} bản ghi");
                 strOutput.AppendLine($"*Chi tiết:");
-                lData = lData.OrderByDescending(x => x.bva - x.sva).ToList();
-                var countData = lData.Count();
+                lOutput = lOutput.OrderByDescending(x => x.net).ToList();
+                var countData = lOutput.Count();
                 var lFlag = new List<int>();
                 if (countData > 20)
                 {
@@ -164,11 +161,19 @@ namespace SLib.Service
 
                 var index = 1;
                 var lMes = new List<string>();
-                foreach (var item in lData)
+                foreach (var item in lOutput)
                 {
-                    var net = item.bva - item.sva;
-                    strOutput.AppendLine($"{index}. {item.s} KL: {item.bvo.ToString("#,##0")}/{item.svo.ToString("#,##0")}| " +
-                       $"GT: {(item.bva * 1000).ToString("#,##0")}/{(item.sva * 1000).ToString("#,##0")}| {(net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(net * 1000).ToString("#,##0")}đ");
+                    var content = $"{index}. {item.s} ({(item.net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(item.net * 1000).ToString("#,##0")}đ)";
+                    if(item.net_pt > 0)
+                    {
+                        content += $" - Thỏa thuận mua {Math.Abs(item.net_pt * 1000).ToString("#,##0")}đ";
+                    }
+                    else if(item.net_pt < 0)
+                    {
+                        content += $" - Thỏa thuận bán {Math.Abs(item.net_pt * 1000).ToString("#,##0")}đ";
+                    }    
+
+                    strOutput.AppendLine(content);
                     if (lFlag.Contains(index))
                     {
                         lMes.Add(strOutput.ToString());
@@ -197,19 +202,29 @@ namespace SLib.Service
             return (0, null);
         }
 
-        private int InsertTuDoanh(List<TuDoanh> lInput)
+        private List<TuDoanh> InsertTuDoanh(List<TudoanhPDF> lInput)
         {
-            var count = 0;
+            var lstResult = new List<TuDoanh>();
             foreach (var item in lInput)
             {
                 //Check Exists
                 var lFind = _tudoanhRepo.GetWithFilter(1, 20, item.s, item.d);
                 if ((lFind ?? new List<TuDoanh>()).Any())
                     continue;
-                _tudoanhRepo.InsertOne(item);
-                count++;
+                var model = new TuDoanh
+                {
+                    no = item.no,
+                    d = item.d,
+                    s = item.s,
+                    net_deal = item.bva - item.sva,
+                    net_pt = item.bva_pt - item.sva_pt,
+                    t = item.t
+                };
+                model.net = model.net_deal + model.net_pt;
+                lstResult.Add(model);
+                _tudoanhRepo.InsertOne(model);
             }
-            return count;
+            return lstResult;
         }
     }
 }

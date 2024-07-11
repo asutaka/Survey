@@ -13,49 +13,49 @@ namespace SLib.Service
         public string TongTuDoanhStr()
         {
             var output = new StringBuilder();
-            var dt = DateTime.Now;
-            if (dt.Hour < 20)
-            {
-                dt = dt.AddDays(-1);
-            }
+            //var dt = DateTime.Now;
+            //if (dt.Hour < 20)
+            //{
+            //    dt = dt.AddDays(-1);
+            //}
 
-            FilterDefinition<TuDoanh> filter = null;
-            var builder = Builders<TuDoanh>.Filter;
-            var lFilter = new List<FilterDefinition<TuDoanh>>
-                {
-                    builder.Eq(x => x.d, new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds())
-                };
-            foreach (var item in lFilter)
-            {
-                if (filter is null)
-                {
-                    filter = item;
-                    continue;
-                }
-                filter &= item;
-            }
-            var lTuDoanh = _tudoanhRepo.GetWithFilter(1, 1000, filter);
-            if (lTuDoanh is null
-                || !lTuDoanh.Any())
-            {
-                output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
-                return output.ToString();
-            }
+            //FilterDefinition<TuDoanh> filter = null;
+            //var builder = Builders<TuDoanh>.Filter;
+            //var lFilter = new List<FilterDefinition<TuDoanh>>
+            //    {
+            //        builder.Eq(x => x.d, new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds())
+            //    };
+            //foreach (var item in lFilter)
+            //{
+            //    if (filter is null)
+            //    {
+            //        filter = item;
+            //        continue;
+            //    }
+            //    filter &= item;
+            //}
+            //var lTuDoanh = _tudoanhRepo.GetWithFilter(1, 1000, filter);
+            //if (lTuDoanh is null
+            //    || !lTuDoanh.Any())
+            //{
+            //    output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
+            //    return output.ToString();
+            //}
 
-            var TongMua = lTuDoanh.Sum(x => x.bva);
-            var TongBan = lTuDoanh.Sum(x => x.sva);
-            var div = TongMua - TongBan;
-            var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
-            output.AppendLine($"[Tổng tự doanh({dt.ToString("dd/MM/yyyy")})] {mode} {Math.Abs((decimal)div * 1000).ToString("#,##0")}đ");
-            var lCal = lTuDoanh.Select(x => new
-            {
-                MaCK = x.s,
-                GiaTri = (x.bva - x.sva)
-            });
-            var MuaDongStr = string.Join(", ", lCal.OrderByDescending(x => x.GiaTri).Take(10).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri * 1000).ToString("#,##0")}đ)"));
-            var BanDongStr = string.Join(", ", lCal.OrderBy(x => x.GiaTri).Take(10).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri * 1000).ToString("#,##0")}đ)"));
-            output.AppendLine($">> Top 10 mua ròng: {MuaDongStr}");
-            output.AppendLine($">> Top 10 bán ròng: {BanDongStr}");
+            //var TongMua = lTuDoanh.Sum(x => x.bva);
+            //var TongBan = lTuDoanh.Sum(x => x.sva);
+            //var div = TongMua - TongBan;
+            //var mode = div >= 0 ? "Mua ròng" : "Bán ròng";
+            //output.AppendLine($"[Tổng tự doanh({dt.ToString("dd/MM/yyyy")})] {mode} {Math.Abs((decimal)div * 1000).ToString("#,##0")}đ");
+            //var lCal = lTuDoanh.Select(x => new
+            //{
+            //    MaCK = x.s,
+            //    GiaTri = (x.bva - x.sva)
+            //});
+            //var MuaDongStr = string.Join(", ", lCal.OrderByDescending(x => x.GiaTri).Take(10).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri * 1000).ToString("#,##0")}đ)"));
+            //var BanDongStr = string.Join(", ", lCal.OrderBy(x => x.GiaTri).Take(10).Select(x => $"{x.MaCK}({Math.Abs((decimal)x.GiaTri * 1000).ToString("#,##0")}đ)"));
+            //output.AppendLine($">> Top 10 mua ròng: {MuaDongStr}");
+            //output.AppendLine($">> Top 10 bán ròng: {BanDongStr}");
 
             return output.ToString();
         }
@@ -108,62 +108,62 @@ namespace SLib.Service
         public string TuDoanhBuildStr(string code)
         {
             var output = new StringBuilder();
-            try
-            {
-                var dt = DateTime.Now;
-                var firstMonth = new DateTime(dt.Year, dt.Month, 1);
-                var firstWeek = dt.AddDays((int)DayOfWeek.Monday - (int)dt.DayOfWeek);
+            //try
+            //{
+            //    var dt = DateTime.Now;
+            //    var firstMonth = new DateTime(dt.Year, dt.Month, 1);
+            //    var firstWeek = dt.AddDays((int)DayOfWeek.Monday - (int)dt.DayOfWeek);
 
-                FilterDefinition<TuDoanh> filter = null;
-                var builder = Builders<TuDoanh>.Filter;
-                var lFilter = new List<FilterDefinition<TuDoanh>>
-                {
-                    builder.Eq(x => x.s, code),
-                    builder.Gte(x => x.d, new DateTimeOffset(firstMonth, TimeSpan.FromHours(0)).ToUnixTimeSeconds())
-                };
-                foreach (var item in lFilter)
-                {
-                    if (filter is null)
-                    {
-                        filter = item;
-                        continue;
-                    }
-                    filter &= item;
-                }
+            //    FilterDefinition<TuDoanh> filter = null;
+            //    var builder = Builders<TuDoanh>.Filter;
+            //    var lFilter = new List<FilterDefinition<TuDoanh>>
+            //    {
+            //        builder.Eq(x => x.s, code),
+            //        builder.Gte(x => x.d, new DateTimeOffset(firstMonth, TimeSpan.FromHours(0)).ToUnixTimeSeconds())
+            //    };
+            //    foreach (var item in lFilter)
+            //    {
+            //        if (filter is null)
+            //        {
+            //            filter = item;
+            //            continue;
+            //        }
+            //        filter &= item;
+            //    }
 
-                var lTuDoanh = _tudoanhRepo.GetWithFilter(1, 30, filter);
-                if (lTuDoanh is null
-                    || !lTuDoanh.Any())
-                {
-                    output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
-                    return output.ToString();
-                }
+            //    var lTuDoanh = _tudoanhRepo.GetWithFilter(1, 30, filter);
+            //    if (lTuDoanh is null
+            //        || !lTuDoanh.Any())
+            //    {
+            //        output.AppendLine("[Tự doanh] Không có dữ liệu tự doanh");
+            //        return output.ToString();
+            //    }
 
-                //Ngày gần nhất
-                var dtTuDoanhMax = lTuDoanh.Max(x => x.d);
-                var TuDoanhLast = lTuDoanh.FirstOrDefault(x => x.d >= dtTuDoanhMax);
-                var divLast = TuDoanhLast.bvo - TuDoanhLast.svo;
-                var modeLast = divLast >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($"[Tự doanh ngày gần nhất: {TuDoanhLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
-                output.AppendLine($"(MUA: {TuDoanhLast.bvo.ToString("#,##0")}|BÁN: {TuDoanhLast.svo.ToString("#,##0")}) ==> {modeLast} {Math.Abs(divLast).ToString("#,##0")} cổ phiếu");
-                //Trong Tuần
-                var lTuDoanhWeek = lTuDoanh.Where(x => x.d >= new DateTimeOffset(new DateTime(firstWeek.Year, firstWeek.Month, firstWeek.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds());
-                var Tuan_Mua = lTuDoanhWeek.Sum(x => x.bvo);
-                var Tuan_Ban = lTuDoanhWeek.Sum(x => x.svo);
-                var divTuan = Tuan_Mua - Tuan_Ban;
-                var modeTuan = divTuan >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($">> Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
-                //Trong Tháng
-                var Thang_Mua = lTuDoanh.Sum(x => x.bvo);
-                var Thang_Ban = lTuDoanh.Sum(x => x.svo);
-                var divThang = Thang_Mua - Thang_Ban;
-                var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
-                output.AppendLine($">> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"TelegramService.TuDoanhBuildStr|EXCEPTION| {ex.Message}");
-            }
+            //    //Ngày gần nhất
+            //    var dtTuDoanhMax = lTuDoanh.Max(x => x.d);
+            //    var TuDoanhLast = lTuDoanh.FirstOrDefault(x => x.d >= dtTuDoanhMax);
+            //    var divLast = TuDoanhLast.bvo - TuDoanhLast.svo;
+            //    var modeLast = divLast >= 0 ? "Mua ròng" : "Bán ròng";
+            //    output.AppendLine($"[Tự doanh ngày gần nhất: {TuDoanhLast.d.UnixTimeStampToDateTime().ToString("dd/MM/yyyy")}]");
+            //    output.AppendLine($"(MUA: {TuDoanhLast.bvo.ToString("#,##0")}|BÁN: {TuDoanhLast.svo.ToString("#,##0")}) ==> {modeLast} {Math.Abs(divLast).ToString("#,##0")} cổ phiếu");
+            //    //Trong Tuần
+            //    var lTuDoanhWeek = lTuDoanh.Where(x => x.d >= new DateTimeOffset(new DateTime(firstWeek.Year, firstWeek.Month, firstWeek.Day), TimeSpan.FromHours(0)).ToUnixTimeSeconds());
+            //    var Tuan_Mua = lTuDoanhWeek.Sum(x => x.bvo);
+            //    var Tuan_Ban = lTuDoanhWeek.Sum(x => x.svo);
+            //    var divTuan = Tuan_Mua - Tuan_Ban;
+            //    var modeTuan = divTuan >= 0 ? "Mua ròng" : "Bán ròng";
+            //    output.AppendLine($">> Trong Tuần: (MUA: {Tuan_Mua.ToString("#,##0")}|BÁN: {Tuan_Ban.ToString("#,##0")}) ==> {modeTuan} {Math.Abs(divTuan).ToString("#,##0")} cổ phiếu");
+            //    //Trong Tháng
+            //    var Thang_Mua = lTuDoanh.Sum(x => x.bvo);
+            //    var Thang_Ban = lTuDoanh.Sum(x => x.svo);
+            //    var divThang = Thang_Mua - Thang_Ban;
+            //    var modeThang = divThang >= 0 ? "Mua ròng" : "Bán ròng";
+            //    output.AppendLine($">> Trong Tháng: (MUA: {Thang_Mua.ToString("#,##0")}|BÁN: {Thang_Ban.ToString("#,##0")}) ==> {modeThang} {Math.Abs(divThang).ToString("#,##0")} cổ phiếu");
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine($"TelegramService.TuDoanhBuildStr|EXCEPTION| {ex.Message}");
+            //}
             return output.ToString();
         }
 

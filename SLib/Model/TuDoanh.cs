@@ -8,10 +8,9 @@ namespace SLib.Model
         public int no { get; set; }
         public long d { get; set; }
         public string s { get; set; }
-        public int bvo { get; set; }//kl mua
-        public int svo { get; set; }//kl ban
-        public decimal bva { get; set; }//gia tri mua
-        public decimal sva { get; set; }//gia tri ban
+        public decimal net_deal { get; set; }//gia tri mua bán khớp lệnh
+        public decimal net_pt { get; set; }//gia tri mua bán thỏa thuận
+        public decimal net { get; set; }//gia tri mua bán
         public long t { get; set; }
     }
 }
