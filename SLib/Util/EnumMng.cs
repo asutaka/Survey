@@ -46,4 +46,14 @@ namespace SLib.Util
         OnlyStock = 1,
         Other = 10
     }
+
+    public enum E24HGDNNMode
+    {
+        [Display(Name = "10")]
+        HSX = 1,
+        [Display(Name = "02")]
+        HNX = 2,
+        [Display(Name = "03")]
+        UP = 3
+    }
 }

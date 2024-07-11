@@ -14,7 +14,7 @@
         public const string _botToken = "7422438658:AAEPzAwq-5rA-5dLEFRpPrdOBt9yMfnkBxA";
 
         public const string _giaodichNN_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/web/indices/foreign-trading-all-stock-by-time?code=10&type=today";//Giao dịch nước ngoài
-        public const string _giaodichTuDoanh_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/web/indices/proprietary-trading-all-stock-by-time?code=10&type=today";//Giao dịch tự doanh
+        public const string _giaodichTuDoanh_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/web/indices/proprietary-trading-all-stock-by-time?code={0}&type=today";//Giao dịch tự doanh
     }
 }
 
