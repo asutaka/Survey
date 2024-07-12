@@ -61,7 +61,8 @@ namespace SLib.Service
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
                 doc.LoadHtml(html);
-                var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"body\"]/div[2]/div[1]/div[2]/div[1]/div/div[2]/div/div[2]/ul") as IEnumerable<HtmlNode>;
+
+                var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"body\"]/div[2]/div[1]/div[2]/div[1]/div/div[2]/div") as IEnumerable<HtmlNode>;
                 foreach (HtmlNode node in nodes.ElementAt(0).ChildNodes)
                 {
                     if (string.IsNullOrWhiteSpace(node.InnerText))
@@ -69,14 +70,18 @@ namespace SLib.Service
 
                     var document = new HtmlDocument();
                     document.LoadHtml(node.InnerHtml);
-                    var tagA = document.DocumentNode.SelectSingleNode("//a");
-                    var title = tagA.Attributes["title"].Value;
-                    if (!(title.Contains("giao dịch tự doanh")
-                        && title.Contains($"{dt.Day.To2Digit()}/{dt.Month.To2Digit()}/{dt.Year}")))
-                        continue;
+                    var lNode = document.DocumentNode.SelectNodes("//a");
+                    foreach (var item in lNode)
+                    {
+                        var tagA = document.DocumentNode.SelectSingleNode("//a");
+                        var title = tagA.Attributes["title"].Value;
+                        if (!(title.Contains("giao dịch tự doanh")
+                            && title.Contains($"{dt.Day.To2Digit()}/{dt.Month.To2Digit()}/{dt.Year}")))
+                            continue;
 
-                    link = tagA.Attributes["href"].Value;
-                    break;
+                        link = tagA.Attributes["href"].Value;
+                        break;
+                    }
                 }
 
                 if (string.IsNullOrWhiteSpace(link))
