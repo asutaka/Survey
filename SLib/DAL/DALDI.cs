@@ -9,6 +9,7 @@ namespace SLib.DAL
             services.AddSingleton<IStockRepo, StockRepo>();
             services.AddSingleton<ITuDoanhRepo, TuDoanhRepo>();
             services.AddSingleton<IConfigDataRepo, ConfigDataRepo>();
+            services.AddSingleton<IForeignRepo, ForeignRepo>();
         }
     }
 }

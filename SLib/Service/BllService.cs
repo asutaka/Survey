@@ -1,4 +1,5 @@
 ﻿using SLib.DAL;
+using SLib.Util;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,6 +10,7 @@ namespace SLib.Service
         Task<(int, string)> SyncTuDoanhHNX();
         Task<(int, string)> SyncTuDoanhUp();
         Task<(int, List<string>)> SyncTuDoanhHSX();
+        Task<(int, string)> SyncThongkeGDNN(E24hGDNNType type);
 
         string TongTuDoanhStr();
         string TongGDNNStr();
@@ -22,7 +24,7 @@ namespace SLib.Service
         //private readonly IStockMongoRepo _stockRepo;
         private readonly IConfigDataRepo _configRepo;
         private readonly ITuDoanhRepo _tudoanhRepo;
-        //private readonly IForeignMongoRepo _foreignRepo;
+        private readonly IForeignRepo _foreignRepo;
         //private readonly IReportMongoRepo _reportRepo;
         private readonly IFileService _fileService;
         public BllService(IAPIService apiService,
@@ -30,7 +32,7 @@ namespace SLib.Service
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
                             //IReportMongoRepo reportRepo,
-                            //IForeignMongoRepo foreignRepo,
+                            IForeignRepo foreignRepo,
                             IFileService fileService
                             )
         {
@@ -38,7 +40,7 @@ namespace SLib.Service
             //_stockRepo = stockRepo;
             _configRepo = configRepo;
             _tudoanhRepo = tudoanhRepo;
-            //_foreignRepo = foreignRepo;
+            _foreignRepo = foreignRepo;
             //_reportRepo = reportRepo;
             _fileService = fileService;
         }

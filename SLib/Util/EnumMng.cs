@@ -54,6 +54,16 @@ namespace SLib.Util
         [Display(Name = "02")]
         HNX = 2,
         [Display(Name = "03")]
-        UP = 3
+        UPCOM = 3
+    }
+
+    public enum E24hGDNNType
+    {
+        [Display(Name = "today")]
+        today = 1,
+        [Display(Name = "week")]
+        week = 2,
+        [Display(Name = "month")]
+        month = 3
     }
 }

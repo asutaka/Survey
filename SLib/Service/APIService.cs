@@ -19,7 +19,7 @@ namespace SLib.Service
         Task<Stream> GetTuDoanhHSX();
         Task<List<Quote>> GetDataStock(string code);
         Task<List<TuDoanh>> GetTuDoanh24H();
-        Task<List<Foreign>> GetGDNN24H(E24HGDNNMode mode);
+        Task<List<Foreign>> GetGDNN24H(E24HGDNNMode mode, E24hGDNNType type);
     }
     public class APIService : IAPIService
     {
@@ -174,12 +174,12 @@ namespace SLib.Service
             return lOutput;
         }
 
-        public async Task<List<Foreign>> GetGDNN24H(E24HGDNNMode mode)
+        public async Task<List<Foreign>> GetGDNN24H(E24HGDNNMode mode, E24hGDNNType type)
         {
             var lOutput = new List<Foreign>();
             try
             {
-                var url = string.Format(ServiceSetting._giaodichNN_24hMoney, mode.GetDisplayName());
+                var url = string.Format(ServiceSetting._giaodichNN_24hMoney, mode.GetDisplayName(), type.GetDisplayName());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);

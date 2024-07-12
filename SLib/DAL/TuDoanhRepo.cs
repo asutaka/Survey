@@ -16,8 +16,7 @@ namespace SLib.DAL
 
     public class TuDoanhRepo : MongoBaseRepo<TuDoanh>, ITuDoanhRepo
     {
-        public TuDoanhRepo()
-        { }
+        public TuDoanhRepo(){ }
 
         public List<TuDoanh> GetWithFilter(int offset, int limit, FilterDefinition<TuDoanh> filter)
         {

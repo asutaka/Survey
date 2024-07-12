@@ -21,7 +21,36 @@ namespace StockBridgeAPI.Jobs
             var dt = DateTime.Now;
             if ((int)dt.DayOfWeek >= 1 && (int)dt.DayOfWeek <= 5)
             {
-                if (dt.Hour >= 16 && dt.Hour <= 23)
+                if(dt.Hour >= 15 && dt.Hour < 16)
+                {
+                    //NN
+                    try
+                    {
+                        var gdnn_day = await _bllService.SyncThongkeGDNN(SLib.Util.E24hGDNNType.today);
+                        if (gdnn_day.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, gdnn_day.Item2);
+                        }
+
+                        var gdnn_week = await _bllService.SyncThongkeGDNN(SLib.Util.E24hGDNNType.week);
+                        if (gdnn_week.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, gdnn_week.Item2);
+                        }
+
+                        var gdnn_month = await _bllService.SyncThongkeGDNN(SLib.Util.E24hGDNNType.month);
+                        if (gdnn_month.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, gdnn_month.Item2);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+
+                if (dt.Hour >= 16 && dt.Hour <= 18)
                 {
                     //Tự doanh HNX
                     try
