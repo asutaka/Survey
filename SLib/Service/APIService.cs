@@ -20,6 +20,9 @@ namespace SLib.Service
         Task<List<Quote>> GetDataStock(string code);
         Task<List<TuDoanh>> GetTuDoanh24H();
         Task<List<Foreign>> GetGDNN24H(E24HGDNNMode mode, E24hGDNNType type);
+        Task<string> GetExternalIpAddress();
+        Task<NhomNganhAPIModel> GetDulieuNhomNganh(E24hGDNNType type);
+        Task<MaTheoNhomNganhAPIModel> GetMaTheoNhomNganh(string nhom);
     }
     public class APIService : IAPIService
     {
@@ -189,18 +192,21 @@ namespace SLib.Service
                     && responseModel.data.data.Any())
                 {
                     var date = responseModel.data.from_date.ToDateTime("dd/MM/yyyy");
-                    return responseModel.data.data.Where(x => x.symbol.Length == 3).OrderByDescending(x => x.net_val).Select((x, index) => new Foreign
+                    if(date.Day == DateTime.Now.Day)
                     {
-                        no = index + 1,
-                        d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
-                        s = x.symbol,
-                        sell_qtty = x.sell_qtty,
-                        sell_val = x.sell_val,
-                        buy_qtty = x.buy_qtty,
-                        buy_val = x.buy_val,
-                        net_val = x.net_val,
-                        t = DateTimeOffset.Now.ToUnixTimeSeconds()
-                    }).ToList();
+                        return responseModel.data.data.Where(x => x.symbol.Length == 3).OrderByDescending(x => x.net_val).Select((x, index) => new Foreign
+                        {
+                            no = index + 1,
+                            d = new DateTimeOffset(date, TimeSpan.FromHours(0)).ToUnixTimeSeconds(),
+                            s = x.symbol,
+                            sell_qtty = x.sell_qtty,
+                            sell_val = x.sell_val,
+                            buy_qtty = x.buy_qtty,
+                            buy_val = x.buy_val,
+                            net_val = x.net_val,
+                            t = DateTimeOffset.Now.ToUnixTimeSeconds()
+                        }).ToList();
+                    }
                 }
             }
             catch (Exception ex)
@@ -208,6 +214,68 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return lOutput;
+        }
+
+        public async Task<string> GetExternalIpAddress()
+        {
+            var lOutput = new List<Foreign>();
+            try
+            {
+                var url = "http://icanhazip.com";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                return await responseMessage.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return string.Empty;
+        }
+
+        public async Task<NhomNganhAPIModel> GetDulieuNhomNganh(E24hGDNNType type)
+        {
+            try
+            {
+                var url = string.Format(ServiceSetting._nhomNganh_24hMoney, type.GetDisplayName());
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var result = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<NhomNganhAPIModel>(result);
+                if (responseModel.status == 200)
+                {
+                    return responseModel;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<MaTheoNhomNganhAPIModel> GetMaTheoNhomNganh(string nhom)
+        {
+            try
+            {
+                var url = string.Format(ServiceSetting._maTheoNganh_24hMoney, nhom);
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var result = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<MaTheoNhomNganhAPIModel>(result);
+                if (responseModel.status == 200)
+                {
+                    return responseModel;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
         }
     }
 }

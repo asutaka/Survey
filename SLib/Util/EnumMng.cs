@@ -24,7 +24,8 @@ namespace SLib.Util
         TuDoanhHNX = 1,
         TuDoanhUpcom = 2,
         TuDoanhHose = 3,
-        GDNN = 4
+        GDNN = 4,
+        ThongKeNhomNganh = 5
     }
 
     public enum ETransactionType

@@ -11,6 +11,7 @@ namespace SLib.Service
         Task<(int, string)> SyncTuDoanhUp();
         Task<(int, List<string>)> SyncTuDoanhHSX();
         Task<(int, string)> SyncThongkeGDNN(E24hGDNNType type);
+        Task<(int, string)> SyncThongkeNhomNganh(E24hGDNNType type);
 
         string TongTuDoanhStr();
         string TongGDNNStr();
@@ -21,18 +22,18 @@ namespace SLib.Service
     public partial class BllService : IBllService
     {
         private readonly IAPIService _apiService;
-        //private readonly IStockMongoRepo _stockRepo;
+        //private readonly IStockRepo _stockRepo;
         private readonly IConfigDataRepo _configRepo;
         private readonly ITuDoanhRepo _tudoanhRepo;
-        private readonly IForeignRepo _foreignRepo;
+        private readonly ICategoryRepo _categoryRepo;
         //private readonly IReportMongoRepo _reportRepo;
         private readonly IFileService _fileService;
         public BllService(IAPIService apiService,
-                            //IStockMongoRepo stockRepo,
+                            //IStockRepo stockRepo,
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
                             //IReportMongoRepo reportRepo,
-                            IForeignRepo foreignRepo,
+                            ICategoryRepo categoryRepo,
                             IFileService fileService
                             )
         {
@@ -40,7 +41,7 @@ namespace SLib.Service
             //_stockRepo = stockRepo;
             _configRepo = configRepo;
             _tudoanhRepo = tudoanhRepo;
-            _foreignRepo = foreignRepo;
+            _categoryRepo = categoryRepo;
             //_reportRepo = reportRepo;
             _fileService = fileService;
         }

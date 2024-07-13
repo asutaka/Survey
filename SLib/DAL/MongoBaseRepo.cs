@@ -85,8 +85,6 @@ namespace SLib.DAL
 
         #endregion
 
-        #region Constructor
-
         /// <summary>
         /// Constructor
         /// </summary>        
@@ -208,7 +206,7 @@ namespace SLib.DAL
                 _logger.LogError($"IMongoRepositoryBase.DeleteMany|REPOSITORY: {typeof(T).Name.ToUpper()}Repository|EXCEPTION| {ex.Message}");
             }
         }
-
+        //Example: FilterDefinition<Stock> filter = Builders<Stock>.Filter.Eq(x => x.s, itemMa.symbol);
         public List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0)
         {
             if (filter is null)
@@ -233,8 +231,5 @@ namespace SLib.DAL
                 return _collection.Find(filter).ToList();
             }
         }
-
-
-        #endregion
     }
 }

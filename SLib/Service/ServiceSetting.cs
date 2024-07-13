@@ -15,6 +15,8 @@
 
         public const string _giaodichNN_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/web/indices/foreign-trading-all-stock-by-time?code={0}&type={1}";//Giao dịch nước ngoài
         public const string _giaodichTuDoanh_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/web/indices/proprietary-trading-all-stock-by-time?code={0}&type=today";//Giao dịch tự doanh
+        public const string _nhomNganh_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/ios/company-group/all-level-with-summary?type={0}";//Dữ liệu nhóm ngành
+        public const string _maTheoNganh_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/ios/stock-recommend/business?group_id={0}&page=1&per_page=500";//Lấy danh sách Mã CK theo nhóm ngành
     }
 }
 

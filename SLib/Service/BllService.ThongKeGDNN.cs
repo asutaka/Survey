@@ -15,6 +15,7 @@ namespace SLib.Service
         {
             var dt = DateTime.Now;
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+            var dTime = new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day)).ToUnixTimeSeconds();
             try
             {
                 var builder = Builders<ConfigData>.Filter;

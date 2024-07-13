@@ -9,8 +9,10 @@ namespace SLib.Model
         public string s { get; set; }//symbol
         public string e { get; set; }//exchange
         public CompanyProfileDataModel p { get; set; } //profile
+        public List<H24DataModel> h24 { get; set; }//nhóm ngành lấy từ 24h smart money
         public List<string> cat { get; set; }//cat
         public List<string> catl { get; set; }//cat leader
+        public int status { get; set; }
     }
 
     public class CompanyProfileDataModel
@@ -28,5 +30,12 @@ namespace SLib.Model
         public decimal lv { get; set; }//Vốn hóa(listedValue)
         public string n { get; set; }//companyName
         public decimal q { get; set; }//SLCP lưu hành(quantity)
+    }
+
+    public class H24DataModel
+    {
+        public string code { get; set; }
+        public string name { get; set; }
+        public int level { get; set; }
     }
 }

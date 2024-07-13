@@ -1,5 +1,6 @@
 ﻿using Quartz;
 using SLib.Service;
+using SLib.Util;
 using Telegram.Bot;
 
 namespace StockBridgeAPI.Jobs
@@ -18,6 +19,7 @@ namespace StockBridgeAPI.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
+
             var dt = DateTime.Now;
             if ((int)dt.DayOfWeek >= 1 && (int)dt.DayOfWeek <= 5)
             {
@@ -26,22 +28,48 @@ namespace StockBridgeAPI.Jobs
                     //NN
                     try
                     {
-                        var gdnn_day = await _bllService.SyncThongkeGDNN(SLib.Util.E24hGDNNType.today);
+                        var gdnn_day = await _bllService.SyncThongkeGDNN(E24hGDNNType.today);
                         if (gdnn_day.Item1 > 0)
                         {
                             await _telegramService.BotInstance().SendTextMessageAsync(_idMain, gdnn_day.Item2);
                         }
 
-                        var gdnn_week = await _bllService.SyncThongkeGDNN(SLib.Util.E24hGDNNType.week);
+                        var gdnn_week = await _bllService.SyncThongkeGDNN(E24hGDNNType.week);
                         if (gdnn_week.Item1 > 0)
                         {
                             await _telegramService.BotInstance().SendTextMessageAsync(_idMain, gdnn_week.Item2);
                         }
 
-                        var gdnn_month = await _bllService.SyncThongkeGDNN(SLib.Util.E24hGDNNType.month);
+                        var gdnn_month = await _bllService.SyncThongkeGDNN(E24hGDNNType.month);
                         if (gdnn_month.Item1 > 0)
                         {
                             await _telegramService.BotInstance().SendTextMessageAsync(_idMain, gdnn_month.Item2);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+
+                    //Nhóm ngành
+                    try
+                    {
+                        var nhomNganh_day = await _bllService.SyncThongkeNhomNganh(E24hGDNNType.today);
+                        if (nhomNganh_day.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, nhomNganh_day.Item2);
+                        }
+
+                        var nhomNganh_week = await _bllService.SyncThongkeNhomNganh(E24hGDNNType.week);
+                        if (nhomNganh_week.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, nhomNganh_week.Item2);
+                        }
+
+                        var nhomNganh_month = await _bllService.SyncThongkeNhomNganh(E24hGDNNType.month);
+                        if (nhomNganh_month.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, nhomNganh_month.Item2);
                         }
                     }
                     catch (Exception ex)
