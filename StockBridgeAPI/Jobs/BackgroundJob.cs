@@ -1,6 +1,8 @@
 ﻿using Quartz;
 using SLib.Service;
 using SLib.Util;
+using System;
+using System.Threading.Tasks;
 using Telegram.Bot;
 
 namespace StockBridgeAPI.Jobs
@@ -9,6 +11,7 @@ namespace StockBridgeAPI.Jobs
     public class BackgroundJob : IJob
     {
         private const long _idMain = -1002247826353;
+        private const long _idUser = 0;
         private readonly ITelegramLibService _telegramService;
         private readonly IBllService _bllService;
         public BackgroundJob(ITelegramLibService telegramService, IBllService bllService)
@@ -19,10 +22,21 @@ namespace StockBridgeAPI.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-
             var dt = DateTime.Now;
             if ((int)dt.DayOfWeek >= 1 && (int)dt.DayOfWeek <= 5)
             {
+                if(dt.Hour >= 9 && dt.Hour < 16)
+                {
+                    if(dt.Minute == 20)
+                    {
+                        var chibao = await _bllService.LayMaTheoChiBao();
+                        if (chibao.Item1 > 0)
+                        {
+                            await _telegramService.BotInstance().SendTextMessageAsync(_idMain, chibao.Item2);
+                        }
+                    }    
+                }
+
                 if(dt.Hour >= 15 && dt.Hour < 16)
                 {
                     //NN

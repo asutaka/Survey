@@ -1,3 +1,5 @@
+using System;
+
 namespace StockBridgeAPI
 {
     public class WeatherForecast

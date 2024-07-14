@@ -12,24 +12,26 @@ namespace SLib.Service
         Task<(int, List<string>)> SyncTuDoanhHSX();
         Task<(int, string)> SyncThongkeGDNN(E24hGDNNType type);
         Task<(int, string)> SyncThongkeNhomNganh(E24hGDNNType type);
+        Task<(int, string)> LayMaTheoChiBao();
 
         string TongTuDoanhStr();
         string TongGDNNStr();
         string TuDoanhBuildStr(string code);
         string ForeignBuildStr(string code);
         string ThongKeThiTruongStr();
+        Task Test();
     }
     public partial class BllService : IBllService
     {
         private readonly IAPIService _apiService;
-        //private readonly IStockRepo _stockRepo;
+        private readonly IStockRepo _stockRepo;
         private readonly IConfigDataRepo _configRepo;
         private readonly ITuDoanhRepo _tudoanhRepo;
         private readonly ICategoryRepo _categoryRepo;
         //private readonly IReportMongoRepo _reportRepo;
         private readonly IFileService _fileService;
         public BllService(IAPIService apiService,
-                            //IStockRepo stockRepo,
+                            IStockRepo stockRepo,
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
                             //IReportMongoRepo reportRepo,
@@ -38,12 +40,17 @@ namespace SLib.Service
                             )
         {
             _apiService = apiService;
-            //_stockRepo = stockRepo;
+            _stockRepo = stockRepo;
             _configRepo = configRepo;
             _tudoanhRepo = tudoanhRepo;
             _categoryRepo = categoryRepo;
             //_reportRepo = reportRepo;
             _fileService = fileService;
+        }
+
+        public async Task Test()
+        {
+            //var tmp = await _apiService.GetMaTheoChiBao();
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SLib.Service
@@ -23,6 +24,7 @@ namespace SLib.Service
         Task<string> GetExternalIpAddress();
         Task<NhomNganhAPIModel> GetDulieuNhomNganh(E24hGDNNType type);
         Task<MaTheoNhomNganhAPIModel> GetMaTheoNhomNganh(string nhom);
+        Task<List<DuLieuTheoChiBaoAPIDataDetailModel>> GetMaTheoChiBao();
     }
     public class APIService : IAPIService
     {
@@ -276,6 +278,36 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return null;
+        }
+
+        public async Task<List<DuLieuTheoChiBaoAPIDataDetailModel>> GetMaTheoChiBao()
+        {
+            var body = "{\"floor_codes\":[\"10\",\"11\",\"02\",\"03\"],\"group_ids\":[\"0001\",\"1000\",\"2000\",\"3000\",\"4000\",\"5000\",\"6000\",\"7000\",\"8000\",\"8301\",\"9000\"],\"signals\":[{\"ma20\":\"up\"}]}";
+            var lOutput = new List<DuLieuTheoChiBaoAPIDataDetailModel>();
+            try
+            {
+                var url = ServiceSetting._maTheoChiBao_24hMoney;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json"); 
+               
+                var responseMessage = await client.SendAsync(requestMessage);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<DuLieuTheoChiBaoAPIModel>(resultArray);
+                if (responseModel.status == 200
+                    && responseModel.data.total_symbol > 0
+                    && responseModel.data.data.Any())
+                {
+                    return responseModel.data.data;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return lOutput;
         }
     }
 }

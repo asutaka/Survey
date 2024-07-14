@@ -4,6 +4,11 @@ using Microsoft.OpenApi.Models;
 using System.Net;
 using SLib.Service;
 using SLib.DAL;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace StockBridgeAPI
 {
@@ -40,7 +45,6 @@ namespace StockBridgeAPI
             });
             services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            services.AddEndpointsApiExplorer();
             services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddMemoryCache();
@@ -73,21 +77,7 @@ namespace StockBridgeAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler(
-                     new ExceptionHandlerOptions()
-                     {
-                         AllowStatusCode404Response = true, // important!
-                         ExceptionHandlingPath = "/error"
-                     }
-                 );
-                //app.UseExceptionHandler("/Home/Error");
-            }
+            app.UseDeveloperExceptionPage();
 
             app.Use((context, next) =>
             {

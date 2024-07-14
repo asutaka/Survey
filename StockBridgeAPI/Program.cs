@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Quartz;
 using StockBridgeAPI.Jobs;
 using StockBridgeAPI.Utils;
+using System;
 
 namespace StockBridgeAPI
 {
@@ -34,13 +37,7 @@ namespace StockBridgeAPI
                     webBuilder
                     .ConfigureAppConfiguration((hostingContext, config) =>
                     { })
-                    .UseStartup<Startup>()
-                    .ConfigureLogging(logging =>
-                    {
-                        logging.ClearProviders();
-                        logging.SetMinimumLevel(LogLevel.Information);
-                    });
-                    //.UseNLog();
+                    .UseStartup<Startup>();
                 })
                 .ConfigureServices((hostContext, services) =>
                 {

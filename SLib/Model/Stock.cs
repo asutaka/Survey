@@ -12,6 +12,7 @@ namespace SLib.Model
         public List<H24DataModel> h24 { get; set; }//nhóm ngành lấy từ 24h smart money
         public List<string> cat { get; set; }//cat
         public List<string> catl { get; set; }//cat leader
+        public int rank { get; set; }
         public int status { get; set; }
     }
 

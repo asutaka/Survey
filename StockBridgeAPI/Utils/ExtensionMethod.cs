@@ -1,4 +1,6 @@
-﻿using Quartz;
+﻿using Microsoft.Extensions.Configuration;
+using Quartz;
+using System;
 
 namespace StockBridgeAPI.Utils
 {
