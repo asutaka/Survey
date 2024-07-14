@@ -50,7 +50,7 @@ namespace SLib.Service
 
         public async Task Test()
         {
-            //var tmp = await _apiService.GetMaTheoChiBao();
+            //var tmp = await _apiService.GetKeHoachThucHien("DPG");
         }
     }
 }

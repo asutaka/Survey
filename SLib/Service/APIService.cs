@@ -25,6 +25,7 @@ namespace SLib.Service
         Task<NhomNganhAPIModel> GetDulieuNhomNganh(E24hGDNNType type);
         Task<MaTheoNhomNganhAPIModel> GetMaTheoNhomNganh(string nhom);
         Task<List<DuLieuTheoChiBaoAPIDataDetailModel>> GetMaTheoChiBao();
+        Task<KeHoachThucHienAPIModel> GetKeHoachThucHien(string ma);
     }
     public class APIService : IAPIService
     {
@@ -308,6 +309,28 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return lOutput;
+        }
+
+        public async Task<KeHoachThucHienAPIModel> GetKeHoachThucHien(string ma)
+        {
+            try
+            {
+                var url = string.Format(ServiceSetting._keHoachThucHien_24hMoney, ma);
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var result = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<KeHoachThucHienAPIModel>(result);
+                if (responseModel.status == 200)
+                {
+                    return responseModel;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
         }
     }
 }
