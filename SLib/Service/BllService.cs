@@ -1,6 +1,9 @@
 ﻿using SLib.DAL;
 using SLib.Util;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SLib.Service
@@ -13,6 +16,8 @@ namespace SLib.Service
         Task<(int, string)> SyncThongkeGDNN(E24hGDNNType type);
         Task<(int, string)> SyncThongkeNhomNganh(E24hGDNNType type);
         Task<(int, string)> LayMaTheoChiBao();
+        Task<(int, string)> KeHoachNam(string code);
+        Task<(int, string)> ThongKeLoiNhuan(string code);
 
         string TongTuDoanhStr();
         string TongGDNNStr();
@@ -50,7 +55,13 @@ namespace SLib.Service
 
         public async Task Test()
         {
-            //var tmp = await _apiService.GetKeHoachThucHien("DPG");
+            //var lLoiNhuan = await _apiService.ThongKeLoiNhuan("DPG");
+            //lLoiNhuan.Reverse();
+            //foreach (var item in lLoiNhuan)
+            //{
+
+            //}
+            //var tmp1 = 1;
         }
     }
 }

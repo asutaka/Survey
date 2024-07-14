@@ -19,6 +19,7 @@
         public const string _maTheoNganh_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/ios/stock-recommend/business?group_id={0}&page=1&per_page=500";//Lấy danh sách Mã CK theo nhóm ngành
         public const string _maTheoChiBao_24hMoney = "https://api-finance-t19.24hmoney.vn/v2/web/indices/technical-signal-filter?sort=asc&page=1&per_page=200";//Lấy danh sách Mã CK theo chỉ báo
         public const string _keHoachThucHien_24hMoney = "https://api-finance-t19.24hmoney.vn/v1/ios/company/plan-all?symbol={0}";//Lấy kế hoạch kinh doanh của cty
+        public const string _loinhuan_24hMoney = "https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-graph?symbol={0}&graph_type=4";//Thống kê lợi nhuận doanh nghiệp
     }
 }
 

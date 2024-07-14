@@ -87,5 +87,16 @@ namespace SLib.Util
                 return DateTime.MinValue;
             }
         }
+
+        public static string ToQuarter(this int val)
+        {
+            if (val == 0)
+                return "I";
+            if (val == 1)
+                return "II";
+            if (val == 2)
+                return "III";
+            return "IV";
+        }
     }
 }

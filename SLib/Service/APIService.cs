@@ -26,6 +26,7 @@ namespace SLib.Service
         Task<MaTheoNhomNganhAPIModel> GetMaTheoNhomNganh(string nhom);
         Task<List<DuLieuTheoChiBaoAPIDataDetailModel>> GetMaTheoChiBao();
         Task<KeHoachThucHienAPIModel> GetKeHoachThucHien(string ma);
+        Task<List<LoiNhuanAPIDetail>> ThongKeLoiNhuan(string ma);
     }
     public class APIService : IAPIService
     {
@@ -324,6 +325,42 @@ namespace SLib.Service
                 if (responseModel.status == 200)
                 {
                     return responseModel;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<List<LoiNhuanAPIDetail>> ThongKeLoiNhuan(string ma)
+        {
+            try
+            {
+                var url = string.Format(ServiceSetting._loinhuan_24hMoney, ma);
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var result = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<LoiNhuanAPIModel>(result);
+                if (responseModel.status == 200)
+                {
+                    var lOutput = new List<LoiNhuanAPIDetail>();
+                    foreach (var item in responseModel.data.xAxis)
+                    {
+                        var first = responseModel.data.points.FirstOrDefault(x => x.x == item.value);
+                        if (first is null)
+                            continue;
+
+                        lOutput.Add(new LoiNhuanAPIDetail
+                        {
+                            Name = item.name,
+                            Profit = first.y1,
+                            Rate_qoq = first.y3
+                        });
+                    }
+                    return lOutput;
                 }
             }
             catch (Exception ex)
