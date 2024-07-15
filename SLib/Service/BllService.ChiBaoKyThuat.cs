@@ -117,10 +117,10 @@ namespace SLib.Service
              
 
                 var lBatDay = lReport.Where(x => x.bd)
-                    .OrderByDescending(x => x.isRsiZero)
-                    .ThenBy(x => x.priceBB)
+                    //.OrderByDescending(x => x.isRsiZero)
+                    .OrderBy(x => x.priceBB)
                     .ThenBy(x => x.rank)
-                    .Take(10);
+                    .Take(20);
                 if(lBatDay.Any())
                 {
                     strOutput.AppendLine();
@@ -142,7 +142,7 @@ namespace SLib.Service
 
                 var lTrenMa20 = lReport.Where(x => x.isPriceUp && x.isCrossMa20Up)
                                     .OrderBy(x => x.rank)
-                                    .Take(10);
+                                    .Take(15);
                 if (lTrenMa20.Any())
                 {
                     strOutput.AppendLine();
@@ -159,7 +159,7 @@ namespace SLib.Service
                                   .OrderByDescending(x => x.priceCompareIchi)
                                   .ThenBy(x => x.priceBB)
                                   .ThenBy(x => x.rank)
-                                  .Take(10);
+                                  .Take(15);
                 if (lTrenMa20Extend.Any())
                 {
                     strOutput.AppendLine();
