@@ -22,6 +22,7 @@ namespace StockBridgeAPI.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
+            return;
             var dt = DateTime.Now;
             if ((int)dt.DayOfWeek >= 1 && (int)dt.DayOfWeek <= 5)
             {

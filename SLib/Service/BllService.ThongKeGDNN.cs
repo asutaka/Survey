@@ -18,8 +18,16 @@ namespace SLib.Service
             var dTime = new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day)).ToUnixTimeSeconds();
             try
             {
+                EConfigDataType mode;
+                switch(type)
+                {
+                    case E24hGDNNType.week: mode = EConfigDataType.GDNN_week; break;
+                    case E24hGDNNType.month: mode = EConfigDataType.GDNN_month; break;
+                    default: mode = EConfigDataType.GDNN_today; break;
+                }    
+
                 var builder = Builders<ConfigData>.Filter;
-                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.GDNN);
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
                 var lConfig = _configRepo.GetByFilter(filter);
                 if (lConfig.Any())
                 {
@@ -69,13 +77,35 @@ namespace SLib.Service
                     index++;
                 }
 
-                if(type == E24hGDNNType.month)
+                switch (type)
                 {
-                    _configRepo.InsertOne(new ConfigData
-                    {
-                        ty = (int)EConfigDataType.GDNN,
-                        t = t
-                    });
+                    case E24hGDNNType.week:
+                        {
+                            _configRepo.InsertOne(new ConfigData
+                            {
+                                ty = (int)EConfigDataType.GDNN_week,
+                                t = t
+                            });
+                            break;
+                        } 
+                    case E24hGDNNType.month:
+                        {
+                            _configRepo.InsertOne(new ConfigData
+                            {
+                                ty = (int)EConfigDataType.GDNN_month,
+                                t = t
+                            });
+                            break;
+                        }
+                    default:
+                        {
+                            _configRepo.InsertOne(new ConfigData
+                            {
+                                ty = (int)EConfigDataType.GDNN_today,
+                                t = t
+                            });
+                            break;
+                        }
                 }
 
                 return (1, strOutput.ToString());

@@ -19,8 +19,16 @@ namespace SLib.Service
             var dTime = new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day)).ToUnixTimeSeconds();
             try
             {
+                EConfigDataType mode;
+                switch (type)
+                {
+                    case E24hGDNNType.week: mode = EConfigDataType.ThongKeNhomNganh_week; break;
+                    case E24hGDNNType.month: mode = EConfigDataType.ThongKeNhomNganh_month; break;
+                    default: mode = EConfigDataType.ThongKeNhomNganh_today; break;
+                }
+
                 var builder = Builders<ConfigData>.Filter;
-                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.ThongKeNhomNganh);
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
                 var lConfig = _configRepo.GetByFilter(filter);
                 if (lConfig.Any())
                 {
@@ -109,14 +117,37 @@ namespace SLib.Service
                     index++;
                 }
 
-                if (type == E24hGDNNType.month)
+                switch (type)
                 {
-                    _configRepo.InsertOne(new ConfigData
-                    {
-                        ty = (int)EConfigDataType.ThongKeNhomNganh,
-                        t = t
-                    });
+                    case E24hGDNNType.week:
+                        {
+                            _configRepo.InsertOne(new ConfigData
+                            {
+                                ty = (int)EConfigDataType.ThongKeNhomNganh_week,
+                                t = t
+                            });
+                            break;
+                        }
+                    case E24hGDNNType.month:
+                        {
+                            _configRepo.InsertOne(new ConfigData
+                            {
+                                ty = (int)EConfigDataType.ThongKeNhomNganh_month,
+                                t = t
+                            });
+                            break;
+                        }
+                    default:
+                        {
+                            _configRepo.InsertOne(new ConfigData
+                            {
+                                ty = (int)EConfigDataType.ThongKeNhomNganh_today,
+                                t = t
+                            });
+                            break;
+                        }
                 }
+
 
                 return (1, strOutput.ToString());
             }

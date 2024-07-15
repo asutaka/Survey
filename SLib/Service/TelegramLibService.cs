@@ -29,7 +29,9 @@ namespace SLib.Service
         private readonly IStockRepo _stockRepo;
         private readonly IBllService _bllService;
         private readonly IAPIService _apiService;
-        private const long _idMain = -1002247826353;
+        private const long _idChannel = -1002247826353;
+        private const long _idUser = 1066022551;
+        private const long _idGroup = -4237476810;
 
         public TelegramLibService(IStockRepo stockRepo,
                                 IBllService bllService,
@@ -62,7 +64,6 @@ namespace SLib.Service
             _lStock = _stockRepo.GetAll();
             return _lStock;
         }
-
         public async Task BotSyncUpdate()
         {
             await func();
@@ -74,7 +75,7 @@ namespace SLib.Service
                     return;
 
                 var lUpdateClean = new List<Update>();
-                var lGroup = lUpdate.Where(x => x.Message.From.Id != _idMain).GroupBy(x => x.Message.From.Id);
+                var lGroup = lUpdate.Where(x => x.Message.From.Id != _idGroup).GroupBy(x => x.Message.From.Id);
                 foreach (var item in lGroup)
                 {
                     var lItem = item.ToList().OrderByDescending(x => x.Message.Date);
