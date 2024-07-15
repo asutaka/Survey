@@ -21,7 +21,7 @@ namespace SLib.DAL
         /// </summary>
         /// <returns>collection of entities</returns>
         List<T> GetAll();
-
+        //Example: FilterDefinition<Stock> filter = Builders<Stock>.Filter.Eq(x => x.s, itemMa.symbol);
         List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0);
 
 

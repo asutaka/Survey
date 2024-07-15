@@ -38,15 +38,15 @@ namespace SLib.Service
                     strOutput.AppendLine(content);
                     index++;
                 }
-                strOutput.AppendLine();
-                strOutput.AppendLine($"[Thông báo] Top 10 cổ phiếu vừa cắt lên MA20 với khối lượng đột biến:");
-                index = 1;
-                foreach (var item in lOutput.Take(10).ToList())
-                {
-                    var content = $"{index}. {item.s}";
-                    strOutput.AppendLine(content);
-                    index++;
-                }
+                //strOutput.AppendLine();
+                //strOutput.AppendLine($"[Thông báo] Top 10 cổ phiếu vừa cắt lên MA20 với khối lượng đột biến:");
+                //index = 1;
+                //foreach (var item in lOutput.Take(10).ToList())
+                //{
+                //    var content = $"{index}. {item.s}";
+                //    strOutput.AppendLine(content);
+                //    index++;
+                //}
 
                 return (1, strOutput.ToString());
             }

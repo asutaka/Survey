@@ -117,7 +117,7 @@ namespace SLib.Service
             var lOutput = new List<Quote>();
             try
             {
-                var url = string.Format(ServiceSetting._stockData, code, "1D", DateTimeOffset.Now.AddYears(-1).ToUnixTimeSeconds(), DateTimeOffset.Now.ToUnixTimeSeconds());
+                var url = string.Format(ServiceSetting._stockData, code, "1D", DateTimeOffset.Now.AddYears(-2).ToUnixTimeSeconds(), DateTimeOffset.Now.ToUnixTimeSeconds());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);

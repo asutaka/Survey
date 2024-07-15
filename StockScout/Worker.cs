@@ -24,6 +24,7 @@ namespace StockScout
                 await _bridgeService.NhomNganh(dt);
                 await _bridgeService.GDNN(dt);
                 await _bridgeService.TuDoanh(dt);
+                await _bridgeService.ChiBaoKyThuat(dt);
 
                 await Task.Delay(1000 * 60 * 15, stoppingToken);
             }

@@ -4,6 +4,7 @@ using SLib.Util;
 using System;
 using System.Threading.Tasks;
 using Telegram.Bot;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -22,6 +23,7 @@ namespace SLib.Service
         Task NhomNganh(DateTime dt);
         Task GDNN(DateTime dt);
         Task TuDoanh(DateTime dt);
+        Task ChiBaoKyThuat(DateTime dt);
     }
 
     public class BridgeService : IBridgeService
@@ -114,7 +116,7 @@ namespace SLib.Service
             if ((int)dt.DayOfWeek < 1 || (int)dt.DayOfWeek > 5)
                 return;
 
-            if (dt.Minute < 15 || dt.Minute >= 30 || dt.Hour < 9 || dt.Hour >= 16)
+            if (dt.Minute < 15 || dt.Minute >= 30 || dt.Hour < 9 || dt.Hour >= 15)
                 return;
             try
             {
@@ -180,6 +182,23 @@ namespace SLib.Service
             {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        public async Task ChiBaoKyThuat(DateTime dt)
+        {
+            try
+            {
+                var cbkt = await _bllService.ChiBaoKyThuat(); ;
+                if (cbkt.Item1 > 0)
+                {
+                    await _telegramService.BotInstance().SendTextMessageAsync(_idMain, cbkt.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            
         }
     }
 }
