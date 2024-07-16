@@ -39,13 +39,24 @@ namespace SLib.Service
                 var lOutput = InsertTuDoanh(lData);
 
                 strOutput.AppendLine($"[Thông báo] Tự doanh HNX ngày {dt.ToString("dd/MM/yyyy")}:");
-                strOutput.AppendLine($"*Số bản ghi được lưu: {lOutput.Count()} bản ghi");
                 strOutput.AppendLine($"*Chi tiết:");
                 lOutput = lOutput.OrderByDescending(x => x.net).ToList();
                 var index = 1;
                 foreach (var item in lOutput)
                 {
-                    strOutput.AppendLine($"{index++}. {item.s}({(item.net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(item.net * 1000).ToString("#,##0")}đ)");
+                    var buySell = item.net > 0 ? "Mua ròng" : "Bán ròng";
+                    var valStr = string.Empty;
+                    item.net = Math.Abs(item.net / 1000);
+                    if(item.net < 1000)
+                    {
+                        valStr = $"{Math.Round(item.net,0)} triệu";
+                    }
+                    else
+                    {
+                        item.net = Math.Round(item.net / 1000, 1);
+                        valStr = $"{item.net} tỷ";
+                    }
+                    strOutput.AppendLine($"{index++}. {item.s} ({buySell} {valStr})");
                 }
                 _configRepo.InsertOne(new ConfigData
                 {
@@ -90,13 +101,24 @@ namespace SLib.Service
                 var lOutput = InsertTuDoanh(lData);
 
                 strOutput.AppendLine($"[Thông báo] Tự doanh Upcom ngày {dt.ToString("dd/MM/yyyy")}:");
-                strOutput.AppendLine($"*Số bản ghi được lưu: {lOutput.Count()} bản ghi");
                 strOutput.AppendLine($"*Chi tiết:");
                 lOutput = lOutput.OrderByDescending(x => x.net).ToList();
                 var index = 1;
                 foreach (var item in lOutput)
                 {
-                    strOutput.AppendLine($"{index++}. {item.s} ({(item.net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(item.net * 1000).ToString("#,##0")}đ)");
+                    var buySell = item.net > 0 ? "Mua ròng" : "Bán ròng";
+                    var valStr = string.Empty;
+                    item.net = Math.Abs(item.net / 1000);
+                    if (item.net < 1000)
+                    {
+                        valStr = $"{Math.Round(item.net, 0)} triệu";
+                    }
+                    else
+                    {
+                        item.net = Math.Round(item.net / 1000, 1);
+                        valStr = $"{item.net} tỷ";
+                    }
+                    strOutput.AppendLine($"{index++}. {item.s} ({buySell} {valStr})");
                 }
                 _configRepo.InsertOne(new ConfigData
                 {
@@ -141,37 +163,49 @@ namespace SLib.Service
                 var lOutput = InsertTuDoanh(lData);
 
                 strOutput.AppendLine($"[Thông báo] Tự doanh HOSE ngày {dt.ToString("dd/MM/yyyy")}:");
-                strOutput.AppendLine($"*Số bản ghi được lưu: {lOutput.Count()} bản ghi");
                 strOutput.AppendLine($"*Chi tiết:");
                 lOutput = lOutput.OrderByDescending(x => x.net).ToList();
                 var countData = lOutput.Count();
                 var lFlag = new List<int>();
-                if (countData > 20)
+                if (countData > 120)
                 {
-                    lFlag.Add(10);
-                }
-                if (countData > 60)
-                {
-                    lFlag.Add(50);
-                }
-                if (countData > 100)
-                {
-                    lFlag.Add(100);
+                    lFlag.Add(120);
                 }
 
                 var index = 1;
                 var lMes = new List<string>();
                 foreach (var item in lOutput)
                 {
-                    var content = $"{index}. {item.s} ({(item.net > 0 ? "Mua ròng" : "Bán ròng")} {Math.Abs(item.net * 1000).ToString("#,##0")}đ)";
-                    if(item.net_pt > 0)
+                    var buySell = item.net > 0 ? "Mua ròng" : "Bán ròng";
+                    var valStr = string.Empty;
+                    item.net = Math.Abs(item.net / 1000);
+                    if (item.net < 1000)
                     {
-                        content += $" - Thỏa thuận mua {Math.Abs(item.net_pt * 1000).ToString("#,##0")}đ";
+                        valStr = $"{Math.Round(item.net, 0)} triệu";
                     }
-                    else if(item.net_pt < 0)
+                    else
                     {
-                        content += $" - Thỏa thuận bán {Math.Abs(item.net_pt * 1000).ToString("#,##0")}đ";
-                    }    
+                        item.net = Math.Round(item.net / 1000, 1);
+                        valStr = $"{item.net} tỷ";
+                    }
+
+                    var content = $"{index++}. {item.s} ({buySell} {valStr})";
+                    if(item.net_pt != 0)
+                    {
+                        var buySell_pt = item.net_pt > 0 ? "Thỏa thuận mua" : "Thỏa thuận bán";
+                        var valStr_pt = string.Empty;
+                        item.net_pt = Math.Abs(item.net_pt / 1000);
+                        if (item.net_pt < 1000)
+                        {
+                            valStr_pt = $"{Math.Round(item.net_pt,0)} triệu";
+                        }
+                        else
+                        {
+                            item.net_pt = Math.Round(item.net_pt / 1000, 1);
+                            valStr_pt = $"{item.net_pt} tỷ";
+                        }
+                        content += $" - {buySell_pt} {valStr_pt}";
+                    }
 
                     strOutput.AppendLine(content);
                     if (lFlag.Contains(index))
@@ -179,7 +213,6 @@ namespace SLib.Service
                         lMes.Add(strOutput.ToString());
                         strOutput.Clear();
                     }
-                    index++;
                 }
                 if (!string.IsNullOrWhiteSpace(strOutput.ToString()))
                 {

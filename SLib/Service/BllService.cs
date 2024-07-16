@@ -18,7 +18,7 @@ namespace SLib.Service
         Task<(int, string)> LayMaTheoChiBao();
         Task<(int, string)> KeHoachNam(string code);
         Task<(int, string)> ThongKeLoiNhuan(string code);
-        Task<(int, string)> ChiBaoKyThuat();
+        Task<(int, List<string>)> ChiBaoKyThuat();
 
         string TongTuDoanhStr();
         string TongGDNNStr();

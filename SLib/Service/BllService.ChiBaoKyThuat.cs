@@ -12,7 +12,7 @@ namespace SLib.Service
 {
     public partial class BllService
     {
-        public async Task<(int, string)> ChiBaoKyThuat()
+        public async Task<(int, List<string>)> ChiBaoKyThuat()
         {
             try
             {
@@ -28,7 +28,6 @@ namespace SLib.Service
 
                     _configRepo.DeleteMany(filterConfig);
                 }
-
 
                 var strOutput = new StringBuilder();
                 var lReport = new List<ReportPTKT>();
@@ -55,7 +54,7 @@ namespace SLib.Service
                         var lBb = lData.GetBollingerBands();
                         var lEma21 = lData.GetEma(21);
                         var lEma50 = lData.GetEma(50);
-                        var lEma200 = lData.GetEma(200);
+                        //var lEma200 = lData.GetEma(200);
                         var lRsi = lData.GetRsi();
 
                         //Chỉ báo bắt đáy
@@ -74,8 +73,11 @@ namespace SLib.Service
                         //MA20
                         var entity = lData.Last();
                         var bb = lBb.Last();
+                        var entityNear = lData.SkipLast(1).TakeLast(1).First();
+                        var bbNear = lBb.SkipLast(1).TakeLast(1).First();
+
                         model.isGEMA20 = entity.Close >= (decimal)bb.Sma;
-                        model.isCrossMa20Up = entity.Close >= (decimal)bb.Sma && entity.Open <= (decimal)bb.Sma;
+                        model.isCrossMa20Up = entityNear.Close < (decimal)bbNear.Sma && entity.Close >= (decimal)bb.Sma && entity.Open <= (decimal)bb.Sma;
                         model.isPriceUp = entity.Close > entity.Open;
                         if (entity.Close < (decimal)bb.LowerBand)
                         {
@@ -113,6 +115,32 @@ namespace SLib.Service
                         {
                             model.priceCompareIchi = 2;
                         }
+                        //EMA21
+                        var ema21 = lEma21.Last();
+                        var ema50 = lEma50.Last();
+                        var ema21Near = lEma21.SkipLast(1).TakeLast(1).First();
+                        var ema50Near = lEma50.SkipLast(1).TakeLast(1).First();
+
+                        if (entityNear.Close < (decimal)ema21Near.Ema 
+                            && entity.Close >= (decimal)ema21.Ema 
+                            && entity.Open <= (decimal)ema21.Ema)
+                        {
+                            model.isCrossEma21Up = true;
+                        }
+                        if (entityNear.Close < (decimal)ema50Near.Ema 
+                            && entity.Close >= (decimal)ema50.Ema 
+                            && entity.Open <= (decimal)ema50.Ema)
+                        {
+                            model.isCrossEma50Up = true;
+                        }
+                        if(ema21Near.Ema < ema50Near.Ema
+                            && ema21.Ema >= ema50.Ema)
+                        {
+                            model.isEma21_50 = true;
+                        }
+
+
+
                         lReport.Add(model);
                     }
                     catch (Exception ex)
@@ -123,6 +151,7 @@ namespace SLib.Service
                     Console.WriteLine($"{dem++}. {item.s}");
                 }
 
+                var lMes = new List<string>();
                 var count = lReport.Count;
                 //Tỉ lệ cp trên ma20 
                 strOutput.AppendLine($"[Thống kê PTKT]");
@@ -131,18 +160,17 @@ namespace SLib.Service
              
 
                 var lBatDay = lReport.Where(x => x.bd)
-                    //.OrderByDescending(x => x.isRsiZero)
-                    .OrderBy(x => x.priceBB)
-                    .ThenBy(x => x.rank)
+                    .OrderBy(x => x.rank)
+                    .ThenBy(x => x.priceBB)
                     .Take(20);
                 if(lBatDay.Any())
                 {
                     strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top 10 cp bắt đáy:");
+                    strOutput.AppendLine($"*Top 20 cp bắt đáy:");
                     var index = 1;
                     foreach (var item in lBatDay)
                     {
-                        strOutput.Append($"{index++}.{item.s}");
+                        strOutput.Append($"{index++}. {item.s}");
                         if (item.isRsiZero)
                         {
                             strOutput.AppendLine(" - RSI zero");
@@ -156,34 +184,87 @@ namespace SLib.Service
 
                 var lTrenMa20 = lReport.Where(x => x.isPriceUp && x.isCrossMa20Up)
                                     .OrderBy(x => x.rank)
-                                    .Take(15);
+                                    .Take(20);
                 if (lTrenMa20.Any())
                 {
                     strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top 10 cp cắt lên MA20:");
+                    strOutput.AppendLine($"*Top 20 cp cắt lên MA20:");
                     var index = 1;
                     foreach (var item in lTrenMa20)
                     {
-                        strOutput.AppendLine($"{index++}.{item.s}");
+                        var content = $"{index++}. {item.s}";
+                        if(item.priceCompareIchi == 3)
+                        {
+                            content += " - trên mây Ichimoku";
+                        }
+                        strOutput.AppendLine(content);
                     }
                 }
-               
-               
-                var lTrenMa20Extend = lReport.Where(x => x.isPriceUp && x.isCrossMa20Up)
-                                  .OrderByDescending(x => x.priceCompareIchi)
-                                  .ThenBy(x => x.priceBB)
-                                  .ThenBy(x => x.rank)
-                                  .Take(15);
-                if (lTrenMa20Extend.Any())
+
+                lMes.Add(strOutput.ToString());
+                //
+                strOutput.Clear();
+                strOutput.AppendLine("[Dan Zanger]");
+
+                var lTrenEma21 = lReport.Where(x => x.isPriceUp && x.isCrossEma21Up)
+                            .OrderBy(x => x.rank)
+                            .Take(20);
+                if (lTrenEma21.Any())
                 {
                     strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top 10 cp quan tâm:");
+                    strOutput.AppendLine($"*Top 20 cp cắt lên E21:");
                     var index = 1;
-                    foreach (var item in lTrenMa20Extend)
+                    foreach (var item in lTrenEma21)
                     {
-                        strOutput.AppendLine($"{index++}.{item.s}");
+                        var content = $"{index++}. {item.s}";
+                        if (item.priceCompareIchi == 3)
+                        {
+                            content += " - trên mây Ichimoku";
+                        }
+                        strOutput.AppendLine(content);
                     }
                 }
+
+                var lTrenEma50 = lReport.Where(x => x.isPriceUp && x.isCrossEma50Up)
+                            .OrderBy(x => x.rank)
+                            .Take(20);
+                if (lTrenEma50.Any())
+                {
+                    strOutput.AppendLine();
+                    strOutput.AppendLine($"*Top 20 cp cắt lên E50:");
+                    var index = 1;
+                    foreach (var item in lTrenEma50)
+                    {
+                        var content = $"{index++}. {item.s}";
+                        if (item.priceCompareIchi == 3)
+                        {
+                            content += " - trên mây Ichimoku";
+                        }
+                        strOutput.AppendLine(content);
+                    }
+                }
+
+                var lEma21_50 = lReport.Where(x => x.isPriceUp && x.isEma21_50)
+                           .OrderBy(x => x.rank)
+                           .Take(20);
+                if (lEma21_50.Any())
+                {
+                    strOutput.AppendLine();
+                    strOutput.AppendLine($"*Top 20 cp E21 cắt E50:");
+                    var index = 1;
+                    foreach (var item in lEma21_50)
+                    {
+                        var content = $"{index++}. {item.s}";
+                        if (item.priceCompareIchi == 3)
+                        {
+                            content += " - trên mây Ichimoku";
+                        }
+                        strOutput.AppendLine(content);
+                    }
+                }
+
+                lMes.Add(strOutput.ToString());
+
                 var dtEnd = DateTime.Now;
                 var ts = (dtEnd - dtStart).TotalSeconds;
 
@@ -193,7 +274,7 @@ namespace SLib.Service
                     t = t
                 });
 
-                return (1, strOutput.ToString());
+                return (1, lMes);
             }
             catch (Exception ex) 
             {
@@ -215,6 +296,10 @@ namespace SLib.Service
         public int priceCompareIchi { get; set; }//Vị trí tương đối so với ichimoku - dưới(1), trong(2), trên(3)
         public int priceBB { get; set; }//Vị trí tương đối so với đường BB - dưới(1), trong(2), trên(3)
         public bool isPriceUp { get; set; }//cp tăng giá hay ko
+
+        public bool isCrossEma21Up { get; set; }
+        public bool isCrossEma50Up { get; set; }
+        public bool isEma21_50 { get; set; }
     }
 }
 

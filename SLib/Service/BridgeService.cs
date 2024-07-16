@@ -31,7 +31,7 @@ namespace SLib.Service
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
-        private const long _idMain = -1002247826353;
+        private const long _idMain = 1066022551;
         private readonly ITelegramLibService _telegramService;
         private readonly IBllService _bllService;
         public BridgeService(ITelegramLibService telegramService, IBllService bllService)
@@ -185,18 +185,21 @@ namespace SLib.Service
 
         public async Task ChiBaoKyThuat(DateTime dt)
         {
-            if ((int)dt.DayOfWeek < 1 || (int)dt.DayOfWeek > 5)
-                return;
+            //if ((int)dt.DayOfWeek < 1 || (int)dt.DayOfWeek > 5)
+            //    return;
 
-            if (dt.Hour != 15)
-                return;
+            //if (dt.Hour != 15)
+            //    return;
 
             try
             {
                 var cbkt = await _bllService.ChiBaoKyThuat(); ;
                 if (cbkt.Item1 > 0)
                 {
-                    await _telegramService.BotInstance().SendTextMessageAsync(_idMain, cbkt.Item2);
+                    foreach (var item in cbkt.Item2)
+                    {
+                        await _telegramService.BotInstance().SendTextMessageAsync(_idMain, item);
+                    }
                 }
             }
             catch (Exception ex)
