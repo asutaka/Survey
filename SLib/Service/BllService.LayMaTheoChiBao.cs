@@ -30,6 +30,9 @@ namespace SLib.Service
                         lOutput.Add(entityStock);
                 }
 
+                if (!lOutput.Any())
+                    return (0, null);
+
                 strOutput.AppendLine($"[Thông báo] Top 10 cổ phiếu vừa cắt lên MA20:");
                 var index = 1;
                 foreach (var item in lOutput.OrderBy(x => x.rank).Take(10).ToList())
