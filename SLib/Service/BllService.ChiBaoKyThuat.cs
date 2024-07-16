@@ -195,7 +195,7 @@ namespace SLib.Service
                         var content = $"{index++}. {item.s}";
                         if(item.priceCompareIchi == 3)
                         {
-                            content += " - trên mây Ichimoku";
+                            content += " - Ichimoku";
                         }
                         strOutput.AppendLine(content);
                     }
@@ -219,7 +219,7 @@ namespace SLib.Service
                         var content = $"{index++}. {item.s}";
                         if (item.priceCompareIchi == 3)
                         {
-                            content += " - trên mây Ichimoku";
+                            content += " - Ichimoku";
                         }
                         strOutput.AppendLine(content);
                     }
@@ -238,7 +238,7 @@ namespace SLib.Service
                         var content = $"{index++}. {item.s}";
                         if (item.priceCompareIchi == 3)
                         {
-                            content += " - trên mây Ichimoku";
+                            content += " - Ichimoku";
                         }
                         strOutput.AppendLine(content);
                     }
@@ -257,7 +257,7 @@ namespace SLib.Service
                         var content = $"{index++}. {item.s}";
                         if (item.priceCompareIchi == 3)
                         {
-                            content += " - trên mây Ichimoku";
+                            content += " - Ichimoku";
                         }
                         strOutput.AppendLine(content);
                     }

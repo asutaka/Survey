@@ -29,9 +29,9 @@ namespace SLib.Service
         private readonly IStockRepo _stockRepo;
         private readonly IBllService _bllService;
         private readonly IAPIService _apiService;
-        private const long _idChannel = -1002247826353;
-        private const long _idUser = 1066022551;
-        private const long _idGroup = -4237476810;
+        //private const long _idChannel = -1002247826353;
+        //private const long _idUser = 1066022551;
+        //private const long _idGroup = -4237476810;
 
         public TelegramLibService(IStockRepo stockRepo,
                                 IBllService bllService,
@@ -75,7 +75,7 @@ namespace SLib.Service
                     return;
 
                 var lUpdateClean = new List<Update>();
-                var lGroup = lUpdate.Where(x => x.Message.From.Id != _idGroup).GroupBy(x => x.Message.From.Id);
+                var lGroup = lUpdate.Where(x => x.Message != null).GroupBy(x => x.Message.From.Id);
                 foreach (var item in lGroup)
                 {
                     var lItem = item.ToList().OrderByDescending(x => x.Message.Date);
@@ -112,13 +112,13 @@ namespace SLib.Service
                            }
                            Monitor.Exit(objLock);
                            //action
-                           var mesResult = await Analyze(item.Message.Text);
-                           await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
-                           if(mesResult.Item1 == EMessageMode.OnlyStock)
-                           {
-                               await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeFA(item.Message.Text));
-                               await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeTA(item.Message.Text));
-                           }
+                           //var mesResult = await Analyze(item.Message.Text);
+                           //await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
+                           //if (mesResult.Item1 == EMessageMode.OnlyStock)
+                           //{
+                           //    await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeFA(item.Message.Text));
+                           //    await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeTA(item.Message.Text));
+                           //}
                        }
                        catch (Exception ex)
                        {
