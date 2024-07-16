@@ -31,7 +31,7 @@ namespace SLib.Service
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
-        private const long _idMain = 1066022551;
+        private const long _idMain = -1002247826353;
         private readonly ITelegramLibService _telegramService;
         private readonly IBllService _bllService;
         public BridgeService(ITelegramLibService telegramService, IBllService bllService)
