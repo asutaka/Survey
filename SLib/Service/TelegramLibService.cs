@@ -112,7 +112,7 @@ namespace SLib.Service
                            }
                            Monitor.Exit(objLock);
                            //action
-                           //var mesResult = await Analyze(item.Message.Text);
+                           var mesResult = await Analyze(item.Message.Text);
                            //await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
                            //if (mesResult.Item1 == EMessageMode.OnlyStock)
                            //{
@@ -177,49 +177,41 @@ namespace SLib.Service
 
         private async Task<(EMessageMode,string)> Analyze(string input)
         {
+            var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.Trim().ToUpper()));
+            if(entityStock != null)
+            {
+                return (EMessageMode.OnlyStock, OnlyStock(entityStock));
+            }
+    
             var output = new StringBuilder();
-            //clean
-            //find
-            input = input.Trim().ToUpper();
-            if(input.Length == 3)
-            {
-                return (EMessageMode.OnlyStock, OnlyStock(input));
-            }
-
             //
-            if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
-            {
-                output.AppendLine(_bllService.TongTuDoanhStr());
-                return (EMessageMode.Other, output.ToString());
-            }
-            if (input.Equals("[tnn]", StringComparison.OrdinalIgnoreCase))
-            {
-                output.AppendLine(_bllService.TongGDNNStr());
-                return (EMessageMode.Other, output.ToString());
-            }
-            if (input.Equals("[tttt]", StringComparison.OrdinalIgnoreCase))
-            {
-                output.AppendLine(_bllService.ThongKeThiTruongStr());
-                return (EMessageMode.Other, output.ToString());
-            }
+            //if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    output.AppendLine(_bllService.TongTuDoanhStr());
+            //    return (EMessageMode.Other, output.ToString());
+            //}
+            //if (input.Equals("[tnn]", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    output.AppendLine(_bllService.TongGDNNStr());
+            //    return (EMessageMode.Other, output.ToString());
+            //}
+            //if (input.Equals("[tttt]", StringComparison.OrdinalIgnoreCase))
+            //{
+            //    output.AppendLine(_bllService.ThongKeThiTruongStr());
+            //    return (EMessageMode.Other, output.ToString());
+            //}
 
             return (EMessageMode.Other, output.ToString());
         }
 
-        private string OnlyStock(string input)
+        private string OnlyStock(Stock entity)
         {
             var output = new StringBuilder();
-            var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input));
-            if (entityStock is null)
-            {
-                output.Append("Không tìm thấy dữ liệu!");
-                return output.ToString();
-            }
-
-            output.AppendLine($"Mã cổ phiếu: {input}");
-            output.AppendLine();
-            output.AppendLine(_bllService.TuDoanhBuildStr(input));
-            output.AppendLine(_bllService.ForeignBuildStr(input));
+            output.AppendLine($"Mã cổ phiếu: {entity.s}");
+            output.AppendLine($"Tên: {entity.p.n.Replace("Công ty", "").Replace("Cổ phần", "").Trim()}");
+            output.AppendLine($"Ngành: {entity.h24.Last().name}");
+            //output.AppendLine(_bllService.TuDoanhBuildStr(input));
+            //output.AppendLine(_bllService.ForeignBuildStr(input));
             return output.ToString();
         }
 
