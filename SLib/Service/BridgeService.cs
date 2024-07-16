@@ -185,11 +185,11 @@ namespace SLib.Service
 
         public async Task ChiBaoKyThuat(DateTime dt)
         {
-            //if ((int)dt.DayOfWeek < 1 || (int)dt.DayOfWeek > 5)
-            //    return;
+            if ((int)dt.DayOfWeek < 1 || (int)dt.DayOfWeek > 5)
+                return;
 
-            //if (dt.Hour != 15)
-            //    return;
+            if (dt.Hour != 15)
+                return;
 
             try
             {
