@@ -1,12 +1,12 @@
 ﻿using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using SLib.Model;
+using SLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -16,6 +16,20 @@ namespace SLib.Service
         {
             try
             {
+                var dt = DateTime.Now;
+                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+                var builderConfig = Builders<ConfigData>.Filter;
+                FilterDefinition<ConfigData> filterConfig = builderConfig.Eq(x => x.ty, (int)EConfigDataType.ChiBaoKyThuat);
+                var lConfig = _configRepo.GetByFilter(filterConfig);
+                if (lConfig.Any())
+                {
+                    if (lConfig.Any(x => x.t == t))
+                        return (0, null);
+
+                    _configRepo.DeleteMany(filterConfig);
+                }
+
+
                 var strOutput = new StringBuilder();
                 var lReport = new List<ReportPTKT>();
                 var dtStart = DateTime.Now;
@@ -172,6 +186,13 @@ namespace SLib.Service
                 }
                 var dtEnd = DateTime.Now;
                 var ts = (dtEnd - dtStart).TotalSeconds;
+
+                _configRepo.InsertOne(new ConfigData
+                {
+                    ty = (int)EConfigDataType.ChiBaoKyThuat,
+                    t = t
+                });
+
                 return (1, strOutput.ToString());
             }
             catch (Exception ex) 

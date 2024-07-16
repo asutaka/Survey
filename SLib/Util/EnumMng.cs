@@ -29,7 +29,8 @@ namespace SLib.Util
         GDNN_month = 12,
         ThongKeNhomNganh_today = 20,
         ThongKeNhomNganh_week = 21,
-        ThongKeNhomNganh_month = 22
+        ThongKeNhomNganh_month = 22,
+        ChiBaoKyThuat = 30,
     }
 
     public enum ETransactionType
