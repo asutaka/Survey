@@ -49,7 +49,7 @@ namespace SLib.Service
                 if (strChiBao.Length > 0)
                 {
                     strOut.AppendLine($"*TA:");
-                    strOut.AppendLine(strChiBao.ToString());
+                    strOut.Append(strChiBao.ToString());
                 }
 
                 return (1, strOut.ToString());
@@ -71,15 +71,32 @@ namespace SLib.Service
                 strOut.AppendLine($"*Thống kê giao dịch:");
                 var dt = DateTime.Now;
                 var dtFirstWeek = dt.AddDays(-(int)dt.DayOfWeek);
-                var lData = await _apiService.GetForeign(code, 1, 1000, dtFirstWeek.ToString("dd/MM/yyyy"), dt.ToString("dd/MM/yyyy"));
+                var lData = await _apiService.GetForeign(code, 1, 1000, dtFirstWeek.ToString("dd/MM/yyyy"), dt.AddDays(1).ToString("dd/MM/yyyy"));
                 if (lData?.Any() ?? false) 
                 {
                     //NN
                     var curRoom = lData.First().foreignCurrentRoom;
                     var buySell = lData.Sum(x => x.netBuySellVal);
                     var flagNN = buySell >= 0 ? "Mua ròng" : "Bán ròng";
-                    strOut.AppendLine($"+ Room ngoại: {curRoom.ToString("#,##0")}cp");
-                    strOut.AppendLine($"+ GDNN: {flagNN} {Math.Abs(buySell)}đ");
+                    strOut.AppendLine($"+ Room ngoại: {curRoom.ToString("#,##0")} cổ phiếu");
+
+                    var strBuySell = string.Empty;
+                    if (buySell > 1000000000)
+                    {
+                        buySell = Math.Round(buySell / 1000000000, 1);
+                        strBuySell = $"{flagNN} {buySell.ToString("#,##0.#")} tỷ";
+                    }
+                    else if (buySell > 1000000)
+                    {
+                        buySell = Math.Round(buySell / 1000000, 1);
+                        strBuySell = $"{flagNN} {buySell.ToString("#,##0.#")} triệu";
+                    }
+                    else
+                    {
+                        strBuySell = $"Mua ròng 0 đồng";
+                    }
+                    strOut.AppendLine($"+ GDNN: {strBuySell}");
+                    
                     //Tự doanh
                     FilterDefinition<TuDoanh> filter = Builders<TuDoanh>.Filter.Eq(x => x.s, code);
                     var lTuDoanh = _tudoanhRepo.GetByFilter(filter);
@@ -98,6 +115,7 @@ namespace SLib.Service
                         valStr = $"{tudoanh} tỷ";
                     }
                     strOut.AppendLine($"+ Tự doanh: {flagTuDoanh} {valStr}");
+
                     //Mua bán chủ động
                     var muachudong = lData.Sum(x => x.totalBuyTradeVol);
                     var banchudong = lData.Sum(x => x.totalSellTradeVol);
@@ -109,7 +127,7 @@ namespace SLib.Service
                     }
                     var rateMuachudong = Math.Round(muachudong * 100 / tongmuabanchudong, 1);
                     var rateBanchudong = 100 - rateMuachudong;
-                    strOut.AppendLine($"+ Mua/bán chủ động: {rateMuachudong}%/{rateBanchudong}%");
+                    strOut.AppendLine($"+ Mua/ Bán chủ động: {rateMuachudong}%/ {rateBanchudong}%");
                     return (1, strOut.ToString());
                 }    
 
@@ -145,6 +163,7 @@ namespace SLib.Service
                 //BCTC quý
                 var linkBCTC = $"https://finance.vietstock.vn/{code}/tai-tai-lieu.htm?doctype=1";
                 strOut.AppendLine($"Link BCTC: {linkBCTC}");
+                return (1, strOut.ToString());
             }
             catch (Exception ex)
             {

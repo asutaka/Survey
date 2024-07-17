@@ -36,9 +36,9 @@ namespace SLib.Service
                                 IBllService bllService,
                                 IAPIService apiService)
         {
-            StockInstance();
             _bllService = bllService;
             _apiService = apiService;
+            StockInstance();
         }
 
         public TelegramBotClient BotInstance()
@@ -111,7 +111,7 @@ namespace SLib.Service
                            Monitor.Exit(objLock);
                            //action
                            var mesResult = await Analyze(item.Message.Text);
-                           //await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
+                           await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
                            //if (mesResult.Item1 == EMessageMode.OnlyStock)
                            //{
                            //    await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeFA(item.Message.Text));
