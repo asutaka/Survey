@@ -1,4 +1,5 @@
 ﻿using SLib.DAL;
+using SLib.Model;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,21 @@ namespace SLib.Service
         Task<(int, string)> KeHoachNam(string code);
         Task<(int, string)> ThongKeLoiNhuan(string code);
         Task<(int, List<string>)> ChiBaoKyThuat();
+
+        //Tele only stock
+        List<Stock> GetStock();
+
+        //public
+        Task<(int, string)> TA(string code);
+        Task<(int, string)> ThongKeGD(string code);
+        Task<(int, string)> FA(string code);
+        Task<(int, string)> ThongKeKhac(string code);
+        Task<(int, string)> PTChuyenSau(string code);
+
+
+
+
+
 
         string TongTuDoanhStr();
         string TongGDNNStr();
@@ -52,6 +68,11 @@ namespace SLib.Service
             _categoryRepo = categoryRepo;
             //_reportRepo = reportRepo;
             _fileService = fileService;
+        }
+
+        public List<Stock> GetStock()
+        {
+            return _stockRepo.GetAll();
         }
 
         public async Task Test()

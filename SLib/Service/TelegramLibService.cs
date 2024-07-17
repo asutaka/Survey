@@ -26,18 +26,16 @@ namespace SLib.Service
         private static List<Stock> _lStock = new List<Stock>();
         private object objLock = 1;
         private readonly int _numThread = 1;
-        private readonly IStockRepo _stockRepo;
         private readonly IBllService _bllService;
         private readonly IAPIService _apiService;
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
-        public TelegramLibService(IStockRepo stockRepo,
+        public TelegramLibService(
                                 IBllService bllService,
                                 IAPIService apiService)
         {
-            _stockRepo = stockRepo;
             StockInstance();
             _bllService = bllService;
             _apiService = apiService;
@@ -61,7 +59,7 @@ namespace SLib.Service
         {
             if (_lStock != null && _lStock.Any())
                 return _lStock;
-            _lStock = _stockRepo.GetAll();
+            _lStock = _bllService.GetStock();
             return _lStock;
         }
         public async Task BotSyncUpdate()
@@ -180,7 +178,7 @@ namespace SLib.Service
             var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.Trim().ToUpper()));
             if(entityStock != null)
             {
-                return (EMessageMode.OnlyStock, OnlyStock(entityStock));
+                return (EMessageMode.OnlyStock, await OnlyStock(entityStock));
             }
     
             var output = new StringBuilder();
@@ -204,14 +202,47 @@ namespace SLib.Service
             return (EMessageMode.Other, output.ToString());
         }
 
-        private string OnlyStock(Stock entity)
+        private async Task<string> OnlyStock(Stock entity)
         {
             var output = new StringBuilder();
             output.AppendLine($"Mã cổ phiếu: {entity.s}");
             output.AppendLine($"Tên: {entity.p.n.Replace("Công ty", "").Replace("Cổ phần", "").Trim()}");
             output.AppendLine($"Ngành: {entity.h24.Last().name}");
-            //output.AppendLine(_bllService.TuDoanhBuildStr(input));
-            //output.AppendLine(_bllService.ForeignBuildStr(input));
+
+            //TA: Giá hiện tại, chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
+            var entityTA = await _bllService.TA(entity.s);
+            if(entityTA.Item1 > 0)
+            {
+                output.AppendLine(entityTA.Item2);
+            }
+
+            //Thống kê giao dịch: + NN mua bán + Tự doanh + Mua bán chủ động
+            var entityTKGD = await _bllService.ThongKeGD(entity.s);
+            if (entityTKGD.Item1 > 0)
+            {
+                output.AppendLine(entityTKGD.Item2);
+            }
+
+            //FA: + Lợi nhuận + Kế hoạch năm +BCTC quý x
+            var entityFA = await _bllService.FA(entity.s);
+            if (entityFA.Item1 > 0)
+            {
+                output.AppendLine(entityFA.Item2);
+            }
+
+            //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb năm + buy MAup/sell MAdown
+            var entityKhac = await _bllService.ThongKeKhac(entity.s);
+            if (entityKhac.Item1 > 0)
+            {
+                output.AppendLine(entityKhac.Item2);
+            }
+
+            //Chuyên sâu: + Cơ cấu lợi nhuận + Phân tích lợi nhuận + Động lực tăng trưởng 
+            var entityChuyenSau = await _bllService.PTChuyenSau(entity.s);
+            if (entityChuyenSau.Item1 > 0)
+            {
+                output.AppendLine(entityChuyenSau.Item2);
+            }
             return output.ToString();
         }
 

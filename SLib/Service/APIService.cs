@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 
 namespace SLib.Service
@@ -27,6 +28,7 @@ namespace SLib.Service
         Task<List<DuLieuTheoChiBaoAPIDataDetailModel>> GetMaTheoChiBao();
         Task<KeHoachThucHienAPIModel> GetKeHoachThucHien(string ma);
         Task<List<LoiNhuanAPIDetail>> ThongKeLoiNhuan(string ma);
+        Task<List<ForeignDataModel>> GetForeign(string code, int page, int pageSize, string fromDate, string toDate);
     }
     public class APIService : IAPIService
     {
@@ -366,6 +368,24 @@ namespace SLib.Service
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<List<ForeignDataModel>> GetForeign(string code, int page, int pageSize, string fromDate, string toDate)
+        {
+            try
+            {
+                var url = string.Format(ServiceSetting._foreignBuySell_ssi, code, page, pageSize, UrlEncoder.Default.Encode(fromDate), UrlEncoder.Default.Encode(toDate));
+                var client = new HttpClient { BaseAddress = new Uri(url) };
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var res = JsonConvert.DeserializeObject<ForeignModel>(resultArray);
+                return res.data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"APIService.GetForeign|EXCEPTION|INPUT: {code}| {ex.Message}");
             }
             return null;
         }

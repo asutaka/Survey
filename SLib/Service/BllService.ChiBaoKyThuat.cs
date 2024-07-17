@@ -39,107 +39,9 @@ namespace SLib.Service
                 {
                     try
                     {
-                        
-                        var lData = await _apiService.GetDataStock(item.s);
-                        if (lData.Count() < 250
-                            || lData.Last().Volume < 50000)
+                        var model = await ChiBaoKyThuatOnlyStock(item.s, item.rank);
+                        if (model is null)
                             continue;
-                        var model = new ReportPTKT
-                        {
-                            s = item.s,
-                            rank = item.rank
-                        };
-
-                        var lIchi = lData.GetIchimoku();
-                        var lBb = lData.GetBollingerBands();
-                        var lEma21 = lData.GetEma(21);
-                        var lEma50 = lData.GetEma(50);
-                        //var lEma200 = lData.GetEma(200);
-                        var lRsi = lData.GetRsi();
-
-                        //Chỉ báo bắt đáy
-                        var lBBCheck = lBb.TakeLast(7);
-                        var lEma50Check = lEma50.TakeLast(7);
-                        for (int i = 0; i < lBBCheck.Count(); i++)
-                        {
-                            var itemBBCheck = lBBCheck.ElementAt(i);
-                            var itemEma50Check = lEma50Check.ElementAt(i);
-                            if ((itemBBCheck.LowerBand ?? 0) > (itemEma50Check.Ema ?? 0))
-                            {
-                                model.bd = true;
-                                break;
-                            }
-                        }
-                        //MA20
-                        var entity = lData.Last();
-                        var bb = lBb.Last();
-                        var entityNear = lData.SkipLast(1).TakeLast(1).First();
-                        var bbNear = lBb.SkipLast(1).TakeLast(1).First();
-
-                        model.isGEMA20 = entity.Close >= (decimal)bb.Sma;
-                        model.isCrossMa20Up = entityNear.Close < (decimal)bbNear.Sma && entity.Close >= (decimal)bb.Sma && entity.Open <= (decimal)bb.Sma;
-                        model.isPriceUp = entity.Close > entity.Open;
-                        if (entity.Close < (decimal)bb.LowerBand)
-                        {
-                            model.priceBB = 1;
-                        }
-                        else if (entity.Close > (decimal)bb.UpperBand)
-                        {
-                            model.priceBB = 3;
-                        }
-                        else
-                        {
-                            model.priceBB = 2;
-                        }
-                        //RSI zero
-                        var lRsiCheck = lRsi.TakeLast(7);
-                        for (int i = 0; i < lRsiCheck.Count() - 1; i++)
-                        {
-                            if ((lRsiCheck.ElementAt(i).Rsi - lRsiCheck.ElementAt(i + 1).Rsi) == 0)
-                            {
-                                model.isRsiZero = true;
-                                break;
-                            }
-                        }
-                        //Ichi
-                        var ichiCheck = lIchi.Last();
-                        if (entity.Close < ichiCheck.SenkouSpanA && entity.Close < ichiCheck.SenkouSpanB)
-                        {
-                            model.priceCompareIchi = 1;
-                        }
-                        else if (entity.Close > ichiCheck.SenkouSpanA && entity.Close > ichiCheck.SenkouSpanB)
-                        {
-                            model.priceCompareIchi = 3;
-                        }
-                        else
-                        {
-                            model.priceCompareIchi = 2;
-                        }
-                        //EMA21
-                        var ema21 = lEma21.Last();
-                        var ema50 = lEma50.Last();
-                        var ema21Near = lEma21.SkipLast(1).TakeLast(1).First();
-                        var ema50Near = lEma50.SkipLast(1).TakeLast(1).First();
-
-                        if (entityNear.Close < (decimal)ema21Near.Ema 
-                            && entity.Close >= (decimal)ema21.Ema 
-                            && entity.Open <= (decimal)ema21.Ema)
-                        {
-                            model.isCrossEma21Up = true;
-                        }
-                        if (entityNear.Close < (decimal)ema50Near.Ema 
-                            && entity.Close >= (decimal)ema50.Ema 
-                            && entity.Open <= (decimal)ema50.Ema)
-                        {
-                            model.isCrossEma50Up = true;
-                        }
-                        if(ema21Near.Ema < ema50Near.Ema
-                            && ema21.Ema >= ema50.Ema)
-                        {
-                            model.isEma21_50 = true;
-                        }
-
-
 
                         lReport.Add(model);
                     }
@@ -193,7 +95,7 @@ namespace SLib.Service
                     foreach (var item in lTrenMa20)
                     {
                         var content = $"{index++}. {item.s}";
-                        if(item.priceCompareIchi == 3)
+                        if(item.isIchi)
                         {
                             content += " - Ichimoku";
                         }
@@ -217,7 +119,7 @@ namespace SLib.Service
                     foreach (var item in lTrenEma21)
                     {
                         var content = $"{index++}. {item.s}";
-                        if (item.priceCompareIchi == 3)
+                        if (item.isIchi)
                         {
                             content += " - Ichimoku";
                         }
@@ -236,7 +138,7 @@ namespace SLib.Service
                     foreach (var item in lTrenEma50)
                     {
                         var content = $"{index++}. {item.s}";
-                        if (item.priceCompareIchi == 3)
+                        if (item.isIchi)
                         {
                             content += " - Ichimoku";
                         }
@@ -255,7 +157,7 @@ namespace SLib.Service
                     foreach (var item in lEma21_50)
                     {
                         var content = $"{index++}. {item.s}";
-                        if (item.priceCompareIchi == 3)
+                        if (item.isIchi)
                         {
                             content += " - Ichimoku";
                         }
@@ -283,17 +185,123 @@ namespace SLib.Service
 
             return (0, null);
         }
+        private async Task<ReportPTKT> ChiBaoKyThuatOnlyStock(string code, int rank)
+        {
+            try
+            {
+                var lData = await _apiService.GetDataStock(code);
+                if (lData.Count() < 250
+                    || lData.Last().Volume < 50000)
+                    return null;
+                var model = new ReportPTKT
+                {
+                    s = code,
+                    rank = rank
+                };
+
+                var lIchi = lData.GetIchimoku();
+                var lBb = lData.GetBollingerBands();
+                var lEma21 = lData.GetEma(21);
+                var lEma50 = lData.GetEma(50);
+                //var lEma200 = lData.GetEma(200);
+                var lRsi = lData.GetRsi();
+
+                //Chỉ báo bắt đáy
+                var lBBCheck = lBb.TakeLast(7);
+                var lEma50Check = lEma50.TakeLast(7);
+                for (int i = 0; i < lBBCheck.Count(); i++)
+                {
+                    var itemBBCheck = lBBCheck.ElementAt(i);
+                    var itemEma50Check = lEma50Check.ElementAt(i);
+                    if ((itemBBCheck.LowerBand ?? 0) > (itemEma50Check.Ema ?? 0))
+                    {
+                        model.bd = true;
+                        break;
+                    }
+                }
+                //MA20
+                var entity = lData.Last();
+                var bb = lBb.Last();
+                var entityNear = lData.SkipLast(1).TakeLast(1).First();
+                var bbNear = lBb.SkipLast(1).TakeLast(1).First();
+
+                model.curPrice = entity.Close;
+                model.basicPrice = entityNear.Close;
+                model.isGEMA20 = entity.Close >= (decimal)bb.Sma;
+                model.isCrossMa20Up = entityNear.Close < (decimal)bbNear.Sma && entity.Close >= (decimal)bb.Sma && entity.Open <= (decimal)bb.Sma;
+                model.isPriceUp = entity.Close > entity.Open;
+                if (entity.Close < (decimal)bb.LowerBand)
+                {
+                    model.priceBB = 1;
+                }
+                else if (entity.Close > (decimal)bb.UpperBand)
+                {
+                    model.priceBB = 3;
+                }
+                else
+                {
+                    model.priceBB = 2;
+                }
+                //RSI zero
+                var lRsiCheck = lRsi.TakeLast(7);
+                for (int i = 0; i < lRsiCheck.Count() - 1; i++)
+                {
+                    if ((lRsiCheck.ElementAt(i).Rsi - lRsiCheck.ElementAt(i + 1).Rsi) == 0)
+                    {
+                        model.isRsiZero = true;
+                        break;
+                    }
+                }
+                //Ichi
+                var ichiCheck = lIchi.Last();
+                if (entity.Close > ichiCheck.SenkouSpanA && entity.Close > ichiCheck.SenkouSpanB)
+                {
+                    model.isIchi = true;
+                }
+                //EMA21
+                var ema21 = lEma21.Last();
+                var ema50 = lEma50.Last();
+                var ema21Near = lEma21.SkipLast(1).TakeLast(1).First();
+                var ema50Near = lEma50.SkipLast(1).TakeLast(1).First();
+
+                if (entityNear.Close < (decimal)ema21Near.Ema
+                    && entity.Close >= (decimal)ema21.Ema
+                    && entity.Open <= (decimal)ema21.Ema)
+                {
+                    model.isCrossEma21Up = true;
+                }
+                if (entityNear.Close < (decimal)ema50Near.Ema
+                    && entity.Close >= (decimal)ema50.Ema
+                    && entity.Open <= (decimal)ema50.Ema)
+                {
+                    model.isCrossEma50Up = true;
+                }
+                if (ema21Near.Ema < ema50Near.Ema
+                    && ema21.Ema >= ema50.Ema)
+                {
+                    model.isEma21_50 = true;
+                }
+                return model;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
     }
 
     public class ReportPTKT
     {
         public string s { get; set; }
         public int rank { get; set; }
+        public decimal curPrice { get; set; }
+        public decimal basicPrice { get; set; }
         public bool bd { get; set; }//Chỉ báo bắt đáy
         public bool isCrossMa20Up { get; set; }// cắt lên và nến xanh
         public bool isGEMA20 { get; set; }//Nằm trên MA20
         public bool isRsiZero { get; set; }
-        public int priceCompareIchi { get; set; }//Vị trí tương đối so với ichimoku - dưới(1), trong(2), trên(3)
+        public bool isIchi { get; set; }//giá vượt trên ichi
         public int priceBB { get; set; }//Vị trí tương đối so với đường BB - dưới(1), trong(2), trên(3)
         public bool isPriceUp { get; set; }//cp tăng giá hay ko
 
