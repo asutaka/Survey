@@ -126,7 +126,25 @@ namespace SLib.Service
         {
             try
             {
-
+                var strOut = new StringBuilder();
+                strOut.AppendLine($"*FA:");
+                //Lợi nhuận
+                var loinhuan = await ThongKeLoiNhuan(code);
+                if(loinhuan.Item1 > 0)
+                {
+                    strOut.AppendLine(loinhuan.Item2);
+                }
+                //Kế hoạch năm
+                var kehoachNam = await KeHoachNam(code);
+                if(kehoachNam.Item1 > 0)
+                {
+                    strOut.AppendLine(kehoachNam.Item2);
+                }
+                var linkKeHoach = $"https://24hmoney.vn/stock/{code}/ke-hoach-kinh-doanh";
+                strOut.AppendLine($"Link kế hoạch: {linkKeHoach}");
+                //BCTC quý
+                var linkBCTC = $"https://finance.vietstock.vn/{code}/tai-tai-lieu.htm?doctype=1";
+                strOut.AppendLine($"Link BCTC: {linkBCTC}");
             }
             catch (Exception ex)
             {

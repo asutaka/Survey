@@ -17,7 +17,6 @@ namespace SLib.Service
                     return (0, null);
 
                 var strOutput = new StringBuilder();
-                strOutput.AppendLine($"Góc nhìn tài chính:");
                 strOutput.AppendLine($" - Lợi nhuận:");
                 foreach (var item in lLoiNhuan)
                 {
