@@ -16,7 +16,7 @@ namespace SLib.Service
             var strOut = new StringBuilder();
             try
             {
-                var chibao = await ChiBaoKyThuatOnlyStock(code, 0);
+                var chibao = await ChiBaoKyThuatOnlyStock(code, 0, 0);
                 if (chibao is null)
                     return (0, null);
 
@@ -172,20 +172,26 @@ namespace SLib.Service
             return (0, null);
         }
 
-        //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb năm + buy MAup/sell MAdown
+        //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb quý + buy MAup/sell MAdown + giá cổ phiếu từ đầu quý đến thời điểm hiện tại + (mua theo tín hiệu bắt đáy? chưa biết điểm mua, điểm bán)
         public async Task<(int, string)> ThongKeKhac(string code)
         {
             try
             {
-                //+Q1 / 2024: 319.1 tỷ / -20.01 %
-                //+Q4 / 2023: 403.3 tỷ / 7.34 %
-                //+Q3 / 2023: 109.5 tỷ / -69.29 %
-                //+Q2 / 2023: 95.3 tỷ / -83.08 %
-                //+Q1 / 2023: 398.9 tỷ / 22.67 %
-                //+Q4 / 2022: 375.7 tỷ / -48.6 %
-                //+Q3 / 2022: 356.6 tỷ / 19.56 %
-                //+Q2 / 2022: 562.8 tỷ / 710.77 %
-                //+Q1 / 2022: 325.2 tỷ / -34.25 %
+                var strOut = new StringBuilder();
+                strOut.AppendLine($"*Thống kê khác:");
+              
+                var loinhuanTB = await LoiNhuanDN_TB(code);
+                strOut.AppendLine($"- Lợi nhuận TB năm: {loinhuanTB}%");
+
+                var tinhtoanThongKe = await TinhToanThongKeDuaVaoDuLieu(code);
+                strOut.AppendLine($"- Giá tăng trung bình mỗi quý: {tinhtoanThongKe.giacpTangTB_Quy}%");
+                strOut.AppendLine($"- Giá tăng từ đầu quý đến hiện tại: {tinhtoanThongKe.giacpTuDauQuyDenHienTai}%");
+                strOut.AppendLine($"- Winrate TB MA20-Rate Loss: {tinhtoanThongKe.muabanTheoMa20}%/{tinhtoanThongKe.tilebreakMa20Loi}%");
+                strOut.AppendLine($"- Winrate TB MA20 Ichi-Rate Loss: {tinhtoanThongKe.muabanTheoMa20_Ichi}%/{tinhtoanThongKe.tilebreakMa20Loi_Ichi}%");
+                strOut.AppendLine($"- Winrate TB E10-Rate Loss: {tinhtoanThongKe.muabanTheoE10}%/{tinhtoanThongKe.tilebreakE10Loi}%");
+                strOut.AppendLine($"- Winrate TB E10 Ichi-Rate Loss: {tinhtoanThongKe.muabanTheoE10_Ichi}%/{tinhtoanThongKe.tilebreakE10Loi_Ichi}%");
+                strOut.AppendLine($"- Winrate TB E21-Rate Loss: {tinhtoanThongKe.muabanTheoE21}%/{tinhtoanThongKe.tilebreakE21Loi}%");
+                strOut.AppendLine($"- Winrate TB E21 Ichi-Rate Loss: {tinhtoanThongKe.muabanTheoE21_Ichi}%/{tinhtoanThongKe.tilebreakE21Loi_Ichi}%");
             }
             catch (Exception ex)
             {

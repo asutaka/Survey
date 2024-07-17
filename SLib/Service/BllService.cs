@@ -32,7 +32,7 @@ namespace SLib.Service
         Task<(int, string)> PTChuyenSau(string code);
 
 
-
+        Task<ThongKeKhacModel> TinhToanThongKeDuaVaoDuLieu(string code);
 
 
 

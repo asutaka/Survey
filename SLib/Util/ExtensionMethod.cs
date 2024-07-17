@@ -98,5 +98,17 @@ namespace SLib.Util
                 return "III";
             return "IV";
         }
+
+        public static int GetQuarter(this DateTime date)
+        {
+            if (date.Month >= 4 && date.Month <= 6)
+                return 2;
+            else if (date.Month >= 7 && date.Month <= 9)
+                return 3;
+            else if (date.Month >= 10 && date.Month <= 12)
+                return 4;
+            else
+                return 1;
+        }
     }
 }

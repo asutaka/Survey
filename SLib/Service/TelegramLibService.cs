@@ -204,6 +204,11 @@ namespace SLib.Service
 
         private async Task<string> OnlyStock(Stock entity)
         {
+            //phunv
+            var tmp = await _bllService.TinhToanThongKeDuaVaoDuLieu("MWG");
+            return string.Empty;
+
+
             var output = new StringBuilder();
             output.AppendLine($"Mã cổ phiếu: {entity.s}");
             output.AppendLine($"Tên: {entity.p.n.Replace("Công ty", "").Replace("Cổ phần", "").Trim()}");

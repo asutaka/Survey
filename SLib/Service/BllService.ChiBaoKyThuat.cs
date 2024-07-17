@@ -5,6 +5,7 @@ using SLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,7 +40,7 @@ namespace SLib.Service
                 {
                     try
                     {
-                        var model = await ChiBaoKyThuatOnlyStock(item.s, item.rank);
+                        var model = await ChiBaoKyThuatOnlyStock(item.s, item.rank, 50000);
                         if (model is null)
                             continue;
 
@@ -185,14 +186,16 @@ namespace SLib.Service
 
             return (0, null);
         }
-        private async Task<ReportPTKT> ChiBaoKyThuatOnlyStock(string code, int rank)
+        private async Task<ReportPTKT> ChiBaoKyThuatOnlyStock(string code, int rank, int limitvol)
         {
             try
             {
                 var lData = await _apiService.GetDataStock(code);
-                if (lData.Count() < 250
-                    || lData.Last().Volume < 50000)
+                if (lData.Count() < 250)
                     return null;
+                if (limitvol > 0 && lData.Last().Volume < limitvol)
+                    return null;
+
                 var model = new ReportPTKT
                 {
                     s = code,
@@ -289,6 +292,292 @@ namespace SLib.Service
             }
             return null;
         }
+
+        public async Task<ThongKeKhacModel> TinhToanThongKeDuaVaoDuLieu(string code)
+        {
+            try
+            {
+                var lData = await _apiService.GetDataStock(code);
+                var count = lData.Count;
+                if (count < 250)
+                    return null;
+                var dt = DateTime.Now;
+                var model = new ThongKeKhacModel();
+
+                var lIchi = lData.GetIchimoku();
+                var lBb = lData.GetBollingerBands();
+                var lEma21 = lData.GetEma(21);
+                var lEma50 = lData.GetEma(50);
+                var lEma10 = lData.GetEma(10);
+                var lMa20 = lData.GetSma(20);
+                var lRsi = lData.GetRsi();
+
+                //giacpTuDauQuyDenHienTai
+                var last = lData.Last();
+                var quarter = dt.GetQuarter();
+                DateTime dtQuarter;
+                switch (quarter)
+                {
+                    case 1: dtQuarter = new DateTime(dt.Year, 1, 1);break;
+                    case 2: dtQuarter = new DateTime(dt.Year, 4, 1);break;
+                    case 3: dtQuarter = new DateTime(dt.Year, 7, 1);break;
+                    default: dtQuarter = new DateTime(dt.Year, 10, 1); break;
+                }
+                var entityQuarter = lData.FirstOrDefault(x => x.Date.Year == dtQuarter.Year && x.Date.Month == dtQuarter.Month && x.Date.Day == dtQuarter.Day);
+                model.giacpTuDauQuyDenHienTai = Math.Round(100 * (-1 + last.Close / entityQuarter.Close), 1);
+                //giacpTangTB_Quy
+                var lDataQuy = lData.Where(x => x.Date < entityQuarter.Date)
+                    .GroupBy(x => new { x.Date.Year, x.Date.Month }, (key, group) => new
+                    {
+                        Year = key.Year,
+                        Month = key.Month,
+                        Open = group.First().Open,
+                        Close = group.Last().Close
+                    });
+                lDataQuy.Reverse();
+                var countDataQuy = lDataQuy.Count();
+                var lQuy = new List<decimal>();
+                for (int i = 0; i < countDataQuy; i = i+3)
+                {
+                    var itemFirst = lDataQuy.ElementAt(i);
+                    var itemLast = lDataQuy.ElementAt(i+2);
+                    var rateQuy = Math.Round(100 * (-1 + itemFirst.Close / itemLast.Open), 1);
+                    lQuy.Add(rateQuy);
+                    if (lQuy.Count() == 10)
+                        break;
+                }
+                model.giacpTangTB_Quy = lQuy.Average();
+                /*
+                    muabanTheoMa20, tilebreakMa20Loi: 
+                    - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma)
+                    - điều kiện bán: bán sau T3
+                */
+                var ma20 = CalculateMa(lMa20);
+                model.muabanTheoMa20 = ma20.Item1;
+                model.tilebreakMa20Loi = ma20.Item2;
+                /*
+                   muabanTheoE10, tilebreakE10LoikMa20Loi: 
+                   - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma)
+                   - điều kiện bán: bán sau T3
+               */
+                var e10 = CalculateEma(lEma10);
+                model.muabanTheoE10 = e10.Item1;
+                model.tilebreakE10Loi = e10.Item2;
+                /*
+                  muabanTheoE21, tilebreakE21Loi: 
+                  - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma)
+                  - điều kiện bán: bán sau T3
+              */
+                var e21 = CalculateEma(lEma21);
+                model.muabanTheoE21 = e21.Item1;
+                model.tilebreakE21Loi = e21.Item2;
+
+                /*
+                 * Ichi
+                   muabanTheoMa20, tilebreakMa20Loi: 
+                   - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma)
+                   - điều kiện bán: bán sau T3
+               */
+                var ma20Ichi = CalculateMaIchi(lMa20);
+                model.muabanTheoMa20_Ichi = ma20Ichi.Item1;
+                model.tilebreakMa20Loi_Ichi = ma20Ichi.Item2;
+                /*
+                 * Ichi
+                   muabanTheoE10, tilebreakE10LoikMa20Loi: 
+                   - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma)
+                   - điều kiện bán: bán sau T3
+               */
+                var e10Ichi = CalculateEmaIchi(lEma10);
+                model.muabanTheoE10_Ichi = e10Ichi.Item1;
+                model.tilebreakE10Loi_Ichi = e10Ichi.Item2;
+                /*
+                 * Ichi
+                  muabanTheoE21, tilebreakE21Loi: 
+                  - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma)
+                  - điều kiện bán: bán sau T3
+              */
+                var e21Ichi = CalculateEmaIchi(lEma21);
+                model.muabanTheoE21_Ichi = e21Ichi.Item1;
+                model.tilebreakE21Loi_Ichi = e21Ichi.Item2;
+
+                (decimal, decimal) CalculateMa(IEnumerable<SmaResult> lInput)
+                {
+                    var isBuy = false;
+                    var lRate = new List<decimal>();
+                    decimal priceBuy = 0;
+                    var cd = 0;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var item = lData.ElementAt(i);
+                        var itemInput = lInput.ElementAt(i);
+                        if (itemInput.Sma is null)
+                            continue;
+
+                        if (!isBuy)
+                        {
+                            cd = 0;
+                            if (item.Open <= (decimal)itemInput.Sma && item.Close >= (decimal)itemInput.Sma)
+                            {
+                                isBuy = true;
+                                priceBuy = item.Close;
+                                cd++;
+                            }
+                            continue;
+                        }
+
+                        if (cd < 3)
+                        {
+                            cd++;
+                            continue;
+                        }
+
+                        if (item.Close < (decimal)itemInput.Sma)
+                        {
+                            lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
+                            cd = 0;
+                            priceBuy = 0;
+                            isBuy = false;
+                        }
+                    }
+                    return (Math.Round(lRate.Average(),1), Math.Round((decimal)100 * lRate.Count(x => x <= 0)/lRate.Count(),1));
+                }
+                (decimal, decimal) CalculateEma(IEnumerable<EmaResult> lInput)
+                {
+                    var isBuy = false;
+                    var lRate = new List<decimal>();
+                    decimal priceBuy = 0;
+                    var cd = 0;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var item = lData.ElementAt(i);
+                        var itemInput = lInput.ElementAt(i);
+                        if (itemInput.Ema is null)
+                            continue;
+
+                        if (!isBuy)
+                        {
+                            cd = 0;
+                            if (item.Open <= (decimal)itemInput.Ema && item.Close >= (decimal)itemInput.Ema)
+                            {
+                                isBuy = true;
+                                priceBuy = item.Close;
+                                cd++;
+                            }
+                            continue;
+                        }
+
+                        if (cd < 3)
+                        {
+                            cd++;
+                            continue;
+                        }
+
+                        if (item.Close < (decimal)itemInput.Ema)
+                        {
+                            lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
+                            cd = 0;
+                            priceBuy = 0;
+                            isBuy = false;
+                        }
+                    }
+                    return (Math.Round(lRate.Average(), 1), Math.Round((decimal)100 * lRate.Count(x => x <= 0) / lRate.Count(), 1));
+                }
+                (decimal, decimal) CalculateMaIchi(IEnumerable<SmaResult> lInput)
+                {
+                    var isBuy = false;
+                    var lRate = new List<decimal>();
+                    decimal priceBuy = 0;
+                    var cd = 0;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var item = lData.ElementAt(i);
+                        var itemInput = lInput.ElementAt(i);
+                        if (itemInput.Sma is null)
+                            continue;
+                        var itemIchi = lIchi.ElementAt(i);
+                        if (itemIchi.SenkouSpanA is null || itemIchi.SenkouSpanB is null)
+                            continue;
+
+                        if (!isBuy)
+                        {
+                            cd = 0;
+                            if (item.Open <= (decimal)itemInput.Sma && item.Close >= (decimal)itemInput.Sma && item.Close >= Math.Max(itemIchi.SenkouSpanA??0, itemIchi.SenkouSpanB??0))
+                            {
+                                isBuy = true;
+                                priceBuy = item.Close;
+                                cd++;
+                            }
+                            continue;
+                        }
+
+                        if (cd < 3)
+                        {
+                            cd++;
+                            continue;
+                        }
+
+                        if (item.Close < (decimal)itemInput.Sma)
+                        {
+                            lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
+                            cd = 0;
+                            priceBuy = 0;
+                            isBuy = false;
+                        }
+                    }
+                    return (Math.Round(lRate.Average(), 1), Math.Round((decimal)100 * lRate.Count(x => x <= 0) / lRate.Count(), 1));
+                }
+                (decimal, decimal) CalculateEmaIchi(IEnumerable<EmaResult> lInput)
+                {
+                    var isBuy = false;
+                    var lRate = new List<decimal>();
+                    decimal priceBuy = 0;
+                    var cd = 0;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var item = lData.ElementAt(i);
+                        var itemInput = lInput.ElementAt(i);
+                        if (itemInput.Ema is null)
+                            continue;
+                        var itemIchi = lIchi.ElementAt(i);
+                        if (itemIchi.SenkouSpanA is null || itemIchi.SenkouSpanB is null)
+                            continue;
+
+                        if (!isBuy)
+                        {
+                            cd = 0;
+                            if (item.Open <= (decimal)itemInput.Ema && item.Close >= (decimal)itemInput.Ema && item.Close >= Math.Max(itemIchi.SenkouSpanA ?? 0, itemIchi.SenkouSpanB ?? 0))
+                            {
+                                isBuy = true;
+                                priceBuy = item.Close;
+                                cd++;
+                            }
+                            continue;
+                        }
+
+                        if (cd < 3)
+                        {
+                            cd++;
+                            continue;
+                        }
+
+                        if (item.Close < (decimal)itemInput.Ema)
+                        {
+                            lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
+                            cd = 0;
+                            priceBuy = 0;
+                            isBuy = false;
+                        }
+                    }
+                    return (Math.Round(lRate.Average(), 1), Math.Round((decimal)100 * lRate.Count(x => x <= 0) / lRate.Count(), 1));
+                }
+                return model;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
     }
 
     public class ReportPTKT
@@ -308,6 +597,25 @@ namespace SLib.Service
         public bool isCrossEma21Up { get; set; }
         public bool isCrossEma50Up { get; set; }
         public bool isEma21_50 { get; set; }
+    }
+
+    public class ThongKeKhacModel
+    {
+        public decimal giacpTuDauQuyDenHienTai { get; set; }
+        public decimal giacpTangTB_Quy { get; set; }
+        public decimal muabanTheoMa20 { get; set; }
+        public decimal tilebreakMa20Loi { get; set; }
+        public decimal muabanTheoE10 { get; set; }
+        public decimal tilebreakE10Loi { get; set; }
+        public decimal muabanTheoE21 { get; set; }
+        public decimal tilebreakE21Loi { get; set; }
+        //Ichi
+        public decimal muabanTheoMa20_Ichi { get; set; }
+        public decimal tilebreakMa20Loi_Ichi { get; set; }
+        public decimal muabanTheoE10_Ichi { get; set; }
+        public decimal tilebreakE10Loi_Ichi { get; set; }
+        public decimal muabanTheoE21_Ichi { get; set; }
+        public decimal tilebreakE21Loi_Ichi { get; set; }
     }
 }
 
