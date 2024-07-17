@@ -1,5 +1,7 @@
-﻿using SLib.Util;
+﻿using iTextSharp.text;
+using SLib.Util;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -42,6 +44,28 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return (0, null);
+        }
+
+        public async Task<decimal> LoiNhuanDN_TB(string code)
+        {
+            var dt = DateTime.Now;
+            var KeHoach = await _apiService.GetKeHoachThucHien(code);
+            if (!KeHoach.data.Any())
+                return 0;
+            KeHoach.data = KeHoach.data.Where(x => x.year < dt.Year).ToList();
+            var lLoiNhuan = new List<decimal>();
+            var count = KeHoach.data.Count();
+            for ( var i = 0; i < count - 1; i++ )
+            {
+                var itemCur = KeHoach.data[i];
+                var itemPrev = KeHoach.data[i + 1];
+                var flag = itemCur.isa16 >= itemPrev.isa16;
+                //ve lam tiep
+
+
+                var rate = Math.Round(100 * (-1 + itemCur.isa16 / itemPrev.isa16));
+            }
+
         }
     }
 }
