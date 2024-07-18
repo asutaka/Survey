@@ -448,7 +448,7 @@ namespace SLib.Service
                                     isBuy = true;
                                     priceBuy = item.Close;
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -463,7 +463,7 @@ namespace SLib.Service
                         if (item.Close < (decimal)itemInput.Sma)
                         {
                             lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                            Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%"); 
+                            //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%"); 
                             cd = 0;
                             priceBuy = 0;
                             isBuy = false;
@@ -496,7 +496,7 @@ namespace SLib.Service
                                     isBuy = true;
                                     priceBuy = item.Close;
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -546,7 +546,7 @@ namespace SLib.Service
                                     isBuy = true;
                                     priceBuy = item.Close;
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -561,7 +561,7 @@ namespace SLib.Service
                         if (item.Close < (decimal)itemInput.Sma)
                         {
                             lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                            Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                            //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                             cd = 0;
                             priceBuy = 0;
                             isBuy = false;
@@ -597,7 +597,7 @@ namespace SLib.Service
                                     isBuy = true;
                                     priceBuy = item.Close;
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -651,7 +651,7 @@ namespace SLib.Service
                                         isBelowIchi = true;
                                     }
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -672,7 +672,7 @@ namespace SLib.Service
                                 if(Math.Max(ichi.SenkouSpanA ?? 0, ichi.SenkouSpanB ?? 0) > item.Close)
                                 {
                                     lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                                    Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                                    //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                                     cd = 0;
                                     priceBuy = 0;
                                     isBuy = false;
@@ -686,7 +686,7 @@ namespace SLib.Service
                         if (item.Close < (decimal)itemInput.Sma)
                         {
                             lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                            Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                            //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                             cd = 0;
                             priceBuy = 0;
                             isBuy = false;
@@ -726,7 +726,7 @@ namespace SLib.Service
                                         isBelowIchi = true;
                                     }
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -748,7 +748,7 @@ namespace SLib.Service
                                 if (Math.Max(ichi.SenkouSpanA ?? 0, ichi.SenkouSpanB ?? 0) > item.Close)
                                 {
                                     lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                                    Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                                    //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                                     cd = 0;
                                     priceBuy = 0;
                                     isBuy = false;
@@ -803,7 +803,7 @@ namespace SLib.Service
                                         isBelowIchi = true;
                                     }
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -825,7 +825,7 @@ namespace SLib.Service
                                 if (Math.Max(ichi.SenkouSpanA ?? 0, ichi.SenkouSpanB ?? 0) > item.Close)
                                 {
                                     lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                                    Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                                    //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                                     cd = 0;
                                     priceBuy = 0;
                                     isBuy = false;
@@ -839,7 +839,7 @@ namespace SLib.Service
                         if (item.Close < (decimal)itemInput.Sma)
                         {
                             lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                            Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                            //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                             cd = 0;
                             priceBuy = 0;
                             isBuy = false;
@@ -881,7 +881,7 @@ namespace SLib.Service
                                         isBelowIchi = true;
                                     }
                                     cd++;
-                                    Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
+                                    //Console.WriteLine($"Ngay mua: {item.Date.ToString("dd/MM/yyyy")}; Gia mua: {priceBuy}");
                                 }
                             }
                             continue;
@@ -903,7 +903,7 @@ namespace SLib.Service
                                 if (Math.Max(ichi.SenkouSpanA ?? 0, ichi.SenkouSpanB ?? 0) > item.Close)
                                 {
                                     lRate.Add(Math.Round(100 * (-1 + item.Close / priceBuy), 1));
-                                    Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
+                                    //Console.WriteLine($"             =>Ngay ban: {item.Date.ToString("dd/MM/yyyy")}; Gia ban: {item.Close}; Ti le: {lRate.Last()}%");
                                     cd = 0;
                                     priceBuy = 0;
                                     isBuy = false;
