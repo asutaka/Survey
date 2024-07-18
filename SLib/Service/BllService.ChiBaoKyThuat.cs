@@ -341,7 +341,7 @@ namespace SLib.Service
                 {
                     var itemFirst = lDataQuy.ElementAt(i);
                     var itemLast = lDataQuy.ElementAt(i+2);
-                    var rateQuy = Math.Round(100 * (-1 + itemFirst.Close / itemLast.Open), 1);
+                    var rateQuy = Math.Round(100 * (-1 + itemLast.Close / itemFirst.Open), 1);
                     lQuy.Add(rateQuy);
                     if (lQuy.Count() == 10)
                         break;
