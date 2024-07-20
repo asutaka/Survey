@@ -1,4 +1,5 @@
 ﻿using iTextSharp.text;
+using SLib.Model.APIModel;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,21 @@ namespace SLib.Service
         {
             try
             {
-                var dt = DateTime.Now;
                 var KeHoach = await _apiService.GetKeHoachThucHien(code);
+                return KeHoachNam(KeHoach);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return (0, null);
+        }
+
+        public (int, string) KeHoachNam(KeHoachThucHienAPIModel KeHoach)
+        {
+            try
+            {
+                var dt = DateTime.Now;
                 if (!KeHoach.data.Any())
                     return (0, null);
 
@@ -50,13 +64,19 @@ namespace SLib.Service
         {
             var dt = DateTime.Now;
             var KeHoach = await _apiService.GetKeHoachThucHien(code);
+            return LoiNhuanDN_TB(KeHoach);
+        }
+
+        private decimal LoiNhuanDN_TB(KeHoachThucHienAPIModel KeHoach)
+        {
+            var dt = DateTime.Now;
             if (!KeHoach.data.Any())
                 return 0;
             KeHoach.data = KeHoach.data.Where(x => x.year < dt.Year).ToList();
             var lKetquaNam = KeHoach.data.Select(x => x.quarter.FirstOrDefault(y => y.quarter == 0));
             var lLoiNhuan = new List<decimal>();
             var count = lKetquaNam.Count();
-            if(count > 1)
+            if (count > 1)
             {
                 for (var i = 0; i < count - 1; i++)
                 {

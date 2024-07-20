@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SLib.Model.APIModel;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,11 +9,14 @@ namespace SLib.Service
 {
     public partial class BllService
     {
-        public async Task<(int, string)> ThongKeLoiNhuan(string code)
+        public async Task<(int, string)> ThongKeLoiNhuan(string code, List<LoiNhuanAPIDetail> lLoiNhuan = null)
         {
             try
             {
-                var lLoiNhuan = await _apiService.ThongKeLoiNhuan(code);
+                if (lLoiNhuan == null)
+                {
+                    lLoiNhuan = await _apiService.ThongKeLoiNhuan(code);
+                }
                 lLoiNhuan.Reverse();
                 if (!lLoiNhuan.Any())
                     return (0, null);

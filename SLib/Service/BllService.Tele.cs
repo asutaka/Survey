@@ -1,7 +1,10 @@
 ﻿using MongoDB.Driver;
 using MongoDB.Driver.Linq;
+using Skender.Stock.Indicators;
 using SLib.Model;
+using SLib.Model.APIModel;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +14,12 @@ namespace SLib.Service
     public partial class BllService
     {
         //TA: Giá hiện tại, chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
-        public async Task<(int, string)> TA(string code)
+        public (int, string) TA(List<Quote> lData)
         {
             var strOut = new StringBuilder();
             try
             {
-                var chibao = await ChiBaoKyThuatOnlyStock(code, 0, 0);
+                var chibao = ChiBaoKyThuatOnlyStock(lData, 0);
                 if (chibao is null)
                     return (0, null);
 
@@ -63,7 +66,7 @@ namespace SLib.Service
         }
 
         //Thống kê giao dịch: + NN mua bán + Tự doanh + Mua bán chủ động
-        public async Task<(int, string)> ThongKeGD(string code)
+        private async Task<(int, string)> ThongKeGD(string code, List<ForeignDataModel> lData = null)
         {
             try
             {
@@ -71,7 +74,10 @@ namespace SLib.Service
                 strOut.AppendLine($"*Thống kê giao dịch:");
                 var dt = DateTime.Now;
                 var dtFirstWeek = dt.AddDays(-(int)dt.DayOfWeek);
-                var lData = await _apiService.GetForeign(code, 1, 1000, dtFirstWeek.ToString("dd/MM/yyyy"), dt.AddDays(1).ToString("dd/MM/yyyy"));
+                if(lData is null)
+                {
+                    lData = await _apiService.GetForeign(code, 1, 1000, dtFirstWeek.ToString("dd/MM/yyyy"), dt.AddDays(1).ToString("dd/MM/yyyy"));
+                }
                 if (lData?.Any() ?? false) 
                 {
                     //NN
@@ -140,20 +146,20 @@ namespace SLib.Service
         }
 
         //FA: + Lợi nhuận + Kế hoạch năm +BCTC quý x
-        public async Task<(int, string)> FA(string code)
+        public async Task<(int, string)> FA(string code, List<LoiNhuanAPIDetail> lLoiNhuan, KeHoachThucHienAPIModel kehoach)
         {
             try
             {
                 var strOut = new StringBuilder();
                 strOut.AppendLine($"*FA:");
                 //Lợi nhuận
-                var loinhuan = await ThongKeLoiNhuan(code);
+                var loinhuan = await ThongKeLoiNhuan(code, lLoiNhuan);
                 if(loinhuan.Item1 > 0)
                 {
                     strOut.AppendLine(loinhuan.Item2);
                 }
                 //Kế hoạch năm
-                var kehoachNam = await KeHoachNam(code);
+                var kehoachNam = KeHoachNam(kehoach);
                 if(kehoachNam.Item1 > 0)
                 {
                     strOut.AppendLine(kehoachNam.Item2);
@@ -173,25 +179,44 @@ namespace SLib.Service
         }
 
         //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb quý + buy MAup/sell MAdown + giá cổ phiếu từ đầu quý đến thời điểm hiện tại + (mua theo tín hiệu bắt đáy? chưa biết điểm mua, điểm bán)
-        public async Task<(int, string)> ThongKeKhac(string code)
+        public async Task<(int, string)> ThongKeKhac(string code, List<Quote> lDataStock, KeHoachThucHienAPIModel kehoach)
         {
             try
             {
                 var strOut = new StringBuilder();
                 strOut.AppendLine($"*Thống kê khác:");
               
-                var loinhuanTB = await LoiNhuanDN_TB(code);
+                var loinhuanTB = LoiNhuanDN_TB(kehoach);
                 strOut.AppendLine($"- Lợi nhuận TB năm: {loinhuanTB}%");
 
-                var tinhtoanThongKe = await TinhToanThongKeDuaVaoDuLieu(code);
-                strOut.AppendLine($"- Giá tăng trung bình mỗi quý: {tinhtoanThongKe.giacpTangTB_Quy}%");
-                strOut.AppendLine($"- Giá tăng từ đầu quý đến hiện tại: {tinhtoanThongKe.giacpTuDauQuyDenHienTai}%");
-                strOut.AppendLine($"- Winrate TB MA20-Rate Loss: {tinhtoanThongKe.muabanTheoMa20}%/{tinhtoanThongKe.tilebreakMa20Loi}%");
-                strOut.AppendLine($"- Winrate TB MA20 Ichi-Rate Loss: {tinhtoanThongKe.muabanTheoMa20_Ichi}%/{tinhtoanThongKe.tilebreakMa20Loi_Ichi}%");
-                strOut.AppendLine($"- Winrate TB E10-Rate Loss: {tinhtoanThongKe.muabanTheoE10}%/{tinhtoanThongKe.tilebreakE10Loi}%");
-                strOut.AppendLine($"- Winrate TB E10 Ichi-Rate Loss: {tinhtoanThongKe.muabanTheoE10_Ichi}%/{tinhtoanThongKe.tilebreakE10Loi_Ichi}%");
-                strOut.AppendLine($"- Winrate TB E21-Rate Loss: {tinhtoanThongKe.muabanTheoE21}%/{tinhtoanThongKe.tilebreakE21Loi}%");
-                strOut.AppendLine($"- Winrate TB E21 Ichi-Rate Loss: {tinhtoanThongKe.muabanTheoE21_Ichi}%/{tinhtoanThongKe.tilebreakE21Loi_Ichi}%");
+                var tinhtoanThongKe = TinhToanThongKeDuaVaoDuLieu(lDataStock);
+                if(tinhtoanThongKe != null)
+                {
+                    strOut.AppendLine($"- Giá tăng trung bình mỗi quý: {tinhtoanThongKe.giacpTangTB_Quy}%");
+                    strOut.AppendLine($"- Giá tăng từ đầu quý đến hiện tại: {tinhtoanThongKe.giacpTuDauQuyDenHienTai}%");
+                    strOut.AppendLine();
+                    var lstOrderDesc = new List<WinrateShow>
+                    {
+                        new WinrateShow { Name = "MA20-Rate", BuySell = tinhtoanThongKe.muabanTheoMa20, Break = tinhtoanThongKe.tilebreakMa20Loi },
+                        new WinrateShow { Name = "MA20 Ichi-Rate", BuySell = tinhtoanThongKe.muabanTheoMa20_Ichi, Break = tinhtoanThongKe.tilebreakMa20Loi_Ichi },
+                        new WinrateShow { Name = "E10-Rate", BuySell = tinhtoanThongKe.muabanTheoE10, Break = tinhtoanThongKe.tilebreakE10Loi },
+                        new WinrateShow { Name = "E10 Ichi-Rate", BuySell = tinhtoanThongKe.muabanTheoE10_Ichi, Break = tinhtoanThongKe.tilebreakE10Loi_Ichi },
+                        new WinrateShow { Name = "E21-Rate", BuySell = tinhtoanThongKe.muabanTheoE21, Break = tinhtoanThongKe.tilebreakE21Loi },
+                        new WinrateShow { Name = "E21 Ichi-Rate", BuySell = tinhtoanThongKe.muabanTheoE21_Ichi, Break = tinhtoanThongKe.tilebreakE21Loi_Ichi },
+                        new WinrateShow { Name = "MA20-EX-Rate", BuySell = tinhtoanThongKe.muabanTheoMa20_EX, Break = tinhtoanThongKe.tilebreakMa20Loi_EX },
+                        new WinrateShow { Name = "MA20-EX Ichi-Rate", BuySell = tinhtoanThongKe.muabanTheoMa20_Ichi_EX, Break = tinhtoanThongKe.tilebreakMa20Loi_Ichi_EX },
+                        new WinrateShow { Name = "E10-EX-Rate", BuySell = tinhtoanThongKe.muabanTheoE10_EX, Break = tinhtoanThongKe.tilebreakE10Loi_EX },
+                        new WinrateShow { Name = "E10-EX Ichi-Rate", BuySell = tinhtoanThongKe.muabanTheoE10_Ichi_EX, Break = tinhtoanThongKe.tilebreakE10Loi_Ichi_EX },
+                        new WinrateShow { Name = "E21-EX-Rate", BuySell = tinhtoanThongKe.muabanTheoE21_EX, Break = tinhtoanThongKe.tilebreakE21Loi_EX },
+                        new WinrateShow { Name = "E21-EX Ichi-Rate", BuySell = tinhtoanThongKe.muabanTheoE21_Ichi_EX, Break = tinhtoanThongKe.tilebreakE21Loi_Ichi_EX }
+                    };
+                    foreach (var item in lstOrderDesc.OrderByDescending(x => x.BuySell))
+                    {
+                        strOut.AppendLine($"- Winrate TB {item.Name} Loss: {item.BuySell}%/ {item.Break}%");
+                    }
+                }
+                
+                return (1, strOut.ToString());
             }
             catch (Exception ex)
             {
@@ -213,5 +238,12 @@ namespace SLib.Service
             }
             return (0, null);
         }
+    }
+
+    public class WinrateShow
+    {
+        public string Name { get; set; }
+        public decimal BuySell { get; set; }
+        public decimal Break { get; set; }
     }
 }

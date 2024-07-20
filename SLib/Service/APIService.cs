@@ -224,7 +224,6 @@ namespace SLib.Service
 
         public async Task<string> GetExternalIpAddress()
         {
-            var lOutput = new List<Foreign>();
             try
             {
                 var url = "http://icanhazip.com";

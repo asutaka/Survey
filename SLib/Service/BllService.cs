@@ -1,10 +1,8 @@
 ﻿using SLib.DAL;
 using SLib.Model;
+using SLib.Model.APIModel;
 using SLib.Util;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SLib.Service
@@ -18,21 +16,14 @@ namespace SLib.Service
         Task<(int, string)> SyncThongkeNhomNganh(E24hGDNNType type);
         Task<(int, string)> LayMaTheoChiBao();
         Task<(int, string)> KeHoachNam(string code);
-        Task<(int, string)> ThongKeLoiNhuan(string code);
+        (int, string) KeHoachNam(KeHoachThucHienAPIModel KeHoach);
         Task<(int, List<string>)> ChiBaoKyThuat();
 
         //Tele only stock
         List<Stock> GetStock();
-
-        //public
-        Task<(int, string)> TA(string code);
-        Task<(int, string)> ThongKeGD(string code);
-        Task<(int, string)> FA(string code);
-        Task<(int, string)> ThongKeKhac(string code);
-        Task<(int, string)> PTChuyenSau(string code);
+        Task<string> OnlyStock(Stock entity);
 
 
-        Task<ThongKeKhacModel> TinhToanThongKeDuaVaoDuLieu(string code);
 
 
 
