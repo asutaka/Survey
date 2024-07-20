@@ -29,6 +29,7 @@ namespace SLib.Service
         Task<KeHoachThucHienAPIModel> GetKeHoachThucHien(string ma);
         Task<List<LoiNhuanAPIDetail>> ThongKeLoiNhuan(string ma);
         Task<List<ForeignDataModel>> GetForeign(string code, int page, int pageSize, string fromDate, string toDate);
+        Task<IEnumerable<BCTCAPIModel>> GetDanhSachBCTC(string code);
     }
     public class APIService : IAPIService
     {
@@ -385,6 +386,33 @@ namespace SLib.Service
             catch (Exception ex)
             {
                 Console.WriteLine($"APIService.GetForeign|EXCEPTION|INPUT: {code}| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<BCTCAPIModel>> GetDanhSachBCTC(string code)
+        {
+            var body = $"code={code}&page=1&type=1&__RequestVerificationToken=7E2f40aB2GtqaSRw_1PuR4Fa1x1YHJNqUonxZP9-xlcBpLR9Gh_8ksrtVeyg6dm51Tj-1KY22gRn-ZeDPt_1Sz1oSqFLJKaikrbC5x-Z7L7HEVisBf4QwOUhPhrtbqll0";
+            try
+            {
+                var url = ServiceSetting._bctc_vietstock;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                requestMessage.Headers.Add("Cookie", "ASP.NET_SessionId=kez23nkspuoomciouahd1xqp; __RequestVerificationToken=5t0qgD3M2IWZKLXukNsWaFE2ZCWl_cKVOn2SDHUDDw6NIEfBM1FC1HWEnrE9BzsrKeZrRWbGyYItV21WS4E6t-CTsKZqRvQIv6Ma5qAegwU1; language=vi-VN; vts_usr_lg=8CA082FB9A83611E2EE754B3D0817C20650DC01BCB8E76FCAC643E2DE3B937D04A76BC9A8E76AC797AA7E895EF0AE9051A1FCB4BD46B023E8480A86FFC74A037B20716A602AF53D46BA8F61510D3143F5D712AE2DC4C6A15D16986FE3C2BC95C852ED024741320D07D992CAFF99D22E8C5DB03AB74F593A2517D2B63745AFA70; _ga=GA1.1.1323687995.1720524498; _ga_EXMM0DKVEX=GS1.1.1720524497.1.0.1720524497.60.0.0; Theme=Light; finance_viewedstock=VHM,SHS,SZC,; ASP.NET_SessionId=uybogztjonmgl4zs4blcqcn2; __RequestVerificationToken=i57_ExLOX1hZcmxGXejYGH720nWhDh_sCb42qkKM98h4gGstmLBzGk5cNOEPN_Ir470i5kklT4ZyjOickCYIa6ZbvBbJu0a-VVwD_ffRwn01; language=vi-VN");
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                var responseMessage = await client.SendAsync(requestMessage);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<IEnumerable<BCTCAPIModel>>(resultArray);
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
             return null;
         }

@@ -10,6 +10,7 @@ namespace SLib.Model
         public string e { get; set; }//exchange
         public CompanyProfileDataModel p { get; set; } //profile
         public List<H24DataModel> h24 { get; set; }//nhóm ngành lấy từ 24h smart money
+        public List<BCTCReleaseModel> bc { get; set; }//Thời gian release BCTC
         public List<string> cat { get; set; }//cat
         public List<string> catl { get; set; }//cat leader
         public int rank { get; set; }
@@ -38,5 +39,11 @@ namespace SLib.Model
         public string code { get; set; }
         public string name { get; set; }
         public int level { get; set; }
+    }
+
+    public class BCTCReleaseModel
+    {
+        public long t { get; set; }
+        public string title { get; set; }
     }
 }

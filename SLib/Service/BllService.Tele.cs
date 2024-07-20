@@ -179,7 +179,7 @@ namespace SLib.Service
         }
 
         //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb quý + buy MAup/sell MAdown + giá cổ phiếu từ đầu quý đến thời điểm hiện tại + (mua theo tín hiệu bắt đáy? chưa biết điểm mua, điểm bán)
-        public async Task<(int, string)> ThongKeKhac(string code, List<Quote> lDataStock, KeHoachThucHienAPIModel kehoach)
+        public async Task<(int, string)> ThongKeKhac(Stock entity, List<Quote> lDataStock, KeHoachThucHienAPIModel kehoach)
         {
             try
             {
@@ -189,7 +189,7 @@ namespace SLib.Service
                 var loinhuanTB = LoiNhuanDN_TB(kehoach);
                 strOut.AppendLine($"- Lợi nhuận TB năm: {loinhuanTB}%");
 
-                var tinhtoanThongKe = TinhToanThongKeDuaVaoDuLieu(lDataStock);
+                var tinhtoanThongKe = TinhToanThongKeDuaVaoDuLieu(entity, lDataStock);
                 if(tinhtoanThongKe != null)
                 {
                     strOut.AppendLine($"- Giá tăng trung bình mỗi quý: {tinhtoanThongKe.giacpTangTB_Quy}%");

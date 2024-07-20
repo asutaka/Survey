@@ -19,6 +19,8 @@ namespace SLib.Service
         (int, string) KeHoachNam(KeHoachThucHienAPIModel KeHoach);
         Task<(int, List<string>)> ChiBaoKyThuat();
 
+        Task DongBoNgayCongBoBCTC();
+
         //Tele only stock
         List<Stock> GetStock();
         Task<string> OnlyStock(Stock entity);

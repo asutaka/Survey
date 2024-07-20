@@ -43,7 +43,7 @@ namespace SLib.Service
             }
 
             //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb năm + buy MAup/sell MAdown
-            var entityKhac = await ThongKeKhac(entity.s, lDataStock, KeHoach);
+            var entityKhac = await ThongKeKhac(entity, lDataStock, KeHoach);
             if (entityKhac.Item1 > 0)
             {
                 output.AppendLine(entityKhac.Item2);

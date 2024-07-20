@@ -16,6 +16,8 @@ namespace StockScout
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            //await _bridgeService.DongBoNgayCongBoBCTC();
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 var dt = DateTime.Now;

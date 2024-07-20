@@ -1,4 +1,5 @@
 ﻿using Skender.Stock.Indicators;
+using SLib.Model;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
@@ -9,12 +10,12 @@ namespace SLib.Service
 {
     public partial class BllService
     {
-        public async Task<ThongKeKhacModel> TinhToanThongKeDuaVaoDuLieu(string code)
+        public async Task<ThongKeKhacModel> TinhToanThongKeDuaVaoDuLieu(Stock entity)
         {
             try
             {
-                var lData = await _apiService.GetDataStock(code);
-                return TinhToanThongKeDuaVaoDuLieu(lData);
+                var lData = await _apiService.GetDataStock(entity.s);
+                return TinhToanThongKeDuaVaoDuLieu(entity, lData);
             }
             catch (Exception ex)
             {
@@ -22,7 +23,7 @@ namespace SLib.Service
             }
             return null;
         }
-        public ThongKeKhacModel TinhToanThongKeDuaVaoDuLieu(List<Quote> lData)
+        public ThongKeKhacModel TinhToanThongKeDuaVaoDuLieu(Stock entity, List<Quote> lData)
         {
             try
             {
@@ -40,6 +41,25 @@ namespace SLib.Service
                 var lMa20 = lData.GetSma(20);
                 var lRsi = lData.GetRsi();
 
+                //var countBC = entity.bc.Count();
+                //if (countBC > 3)
+                //{
+                //    //check dữ liệu báo cáo quý có tin tưởng hay ko
+                //    var lDiv = new List<long>();
+                //    for (int i = 0; i < countBC - 1; i++)
+                //    {
+                //        var elementCur = entity.bc[i].t;
+                //        var elementNext = entity.bc[i + 1].t;
+                //        lDiv.Add((elementCur - elementNext)/86400000);
+                //    }
+                //    if (!lDiv.Any(x => x > 180))
+                //    {
+                //        //here
+                //    }
+
+
+                //    //entity.bc.Reverse();
+                //}
                 //giacpTuDauQuyDenHienTai
                 var last = lData.Last();
                 var quarter = dt.GetQuarter();
@@ -75,6 +95,7 @@ namespace SLib.Service
                         break;
                 }
                 model.giacpTangTB_Quy = lQuy.Average();
+
                 /*
                     muabanTheoMa20, tilebreakMa20Loi: 
                     - điều kiện mua: mua khi nến cắt lên MA20 và xanh(O =< Ma và C >= Ma) và nến ngay trước phải nằm toàn bộ thân nến phía dưới MA
