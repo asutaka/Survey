@@ -19,6 +19,7 @@ namespace SLib.Service
         Task<(int, List<string>)> ChiBaoKyThuat();
 
         Task DongBoNgayCongBoBCTC();
+        Task DongBoDoanhThuLoiNhuan();
 
         //Tele only stock
         List<Stock> GetStock();
@@ -47,13 +48,13 @@ namespace SLib.Service
         private readonly IConfigDataRepo _configRepo;
         private readonly ITuDoanhRepo _tudoanhRepo;
         private readonly ICategoryRepo _categoryRepo;
-        //private readonly IReportMongoRepo _reportRepo;
+        private readonly IFinancialRepo _financialRepo;
         private readonly IFileService _fileService;
         public BllService(IAPIService apiService,
                             IStockRepo stockRepo,
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
-                            //IReportMongoRepo reportRepo,
+                            IFinancialRepo financialRepo,
                             ICategoryRepo categoryRepo,
                             IFileService fileService
                             )
@@ -63,7 +64,7 @@ namespace SLib.Service
             _configRepo = configRepo;
             _tudoanhRepo = tudoanhRepo;
             _categoryRepo = categoryRepo;
-            //_reportRepo = reportRepo;
+            _financialRepo = financialRepo;
             _fileService = fileService;
         }
 

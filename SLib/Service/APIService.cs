@@ -31,6 +31,7 @@ namespace SLib.Service
         Task<List<ForeignDataModel>> GetForeign(string code, int page, int pageSize, string fromDate, string toDate);
         Task<IEnumerable<BCTCAPIModel>> GetDanhSachBCTC(string code);
         Task<Stream> GetChartImage(string body);
+        Task<List<Financial>> GetDoanhThuLoiNhuan(string code);
     }
     public class APIService : IAPIService
     {
@@ -439,6 +440,28 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return null;
+        }
+
+        public async Task<List<Financial>> GetDoanhThuLoiNhuan(string code)
+        {
+            var lOutput = new List<Financial>();
+            try
+            {
+                var url = string.Format(ServiceSetting._financeInfo_ssi, code);
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<FinancialAPIModel>(resultArray);
+                if (responseModel is null)
+                    return null;
+                return responseModel.data;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return lOutput;
         }
     }
 }

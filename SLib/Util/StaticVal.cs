@@ -29,7 +29,7 @@ namespace SLib.Util
             {"2357", new List<string>{ "Xây dựng", "xd", "xay dung", "xaydung" } },
             {"2777", new List<string>{ "Cảng biển", "cb", "cangbien", "cang bien" } },
             {"4500", new List<string>{ "Dược", "du", "duoc" } },
-            {"7535", new List<string>{ "Năng lượng", "nl", "nang luong", "nl" } }
+            {"7535", new List<string>{ "Năng lượng", "nl", "nang luong", "nangluong" } }
         };
     }
 }

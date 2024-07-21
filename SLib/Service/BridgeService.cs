@@ -24,6 +24,7 @@ namespace SLib.Service
         Task TuDoanh(DateTime dt);
         Task ChiBaoKyThuat(DateTime dt);
         Task DongBoNgayCongBoBCTC();
+        Task DongBoDoanhThuLoiNhuan();
     }
 
     public class BridgeService : IBridgeService
@@ -212,6 +213,11 @@ namespace SLib.Service
         public async Task DongBoNgayCongBoBCTC()
         {
             await _bllService.DongBoNgayCongBoBCTC();
+        }
+
+        public async Task DongBoDoanhThuLoiNhuan()
+        {
+            await _bllService.DongBoDoanhThuLoiNhuan();
         }
     }
 }

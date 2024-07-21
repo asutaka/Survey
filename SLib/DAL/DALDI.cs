@@ -11,6 +11,7 @@ namespace SLib.DAL
             services.AddSingleton<IConfigDataRepo, ConfigDataRepo>();
             services.AddSingleton<IUserMessageRepo, UserMessageRepo>();
             services.AddSingleton<ICategoryRepo, CategoryRepo>();
+            services.AddSingleton<IFinancialRepo, FinancialRepo>();
         }
     }
 }
