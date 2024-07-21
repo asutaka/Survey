@@ -211,6 +211,15 @@ namespace SLib.Service
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 return;
             }
+            if (input.ToUpper().Contains("LN_"))
+            {
+                var stream = await _bllService.Chart_LN_Category(input);
+                if (stream is null || stream.Length <= 0)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                return;
+            }
             //
             //if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
             //{

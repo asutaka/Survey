@@ -25,6 +25,7 @@ namespace SLib.Service
         List<Stock> GetStock();
         Task<string> OnlyStock(Stock entity);
         Task<Stream> Chart_VonHoa_Category(string input);
+        Task<Stream> Chart_LN_Category(string input);
 
         //HighChart
         Task<Stream> GetBasicColumn();
