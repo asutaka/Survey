@@ -159,11 +159,6 @@ namespace SLib.Service
                     strOut.AppendLine(loinhuan.Item2);
                 }
                 //Kế hoạch năm
-                var kehoachNam = KeHoachNam(kehoach);
-                if(kehoachNam.Item1 > 0)
-                {
-                    strOut.AppendLine(kehoachNam.Item2);
-                }
                 var linkKeHoach = $"https://24hmoney.vn/stock/{code}/ke-hoach-kinh-doanh";
                 strOut.AppendLine($"Link kế hoạch: {linkKeHoach}");
                 //BCTC quý

@@ -73,4 +73,14 @@ namespace SLib.Util
         [Display(Name = "month")]
         month = 3
     }
+
+    public enum EHotkey
+    {
+        vonhoa = 1,
+        nh_nim = 2,
+        nh_casa =3,
+        nh_noxau = 4,
+        nh_trichlapduphong = 5,
+        nh_tangtruongtindung= 6,
+    }
 }

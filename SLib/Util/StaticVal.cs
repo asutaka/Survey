@@ -18,7 +18,7 @@ namespace SLib.Util
             {"8500", new List<string>{ "Bảo hiểm", "bh", "bao hiem" } },
             {"8600", new List<string>{ "Bất động sản","bds", "batdongsan", "bat dong san" } },
             {"8777", new List<string>{ "Chứng khoán","stock", "ck", "chungkhoan", "chung khoan" } },
-            {"8300", new List<string>{ "Ngân hàng", "nn", "bank", "nganhang", "ngan hang" } },
+            {"8300", new List<string>{ "Ngân hàng", "nh", "bank", "nganhang", "ngan hang" } },
             {"5379", new List<string>{ "Bán lẻ", "bl", "ban le", "banle" } },
             {"1353", new List<string>{ "Nhựa cao su", "cao su", "cs", "nhua cao su", "nhuacaosu", "caosu" } },
             {"1357", new List<string>{ "Hoá chất", "phân bón", "hc", "pb", "phanbon", "hoachat", "phan bon", "hoa chat" } },

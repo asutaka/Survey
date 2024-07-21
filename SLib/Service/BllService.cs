@@ -16,8 +16,6 @@ namespace SLib.Service
         Task<(int, string)> SyncThongkeGDNN(E24hGDNNType type);
         Task<(int, string)> SyncThongkeNhomNganh(E24hGDNNType type);
         Task<(int, string)> LayMaTheoChiBao();
-        Task<(int, string)> KeHoachNam(string code);
-        (int, string) KeHoachNam(KeHoachThucHienAPIModel KeHoach);
         Task<(int, List<string>)> ChiBaoKyThuat();
 
         Task DongBoNgayCongBoBCTC();
