@@ -22,6 +22,7 @@
         public const string _loinhuan_24hMoney = "https://api-finance-t19.24hmoney.vn/v1/ios/company/financial-graph?symbol={0}&graph_type=4";//Thống kê lợi nhuận doanh nghiệp
 
         public const string _bctc_vietstock = "https://finance.vietstock.vn/data/getdocument";//Lấy danh sách báo cáo tài chính 
+        public const string _chart = "https://export.highcharts.com";//Lấy chart dạng ảnh
     }
 }
 

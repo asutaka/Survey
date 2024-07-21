@@ -50,6 +50,7 @@ namespace SLib.Util
     public enum EMessageMode
     {
         OnlyStock = 1,
+        Chart_VonHoa = 20,//Vốn hóa
         Other = 10
     }
 

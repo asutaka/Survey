@@ -1,16 +1,19 @@
-﻿using MongoDB.Driver;
+﻿using Amazon.Auth.AccessControlPolicy;
+using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using SLib.DAL;
 using SLib.Model;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -119,8 +122,7 @@ namespace SLib.Service
                                _userMessageRepo.InsertOne(entityMes);
                            }
                            //action
-                           var mesResult = await Analyze(item.Message.Text);
-                           await BotInstance().SendTextMessageAsync(item.Message.From.Id, mesResult.Item2);
+                           await Analyze(item.Message.From.Id, item.Message.Text);
                            //if (mesResult.Item1 == EMessageMode.OnlyStock)
                            //{
                            //    await BotInstance().SendTextMessageAsync(item.Message.From.Id, await AnalyzeFA(item.Message.Text));
@@ -182,15 +184,33 @@ namespace SLib.Service
             return output.ToString();
         }
 
-        private async Task<(EMessageMode,string)> Analyze(string input)
+        private async Task Analyze(long userId, string input)
         {
-            var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.Trim().ToUpper()));
+            var output = new StringBuilder();
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                return;
+            }
+            input = input.Trim();
+
+            var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.ToUpper()));
             if(entityStock != null)
             {
-                return (EMessageMode.OnlyStock, await OnlyStock(entityStock));
+                var mes = await _bllService.OnlyStock(entityStock);
+                if (string.IsNullOrWhiteSpace(mes))
+                    return;
+                await BotInstance().SendTextMessageAsync(userId, mes);
+                return;
             }
-    
-            var output = new StringBuilder();
+            if (input.ToUpper().Contains("CHART_VONHOA_"))
+            {
+                var stream = await _bllService.Chart_VonHoa_Category(input);
+                if (stream is null || stream.Length <= 0)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                return;
+            }
             //
             //if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
             //{
@@ -207,13 +227,6 @@ namespace SLib.Service
             //    output.AppendLine(_bllService.ThongKeThiTruongStr());
             //    return (EMessageMode.Other, output.ToString());
             //}
-
-            return (EMessageMode.Other, output.ToString());
-        }
-
-        private async Task<string> OnlyStock(Stock entity)
-        {
-            return await _bllService.OnlyStock(entity);
         }
     }
 }

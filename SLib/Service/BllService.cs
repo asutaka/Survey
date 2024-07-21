@@ -3,6 +3,7 @@ using SLib.Model;
 using SLib.Model.APIModel;
 using SLib.Util;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace SLib.Service
@@ -24,6 +25,11 @@ namespace SLib.Service
         //Tele only stock
         List<Stock> GetStock();
         Task<string> OnlyStock(Stock entity);
+        Task<Stream> Chart_VonHoa_Category(string input);
+
+        //HighChart
+        Task<Stream> GetBasicColumn();
+        Task<Stream> GetBasicColumnCustomColor();
 
 
 

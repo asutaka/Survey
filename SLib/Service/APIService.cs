@@ -30,6 +30,7 @@ namespace SLib.Service
         Task<List<LoiNhuanAPIDetail>> ThongKeLoiNhuan(string ma);
         Task<List<ForeignDataModel>> GetForeign(string code, int page, int pageSize, string fromDate, string toDate);
         Task<IEnumerable<BCTCAPIModel>> GetDanhSachBCTC(string code);
+        Task<Stream> GetChartImage(string body);
     }
     public class APIService : IAPIService
     {
@@ -409,6 +410,29 @@ namespace SLib.Service
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<IEnumerable<BCTCAPIModel>>(resultArray);
                 return responseModel;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> GetChartImage(string body)
+        {
+            try
+            {
+                var url = ServiceSetting._chart;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
+
+                var responseMessage = await client.SendAsync(requestMessage);
+                var result = await responseMessage.Content.ReadAsStreamAsync();
+                return result;
             }
             catch (Exception ex)
             {
