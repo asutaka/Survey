@@ -1,5 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 using Newtonsoft.Json;
 using SLib.Model;
 using SLib.Model.APIModel;
@@ -19,7 +18,7 @@ namespace SLib.Service
         {
             try
             {
-                input = input.ToUpper().Replace("CHART_VONHOA_", "").Trim();
+                input = input.ToUpper().Replace("VONHOA_", "").Trim();
                 var exists = StaticVal.lHotKey.FirstOrDefault(x => x.Value.Any(y => input.Equals(y, StringComparison.CurrentCultureIgnoreCase)));
                 if (exists.Key is null)
                     return null;

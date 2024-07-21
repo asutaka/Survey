@@ -202,7 +202,7 @@ namespace SLib.Service
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
             }
-            if (input.ToUpper().Contains("CHART_VONHOA_"))
+            if (input.ToUpper().Contains("VONHOA_"))
             {
                 var stream = await _bllService.Chart_VonHoa_Category(input);
                 if (stream is null || stream.Length <= 0)
