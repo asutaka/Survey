@@ -11,6 +11,7 @@ namespace SLib.Service
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<ITelegramLibService, TelegramLibService>();
             services.AddSingleton<IBridgeService, BridgeService>();
+            services.AddSingleton<IGoogleService, GoogleService>();
         }
     }
 }

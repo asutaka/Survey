@@ -87,7 +87,9 @@ namespace SLib.Service
                     var model = new LN_Category
                     {
                         d = cur.d,
-                        s = cur.s
+                        s = cur.s,
+                        lengthReport = cur.lengthReport,
+                        yearReport = cur.yearReport
                     };
                     if (prev is null)
                     {
@@ -126,7 +128,7 @@ namespace SLib.Service
                     }
                 }
 
-                var basicColumn = new HighchartBasicColumn("Tăng trưởng doanh thu, lợi nhuận", lCat, new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"Tăng trưởng doanh thu, lợi nhuận quý {lLN.First().lengthReport}/{lLN.First().yearReport}", lCat, new List<HighChartSeries_BasicColumn>
                 {
                     new HighChartSeries_BasicColumn
                     {
@@ -212,6 +214,8 @@ namespace SLib.Service
             public string s { get; set; }
             public double TangTruongDoanhThu { get; set; }
             public double TangTruongLoiNhuan { get; set; }
+            public int yearReport { get; set; }
+            public int lengthReport { get; set; }
         }
     }
 }

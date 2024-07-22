@@ -51,13 +51,15 @@ namespace SLib.Service
         private readonly ICategoryRepo _categoryRepo;
         private readonly IFinancialRepo _financialRepo;
         private readonly IFileService _fileService;
+        private readonly IGoogleService _googleService;
         public BllService(IAPIService apiService,
                             IStockRepo stockRepo,
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
                             IFinancialRepo financialRepo,
                             ICategoryRepo categoryRepo,
-                            IFileService fileService
+                            IFileService fileService,
+                            IGoogleService googleService
                             )
         {
             _apiService = apiService;
@@ -67,6 +69,7 @@ namespace SLib.Service
             _categoryRepo = categoryRepo;
             _financialRepo = financialRepo;
             _fileService = fileService;
+            _googleService = googleService;
         }
 
         public List<Stock> GetStock()
@@ -76,6 +79,9 @@ namespace SLib.Service
 
         public async Task Test()
         {
+            //_googleService.Post(new Model.GoogleSheet.Item { Id = "156", Category = "abc", Name = "zzz", Price = "-3" });
+
+            //_googleService.Put(2, new Model.GoogleSheet.Item { Id = "1", Category = "abc", Name = "zzz", Price = "9" });
             //var lLoiNhuan = await _apiService.ThongKeLoiNhuan("DPG");
             //lLoiNhuan.Reverse();
             //foreach (var item in lLoiNhuan)
