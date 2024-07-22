@@ -70,6 +70,8 @@ namespace SLib.Service
         }
         public async Task BotSyncUpdate()
         {
+            await _bllService.Test();
+            return;
             await func();
 
             async Task func()

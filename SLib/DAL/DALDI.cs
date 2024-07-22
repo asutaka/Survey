@@ -12,6 +12,7 @@ namespace SLib.DAL
             services.AddSingleton<IUserMessageRepo, UserMessageRepo>();
             services.AddSingleton<ICategoryRepo, CategoryRepo>();
             services.AddSingleton<IFinancialRepo, FinancialRepo>();
+            services.AddSingleton<IGoogleSheetRepo, GoogleSheetRepo>();
         }
     }
 }

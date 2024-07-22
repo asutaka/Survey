@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SLib.Model.GoogleSheet
+namespace SLib.Model.GoogleSheetModel
 {
     public class Item
     {

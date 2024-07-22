@@ -79,6 +79,7 @@ namespace SLib.Service
 
         public async Task Test()
         {
+            await _googleService.GGDoanhThu_NganHang();
             //_googleService.Post(new Model.GoogleSheet.Item { Id = "156", Category = "abc", Name = "zzz", Price = "-3" });
 
             //_googleService.Put(2, new Model.GoogleSheet.Item { Id = "1", Category = "abc", Name = "zzz", Price = "9" });
