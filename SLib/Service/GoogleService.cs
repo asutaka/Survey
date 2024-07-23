@@ -69,17 +69,17 @@ namespace SLib.Service
         //    appendRequest.Execute();
         //}
 
-        //public void Put(int rowId, Item item)
-        //{
-        //    var range = $"{SHEET_NAME}!A{rowId}:D{rowId}";
-        //    var valueRange = new ValueRange
-        //    {
-        //        Values = ItemsMapper.MapToRangeData(item)
-        //    };
-        //    var updateRequest = _googleSheetValues.Update(valueRange, SPREADSHEET_ID, range);
-        //    updateRequest.ValueInputOption = UpdateRequest.ValueInputOptionEnum.USERENTERED;
-        //    updateRequest.Execute();
-        //}
+        public void Put(int rowId, GoogleData item, string spreadID, string sheetName, string range)
+        {
+            //var range = $"{sheetName}!B{rowId}:Z{rowId}";
+            var valueRange = new ValueRange
+            {
+                Values = item.MapToRangeData()
+            };
+            var updateRequest = _googleSheetValues.Update(valueRange, spreadID, range);
+            updateRequest.ValueInputOption = UpdateRequest.ValueInputOptionEnum.USERENTERED;
+            updateRequest.Execute();
+        }
 
         //public void Delete(int rowId)
         //{
@@ -88,5 +88,45 @@ namespace SLib.Service
         //    var deleteRequest = _googleSheetValues.Clear(requestBody, SPREADSHEET_ID, range);
         //    deleteRequest.Execute();
         //}
+    }
+
+    public static class Mapper
+    {
+        public static List<GoogleData> MapFromRangeData(this IList<IList<object>> values)
+        {
+            var items = new List<GoogleData>();
+            foreach (var value in values)
+            {
+                var item = new GoogleData
+                {
+                    lValues = new List<string>()
+                };
+                if (!value.Any())
+                {
+                    items.Add(item);
+                    continue;
+                }
+                var count = value.Count();
+                for (int i = 0; i < count; i++)
+                {
+                    if (i == 0)
+                    {
+                        item.Code = value[0].ToString().Trim();
+                        continue;
+                    }
+                    item.lValues.Add(value[i].ToString().Trim());
+                }
+                items.Add(item);
+            }
+            return items;
+        }
+
+        public static IList<IList<object>> MapToRangeData(this GoogleData item)
+        {
+            var objectList = new List<object>();
+            objectList.AddRange(item.lValues);
+            var rangeData = new List<IList<object>> { objectList };
+            return rangeData;
+        }
     }
 }
