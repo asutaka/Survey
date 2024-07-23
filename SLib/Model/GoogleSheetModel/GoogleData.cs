@@ -2,7 +2,7 @@
 {
     public class GoogleData
     {
-        public string Coin { get; set; }
+        public string Code { get; set; }
         public string Q2_2024 { get; set; }
         public string Q1_2024 { get; set; }
         public string Q4_2023 { get; set; }

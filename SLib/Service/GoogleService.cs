@@ -26,12 +26,15 @@ namespace SLib.Service
         //const string SHEET_NAME = "DoanhThu";
         private readonly SpreadsheetsResource.ValuesResource _googleSheetValues;
         private readonly IGoogleSheetRepo _googleRepo;
+        private readonly IFinancialRepo _financialRepo;
 
         public GoogleService(GoogleSheetsHelper googleSheetsHelper,
-                            IGoogleSheetRepo googleRepo) 
+                            IGoogleSheetRepo googleRepo,
+                            IFinancialRepo financialRepo) 
         {
             _googleSheetValues = googleSheetsHelper.Service.Spreadsheets.Values;
             _googleRepo = googleRepo;
+            _financialRepo = financialRepo;
         }
 
         //public List<Item> Get()
