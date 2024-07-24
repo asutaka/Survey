@@ -1,5 +1,6 @@
 using StockScout;
 using SLib.Service;
+using SLib.Google;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
@@ -7,6 +8,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHostedService<Worker>();
         services.AddHttpClient();
         services.AddSLib();
+        services.AddSingleton(typeof(GoogleSheetsHelper));
     })
     .UseWindowsService()
     .Build();

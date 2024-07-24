@@ -5,9 +5,7 @@ using SLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Threading.Tasks;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -47,13 +45,13 @@ namespace SLib.Service
                         continue;
 
                     var updateOn = row.lValues.Count();
-                    updateOn++;
 
                     var demTitle = 0;
                     foreach (var itemTitle in entityTitle.lValues)
                     {
                         try
                         {
+                            row.lValues.Clear();
                             demTitle++;
                             if (demTitle <= updateOn)
                                 continue;
@@ -93,9 +91,9 @@ namespace SLib.Service
                     if (!row.lValues.Any())
                         continue;
 
-                    updateOn++;
-                    var lastColUpdate = updateOn + row.lValues.Count();
-                    var rangeUpdate = $"{sheetName}!{((ESheetCol)updateOn).ToString()}{rowIndex}:{((ESheetCol)lastColUpdate).ToString()}{rowIndex}";
+                    updateOn = updateOn + 2;//do tính cả cột mã đầu tiên
+                    var lastColUpdate = updateOn + row.lValues.Count() - 1;
+                    var rangeUpdate = $"{sheetName}!{(ESheetCol)updateOn}{rowIndex}:{(ESheetCol)lastColUpdate}{rowIndex}";
                     //
                     Put(rowIndex, row, entityNganHang.ssi, sheetName, rangeUpdate);
                 }

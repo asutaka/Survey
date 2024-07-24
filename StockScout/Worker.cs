@@ -18,7 +18,7 @@ namespace StockScout
         {
             //await _bridgeService.DongBoNgayCongBoBCTC();
             //await _bridgeService.DongBoDoanhThuLoiNhuan();
-            // var tmp = 1;
+            //var tmp = 1;
             while (!stoppingToken.IsCancellationRequested)
             {
                 var dt = DateTime.Now;
