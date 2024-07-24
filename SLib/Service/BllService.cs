@@ -32,9 +32,6 @@ namespace SLib.Service
         Task<Stream> GetBasicColumnCustomColor();
 
 
-
-
-
         string TongTuDoanhStr();
         string TongGDNNStr();
         string TuDoanhBuildStr(string code);
@@ -79,7 +76,14 @@ namespace SLib.Service
 
         public async Task Test()
         {
-            await _googleService.GGDoanhThu_NganHang();
+            //_googleService.GGDoanhThu("NganHang");
+            //_googleService.GGLoiNhuan("NganHang");
+            //_googleService.GGDoanhThu("ChungKhoan");
+            //_googleService.GGLoiNhuan("ChungKhoan");
+            //_googleService.GGDoanhThu("BatDongSan");
+            //_googleService.GGLoiNhuan("BatDongSan");
+
+
             //_googleService.Post(new Model.GoogleSheet.Item { Id = "156", Category = "abc", Name = "zzz", Price = "-3" });
 
             //_googleService.Put(2, new Model.GoogleSheet.Item { Id = "1", Category = "abc", Name = "zzz", Price = "9" });

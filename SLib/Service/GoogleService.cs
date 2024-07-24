@@ -13,7 +13,8 @@ namespace SLib.Service
 {
     public interface IGoogleService
     {
-        Task GGDoanhThu_NganHang();
+        void GGDoanhThu(string nhomNganh);
+        void GGLoiNhuan(string nhomNganh);
         //List<Item> Get();
         //Item GetByRow(int rowId);
         //void Post(Item item);
