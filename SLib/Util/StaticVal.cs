@@ -31,5 +31,19 @@ namespace SLib.Util
             {"4500", new List<string>{ "Dược", "du", "duoc" } },
             {"7535", new List<string>{ "Năng lượng", "nl", "nang luong", "nangluong" } }
         };
+
+        public static Dictionary<string, string> lHotKeyGG = new Dictionary<string, string>
+        {
+            {"8600", "BatDongSan" },
+            {"8777", "ChungKhoan" },
+            {"8300", "NganHang" },
+            {"5379", "BanLe" },
+            {"1353", "CaoSu" },
+            {"1357", "PhanBon_HoaChat" },
+            {"1757", "Thep" },
+            {"0500", "DauKhi" },
+            {"2777", "CangBien_VanTaiBien" },
+            {"7535", "NangLuong" }
+        };
     }
 }

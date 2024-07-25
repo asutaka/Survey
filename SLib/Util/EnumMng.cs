@@ -76,12 +76,15 @@ namespace SLib.Util
 
     public enum EHotkey
     {
-        vonhoa = 1,
+        vonhoa = 1,//Vốn hóa nhóm ngành
         nh_nim = 2,
         nh_casa =3,
         nh_noxau = 4,
         nh_trichlapduphong = 5,
         nh_tangtruongtindung= 6,
+        ln = 7,//Tăng trưởng doanh thu và lợi nhuận nhóm ngành
+        GGDoanhThu = 8,//Đồng bộ Doanh thu nhóm ngành lên file Excel. Ex: GGDoanhThu_NganHang
+        GGLoiNhuan = 9,//Đồng bộ Lợi nhuận nhóm ngành lên file Excel. Ex: GGLoiNhuan_BatDongSan
     }
 
     public enum ESheetCol

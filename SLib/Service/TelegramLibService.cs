@@ -31,6 +31,7 @@ namespace SLib.Service
         private readonly int _numThread = 1;
         private readonly IBllService _bllService;
         private readonly IAPIService _apiService;
+        private readonly IGoogleService _ggService;
         private readonly IUserMessageRepo _userMessageRepo;
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
@@ -39,11 +40,13 @@ namespace SLib.Service
         public TelegramLibService(
                                 IBllService bllService,
                                 IUserMessageRepo userMessageRepo,
+                                IGoogleService ggService,
                                 IAPIService apiService)
         {
             _bllService = bllService;
             _apiService = apiService;
             _userMessageRepo = userMessageRepo;
+            _ggService = ggService;
             StockInstance();
         }
 
@@ -70,8 +73,6 @@ namespace SLib.Service
         }
         public async Task BotSyncUpdate()
         {
-            await _bllService.Test();
-            return;
             await func();
 
             async Task func()
@@ -204,7 +205,7 @@ namespace SLib.Service
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
             }
-            if (input.ToUpper().Contains("VONHOA_"))
+            if (input.ToUpper().Contains("VONHOA_"))//Trả về chart vốn hóa các cp trong nhóm ngành
             {
                 var stream = await _bllService.Chart_VonHoa_Category(input);
                 if (stream is null || stream.Length <= 0)
@@ -213,7 +214,7 @@ namespace SLib.Service
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 return;
             }
-            if (input.ToUpper().Contains("LN_"))
+            if (input.ToUpper().Contains("LN_"))//Trả về chart tăng trưởng Doanh Thu, Lợi Nhuận các cp trong nhóm ngành
             {
                 var stream = await _bllService.Chart_LN_Category(input);
                 if (stream is null || stream.Length <= 0)
@@ -222,6 +223,57 @@ namespace SLib.Service
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 return;
             }
+            if(input.ToUpper().Contains("GGDOANHTHU_"))//Đồng bộ Doanh Thu từ mongo lên file Excel
+            {
+                var nhomNganh = input.Split("_").Last().Trim();
+                var entityHotKey = StaticVal.lHotKey.FirstOrDefault(x => x.Value.Contains(nhomNganh));
+                int res = -1;
+                if(entityHotKey.Key != null)
+                {
+                    var entityGG = StaticVal.lHotKeyGG.FirstOrDefault(x => x.Key == entityHotKey.Key);
+                    if(entityGG.Key != null)
+                    {
+                        res = _ggService.GGDoanhThu(entityGG.Value);
+                    }
+                }
+
+                var mes = res > 0 ? $"Đã đồng bộ Doanh Thu của {input}" : "Dữ liệu nhập vào không đúng";
+                await BotInstance().SendTextMessageAsync(userId, mes);
+                return;
+            }
+            if (input.ToUpper().Contains("GGLOINHUAN_"))//Đồng bộ Lợi Nhuận từ mongo lên file Excel
+            {
+                var nhomNganh = input.Split("_").Last().Trim();
+                var entityHotKey = StaticVal.lHotKey.FirstOrDefault(x => x.Value.Contains(nhomNganh));
+                int res = -1;
+                if (entityHotKey.Key != null)
+                {
+                    var entityGG = StaticVal.lHotKeyGG.FirstOrDefault(x => x.Key == entityHotKey.Key);
+                    if (entityGG.Key != null)
+                    {
+                        res = _ggService.GGLoiNhuan(entityGG.Value);
+                    }
+                }
+
+                var mes = res > 0 ? $"Đã đồng bộ Lợi Nhuận của {input}" : "Dữ liệu nhập vào không đúng";
+                await BotInstance().SendTextMessageAsync(userId, mes);
+                return;
+            }
+            if (input.ToUpper().Contains("DongBoNgayCongBoBCTC"))//Đồng bộ ngày công bố bctc từ trên web về database
+            {
+                await _bllService.DongBoNgayCongBoBCTC();
+                var mes = "Đã đồng bộ Ngày công bố BCTC từ web về db";
+                await BotInstance().SendTextMessageAsync(userId, mes);
+                return;
+            }
+            if (input.ToUpper().Contains("DongBoDoanhThuLoiNhuan"))//Đồng bộ Doanh thu, Lợi nhuận từ trên web về database
+            {
+                await _bllService.DongBoDoanhThuLoiNhuan();
+                var mes = "Đã đồng bộ Doanh thu, Lợi nhuận từ web về db";
+                await BotInstance().SendTextMessageAsync(userId, mes);
+                return;
+            }
+
             //
             //if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))
             //{

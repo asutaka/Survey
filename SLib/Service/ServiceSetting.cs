@@ -23,6 +23,7 @@
 
         public const string _bctc_vietstock = "https://finance.vietstock.vn/data/getdocument";//Lấy danh sách báo cáo tài chính 
         public const string _chart = "https://export.highcharts.com";//Lấy chart dạng ảnh
+        public const string _bctc_cafef = "https://s.cafef.vn/Ajax/CongTy/BaoCaoTaiChinh.aspx?sym={0}";//Lấy danh sách BCTC
     }
 }
 

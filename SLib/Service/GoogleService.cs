@@ -3,18 +3,16 @@ using Google.Apis.Sheets.v4.Data;
 using SLib.DAL;
 using SLib.Google;
 using SLib.Model.GoogleSheetModel;
-using SLib.Util;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Google.Apis.Sheets.v4.SpreadsheetsResource.ValuesResource;
 
 namespace SLib.Service
 {
     public interface IGoogleService
     {
-        void GGDoanhThu(string nhomNganh);
-        void GGLoiNhuan(string nhomNganh);
+        int GGDoanhThu(string nhomNganh);
+        int GGLoiNhuan(string nhomNganh);
         //List<Item> Get();
         //Item GetByRow(int rowId);
         //void Post(Item item);

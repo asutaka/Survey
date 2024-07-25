@@ -18,7 +18,7 @@ namespace SLib.Service
             var values = response.Values;
             return values.MapFromRangeData();
         }
-        public void GGDoanhThu(string nhomNganh)
+        public int GGDoanhThu(string nhomNganh)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace SLib.Service
                 var lGoogle = _googleRepo.GetAll();
                 var entityNganHang = lGoogle.FirstOrDefault(x => x.fn == nhomNganh);
                 if (entityNganHang is null)
-                    return;
+                    return -1;
 
                 var lRecord = GetGoogleData(entityNganHang.ssi, sheetName);
                 var entityTitle = lRecord.First();
@@ -95,14 +95,17 @@ namespace SLib.Service
                     //
                     Put(rowIndex, row, entityNganHang.ssi, sheetName, rangeUpdate);
                 }
+                return 1;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+
+            return -1;
         }
 
-        public void GGLoiNhuan(string nhomNganh)
+        public int GGLoiNhuan(string nhomNganh)
         {
             try
             {
@@ -110,7 +113,7 @@ namespace SLib.Service
                 var lGoogle = _googleRepo.GetAll();
                 var entityNganHang = lGoogle.FirstOrDefault(x => x.fn == nhomNganh);
                 if (entityNganHang is null)
-                    return;
+                    return -1;
 
                 var lRecord = GetGoogleData(entityNganHang.ssi, sheetName);
                 var entityTitle = lRecord.First();
@@ -179,11 +182,13 @@ namespace SLib.Service
                     //
                     Put(rowIndex, row, entityNganHang.ssi, sheetName, rangeUpdate);
                 }
+                return 1;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
+            return -1;
         }
     }
 
