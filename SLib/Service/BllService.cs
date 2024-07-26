@@ -23,6 +23,7 @@ namespace SLib.Service
 
         //Tele only stock
         List<Stock> GetStock();
+        Task<string> ConfigBCTC(string input);
         Task<string> OnlyStock(Stock entity);
         Task<Stream> Chart_VonHoa_Category(string input);
         Task<Stream> Chart_LN_Category(string input);
@@ -43,6 +44,7 @@ namespace SLib.Service
     {
         private readonly IAPIService _apiService;
         private readonly IStockRepo _stockRepo;
+        private readonly IConfigBCTCRepo _configBCTCRepo;
         private readonly IConfigDataRepo _configRepo;
         private readonly ITuDoanhRepo _tudoanhRepo;
         private readonly ICategoryRepo _categoryRepo;
@@ -51,6 +53,7 @@ namespace SLib.Service
         private readonly IGoogleService _googleService;
         public BllService(IAPIService apiService,
                             IStockRepo stockRepo,
+                            IConfigBCTCRepo configBCTCRepo,
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
                             IFinancialRepo financialRepo,
@@ -62,6 +65,7 @@ namespace SLib.Service
             _apiService = apiService;
             _stockRepo = stockRepo;
             _configRepo = configRepo;
+            _configBCTCRepo = configBCTCRepo;
             _tudoanhRepo = tudoanhRepo;
             _categoryRepo = categoryRepo;
             _financialRepo = financialRepo;

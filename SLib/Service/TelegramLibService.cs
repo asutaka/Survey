@@ -259,19 +259,24 @@ namespace SLib.Service
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
             }
-            if (input.ToUpper().Contains("DongBoNgayCongBoBCTC"))//Đồng bộ ngày công bố bctc từ trên web về database
+            if (input.ToUpper().Contains("DongBoNgayCongBoBCTC".ToUpper()))//Đồng bộ ngày công bố bctc từ trên web về database
             {
                 await _bllService.DongBoNgayCongBoBCTC();
                 var mes = "Đã đồng bộ Ngày công bố BCTC từ web về db";
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
             }
-            if (input.ToUpper().Contains("DongBoDoanhThuLoiNhuan"))//Đồng bộ Doanh thu, Lợi nhuận từ trên web về database
+            if (input.ToUpper().Contains("DongBoDoanhThuLoiNhuan".ToUpper()))//Đồng bộ Doanh thu, Lợi nhuận từ trên web về database
             {
                 await _bllService.DongBoDoanhThuLoiNhuan();
                 var mes = "Đã đồng bộ Doanh thu, Lợi nhuận từ web về db";
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
+            }
+            if (input.ToUpper().Contains("Config_".ToUpper()))
+            {
+                var mes = await _bllService.ConfigBCTC(input.ToUpper());
+                await BotInstance().SendTextMessageAsync(userId, mes);
             }
 
             //
