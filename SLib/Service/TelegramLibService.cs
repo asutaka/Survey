@@ -273,11 +273,6 @@ namespace SLib.Service
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
             }
-            if (input.ToUpper().Contains("Config_".ToUpper()))
-            {
-                var mes = await _bllService.ConfigBCTC(input.ToUpper());
-                await BotInstance().SendTextMessageAsync(userId, mes);
-            }
 
             //
             //if (input.Equals("[ttd]", StringComparison.OrdinalIgnoreCase))

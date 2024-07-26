@@ -12,7 +12,6 @@ namespace SLib.Service
     {
         List<TudoanhPDF> HSX(Stream data);
         List<TudoanhPDF> HNX(Stream data);
-        void ExtractBCTC(Stream data);
     }
     public class FileService : IFileService
     {
@@ -343,12 +342,6 @@ namespace SLib.Service
             }
 
             return lData;
-        }
-
-        public void ExtractBCTC(Stream data)
-        {
-            var content = pdfText(data);
-            var tmp = 1;
         }
     }
 }

@@ -32,8 +32,6 @@ namespace SLib.Service
         Task<IEnumerable<BCTCAPIModel>> GetDanhSachBCTC(string code);
         Task<Stream> GetChartImage(string body);
         Task<List<Financial>> GetDoanhThuLoiNhuan(string code);
-        Task<List<BCTCCafeFAPIModel>> GetBCTCCafeF(string symbol);
-        Task<List<BCTCCafeFAPIModel>> GetBCTCCafeF2(string symbol);
     }
     public class APIService : IAPIService
     {
@@ -464,117 +462,6 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return lOutput;
-        }
-
-
-        public async Task<List<BCTCCafeFAPIModel>> GetBCTCCafeF(string symbol)
-        {
-            var lStream = new List<BCTCCafeFAPIModel>();
-            try
-            {
-                var dt = DateTime.Now;
-                for (var i = 2020; i <= dt.Year; i++)
-                {
-                    for (int j = 1; j <= 4; j++)
-                    {
-                        var urlFile = $"https://cafef1.mediacdn.vn/Images/Uploaded/DuLieuDownload/{i}/{symbol}_{i - 2000}Q{j}_BCTC_HN.pdf";
-                        var result = await GetStream(urlFile);
-                        if(result != null)
-                        {
-                            lStream.Add(new BCTCCafeFAPIModel
-                            {
-                                Year = i,
-                                Quarter = j,
-                                Source = result
-                            });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return lStream;
-        }
-
-        private async Task<Stream> GetStream(string url)
-        {
-            try
-            {
-                var clientDownload = new HttpClient { BaseAddress = new Uri(url) };
-                var responseMessage = await clientDownload.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                var result = await responseMessage.Content.ReadAsStreamAsync();
-                if (result.Length > 1000)
-                {
-                    return result;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return null;
-        }
-
-        public async Task<List<BCTCCafeFAPIModel>> GetBCTCCafeF2(string symbol)
-        {
-            try
-            {
-                var link = string.Empty;
-                var dt = DateTime.Now;
-                var lStream = new List<Stream>();
-                ////var url = string.Format(ServiceSetting._bctc_cafef, "HLD");
-                //var url = string.Format(ServiceSetting._bctc_cafef, symbol);
-                //var client = _client.CreateClient();
-                //client.BaseAddress = new Uri(url);
-                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                //var html = await responseMessage.Content.ReadAsStringAsync();
-                //var doc = new HtmlDocument();
-                //doc.LoadHtml(html);
-                //var tmp = 1;
-
-                //var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"body\"]/div[2]/div[1]/div[2]/div[1]/div/div[2]/div") as IEnumerable<HtmlNode>;
-                //foreach (HtmlNode node in nodes.ElementAt(0).ChildNodes)
-                //{
-                //    if (string.IsNullOrWhiteSpace(node.InnerText))
-                //        continue;
-
-                //    var document = new HtmlDocument();
-                //    document.LoadHtml(node.InnerHtml);
-                //    var lNode = document.DocumentNode.SelectNodes("//a");
-                //    foreach (var item in lNode)
-                //    {
-                //        var tagA = document.DocumentNode.SelectSingleNode("//a");
-                //        var title = tagA.Attributes["title"].Value;
-                //        if (!(title.Contains("giao dịch tự doanh")
-                //            && title.Contains($"{dt.Day.To2Digit()}/{dt.Month.To2Digit()}/{dt.Year}")))
-                //            continue;
-
-                //        link = tagA.Attributes["href"].Value;
-                //        break;
-                //    }
-                //}
-
-                //if (string.IsNullOrWhiteSpace(link))
-                //    return null;
-
-                ////LV2
-                //var clientDetail = new HttpClient { BaseAddress = new Uri($"{url}{link.Replace("ViewArticle", "GetRelatedFiles")}?rows=30&page=1") };
-                //responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                //var content = await responseMessage.Content.ReadAsStringAsync();
-                //var model = JsonConvert.DeserializeObject<HSXTudoanhModel>(content);
-                //var lastID = model.rows?.FirstOrDefault()?.cell?.FirstOrDefault();
-                ////LV3
-                //var clientDownload = new HttpClient { BaseAddress = new Uri($"{url}/Modules/CMS/Web/DownloadFile?id={lastID}") };
-                //responseMessage = await clientDownload.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                //return await responseMessage.Content.ReadAsStreamAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            return null;
         }
     }
 }
