@@ -26,13 +26,12 @@ namespace SLib.Model.APIModel
         {
             title = new HighChartTitle { text = titl };
             xAxis = new HighChartXAxis { categories = lCat };
-            yAxis = new HighChartYAxis { title = new HighChartTitle { text = string.Empty } };
             series = lSeries;
             credits = new HighChartCredits { enabled = false };
         }
         public HighChartTitle title { get; set; }
         public HighChartXAxis xAxis { get; set; }
-        public HighChartYAxis yAxis { get; set; }
+        public List<HighChartYAxis> yAxis { get; set; }
         public List<HighChartSeries_BasicColumn> series { get; set; }
         public HighChartCredits credits { get; set; }
     }
@@ -126,6 +125,11 @@ namespace SLib.Model.APIModel
         public string text { get; set; }
     }
 
+    public class HighChartLabel
+    {
+        public string format { get; set; }
+    }
+
     public class HighChartXAxis
     {
         public string type { get; set; }
@@ -135,12 +139,15 @@ namespace SLib.Model.APIModel
     public class HighChartYAxis
     {
         public HighChartTitle title { get; set; }
+        public HighChartLabel labels { get; set; }
+        public bool opposite { get; set; }
     }
 
     public class HighChartSeries
     {
         public string type { get; set; }
         public string name { get; set; }
+        public int yAxis { get; set; }
         public List<string> colors { get; set; }
         public string color { get; set; }
         public bool colorByPoint { get; set; }

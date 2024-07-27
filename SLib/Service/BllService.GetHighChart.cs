@@ -89,7 +89,9 @@ namespace SLib.Service
                         d = cur.d,
                         s = cur.s,
                         lengthReport = cur.lengthReport,
-                        yearReport = cur.yearReport
+                        yearReport = cur.yearReport,
+                        DoanhThu = (double)cur.revenue,
+                        LoiNhuan = (double)cur.profit
                     };
                     if (prev is null)
                     {
@@ -104,12 +106,17 @@ namespace SLib.Service
                         model.TangTruongDoanhThu = (double)Math.Round((-1 + rateRevenue) * 100, 1);
                         model.TangTruongLoiNhuan = (double)Math.Round((-1 + rateProfit) * 100, 1); ;
                     }
+                    //Ty Suat Loi Nhuan
+                    model.TySuatLoiNhuan = model.DoanhThu == 0 ? int.MaxValue : Math.Round(model.LoiNhuan * 100 / model.DoanhThu, 1);
 
                     lLN.Add(model);
                 }
                 var maxD = lLN.Max(x => x.d);
                 lLN = lLN.Where(x => x.d == maxD).ToList();
 
+                var lDoanhThuOut = new List<double>();
+                var lLoiNhuanOut = new List<double>();
+                var lTySuatLN = new List<double>();
                 var lTangTruongDoanhThuOut = new List<double>();
                 var lTangTruongLoiNhuanOut = new List<double>();
                 var lCat = lStockClean.Select(x => x.s).ToList();
@@ -120,31 +127,98 @@ namespace SLib.Service
                     {
                         lTangTruongDoanhThuOut.Add(0);
                         lTangTruongLoiNhuanOut.Add(0);
+                        lDoanhThuOut.Add(0);
+                        lLoiNhuanOut.Add(0);
+                        lTySuatLN.Add(0);
                     }
                     else
                     {
                         lTangTruongDoanhThuOut.Add(first.TangTruongDoanhThu);
                         lTangTruongLoiNhuanOut.Add(first.TangTruongLoiNhuan);
+                        lDoanhThuOut.Add(first.DoanhThu);
+                        lLoiNhuanOut.Add(first.LoiNhuan);
+                        lTySuatLN.Add(first.TySuatLoiNhuan);
                     }
                 }
+                
 
-                var basicColumn = new HighchartBasicColumn($"Tăng trưởng doanh thu, lợi nhuận quý {lLN.First().lengthReport}/{lLN.First().yearReport}", lCat, new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {lLN.First().lengthReport}/{lLN.First().yearReport}", lCat, new List<HighChartSeries_BasicColumn>
                 {
-                    new HighChartSeries_BasicColumn
+                     new HighChartSeries_BasicColumn
                     {
-                        data = lTangTruongDoanhThuOut,
+                        data = lDoanhThuOut,
                         name = "Doanh thu",
                         type = "column",
                         color = "#012060"
                     },
                     new HighChartSeries_BasicColumn
                     {
-                        data = lTangTruongLoiNhuanOut,
+                        data = lLoiNhuanOut,
                         name = "Lợi nhuận",
                         type = "column",
                         color = "#C00000"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTangTruongDoanhThuOut,
+                        name = "Tăng trưởng DT",
+                        type = "spline",
+                        color = "#012060",
+                        yAxis = 1
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTangTruongLoiNhuanOut,
+                        name = "Tăng trưởng LN",
+                        type = "spline",
+                        color = "#C00000",
+                        yAxis = 1
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTySuatLN,
+                        name = "Tỷ suất LN",
+                        type = "spline",
+                        color = "#ffbf00",
+                        yAxis = 1
                     }
                 });
+                var strTitleYAxis = string.Empty;
+                var lCheckValueUnit = basicColumn.series.Where(x => x.yAxis == 0).Select(x => x.data);
+                foreach (var item in lCheckValueUnit)
+                {
+                    if(!item.Any(x => x != 0 && Math.Abs(x) < 1000000000))
+                    {
+                        strTitleYAxis = "(Đơn vị: tỷ)";
+                        foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                        {
+                            itemSeries.data = itemSeries.data.Select(x => x / 1000000000).ToList();
+                        }
+                        break;
+                    }
+                    if (!item.Any(x => x != 0 && Math.Abs(x) < 1000000))
+                    {
+                        strTitleYAxis = "(Đơn vị: triệu)";
+                        foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                        {
+                            itemSeries.data = itemSeries.data.Select(x => x / 1000000).ToList();
+                        }
+                        break;
+                    }
+                    if (!item.Any(x => x != 0 && Math.Abs(x) < 1000))
+                    {
+                        strTitleYAxis = "(Đơn vị: nghìn)";
+                        foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                        {
+                            itemSeries.data = itemSeries.data.Select(x => x / 1000).ToList();
+                        }
+                        break;
+                    }
+                }
+
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
                 var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);
                 return await _apiService.GetChartImage(body);
@@ -277,8 +351,11 @@ namespace SLib.Service
         {
             public long d { get; set; }
             public string s { get; set; }
+            public double DoanhThu { get; set; }
+            public double LoiNhuan { get; set; }
             public double TangTruongDoanhThu { get; set; }
             public double TangTruongLoiNhuan { get; set; }
+            public double TySuatLoiNhuan { get; set; }
             public int yearReport { get; set; }
             public int lengthReport { get; set; }
         }
