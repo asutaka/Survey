@@ -13,6 +13,7 @@ namespace SLib.Service
     {
         int GGDoanhThu(string nhomNganh);
         int GGLoiNhuan(string nhomNganh);
+        void GGLoadData();
         //List<Item> Get();
         //Item GetByRow(int rowId);
         //void Post(Item item);
@@ -26,14 +27,17 @@ namespace SLib.Service
         private readonly SpreadsheetsResource.ValuesResource _googleSheetValues;
         private readonly IGoogleSheetRepo _googleRepo;
         private readonly IFinancialRepo _financialRepo;
+        private readonly IStockRepo _stockRepo;
 
         public GoogleService(GoogleSheetsHelper googleSheetsHelper,
                             IGoogleSheetRepo googleRepo,
+                            IStockRepo stockRepo,
                             IFinancialRepo financialRepo) 
         {
             _googleSheetValues = googleSheetsHelper.Service.Spreadsheets.Values;
             _googleRepo = googleRepo;
             _financialRepo = financialRepo;
+            _stockRepo = stockRepo;
         }
 
         //public List<Item> Get()

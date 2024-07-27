@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SLib.Model.GoogleSheetModel;
+using System.Collections.Generic;
 
 namespace SLib.Util
 {
@@ -45,5 +46,32 @@ namespace SLib.Util
             {"2777", "CangBien_VanTaiBien" },
             {"7535", "NangLuong" }
         };
+
+        public static List<string> lTangTruong = new List<string>
+        {
+            "Công nghệ - viễn thông",
+            "Chứng khoán",
+            "Dầu khí",
+            "Cảng biển - vận tải dầu khí"
+        };
+
+        public static List<string> lPhucHoi = new List<string>
+        {
+            "Ngân hàng",
+            "Thép",
+            "Năng lượng",
+            "Xuất khẩu",
+            "Đầu tư công",
+            "Khu công nghiệp"
+        };
+
+        public static List<string> lTaoDay = new List<string>
+        {
+            "Bán lẻ",
+            "Bất động sản",
+            "Hàng không"
+        };
+
+        public static List<GoogleValueModel> lGoogleData = new List<GoogleValueModel>();
     }
 }

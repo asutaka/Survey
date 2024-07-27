@@ -70,6 +70,57 @@ namespace SLib.Model.APIModel
         public HighChartCredits credits { get; set; }
     }
 
+    #region ChienLuocDauTu
+    public class HighChartChienLuocDauTu
+    {
+        public HighChartChienLuocDauTu(string titl, List<HighChartSeries_ChienLuocDauTu> lSeries)
+        {
+            title = new HighChartTitle { text = titl };
+            series = lSeries;
+            credits = new HighChartCredits { enabled = false };
+        }
+        public HighChartTitle title { get; set; }
+        public List<HighChartSeries_ChienLuocDauTu> series { get; set; }
+        public HighChartCredits credits { get; set; }
+    }
+
+    public class HighChartSeries_ChienLuocDauTu
+    {
+        public string type { get; set; }
+        public List<HighChartSeriesData_ChienLuocDauTu> data { get; set; }
+        public HighChartSeriesMarker_ChienLuocDauTu marker { get; set; }
+        public int borderRadius { get; set; }
+        public List<HighChartSeriesLevel_ChienLuocDauTu> levels { get; set; }
+    }
+
+    public class HighChartSeriesData_ChienLuocDauTu
+    {
+        public string id { get; set; }
+        public string parent { get; set; }
+        public string name { get; set; }
+    }
+
+    public class HighChartSeriesMarker_ChienLuocDauTu
+    {
+        public string symbol { get; set; }
+        public string width { get; set; }
+    }
+
+    public class HighChartSeriesLevel_ChienLuocDauTu
+    {
+        public int level { get; set; }
+        public bool levelIsConstant { get; set; }
+        public bool colorByPoint { get; set; }
+        public HighChartSeriesColor_ChienLuocDauTu colorVariation { get; set; }
+    }
+
+    public class HighChartSeriesColor_ChienLuocDauTu
+    {
+        public string key { get; set; }
+        public double to { get; set; }
+    } 
+    #endregion
+
     public class HighChartTitle
     {
         public string text { get; set; }
@@ -91,6 +142,7 @@ namespace SLib.Model.APIModel
         public string type { get; set; }
         public string name { get; set; }
         public List<string> colors { get; set; }
+        public string color { get; set; }
         public bool colorByPoint { get; set; }
     }
 

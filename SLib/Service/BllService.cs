@@ -1,6 +1,5 @@
 ﻿using SLib.DAL;
 using SLib.Model;
-using SLib.Model.APIModel;
 using SLib.Util;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +25,7 @@ namespace SLib.Service
         Task<string> OnlyStock(Stock entity);
         Task<Stream> Chart_VonHoa_Category(string input);
         Task<Stream> Chart_LN_Category(string input);
+        Task<Stream> Chart_ChienLuocDauTu();
 
         //HighChart
         Task<Stream> GetBasicColumn();

@@ -134,15 +134,80 @@ namespace SLib.Service
                     {
                         data = lTangTruongDoanhThuOut,
                         name = "Doanh thu",
-                        type = "column"
+                        type = "column",
+                        color = "#012060"
                     },
                     new HighChartSeries_BasicColumn
                     {
                         data = lTangTruongLoiNhuanOut,
                         name = "Lợi nhuận",
-                        type = "column"
+                        type = "column",
+                        color = "#C00000"
                     }
                 });
+                var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> Chart_ChienLuocDauTu()
+        {
+            try
+            {
+                var lData = new List<HighChartSeriesData_ChienLuocDauTu>
+                {
+                    new HighChartSeriesData_ChienLuocDauTu { id = "0", name = "2024", parent = string.Empty },
+                    new HighChartSeriesData_ChienLuocDauTu { id = "1", name = "Tạo đáy", parent = "0" },
+                    new HighChartSeriesData_ChienLuocDauTu { id = "2", name = "Phục hồi", parent = "0" },
+                    new HighChartSeriesData_ChienLuocDauTu { id = "3", name = "Tăng trưởng", parent = "0" }
+                };
+
+                var lTangTruong = StaticVal.lTangTruong.ToList();
+                lTangTruong.Reverse();
+                foreach (var item in lTangTruong)
+                {
+                    lData.Add(new HighChartSeriesData_ChienLuocDauTu { id = "a", name = item, parent = "3" });
+                }
+                var lPhucHoi = StaticVal.lPhucHoi.ToList();
+                lPhucHoi.Reverse();
+                foreach (var item in lPhucHoi)
+                {
+                    lData.Add(new HighChartSeriesData_ChienLuocDauTu { id = "b", name = item, parent = "2" });
+                }
+                var lTaoDay = StaticVal.lTaoDay.ToList();
+                lTaoDay.Reverse();
+                foreach (var item in lTaoDay)
+                {
+                    lData.Add(new HighChartSeriesData_ChienLuocDauTu { id = "c", name = item, parent = "1" });
+                }
+
+                var series = new List<HighChartSeries_ChienLuocDauTu>
+                {
+                    new HighChartSeries_ChienLuocDauTu
+                    {
+                        type = "treegraph",
+                        marker = new HighChartSeriesMarker_ChienLuocDauTu
+                        {
+                            symbol = "rect",
+                            width = "25%"
+                        },
+                        borderRadius = 10,
+                        levels = new List<HighChartSeriesLevel_ChienLuocDauTu>
+                        {
+                            new HighChartSeriesLevel_ChienLuocDauTu { level = 1 },
+                            new HighChartSeriesLevel_ChienLuocDauTu { level = 2, colorByPoint = true },
+                            new HighChartSeriesLevel_ChienLuocDauTu { level = 3, colorVariation = new HighChartSeriesColor_ChienLuocDauTu { key = "brightness", to = -0.5 } }
+                        },
+                        data = lData
+                    }
+                };
+                var basicColumn = new HighChartChienLuocDauTu("Chiến lược đầu tư", series);
                 var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);
                 return await _apiService.GetChartImage(body);

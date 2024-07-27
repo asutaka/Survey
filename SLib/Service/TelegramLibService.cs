@@ -1,4 +1,5 @@
 ﻿using Amazon.Auth.AccessControlPolicy;
+using Google.Apis.Drive.v3.Data;
 using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using SLib.DAL;
@@ -34,7 +35,7 @@ namespace SLib.Service
         private readonly IGoogleService _ggService;
         private readonly IUserMessageRepo _userMessageRepo;
         //private const long _idChannel = -1002247826353;
-        //private const long _idUser = 1066022551;
+        private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
         public TelegramLibService(
@@ -74,6 +75,15 @@ namespace SLib.Service
         public async Task BotSyncUpdate()
         {
             await func();
+
+            //var dt = DateTime.Now;
+            //var first = StaticVal.lGoogleData?.FirstOrDefault();
+            //if(first is null
+            //    || first.Time.Day != dt.Day)
+            //{
+            //    _ggService.GGLoadData();
+            //    await BotInstance().SendTextMessageAsync(_idUser, $"{DateTime.Now.ToString("dd/MM/yyyy")}: GGSheet load complete!");
+            //}
 
             async Task func()
             {
@@ -223,7 +233,7 @@ namespace SLib.Service
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 return;
             }
-            if(input.ToUpper().Contains("GGDOANHTHU_"))//Đồng bộ Doanh Thu từ mongo lên file Excel
+            if (input.ToUpper().Contains("GGDOANHTHU_"))//Đồng bộ Doanh Thu từ mongo lên file Excel
             {
                 var nhomNganh = input.Split("_").Last().Trim();
                 var entityHotKey = StaticVal.lHotKey.FirstOrDefault(x => x.Value.Contains(nhomNganh));
@@ -271,6 +281,25 @@ namespace SLib.Service
                 await _bllService.DongBoDoanhThuLoiNhuan();
                 var mes = "Đã đồng bộ Doanh thu, Lợi nhuận từ web về db";
                 await BotInstance().SendTextMessageAsync(userId, mes);
+                return;
+            }
+            if (input.ToUpper().Contains("chart_chienluocdautu".ToUpper())
+                || input.ToUpper().Contains("chart_cl".ToUpper()))//Chiến lược đầu tư
+            {
+                var stream = await _bllService.Chart_ChienLuocDauTu();
+                if (stream is null || stream.Length <= 0)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                return;
+            }
+            if(input.ToUpper().Contains("chart_"))//Tổng hợp về nhóm ngành
+            {
+                var stream = await _bllService.Chart_LN_Category(input);
+                if (stream is null || stream.Length <= 0)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 return;
             }
 

@@ -5,6 +5,7 @@ using SLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -78,7 +79,7 @@ namespace SLib.Service
                                     continue;
                                 }
                                 var rate = Math.Round(100 * (-1 + (entityFinancial.revenue ?? 0) / (entityFinancialPrev.revenue ?? 1)), 1);
-                                row.lValues.Add($"'{rate}");
+                                row.lValues.Add($"{rate}");
                             }
                         }
                         catch (Exception ex) 
@@ -165,7 +166,7 @@ namespace SLib.Service
                                     continue;
                                 }
                                 var rate = Math.Round(100 * (-1 + (entityFinancial.profit ?? 0) / (entityFinancialPrev.profit ?? 1)), 1);
-                                row.lValues.Add($"'{rate}");
+                                row.lValues.Add($"{rate}");
                             }
                         }
                         catch (Exception ex)
@@ -189,6 +190,86 @@ namespace SLib.Service
                 Console.WriteLine(ex.Message);
             }
             return -1;
+        }
+
+        public void GGLoadData()
+        {
+            try
+            {
+                var dtStart = DateTime.Now;
+                var lData = new List<GoogleValueModel>();
+                var lGoogle = _googleRepo.GetAll();
+                foreach (var item in lGoogle)
+                {
+                    foreach (var itemSheetName in item.sh)
+                    {
+                        try
+                        {
+                            var lRecord = GetGoogleData(item.ssi, itemSheetName);
+                            var entityTitle = lRecord.First();
+                            lRecord.RemoveAt(0);
+                            var rowIndex = 1;
+                            foreach (var row in lRecord)
+                            {
+                                rowIndex++;
+                                try
+                                {
+                                    if (string.IsNullOrWhiteSpace(row.Code))
+                                        continue;
+
+                                    var lCoin = _stockRepo.GetByFilter(Builders<Stock>.Filter.Eq(x => x.s, row.Code));
+                                    if (lCoin is null
+                                        || !lCoin.Any())
+                                        continue;
+
+                                    var count = row.lValues.Count();
+                                    for (int i = 0; i < count; i++)
+                                    {
+                                        var itemTitle = entityTitle.lValues.ElementAt(i);
+                                        itemTitle = itemTitle.Replace("Q", "");
+                                        var strQY = itemTitle.Split("/");
+                                        var ggModel = new GoogleValueModel
+                                        {
+                                            NhomNganh = item.fn,
+                                            SheetName = itemSheetName,
+                                            Code = row.Code,
+                                            Quarter = int.Parse(strQY[0]),
+                                            Year = int.Parse(strQY[1])
+                                        };
+                                        if (rowIndex >= 50)
+                                        {
+                                            var isDecimal = decimal.TryParse(row.lValues[i], out var val);
+                                            if (isDecimal)
+                                                ggModel.Value = val;
+                                        }
+                                        else
+                                        {
+                                            var isDecimal = decimal.TryParse(row.lValues[i], out var val);
+                                            if (isDecimal)
+                                                ggModel.Rate = val;
+                                        }
+                                        lData.Add(ggModel);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    Console.WriteLine(ex.Message);
+                                }
+                            }
+                        }
+                        catch(Exception ex)
+                        { 
+                            Console.WriteLine($"INPUT: {item.fn}/{itemSheetName}|{ex.Message}");
+                        }
+                    }
+                }
+                var ts = (DateTime.Now - dtStart).TotalSeconds;
+                StaticVal.lGoogleData = lData;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 
