@@ -26,16 +26,19 @@ namespace SLib.Service
         //const string SHEET_NAME = "DoanhThu";
         private readonly SpreadsheetsResource.ValuesResource _googleSheetValues;
         private readonly IGoogleSheetRepo _googleRepo;
+        private readonly IGoogleDataRepo _ggDataRepo;
         private readonly IFinancialRepo _financialRepo;
         private readonly IStockRepo _stockRepo;
 
         public GoogleService(GoogleSheetsHelper googleSheetsHelper,
                             IGoogleSheetRepo googleRepo,
+                            IGoogleDataRepo ggDataRepo,
                             IStockRepo stockRepo,
                             IFinancialRepo financialRepo) 
         {
             _googleSheetValues = googleSheetsHelper.Service.Spreadsheets.Values;
             _googleRepo = googleRepo;
+            _ggDataRepo = ggDataRepo;
             _financialRepo = financialRepo;
             _stockRepo = stockRepo;
         }
@@ -72,7 +75,7 @@ namespace SLib.Service
         //    appendRequest.Execute();
         //}
 
-        public void Put(int rowId, GoogleData item, string spreadID, string sheetName, string range)
+        public void Put(int rowId, GoogleDataSheet item, string spreadID, string sheetName, string range)
         {
             //var range = $"{sheetName}!B{rowId}:Z{rowId}";
             var valueRange = new ValueRange
@@ -95,12 +98,12 @@ namespace SLib.Service
 
     public static class Mapper
     {
-        public static List<GoogleData> MapFromRangeData(this IList<IList<object>> values)
+        public static List<GoogleDataSheet> MapFromRangeData(this IList<IList<object>> values)
         {
-            var items = new List<GoogleData>();
+            var items = new List<GoogleDataSheet>();
             foreach (var value in values)
             {
-                var item = new GoogleData
+                var item = new GoogleDataSheet
                 {
                     lValues = new List<string>()
                 };
@@ -124,7 +127,7 @@ namespace SLib.Service
             return items;
         }
 
-        public static IList<IList<object>> MapToRangeData(this GoogleData item)
+        public static IList<IList<object>> MapToRangeData(this GoogleDataSheet item)
         {
             var objectList = new List<object>();
             objectList.AddRange(item.lValues);

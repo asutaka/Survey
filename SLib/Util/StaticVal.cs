@@ -71,7 +71,5 @@ namespace SLib.Util
             "Bất động sản",
             "Hàng không"
         };
-
-        public static List<GoogleValueModel> lGoogleData = new List<GoogleValueModel>();
     }
 }

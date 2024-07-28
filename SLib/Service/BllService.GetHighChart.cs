@@ -10,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -58,13 +57,12 @@ namespace SLib.Service
         {
             try
             {
-                input = input.ToUpper().Replace("LN_", "").Trim();
+                input = input.ToUpper().Replace("LN_", "").Replace("CHART_", "").Trim();
                 var exists = StaticVal.lHotKey.FirstOrDefault(x => x.Value.Any(y => input.Equals(y, StringComparison.CurrentCultureIgnoreCase)));
                 if (exists.Key is null)
                     return null;
 
-                var filter = Builders<Stock>.Filter.ElemMatch(x => x.h24, y => Regex.IsMatch(y.code, exists.Key, RegexOptions.IgnoreCase));
-                var lStock = _stockRepo.GetByFilter(filter);
+                var lStock = _stockRepo.GetByFilter(Builders<Stock>.Filter.ElemMatch(x => x.h24, y => Regex.IsMatch(y.code, exists.Key, RegexOptions.IgnoreCase)));
                 if (!(lStock?.Any() ?? false))
                 {
                     return null;
@@ -75,8 +73,7 @@ namespace SLib.Service
 
                 foreach (var item in lStockClean)
                 {
-                    var filterFinance = Builders<Financial>.Filter.Eq(x => x.s, item.s);
-                    var lFinance = _financialRepo.GetByFilter(filterFinance);
+                    var lFinance = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, item.s));
                     lFinance = lFinance?.Where(x => x.lengthReport > 0 && x.lengthReport < 5).OrderByDescending(x => x.d).ToList();
                     if (lFinance is null)
                         continue;
@@ -229,6 +226,161 @@ namespace SLib.Service
             }
             return null;
         }
+        public async Task<Stream> Chart_GG_Category(string input, string name, string sheetName)
+        {
+            try
+            {
+                input = input.ToUpper().Replace("LN_", "").Replace("CHART_", "").Trim();
+                var exists = StaticVal.lHotKey.FirstOrDefault(x => x.Value.Any(y => input.Equals(y, StringComparison.CurrentCultureIgnoreCase)));
+                if (exists.Key is null)
+                    return null;
+                var nhom = StaticVal.lHotKeyGG[exists.Key];
+
+                var dt = DateTime.Now;
+                var quarter = dt.GetQuarter();
+
+                FilterDefinition<GoogleData> filter = null;
+                var builder = Builders<GoogleData>.Filter;
+                var lFilter = new List<FilterDefinition<GoogleData>>
+                {
+                    builder.Eq(x => x.nhom, nhom),
+                    builder.Eq(x => x.sheet, sheetName)
+                };
+                foreach (var item in lFilter)
+                {
+                    if (filter is null)
+                    {
+                        filter = item;
+                        continue;
+                    }
+                    filter &= item;
+                }
+                var lGG = _ggDataRepo.GetByFilter(filter);
+                if(!(lGG?.Any()??false))
+                {
+                    return null;
+                }
+                //
+                var maxYear = lGG.Max(x => x.year);
+                var maxQuarter = lGG.Where(x => x.year == maxYear).Max(x => x.quarter);
+                var quarterPrev = -1;
+                var yearPrev = -1;
+                if(maxQuarter > 1)
+                {
+                    quarterPrev = maxQuarter - 1;
+                    yearPrev = maxYear;
+                }
+                else
+                {
+                    quarterPrev = 4;
+                    yearPrev = maxYear - 1;
+                }
+                lGG = lGG.Where(x => (x.year == maxYear && x.quarter == maxQuarter)
+                                    || (x.year == yearPrev && x.quarter == quarterPrev))
+                        .OrderBy(x => x.code)
+                        .ThenByDescending(x => x.year)
+                        .ThenByDescending(x => x.quarter)
+                        .ToList();
+
+                var lCode = lGG.Select(x => x.code).Distinct().ToList();
+                var lPrev = lGG.Where(x => x.year == yearPrev && x.quarter == quarterPrev && x.ty == 0).Select(x => new { s = x.code, val = (double)x.value }).ToList();
+                var lCur = lGG.Where(x => x.year == maxYear && x.quarter == maxQuarter && x.ty == 0).Select(x => new { s = x.code, val = (double)x.value }).ToList();
+                var lRate = lGG.Where(x => x.year == maxYear && x.quarter == maxQuarter && x.ty == 1).Select(x => new { s = x.code, val = (double)x.rate }).ToList();
+                var lResult = new List<(string, double, double, double)>();
+                foreach (var item in lCode)
+                {
+                    double valPrev = 0, valCur = 0, rateCur = 0;
+                    var cur = lCur.FirstOrDefault(x => x.s == item);
+                    if (cur != null)
+                    {
+                        valCur = cur.val;
+                    }
+
+                    var prev = lPrev.FirstOrDefault(x => x.s == item);
+                    if(prev != null)
+                    {
+                        valPrev = prev.val;
+                    }
+                   
+                    var rate = lRate.FirstOrDefault(x => x.s == item);
+                    if(rate != null)
+                    {
+                        rateCur = rate.val;
+                    }
+                    lResult.Add((item, valCur, valPrev, rateCur));
+                }
+
+                var basicColumn = new HighchartBasicColumn($"{name} Quý {maxQuarter}/{maxYear}", lResult.Select(x => x.Item1).Distinct().ToList(), new List<HighChartSeries_BasicColumn>
+                {
+                     new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.Item2).ToList(),
+                        name = $"{name} quý {maxQuarter}/{maxYear}",
+                        type = "column",
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.Item3).ToList(),
+                        name = $"{name} quý {quarterPrev}/{yearPrev}",
+                        type = "column",
+                        color = "#C00000"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.Item4).ToList(),
+                        name = $"Tăng trưởng {name.ToLower()}",
+                        type = "spline",
+                        color = "#ffbf00",
+                        yAxis = 1
+                    }
+                });
+                var strTitleYAxis = string.Empty;
+                var lCheckValueUnit = basicColumn.series.Where(x => x.yAxis == 0).Select(x => x.data);
+                foreach (var item in lCheckValueUnit)
+                {
+                    if (!item.Any(x => x != 0 && Math.Abs(x) < 1000000000))
+                    {
+                        strTitleYAxis = "(Đơn vị: tỷ)";
+                        foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                        {
+                            itemSeries.data = itemSeries.data.Select(x => x / 1000000000).ToList();
+                        }
+                        break;
+                    }
+                    if (!item.Any(x => x != 0 && Math.Abs(x) < 1000000))
+                    {
+                        strTitleYAxis = "(Đơn vị: triệu)";
+                        foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                        {
+                            itemSeries.data = itemSeries.data.Select(x => x / 1000000).ToList();
+                        }
+                        break;
+                    }
+                    if (!item.Any(x => x != 0 && Math.Abs(x) < 1000))
+                    {
+                        strTitleYAxis = "(Đơn vị: nghìn)";
+                        foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                        {
+                            itemSeries.data = itemSeries.data.Select(x => x / 1000).ToList();
+                        }
+                        break;
+                    }
+                }
+
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
 
         public async Task<Stream> Chart_ChienLuocDauTu()
         {
@@ -282,6 +434,328 @@ namespace SLib.Service
                     }
                 };
                 var basicColumn = new HighChartChienLuocDauTu("Chiến lược đầu tư", series);
+                var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> Chart_LN_Stock(string code)
+        {
+            try
+            {
+                var lFinance = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
+                lFinance = lFinance?.Where(x => x.lengthReport > 0 && x.lengthReport < 5 && x.yearReport >= DateTime.Now.Year - 3).OrderByDescending(x => x.d).ToList();
+                if (lFinance is null)
+                    return null;
+                //
+                //tang truong doanh thu, tang truong loi nhuan
+                var lLN = new List<LN_Category>();
+                foreach (var item in lFinance)
+                {
+                    if (lLN.Any(x => x.d == item.d))
+                        continue;
+
+                    var cur = item;
+                    var prev = lFinance.FirstOrDefault(x => x.yearReport == cur.yearReport - 1 && x.lengthReport == cur.lengthReport);
+                    var model = new LN_Category
+                    {
+                        d = cur.d,
+                        s = cur.s,
+                        lengthReport = cur.lengthReport,
+                        yearReport = cur.yearReport,
+                        DoanhThu = (double)cur.revenue,
+                        LoiNhuan = (double)cur.profit
+                    };
+                    if (prev is null)
+                    {
+                        model.TangTruongDoanhThu = 0;
+                        model.TangTruongLoiNhuan = 0;
+                    }
+                    else
+                    {
+                        var rateRevenue = (cur.revenue / prev.revenue) ?? 0;
+                        var rateProfit = (cur.profit / prev.profit) ?? 0;
+
+                        model.TangTruongDoanhThu = (double)Math.Round((-1 + rateRevenue) * 100, 1);
+                        model.TangTruongLoiNhuan = (double)Math.Round((-1 + rateProfit) * 100, 1); ;
+                    }
+                    //Ty Suat Loi Nhuan
+                    model.TySuatLoiNhuan = model.DoanhThu == 0 ? int.MaxValue : Math.Round(model.LoiNhuan * 100 / model.DoanhThu, 1);
+
+                    lLN.Add(model);
+                }
+                lLN.Reverse();
+
+                var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận {code}", lLN.Select(x => $"{x.lengthReport}/{x.yearReport}").ToList(), new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lLN.Select(x => x.DoanhThu).ToList(),
+                        name = "Doanh thu",
+                        type = "column",
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lLN.Select(x => x.LoiNhuan).ToList(),
+                        name = "Lợi nhuận",
+                        type = "column",
+                        color = "#C00000"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lLN.Select(x => x.TangTruongDoanhThu).ToList(),
+                        name = "Tăng trưởng DT",
+                        type = "spline",
+                        color = "#012060",
+                        yAxis = 1
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lLN.Select(x => x.TangTruongLoiNhuan).ToList(),
+                        name = "Tăng trưởng LN",
+                        type = "spline",
+                        color = "#C00000",
+                        yAxis = 1
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lLN.Select(x => x.TySuatLoiNhuan).ToList(),
+                        name = "Tỷ suất LN",
+                        type = "spline",
+                        color = "#ffbf00",
+                        yAxis = 1
+                    }
+                });
+                var strTitleYAxis = "(Đơn vị: tỷ)";
+                foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                {
+                    itemSeries.data = itemSeries.data.Select(x => x / 1000000000).ToList();
+                }
+
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> Chart_GG_Stock(string code, string name, string sheetName, bool isShowIncrease = false)
+        {
+            try
+            {
+                FilterDefinition<GoogleData> filter = null;
+                var builder = Builders<GoogleData>.Filter;
+                var lFilter = new List<FilterDefinition<GoogleData>>
+                {
+                    builder.Eq(x => x.code, code),
+                    builder.Eq(x => x.sheet, sheetName),
+                    builder.Gte(x => x.year, DateTime.Now.Year - 3),
+                    builder.Eq(x => x.ty, 0)
+                };
+                foreach (var item in lFilter)
+                {
+                    if (filter is null)
+                    {
+                        filter = item;
+                        continue;
+                    }
+                    filter &= item;
+                }
+                var lGG = _ggDataRepo.GetByFilter(filter).OrderByDescending(x => x.year).ThenByDescending(x => x.quarter);
+                if (!(lGG?.Any() ?? false))
+                {
+                    return null;
+                }
+                var lFinance = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
+                lFinance = lFinance?.Where(x => x.lengthReport > 0 && x.lengthReport < 5 && x.yearReport >= DateTime.Now.Year - 3).OrderByDescending(x => x.d).ToList();
+                //
+                var lAnalyze = new List<(int, int, double, double, double)>();//year, quarter, val, rate, ton/doanh thu
+                foreach (var item in lGG)
+                {
+                    if (lAnalyze.Any(x => x.Item1 == item.year && x.Item2 == item.quarter))
+                        continue;
+
+                    var cur = item;
+                    (int, int, double, double, double) res;
+                    res.Item1 = cur.year;
+                    res.Item2 = cur.quarter;
+                    res.Item3 = (double)cur.value;
+
+                    int yearPrev = 0, quarterPrev = 0;
+                    if(cur.quarter > 1)
+                    {
+                        yearPrev = cur.year;
+                        quarterPrev = cur.quarter - 1;
+                    }
+                    else
+                    {
+                        yearPrev = cur.year - 1;
+                        quarterPrev = 4;
+                    }
+
+                    var prev = lGG.FirstOrDefault(x => x.year == yearPrev && x.quarter == quarterPrev);
+                    if(prev is null)
+                    {
+                        res.Item4 = 0;
+                    }
+                    else
+                    {
+                        res.Item4 = (double)Math.Round(100 * (-1 + cur.value / prev.value), 1);
+                    }
+
+                    var financial = lFinance.FirstOrDefault(x => x.yearReport == cur.year && x.lengthReport == cur.quarter);
+                    if (financial is null)
+                    {
+                        res.Item5 = 0;
+                    }
+                    else
+                    {
+                        res.Item5 = (double)Math.Round(100 * (cur.value - (prev?.value ?? cur.value)) / (financial.revenue ?? int.MaxValue), 1);
+                    }
+                    lAnalyze.Add(res);
+                }
+                lAnalyze.Reverse();
+
+                var series = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item3).ToList(),
+                        name = $"Giá trị",
+                        type = "column",
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item4).ToList(),
+                        name = $"Tăng trưởng QoQ",
+                        type = "spline",
+                        color = "#C00000",
+                        yAxis = 1
+                    }
+                };
+
+                if(isShowIncrease)
+                {
+                    series.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item5).ToList(),
+                        name = $"Gia tăng {name.ToLower()}/ Doanh thu",
+                        type = "spline",
+                        color = "#ffbf00",
+                        yAxis = 1
+                    });
+                }
+
+                var basicColumn = new HighchartBasicColumn($"{name} {code}", lAnalyze.Select(x => $"{x.Item2}/{x.Item1}").ToList(), series);
+                var strTitleYAxis = "(Đơn vị: tỷ)";
+                foreach (var itemSeries in basicColumn.series.Where(x => x.yAxis == 0))
+                {
+                    itemSeries.data = itemSeries.data.Select(x => x / 1000000000).ToList();
+                }
+
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> Chart_KeHoachNam_Stock(string code, List<KeHoachThucHienAPIData> lData)
+        {
+            try
+            {
+                if (lData is null)
+                    return null;
+
+                lData = lData.Where(x => x.year >= (DateTime.Now.Year - 4)).ToList();
+                var lAnalyze = new List<(int, double, double, double, double)>();//year, doanh thu ke hoach, loi nhuan ke hoach, rate doanh thu, rate loi nhuan
+                foreach (var item in lData)
+                {
+                    if (lAnalyze.Any(x => x.Item1 == item.year))
+                        continue;
+
+                    var cur = item;
+                    (int, double, double, double, double) res;
+                    res.Item1 = cur.year;
+                    res.Item2 = (double)cur.isa3;
+                    res.Item3 = (double)cur.isa22;
+
+                    var real = item.quarter.FirstOrDefault(x => x.quarter == 0 || x.quarter == 5);
+                    if(real is null)
+                    {
+                        res.Item4 = 0;
+                        res.Item5 = 0;
+                    }
+                    else
+                    {
+                        res.Item4 = (double)real.isa3_percent;
+                        res.Item5 = (double)real.isa22_percent;
+                    }
+                    lAnalyze.Add(res);
+                }
+                lAnalyze.Reverse();
+
+                var series = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item2).ToList(),
+                        name = $"Doanh thu KH",
+                        type = "column",
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item3).ToList(),
+                        name = $"LNST KH",
+                        type = "column",
+                        color = "#C00000"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item4).ToList(),
+                        name = $"Doanh thu thực hiện",
+                        type = "spline",
+                        color = "#012060",
+                        yAxis = 1
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lAnalyze.Select(x => x.Item5).ToList(),
+                        name = $"LNST thực hiện",
+                        type = "spline",
+                        color = "#C00000",
+                        yAxis = 1
+                    }
+                };
+
+                var basicColumn = new HighchartBasicColumn($"Kế hoạch năm {code}", lAnalyze.Select(x => $"{x.Item1}").ToList(), series);
+                var strTitleYAxis = "(Đơn vị: tỷ)";
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
                 var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);
                 return await _apiService.GetChartImage(body);

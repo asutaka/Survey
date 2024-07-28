@@ -34,20 +34,23 @@ namespace SLib.Service
         private readonly IAPIService _apiService;
         private readonly IGoogleService _ggService;
         private readonly IUserMessageRepo _userMessageRepo;
+        private readonly IGoogleDataRepo _ggDataRepo;
         //private const long _idChannel = -1002247826353;
-        private const long _idUser = 1066022551;
+        //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
         public TelegramLibService(
                                 IBllService bllService,
                                 IUserMessageRepo userMessageRepo,
                                 IGoogleService ggService,
+                                IGoogleDataRepo ggDataRepo,
                                 IAPIService apiService)
         {
             _bllService = bllService;
             _apiService = apiService;
             _userMessageRepo = userMessageRepo;
             _ggService = ggService;
+            _ggDataRepo = ggDataRepo;
             StockInstance();
         }
 
@@ -75,15 +78,6 @@ namespace SLib.Service
         public async Task BotSyncUpdate()
         {
             await func();
-
-            //var dt = DateTime.Now;
-            //var first = StaticVal.lGoogleData?.FirstOrDefault();
-            //if(first is null
-            //    || first.Time.Day != dt.Day)
-            //{
-            //    _ggService.GGLoadData();
-            //    await BotInstance().SendTextMessageAsync(_idUser, $"{DateTime.Now.ToString("dd/MM/yyyy")}: GGSheet load complete!");
-            //}
 
             async Task func()
             {
@@ -209,10 +203,7 @@ namespace SLib.Service
             var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.ToUpper()));
             if(entityStock != null)
             {
-                var mes = await _bllService.OnlyStock(entityStock);
-                if (string.IsNullOrWhiteSpace(mes))
-                    return;
-                await BotInstance().SendTextMessageAsync(userId, mes);
+                await _bllService.OnlyStock(userId, entityStock, BotInstance());
                 return;
             }
             if (input.ToUpper().Contains("VONHOA_"))//Trả về chart vốn hóa các cp trong nhóm ngành
@@ -283,6 +274,11 @@ namespace SLib.Service
                 await BotInstance().SendTextMessageAsync(userId, mes);
                 return;
             }
+            if (input.ToUpper().Contains("DongBoGoogle".ToUpper()))
+            {
+                _ggService.GGLoadData();
+                await BotInstance().SendTextMessageAsync(userId, $"GGSheet load complete!");
+            }
             if (input.ToUpper().Contains("chart_chienluocdautu".ToUpper())
                 || input.ToUpper().Contains("chart_cl".ToUpper()))//Chiến lược đầu tư
             {
@@ -293,13 +289,32 @@ namespace SLib.Service
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 return;
             }
-            if(input.ToUpper().Contains("chart_"))//Tổng hợp về nhóm ngành
+            if(input.ToUpper().Contains("chart_".ToUpper()))//Tổng hợp về nhóm ngành
             {
-                var stream = await _bllService.Chart_LN_Category(input);
-                if (stream is null || stream.Length <= 0)
-                    return;
+                //Lợi nhuận
+                var streamLN = await _bllService.Chart_LN_Category(input);
+                if (streamLN?.Length > 0)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+                }
+                
+                //Tồn kho
+                var streamTonKho = await _bllService.Chart_GG_Category(input, "Tồn kho", "TonKho");
+                if (streamTonKho?.Length > 0)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
+                }
 
-                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                //Người mua trả tiền trước
+                var streamNguoiMua = await _bllService.Chart_GG_Category(input, "Người mua", "NguoiMuaTraTienTruoc");
+                if (streamNguoiMua?.Length > 0)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNguoiMua));
+                }
+
+                //Nợ 
+
+                //Kế hoạch năm
                 return;
             }
 

@@ -8,6 +8,7 @@ namespace SLib.Model.GoogleSheetModel
             Time = DateTime.Now;
         }
         public DateTime Time { get; set; }
+        public int Type { get; set; }
         public string NhomNganh { get; set; }
         public string SheetName { get; set; }
         public string Code { get; set; }

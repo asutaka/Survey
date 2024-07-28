@@ -2,7 +2,7 @@
 
 namespace SLib.Model.GoogleSheetModel
 {
-    public class GoogleData
+    public class GoogleDataSheet
     {
         public string Code { get; set; }
         public List<string> lValues { get; set; }

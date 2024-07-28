@@ -1,9 +1,11 @@
 ﻿using SLib.DAL;
 using SLib.Model;
+using SLib.Model.APIModel;
 using SLib.Util;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using Telegram.Bot;
 
 namespace SLib.Service
 {
@@ -22,10 +24,15 @@ namespace SLib.Service
 
         //Tele only stock
         List<Stock> GetStock();
-        Task<string> OnlyStock(Stock entity);
+        Task OnlyStock(long userID, Stock entity, TelegramBotClient bot);
         Task<Stream> Chart_VonHoa_Category(string input);
         Task<Stream> Chart_LN_Category(string input);
+        Task<Stream> Chart_GG_Category(string input, string name, string sheetName);
         Task<Stream> Chart_ChienLuocDauTu();
+
+        Task<Stream> Chart_LN_Stock(string code);
+        Task<Stream> Chart_GG_Stock(string code, string name, string sheetName, bool isShowIncrease = false);
+        Task<Stream> Chart_KeHoachNam_Stock(string code, List<KeHoachThucHienAPIData> lData);
 
         //HighChart
         Task<Stream> GetBasicColumn();
@@ -50,6 +57,7 @@ namespace SLib.Service
         private readonly IFinancialRepo _financialRepo;
         private readonly IFileService _fileService;
         private readonly IGoogleService _googleService;
+        private readonly IGoogleDataRepo _ggDataRepo;
         public BllService(IAPIService apiService,
                             IStockRepo stockRepo,
                             IConfigBCTCRepo configBCTCRepo,
@@ -58,6 +66,7 @@ namespace SLib.Service
                             IFinancialRepo financialRepo,
                             ICategoryRepo categoryRepo,
                             IFileService fileService,
+                            IGoogleDataRepo ggDataRepo,
                             IGoogleService googleService
                             )
         {
@@ -70,6 +79,7 @@ namespace SLib.Service
             _financialRepo = financialRepo;
             _fileService = fileService;
             _googleService = googleService;
+            _ggDataRepo = ggDataRepo;
         }
 
         public List<Stock> GetStock()

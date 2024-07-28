@@ -5,13 +5,14 @@ using SLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
     public partial class GoogleService 
     {
-        private List<GoogleData> GetGoogleData(string spreadId, string sheetName)
+        private List<GoogleDataSheet> GetGoogleData(string spreadId, string sheetName)
         {
             var range = $"{sheetName}!A:Z";
             var request = _googleSheetValues.Get(spreadId, range);
@@ -196,7 +197,6 @@ namespace SLib.Service
         {
             try
             {
-                var dtStart = DateTime.Now;
                 var lData = new List<GoogleValueModel>();
                 var lGoogle = _googleRepo.GetAll();
                 foreach (var item in lGoogle)
@@ -238,13 +238,15 @@ namespace SLib.Service
                                         };
                                         if (rowIndex >= 50)
                                         {
-                                            var isDecimal = decimal.TryParse(row.lValues[i], out var val);
+                                            ggModel.Type = 0;
+                                            var isDecimal = decimal.TryParse(row.lValues[i].Replace(".","").Replace(",", "."), out var val);
                                             if (isDecimal)
                                                 ggModel.Value = val;
                                         }
                                         else
                                         {
-                                            var isDecimal = decimal.TryParse(row.lValues[i], out var val);
+                                            ggModel.Type = 1;
+                                            var isDecimal = decimal.TryParse(row.lValues[i].Replace(",", "."), out var val);
                                             if (isDecimal)
                                                 ggModel.Rate = val;
                                         }
@@ -263,8 +265,22 @@ namespace SLib.Service
                         }
                     }
                 }
-                var ts = (DateTime.Now - dtStart).TotalSeconds;
-                StaticVal.lGoogleData = lData;
+                _ggDataRepo.DeleteMany(Builders<GoogleData>.Filter.Gte(x => x.t, 0));
+                foreach (var item in lData)
+                {
+                    _ggDataRepo.InsertOne(new GoogleData
+                    {
+                        t = DateTimeOffset.Now.ToUnixTimeSeconds(),
+                        ty = item.Type,
+                        nhom = item.NhomNganh,
+                        sheet = item.SheetName,
+                        code = item.Code,
+                        year = item.Year,
+                        quarter = item.Quarter,
+                        value = item.Value,
+                        rate = item.Rate
+                    });
+                }
             }
             catch (Exception ex)
             {
