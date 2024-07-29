@@ -313,8 +313,6 @@ namespace SLib.Service
                 }
 
                 //Nợ 
-
-                //Kế hoạch năm
                 return;
             }
 

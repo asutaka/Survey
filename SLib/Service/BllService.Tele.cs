@@ -13,17 +13,17 @@ namespace SLib.Service
 {
     public partial class BllService
     {
-        //TA: Giá hiện tại, chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
+        //TA: Chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
         public (int, string) TA(List<Quote> lData)
         {
             var strOut = new StringBuilder();
+            strOut.AppendLine($"*TA:");
             try
             {
                 var chibao = ChiBaoKyThuatOnlyStock(lData, 0);
                 if (chibao is null)
                     return (0, null);
 
-                strOut.AppendLine($"*Giá hiện tại: {chibao.curPrice}({Math.Round(100 * (-1 + chibao.curPrice / chibao.basicPrice), 1)}%)");
                 var strChiBao = new StringBuilder();
                 if (chibao.isCrossMa20Up)
                 {
@@ -51,8 +51,11 @@ namespace SLib.Service
                 }
                 if (strChiBao.Length > 0)
                 {
-                    strOut.AppendLine($"*TA:");
                     strOut.Append(strChiBao.ToString());
+                }
+                else
+                {
+                    strOut.AppendLine("Không thỏa mãn chỉ báo nào");
                 }
 
                 return (1, strOut.ToString());
@@ -73,10 +76,10 @@ namespace SLib.Service
                 var strOut = new StringBuilder();
                 strOut.AppendLine($"*Thống kê giao dịch:");
                 var dt = DateTime.Now;
-                var dtFirstWeek = dt.AddDays(-(int)dt.DayOfWeek);
+                var dtWeek = dt.AddDays(-7);
                 if(lData is null)
                 {
-                    lData = await _apiService.GetForeign(code, 1, 1000, dtFirstWeek.ToString("dd/MM/yyyy"), dt.AddDays(1).ToString("dd/MM/yyyy"));
+                    lData = await _apiService.GetForeign(code, 1, 1000, dtWeek.ToString("dd/MM/yyyy"), dt.AddDays(1).ToString("dd/MM/yyyy"));
                 }
                 if (lData?.Any() ?? false) 
                 {
@@ -84,7 +87,7 @@ namespace SLib.Service
                     var curRoom = lData.First().foreignCurrentRoom;
                     var buySell = lData.Sum(x => x.netBuySellVal);
                     var flagNN = buySell >= 0 ? "Mua ròng" : "Bán ròng";
-                    strOut.AppendLine($"+ Room ngoại: {curRoom.ToString("#,##0")} cổ phiếu");
+                    strOut.AppendLine($"+ Room ngoại còn lại: {curRoom.ToString("#,##0")} cổ phiếu");
 
                     var strBuySell = string.Empty;
                     if (buySell > 1000000000)
@@ -99,19 +102,24 @@ namespace SLib.Service
                     }
                     else
                     {
-                        strBuySell = $"Mua ròng 0 đồng";
+                        strBuySell = $"Không có giao dịch";
                     }
-                    strOut.AppendLine($"+ GDNN: {strBuySell}");
+                    strOut.AppendLine($"+ GDNN(7 ngày): {strBuySell}");
                     
                     //Tự doanh
                     FilterDefinition<TuDoanh> filter = Builders<TuDoanh>.Filter.Eq(x => x.s, code);
                     var lTuDoanh = _tudoanhRepo.GetByFilter(filter);
-                    lTuDoanh = lTuDoanh.Where(x => x.d > new DateTimeOffset(dtFirstWeek.AddDays(-1)).ToUnixTimeSeconds()).ToList();
+                    lTuDoanh = lTuDoanh.Where(x => x.d >= new DateTimeOffset(dtWeek).ToUnixTimeSeconds()).ToList();
                     var tudoanh = lTuDoanh.Sum(x => x.net);
                     var flagTuDoanh = tudoanh >= 0 ? "Mua ròng" : "Bán ròng";
                     var valStr = string.Empty;
                     tudoanh = Math.Abs(tudoanh / 1000);
-                    if (tudoanh < 1000)
+                    if(tudoanh == 0)
+                    {
+                        flagTuDoanh = string.Empty;
+                        valStr = $"Không có giao dịch";
+                    }    
+                    else if (tudoanh < 1000)
                     {
                         valStr = $"{Math.Round(tudoanh, 0)} triệu";
                     }
@@ -120,7 +128,7 @@ namespace SLib.Service
                         tudoanh = Math.Round(tudoanh / 1000, 1);
                         valStr = $"{tudoanh} tỷ";
                     }
-                    strOut.AppendLine($"+ Tự doanh: {flagTuDoanh} {valStr}");
+                    strOut.AppendLine($"+ Tự doanh(7 ngày): {flagTuDoanh} {valStr}");
 
                     //Mua bán chủ động
                     var muachudong = lData.Sum(x => x.totalBuyTradeVol);
@@ -133,7 +141,7 @@ namespace SLib.Service
                     }
                     var rateMuachudong = Math.Round(muachudong * 100 / tongmuabanchudong, 1);
                     var rateBanchudong = 100 - rateMuachudong;
-                    strOut.AppendLine($"+ Mua/ Bán chủ động: {rateMuachudong}%/ {rateBanchudong}%");
+                    strOut.AppendLine($"+ Mua/ Bán chủ động(7 ngày): {rateMuachudong}%/ {rateBanchudong}%");
                     return (1, strOut.ToString());
                 }    
 
@@ -182,13 +190,13 @@ namespace SLib.Service
                 strOut.AppendLine($"*Thống kê khác:");
               
                 var loinhuanTB = LoiNhuanDN_TB(kehoach);
-                strOut.AppendLine($"- Lợi nhuận TB năm: {loinhuanTB}%");
+                strOut.AppendLine($"+ Lợi nhuận TB năm: {loinhuanTB}%");
 
                 var tinhtoanThongKe = TinhToanThongKeDuaVaoDuLieu(entity, lDataStock);
                 if(tinhtoanThongKe != null)
                 {
-                    strOut.AppendLine($"- Giá tăng trung bình mỗi quý: {tinhtoanThongKe.giacpTangTB_Quy}%");
-                    strOut.AppendLine($"- Giá tăng từ đầu quý đến hiện tại: {tinhtoanThongKe.giacpTuDauQuyDenHienTai}%");
+                    //strOut.AppendLine($"+ Giá tăng trung bình mỗi quý: {tinhtoanThongKe.giacpTangTB_Quy}%");
+                    //strOut.AppendLine($"+ Giá tăng từ đầu quý đến hiện tại: {tinhtoanThongKe.giacpTuDauQuyDenHienTai}%");
                     strOut.AppendLine();
                     var lstOrderDesc = new List<WinrateShow>
                     {
@@ -207,7 +215,7 @@ namespace SLib.Service
                     };
                     foreach (var item in lstOrderDesc.OrderByDescending(x => x.BuySell))
                     {
-                        strOut.AppendLine($"- Winrate TB {item.Name} Loss: {item.BuySell}%/ {item.Break}%");
+                        strOut.AppendLine($"+ Winrate TB {item.Name} Loss: {item.BuySell}%/ {item.Break}%");
                     }
                 }
                 

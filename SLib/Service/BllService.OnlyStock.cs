@@ -64,21 +64,36 @@ namespace SLib.Service
                     await bot.SendPhotoAsync(userID, InputFile.FromStream(streamKeHoach));
                 }
 
+                //TA: Chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
+                var entityTA = TA(lDataStock);
+                if (entityTA.Item1 > 0)
+                {
+                    output.AppendLine(entityTA.Item2);
+                }
 
+                //Thống kê giao dịch: + NN mua bán + Tự doanh + Mua bán chủ động
+                var entityTKGD = await ThongKeGD(entity.s, lForeign);
+                if (entityTKGD.Item1 > 0)
+                {
+                    output.AppendLine(entityTKGD.Item2);
+                }
 
+                //Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb năm + buy MAup/sell MAdown
+                var entityKhac = await ThongKeKhac(entity, lDataStock, KeHoach);
+                if (entityKhac.Item1 > 0)
+                {
+                    output.AppendLine(entityKhac.Item2);
+                }
 
-                //TA: Giá hiện tại, chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
-                //var entityTA = TA(lDataStock);
-                //if (entityTA.Item1 > 0)
+                //end
+                await bot.SendTextMessageAsync(userID, output.ToString());
+                output.Clear();
+
+                ////Chuyên sâu: + Cơ cấu lợi nhuận + Phân tích lợi nhuận + Động lực tăng trưởng 
+                //var entityChuyenSau = await PTChuyenSau(entity.s);
+                //if (entityChuyenSau.Item1 > 0)
                 //{
-                //    output.AppendLine(entityTA.Item2);
-                //}
-
-                ////Thống kê giao dịch: + NN mua bán + Tự doanh + Mua bán chủ động
-                //var entityTKGD = await ThongKeGD(entity.s, lForeign);
-                //if (entityTKGD.Item1 > 0)
-                //{
-                //    output.AppendLine(entityTKGD.Item2);
+                //    output.AppendLine(entityChuyenSau.Item2);
                 //}
 
                 ////FA: + Lợi nhuận + Kế hoạch năm +BCTC quý x
@@ -86,20 +101,6 @@ namespace SLib.Service
                 //if (entityFA.Item1 > 0)
                 //{
                 //    output.AppendLine(entityFA.Item2);
-                //}
-
-                ////Thống kê khác: + Lợi nhuận DN tb năm + Đà tăng giá cp tb năm + buy MAup/sell MAdown
-                //var entityKhac = await ThongKeKhac(entity, lDataStock, KeHoach);
-                //if (entityKhac.Item1 > 0)
-                //{
-                //    output.AppendLine(entityKhac.Item2);
-                //}
-
-                ////Chuyên sâu: + Cơ cấu lợi nhuận + Phân tích lợi nhuận + Động lực tăng trưởng 
-                //var entityChuyenSau = await PTChuyenSau(entity.s);
-                //if (entityChuyenSau.Item1 > 0)
-                //{
-                //    output.AppendLine(entityChuyenSau.Item2);
                 //}
             }
             catch (Exception ex) 
