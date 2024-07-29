@@ -17,7 +17,7 @@ namespace SLib.Service
         public (int, string) TA(List<Quote> lData)
         {
             var strOut = new StringBuilder();
-            strOut.AppendLine($"*TA:");
+            strOut.AppendLine($"**TA:");
             try
             {
                 var chibao = ChiBaoKyThuatOnlyStock(lData, 0);
@@ -74,7 +74,7 @@ namespace SLib.Service
             try
             {
                 var strOut = new StringBuilder();
-                strOut.AppendLine($"*Thống kê giao dịch:");
+                strOut.AppendLine($"**Thống kê giao dịch:");
                 var dt = DateTime.Now;
                 var dtWeek = dt.AddDays(-7);
                 if(lData is null)
@@ -153,25 +153,16 @@ namespace SLib.Service
             return (0, null);
         }
 
-        //FA: + Lợi nhuận + Kế hoạch năm +BCTC quý x
-        public async Task<(int, string)> FA(string code, List<LoiNhuanAPIDetail> lLoiNhuan, KeHoachThucHienAPIModel kehoach)
+        //Nguồn tham khảo
+        public async Task<(int, string)> NguonThamKhao(string code)
         {
             try
             {
                 var strOut = new StringBuilder();
-                strOut.AppendLine($"*FA:");
-                //Lợi nhuận
-                var loinhuan = await ThongKeLoiNhuan(code, lLoiNhuan);
-                if(loinhuan.Item1 > 0)
-                {
-                    strOut.AppendLine(loinhuan.Item2);
-                }
-                //Kế hoạch năm
-                var linkKeHoach = $"https://24hmoney.vn/stock/{code}/ke-hoach-kinh-doanh";
-                strOut.AppendLine($"Link kế hoạch: {linkKeHoach}");
+                strOut.AppendLine($"**Nguồn tham khảo:");
                 //BCTC quý
                 var linkBCTC = $"https://finance.vietstock.vn/{code}/tai-tai-lieu.htm?doctype=1";
-                strOut.AppendLine($"Link BCTC: {linkBCTC}");
+                strOut.AppendLine($"+Link BCTC: {linkBCTC}");
                 return (1, strOut.ToString());
             }
             catch (Exception ex)
@@ -187,7 +178,7 @@ namespace SLib.Service
             try
             {
                 var strOut = new StringBuilder();
-                strOut.AppendLine($"*Thống kê khác:");
+                strOut.AppendLine($"**Thống kê khác:");
               
                 var loinhuanTB = LoiNhuanDN_TB(kehoach);
                 strOut.AppendLine($"+ Lợi nhuận TB năm: {loinhuanTB}%");

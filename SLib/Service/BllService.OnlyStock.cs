@@ -32,7 +32,7 @@ namespace SLib.Service
                 var nearLastElement = lDataStock.SkipLast(1).Last();
                 var curRate = Math.Round(100 * (-1 + lastElement.Close / nearLastElement.Close), 2);
                 output.AppendLine();
-                output.AppendLine($"*Giá hiện tại: {lastElement.Close}({curRate}% so với giá tham chiếu)");
+                output.AppendLine($"**Giá hiện tại: {lastElement.Close}({curRate}% so với giá tham chiếu)");
                 await bot.SendTextMessageAsync(userID, output.ToString());
                 output.Clear();
                 //*FA
@@ -85,10 +85,6 @@ namespace SLib.Service
                     output.AppendLine(entityKhac.Item2);
                 }
 
-                //end
-                await bot.SendTextMessageAsync(userID, output.ToString());
-                output.Clear();
-
                 ////Chuyên sâu: + Cơ cấu lợi nhuận + Phân tích lợi nhuận + Động lực tăng trưởng 
                 //var entityChuyenSau = await PTChuyenSau(entity.s);
                 //if (entityChuyenSau.Item1 > 0)
@@ -96,12 +92,16 @@ namespace SLib.Service
                 //    output.AppendLine(entityChuyenSau.Item2);
                 //}
 
-                ////FA: + Lợi nhuận + Kế hoạch năm +BCTC quý x
-                //var entityFA = await FA(entity.s, lLoiNhuan, KeHoach);
-                //if (entityFA.Item1 > 0)
-                //{
-                //    output.AppendLine(entityFA.Item2);
-                //}
+                //Link BCTC
+                var entityNguonThamKhao = await NguonThamKhao(entity.s);
+                if (entityNguonThamKhao.Item1 > 0)
+                {
+                    output.AppendLine(entityNguonThamKhao.Item2);
+                }
+
+                //end
+                await bot.SendTextMessageAsync(userID, output.ToString());
+                output.Clear();
             }
             catch (Exception ex) 
             { 

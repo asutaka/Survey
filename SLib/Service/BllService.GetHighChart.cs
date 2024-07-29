@@ -483,7 +483,15 @@ namespace SLib.Service
                         var rateProfit = (cur.profit / prev.profit) ?? 0;
 
                         model.TangTruongDoanhThu = (double)Math.Round((-1 + rateRevenue) * 100, 1);
-                        model.TangTruongLoiNhuan = (double)Math.Round((-1 + rateProfit) * 100, 1); ;
+                        if(cur.revenue >= prev.revenue)
+                        {
+                            model.TangTruongDoanhThu = Math.Abs(model.TangTruongDoanhThu);
+                        }    
+                        model.TangTruongLoiNhuan = (double)Math.Round((-1 + rateProfit) * 100, 1); 
+                        if(cur.profit >= prev.profit)
+                        {
+                            model.TangTruongLoiNhuan = Math.Abs(model.TangTruongLoiNhuan);
+                        }    
                     }
                     //Ty Suat Loi Nhuan
                     model.TySuatLoiNhuan = model.DoanhThu == 0 ? int.MaxValue : Math.Round(model.LoiNhuan * 100 / model.DoanhThu, 1);

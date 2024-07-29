@@ -80,6 +80,10 @@ namespace SLib.Service
                                     continue;
                                 }
                                 var rate = Math.Round(100 * (-1 + (entityFinancial.revenue ?? 0) / (entityFinancialPrev.revenue ?? 1)), 1);
+                                if ((entityFinancial.revenue ?? 0) >= (entityFinancialPrev.revenue ?? 0))
+                                {
+                                    rate = Math.Abs(rate);
+                                }
                                 row.lValues.Add($"{rate}");
                             }
                         }
@@ -167,6 +171,10 @@ namespace SLib.Service
                                     continue;
                                 }
                                 var rate = Math.Round(100 * (-1 + (entityFinancial.profit ?? 0) / (entityFinancialPrev.profit ?? 1)), 1);
+                                if((entityFinancial.profit ?? 0) >= (entityFinancialPrev.profit ?? 0))
+                                {
+                                    rate = Math.Abs(rate);
+                                }    
                                 row.lValues.Add($"{rate}");
                             }
                         }
