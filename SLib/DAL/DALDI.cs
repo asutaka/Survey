@@ -15,6 +15,7 @@ namespace SLib.DAL
             services.AddSingleton<IGoogleSheetRepo, GoogleSheetRepo>();
             services.AddSingleton<IConfigBCTCRepo, ConfigBCTCRepo>();
             services.AddSingleton<IGoogleDataRepo, GoogleDataRepo>();
+            services.AddSingleton<IStockRevenueRepo, StockRevenueRepo>();
         }
     }
 }

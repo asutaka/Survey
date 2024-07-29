@@ -775,6 +775,96 @@ namespace SLib.Service
             return null;
         }
 
+        public async Task<Stream> Chart_CoCauDoanhThu_Stock(string code)
+        {
+            return null;
+            try
+            {
+                var dt = DateTime.Now;
+                // FilterDefinition<Stock> filter = Builders<Stock>.Filter.Eq(x => x.s, itemMa.symbol);
+                var lStockRevenue = _stockRevenueRepo.GetByFilter(Builders<StockRevenue>.Filter.Eq(x => x.s, code))?.Where(x => x.d >= 10 * (dt.Year - 3))?.OrderBy(x => x.d);
+                if (!(lStockRevenue?.Any() ?? false))
+                    return null;
+
+                var lCat = lStockRevenue.Select(x => x.d.ToString()).ToList();
+                var lName = new List<string>();
+                foreach (var item in lStockRevenue)
+                {
+                    foreach (var itemDetail in item.de)
+                    {
+                        if (string.IsNullOrWhiteSpace(itemDetail.name) || lName.Contains(itemDetail.name))
+                            continue;
+                        lName.Add(itemDetail.name);
+                    }
+                }
+                var dicSeries = new Dictionary<string, List<double>>();
+                foreach (var itemName in lName)
+                {
+                    var lVal = new List<double>();
+                    foreach (var item in lStockRevenue)
+                    {
+                        var first = item.de.FirstOrDefault(x => x.name.Equals(itemName));
+                        if(first is null)
+                        {
+                            lVal.Add(0);
+                        }
+                        else
+                        {
+                            lVal.Add(first.rate);
+                        }
+                    }
+                    dicSeries.Add(itemName, lVal);
+                }
+                var series = new List<HighChartSeries_BasicColumn>
+                {
+                    //new HighChartSeries_BasicColumn
+                    //{
+                    //    data = lAnalyze.Select(x => x.Item2).ToList(),
+                    //    name = $"Doanh thu KH",
+                    //    type = "column",
+                    //    color = "#012060"
+                    //},
+                    //new HighChartSeries_BasicColumn
+                    //{
+                    //    data = lAnalyze.Select(x => x.Item3).ToList(),
+                    //    name = $"LNST KH",
+                    //    type = "column",
+                    //    color = "#C00000"
+                    //},
+                    //new HighChartSeries_BasicColumn
+                    //{
+                    //    data = lAnalyze.Select(x => x.Item4).ToList(),
+                    //    name = $"Doanh thu thực hiện",
+                    //    type = "spline",
+                    //    color = "#012060",
+                    //    yAxis = 1
+                    //},
+                    //new HighChartSeries_BasicColumn
+                    //{
+                    //    data = lAnalyze.Select(x => x.Item5).ToList(),
+                    //    name = $"LNST thực hiện",
+                    //    type = "spline",
+                    //    color = "#C00000",
+                    //    yAxis = 1
+                    //}
+                };
+
+                var basicColumn = new HighchartBasicColumn($"Tỉ trọng doanh thu {code}", lCat, series);
+                var strTitleYAxis = "(Đơn vị: tỷ)";
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                var chart = new HighChartAPIModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
         public async Task<Stream> GetBasicColumn()
         {
             var basicColumn = new HighchartBasicColumn("test", new List<string> { "Jan",

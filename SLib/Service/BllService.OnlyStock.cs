@@ -64,6 +64,13 @@ namespace SLib.Service
                     await bot.SendPhotoAsync(userID, InputFile.FromStream(streamKeHoach));
                 }
 
+                //Cơ cấu doanh thu
+                var streamCoCau = await Chart_CoCauDoanhThu_Stock(entity.s);
+                if (streamCoCau?.Length > 0)
+                {
+                    await bot.SendPhotoAsync(userID, InputFile.FromStream(streamCoCau));
+                }
+
                 //TA: Chỉ báo bắt đáy, ma20, ichi, rsi zero, vol, ema21, ema50, e21cross50
                 var entityTA = TA(lDataStock);
                 if (entityTA.Item1 > 0)

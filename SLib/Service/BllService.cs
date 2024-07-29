@@ -58,11 +58,13 @@ namespace SLib.Service
         private readonly IFileService _fileService;
         private readonly IGoogleService _googleService;
         private readonly IGoogleDataRepo _ggDataRepo;
+        private readonly IStockRevenueRepo _stockRevenueRepo;
         public BllService(IAPIService apiService,
                             IStockRepo stockRepo,
                             IConfigBCTCRepo configBCTCRepo,
                             IConfigDataRepo configRepo,
                             ITuDoanhRepo tudoanhRepo,
+                            IStockRevenueRepo stockRevenueRepo,
                             IFinancialRepo financialRepo,
                             ICategoryRepo categoryRepo,
                             IFileService fileService,
@@ -80,6 +82,7 @@ namespace SLib.Service
             _fileService = fileService;
             _googleService = googleService;
             _ggDataRepo = ggDataRepo;
+            _stockRevenueRepo = stockRevenueRepo;
         }
 
         public List<Stock> GetStock()
