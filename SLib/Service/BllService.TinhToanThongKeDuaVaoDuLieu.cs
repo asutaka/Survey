@@ -74,27 +74,27 @@ namespace SLib.Service
                 var entityQuarter = lData.FirstOrDefault(x => x.Date.Year == dtQuarter.Year && x.Date.Month == dtQuarter.Month && x.Date.Day == dtQuarter.Day);
                 model.giacpTuDauQuyDenHienTai = Math.Round(100 * (-1 + last.Close / entityQuarter.Close), 1);
                 //giacpTangTB_Quy
-                var lDataQuy = lData.Where(x => x.Date < entityQuarter.Date)
-                    .GroupBy(x => new { x.Date.Year, x.Date.Month }, (key, group) => new
-                    {
-                        Year = key.Year,
-                        Month = key.Month,
-                        Open = group.First().Open,
-                        Close = group.Last().Close
-                    });
-                lDataQuy.Reverse();
-                var countDataQuy = lDataQuy.Count();
-                var lQuy = new List<decimal>();
-                for (int i = 0; i < countDataQuy; i = i + 3)
-                {
-                    var itemFirst = lDataQuy.ElementAt(i);
-                    var itemLast = lDataQuy.ElementAt(i + 2);
-                    var rateQuy = Math.Round(100 * (-1 + itemLast.Close / itemFirst.Open), 1);
-                    lQuy.Add(rateQuy);
-                    if (lQuy.Count() == 10)
-                        break;
-                }
-                model.giacpTangTB_Quy = lQuy.Average();
+                //var lDataQuy = lData.Where(x => x.Date < entityQuarter.Date)
+                //    .GroupBy(x => new { x.Date.Year, x.Date.Month }, (key, group) => new
+                //    {
+                //        Year = key.Year,
+                //        Month = key.Month,
+                //        Open = group.First().Open,
+                //        Close = group.Last().Close
+                //    });
+                //lDataQuy.Reverse();
+                //var countDataQuy = lDataQuy.Count();
+                //var lQuy = new List<decimal>();
+                //for (int i = 0; i < countDataQuy; i = i + 3)
+                //{
+                //    var itemFirst = lDataQuy.ElementAt(i);
+                //    var itemLast = lDataQuy.ElementAt(i + 2);
+                //    var rateQuy = Math.Round(100 * (-1 + itemLast.Close / itemFirst.Open), 1);
+                //    lQuy.Add(rateQuy);
+                //    if (lQuy.Count() == 10)
+                //        break;
+                //}
+                //model.giacpTangTB_Quy = lQuy.Average();
 
                 /*
                     muabanTheoMa20, tilebreakMa20Loi: 
