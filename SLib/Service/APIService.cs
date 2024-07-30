@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Skender.Stock.Indicators;
 using SLib.Model;
@@ -36,8 +37,11 @@ namespace SLib.Service
     public class APIService : IAPIService
     {
         private readonly IHttpClientFactory _client;
-        public APIService(IHttpClientFactory httpClientFactory) 
+        private readonly ILogger<APIService> _logger;
+        public APIService(ILogger<APIService> logger,
+                        IHttpClientFactory httpClientFactory) 
         {
+            _logger = logger;
             _client = httpClientFactory; 
         }
         public async Task<Stream> GetTuDoanhHNX(EHnxExchange mode)
@@ -54,7 +58,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetTuDoanhHNX|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -112,7 +116,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetTuDoanhHSX|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -147,7 +151,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetDataStock|EXCEPTION| {ex.Message}");
             }
             return lOutput;
         }
@@ -181,7 +185,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetTuDoanh24H|EXCEPTION| {ex.Message}");
             }
             return lOutput;
         }
@@ -220,7 +224,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetGDNN24H|EXCEPTION| {ex.Message}");
             }
             return lOutput;
         }
@@ -237,7 +241,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetExternalIpAddress|EXCEPTION| {ex.Message}");
             }
             return string.Empty;
         }
@@ -259,7 +263,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetDulieuNhomNganh|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -281,7 +285,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetMaTheoNhomNganh|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -311,7 +315,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetMaTheoChiBao|EXCEPTION| {ex.Message}");
             }
             return lOutput;
         }
@@ -333,7 +337,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetKeHoachThucHien|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -369,7 +373,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.ThongKeLoiNhuan|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -387,7 +391,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"APIService.GetForeign|EXCEPTION|INPUT: {code}| {ex.Message}");
+                _logger.LogError($"APIService.GetForeign|EXCEPTION|INPUT: {code}| {ex.Message}");
             }
             return null;
         }
@@ -414,7 +418,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetDanhSachBCTC|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -437,7 +441,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetChartImage|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -459,7 +463,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError($"APIService.GetDoanhThuLoiNhuan|EXCEPTION| {ex.Message}");
             }
             return lOutput;
         }

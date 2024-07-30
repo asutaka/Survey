@@ -15,7 +15,7 @@ namespace StockBridgeAPI
             //var logger = NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
             try
             {
-                Console.WriteLine("init main function");
+                _logger.LogError("init main function");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception ex)

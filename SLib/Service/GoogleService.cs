@@ -1,5 +1,6 @@
 ﻿using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Microsoft.Extensions.Logging;
 using SLib.DAL;
 using SLib.Google;
 using SLib.Model.GoogleSheetModel;
@@ -29,13 +30,16 @@ namespace SLib.Service
         private readonly IGoogleDataRepo _ggDataRepo;
         private readonly IFinancialRepo _financialRepo;
         private readonly IStockRepo _stockRepo;
+        private readonly ILogger<GoogleService> _logger;
 
-        public GoogleService(GoogleSheetsHelper googleSheetsHelper,
+        public GoogleService(ILogger<GoogleService> logger,
+                            GoogleSheetsHelper googleSheetsHelper,
                             IGoogleSheetRepo googleRepo,
                             IGoogleDataRepo ggDataRepo,
                             IStockRepo stockRepo,
                             IFinancialRepo financialRepo) 
         {
+            _logger = logger;
             _googleSheetValues = googleSheetsHelper.Service.Spreadsheets.Values;
             _googleRepo = googleRepo;
             _ggDataRepo = ggDataRepo;

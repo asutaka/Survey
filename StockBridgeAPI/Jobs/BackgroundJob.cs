@@ -63,7 +63,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        _logger.LogError(ex.Message);
                     }
 
                     //Nhóm ngành
@@ -89,7 +89,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        _logger.LogError(ex.Message);
                     }
                 }
 
@@ -106,7 +106,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch(Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        _logger.LogError(ex.Message);
                     }
                     //Tự doanh Upcom
                     try
@@ -119,7 +119,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        _logger.LogError(ex.Message);
                     }
                     //Tự doanh HSX
                     try
@@ -135,7 +135,7 @@ namespace StockBridgeAPI.Jobs
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        _logger.LogError(ex.Message);
                     }
                 }
             }

@@ -1,5 +1,4 @@
-﻿using Amazon.Auth.AccessControlPolicy;
-using Google.Apis.Drive.v3.Data;
+﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using SLib.DAL;
@@ -7,14 +6,12 @@ using SLib.Model;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace SLib.Service
 {
@@ -25,6 +22,7 @@ namespace SLib.Service
     }
     public class TelegramLibService : ITelegramLibService
     {
+        private readonly ILogger<TelegramLibService> _logger;
         private static TelegramBotClient _bot;
         private static List<Stock> _lStock = new List<Stock>();
         private static List<UserMessage> _lUserMes = new List<UserMessage>();
@@ -39,13 +37,14 @@ namespace SLib.Service
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
-        public TelegramLibService(
+        public TelegramLibService(ILogger<TelegramLibService> logger,
                                 IBllService bllService,
                                 IUserMessageRepo userMessageRepo,
                                 IGoogleService ggService,
                                 IGoogleDataRepo ggDataRepo,
                                 IAPIService apiService)
         {
+            _logger = logger;
             _bllService = bllService;
             _apiService = apiService;
             _userMessageRepo = userMessageRepo;
@@ -63,7 +62,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"TelegramService.BotInstance|EXCEPTION| {ex.Message}");
+                _logger.LogError($"TelegramService.BotInstance|EXCEPTION| {ex.Message}");
             }
 
             return _bot;
@@ -138,7 +137,7 @@ namespace SLib.Service
                        }
                        catch (Exception ex)
                        {
-                           Console.WriteLine($"TelegramService.BotSyncUpdate|EXCEPTION| {ex.Message}");
+                           _logger.LogError($"TelegramService.BotSyncUpdate|EXCEPTION| {ex.Message}");
                        }
                    });
             }
@@ -153,7 +152,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"TelegramService.AnalyzeFA|EXCEPTION| {ex.Message}");
+                _logger.LogError($"TelegramService.AnalyzeFA|EXCEPTION| {ex.Message}");
             }
             return output.ToString();
         }
@@ -186,7 +185,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"TelegramService.AnalyzeTA|EXCEPTION| {ex.Message}");
+                _logger.LogError($"TelegramService.AnalyzeTA|EXCEPTION| {ex.Message}");
             }
             return output.ToString();
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using SLib.DAL;
 using SLib.Util;
 using System;
@@ -31,11 +32,13 @@ namespace SLib.Service
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
 
+        private readonly ILogger<BridgeService> _logger;
         private const long _idMain = -1002247826353;
         private readonly ITelegramLibService _telegramService;
         private readonly IBllService _bllService;
-        public BridgeService(ITelegramLibService telegramService, IBllService bllService)
+        public BridgeService(ILogger<BridgeService> logger, ITelegramLibService telegramService, IBllService bllService)
         {
+            _logger = logger;
             _telegramService = telegramService;
             _bllService = bllService;
         }
@@ -71,7 +74,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
 
@@ -106,7 +109,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
 
@@ -127,7 +130,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.ToString());
+                _logger.LogError(ex.ToString());
             }
         }
 
@@ -150,7 +153,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             //Tự doanh Upcom
             try
@@ -163,7 +166,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             //Tự doanh HSX
             try
@@ -179,7 +182,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
 
@@ -204,7 +207,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             
         }

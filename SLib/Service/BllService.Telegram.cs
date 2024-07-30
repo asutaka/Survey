@@ -162,7 +162,7 @@ namespace SLib.Service
             //}
             //catch (Exception ex)
             //{
-            //    Console.WriteLine($"TelegramService.TuDoanhBuildStr|EXCEPTION| {ex.Message}");
+            //    _logger.LogError($"TelegramService.TuDoanhBuildStr|EXCEPTION| {ex.Message}");
             //}
             return output.ToString();
         }
@@ -238,7 +238,7 @@ namespace SLib.Service
             //}
             //catch (Exception ex)
             //{
-            //    Console.WriteLine($"TelegramService.ForeignBuildStr|EXCEPTION| {ex.Message}");
+            //    _logger.LogError($"TelegramService.ForeignBuildStr|EXCEPTION| {ex.Message}");
             //}
             return output.ToString();
         }
@@ -263,7 +263,7 @@ namespace SLib.Service
             //}
             //catch(Exception ex)
             //{
-            //    Console.WriteLine($"TelegramService.ThongKeThiTruongStr|EXCEPTION| {ex.Message}");
+            //    _logger.LogError($"TelegramService.ThongKeThiTruongStr|EXCEPTION| {ex.Message}");
             //}
 
             return output.ToString();

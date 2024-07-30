@@ -1,11 +1,11 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using SLib.Model;
 using SLib.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,10 +49,10 @@ namespace SLib.Service
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine(ex.Message);
+                        _logger.LogError(ex.Message);
                     }
 
-                    Console.WriteLine($"{dem++}. {item.s}");
+                    _logger.LogError($"{dem++}. {item.s}");
                 }
 
                 var lMes = new List<string>();
@@ -182,7 +182,7 @@ namespace SLib.Service
             }
             catch (Exception ex) 
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
 
             return (0, null);
@@ -202,7 +202,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -304,7 +304,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }

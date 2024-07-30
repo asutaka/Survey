@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using SLib.Model;
 using SLib.Model.APIModel;
@@ -48,7 +49,7 @@ namespace SLib.Service
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -222,7 +223,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -377,7 +378,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -440,7 +441,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -556,7 +557,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -685,7 +686,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -770,7 +771,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }
@@ -860,7 +861,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return null;
         }

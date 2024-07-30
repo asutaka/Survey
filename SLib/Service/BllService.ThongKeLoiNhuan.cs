@@ -1,4 +1,5 @@
-﻿using SLib.Model.APIModel;
+﻿using Microsoft.Extensions.Logging;
+using SLib.Model.APIModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return (0, null);
         }

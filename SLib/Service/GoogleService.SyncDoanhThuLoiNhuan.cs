@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using SLib.Model;
 using SLib.Model.GoogleSheetModel;
 using SLib.Util;
@@ -89,7 +90,7 @@ namespace SLib.Service
                         }
                         catch (Exception ex) 
                         {
-                            Console.WriteLine(ex.Message);
+                            _logger.LogError(ex.Message);
                         }
                     }
                     if (!row.lValues.Any())
@@ -105,7 +106,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
 
             return -1;
@@ -180,7 +181,7 @@ namespace SLib.Service
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.Message);
+                            _logger.LogError(ex.Message);
                         }
                     }
                     if (!row.lValues.Any())
@@ -196,7 +197,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
             return -1;
         }
@@ -263,13 +264,13 @@ namespace SLib.Service
                                 }
                                 catch (Exception ex)
                                 {
-                                    Console.WriteLine(ex.Message);
+                                    _logger.LogError(ex.Message);
                                 }
                             }
                         }
                         catch(Exception ex)
                         { 
-                            Console.WriteLine($"INPUT: {item.fn}/{itemSheetName}|{ex.Message}");
+                            _logger.LogError($"INPUT: {item.fn}/{itemSheetName}|{ex.Message}");
                         }
                     }
                 }
@@ -292,7 +293,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
     }

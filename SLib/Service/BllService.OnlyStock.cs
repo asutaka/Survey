@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver.Linq;
+﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver.Linq;
 using SLib.Model;
 using System;
 using System.Linq;
@@ -112,7 +113,7 @@ namespace SLib.Service
             }
             catch (Exception ex) 
             { 
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
         }
     }

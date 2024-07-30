@@ -1,4 +1,5 @@
-﻿using SLib.DAL;
+﻿using Microsoft.Extensions.Logging;
+using SLib.DAL;
 using SLib.Model.APIModel;
 using SLib.Util;
 using System;
@@ -15,9 +16,12 @@ namespace SLib.Service
     }
     public class FileService : IFileService
     {
+        private readonly ILogger<FileService> _logger;
         private readonly IStockRepo _stockRepo;
-        public FileService(IStockRepo stockRepo)
+        public FileService(ILogger<FileService> logger, 
+                        IStockRepo stockRepo)
         {
+            _logger = logger;
             _stockRepo = stockRepo;
         }
 
@@ -337,7 +341,7 @@ namespace SLib.Service
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    _logger.LogError(ex.Message);
                 }
             }
 

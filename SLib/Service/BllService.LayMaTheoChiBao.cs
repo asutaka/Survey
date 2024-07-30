@@ -1,4 +1,5 @@
-﻿using Skender.Stock.Indicators;
+﻿using Microsoft.Extensions.Logging;
+using Skender.Stock.Indicators;
 using SLib.Model;
 using SLib.Model.APIModel;
 using System;
@@ -114,7 +115,7 @@ namespace SLib.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                _logger.LogError(ex.Message);
             }
 
             return (0, null);

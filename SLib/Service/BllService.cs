@@ -1,4 +1,5 @@
-﻿using SLib.DAL;
+﻿using Microsoft.Extensions.Logging;
+using SLib.DAL;
 using SLib.Model;
 using SLib.Model.APIModel;
 using SLib.Util;
@@ -59,7 +60,9 @@ namespace SLib.Service
         private readonly IGoogleService _googleService;
         private readonly IGoogleDataRepo _ggDataRepo;
         private readonly IStockRevenueRepo _stockRevenueRepo;
-        public BllService(IAPIService apiService,
+        private readonly ILogger<BllService> _logger;
+        public BllService(ILogger<BllService> logger, 
+                            IAPIService apiService,
                             IStockRepo stockRepo,
                             IConfigBCTCRepo configBCTCRepo,
                             IConfigDataRepo configRepo,
@@ -72,6 +75,7 @@ namespace SLib.Service
                             IGoogleService googleService
                             )
         {
+            _logger = logger;
             _apiService = apiService;
             _stockRepo = stockRepo;
             _configRepo = configRepo;
