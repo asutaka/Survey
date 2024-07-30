@@ -92,7 +92,7 @@ namespace SLib.Service
                     output.AppendLine(entityKhac.Item2);
                 }
 
-                ////Chuyên sâu: + Cơ cấu lợi nhuận + Phân tích lợi nhuận + Động lực tăng trưởng 
+                ////Chuyên sâu: + Cơ cấu doanh thu + Tỷ suất lợi nhuận + người mua trả tiền trước chi tiết + Tồn kho chi tiết(bds: x%)
                 //var entityChuyenSau = await PTChuyenSau(entity.s);
                 //if (entityChuyenSau.Item1 > 0)
                 //{
