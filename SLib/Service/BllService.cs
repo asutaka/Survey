@@ -26,6 +26,7 @@ namespace SLib.Service
         //Tele only stock
         List<Stock> GetStock();
         Task BCTCRead(string path);
+        Task BCTCImport(Stream input);
         Task OnlyStock(long userID, Stock entity, TelegramBotClient bot);
         Task<Stream> Chart_VonHoa_Category(string input);
         Task<Stream> Chart_LN_Category(string input);

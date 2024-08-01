@@ -38,6 +38,7 @@ namespace SLib.Service
         Task<Stream> GetChartImage(string body);
         Task<List<Financial>> GetDoanhThuLoiNhuan(string code);
         Task<Stream> BCTCRead(string path);
+        Task<Stream> BCTCRead(Stream stream);
     }
     public class APIService : IAPIService
     {
@@ -480,6 +481,55 @@ namespace SLib.Service
             try
             {
                 var stream = await GetFile(path);
+                if (stream is null) return null;
+                var upload = await UploadFile(stream);
+                if (upload is null) return null;
+                var ocr = await OCRFile(upload);
+                if (ocr is null) return null;
+                var count = 1;
+                BCTCStatusResponse status = null;
+                do
+                {
+                    count++;
+                    status = await GetStatus(ocr);
+                    if (status != null)
+                    {
+                        if ("done".Equals(status.status, StringComparison.OrdinalIgnoreCase))
+                        {
+                            break;
+                        }
+                    }
+
+                    if (count >= 100)
+                    {
+                        break;
+                    }
+
+                    Thread.Sleep(5000);
+                }
+                while (true);
+
+                if (status is null)
+                    return null;
+
+                if ("done".Equals(status.status, StringComparison.OrdinalIgnoreCase))
+                {
+                    var streamResult = await DownloadFile(status);
+                    return streamResult;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.BCTCRead|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
+
+        public async Task<Stream> BCTCRead(Stream stream)
+        {
+            try
+            {
                 if (stream is null) return null;
                 var upload = await UploadFile(stream);
                 if (upload is null) return null;

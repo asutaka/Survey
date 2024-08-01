@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockBridgeAPI", "StockBrid
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SLib", "SLib\SLib.csproj", "{C5170F2B-EE61-4887-AC2E-81C021253BBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeleScoutService", "TeleScoutService\TeleScoutService.csproj", "{6635A47B-753C-4390-8B20-0E0D1540203D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeleScoutService", "TeleScoutService\TeleScoutService.csproj", "{6635A47B-753C-4390-8B20-0E0D1540203D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockScout", "StockScout\StockScout.csproj", "{27B10A25-F630-4435-8177-5601358CD24D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockScout", "StockScout\StockScout.csproj", "{27B10A25-F630-4435-8177-5601358CD24D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSyncBCTC", "WebSyncBCTC\WebSyncBCTC.csproj", "{6468F06C-2487-4842-B950-EFA9A769E133}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -109,6 +111,18 @@ Global
 		{27B10A25-F630-4435-8177-5601358CD24D}.Release|x64.Build.0 = Release|Any CPU
 		{27B10A25-F630-4435-8177-5601358CD24D}.Release|x86.ActiveCfg = Release|Any CPU
 		{27B10A25-F630-4435-8177-5601358CD24D}.Release|x86.Build.0 = Release|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Debug|x64.Build.0 = Debug|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Debug|x86.Build.0 = Debug|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Release|x64.ActiveCfg = Release|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Release|x64.Build.0 = Release|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Release|x86.ActiveCfg = Release|Any CPU
+		{6468F06C-2487-4842-B950-EFA9A769E133}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
