@@ -711,7 +711,17 @@ namespace SLib.Service
                 var response = await client.SendAsync(request);
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    return await response.Content.ReadAsStreamAsync();
+                    var stream = await response.Content.ReadAsStreamAsync();
+
+
+                    //var bytesInStream = new byte[stream.Length];
+                    //await stream.ReadAsync(bytesInStream, 0, (int)bytesInStream.Length);
+                    //using (var outputFileStream = new FileStream("D:/Test.pdf", FileMode.Create))
+                    //{
+                    //    await outputFileStream.WriteAsync(bytesInStream, 0, bytesInStream.Length);
+                    //}
+
+                    return stream;
                 }
             }
             catch (Exception ex)

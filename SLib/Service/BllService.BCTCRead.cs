@@ -5,9 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
 using SLib.Util;
 
 namespace SLib.Service
@@ -21,9 +19,8 @@ namespace SLib.Service
                 var stream = await _apiService.BCTCRead(path);
                 if (stream is null)
                     return;
-                var text = pdfText(stream);
-                var tmp = 1;
-
+                var lText = await pdfTextList(stream);
+                Analyze(lText);
             }
             catch (Exception ex)
             {
@@ -35,15 +32,14 @@ namespace SLib.Service
         {
             try
             {
-                var stream = await _apiService.BCTCRead(input);
-                if (stream is null)
-                    return;
-                var lText = pdfTextList(stream);
-                foreach (var item in lText)
-                {
-                    var res = item.FormatVietnamese();
-                     var tmp = 1;
-                }
+                var lText = await pdfTextList(input);
+                Analyze(lText);
+
+                //var stream = await _apiService.BCTCRead(input);
+                //if (stream is null)
+                //    return;
+                //var lText = pdfTextList(stream);
+                //Analyze(lText);
             }
             catch (Exception ex)
             {
@@ -51,26 +47,9 @@ namespace SLib.Service
             }
         }
 
-        private string pdfText(Stream data)
+        private async Task<List<string>> pdfTextList(Stream data)
         {
             var reader = new PdfReader(data);
-            var font = new TextWithFontExtractionStategy();
-
-            string text = string.Empty;
-            for (int page = 1; page <= reader.NumberOfPages; page++)
-            {
-                text += PdfTextExtractor.GetTextFromPage(reader, page);
-                text += "\n";
-            }
-            reader.Close();
-            return text;
-        }
-
-        private List<string> pdfTextList(Stream data)
-        {
-            var reader = new PdfReader(data);
-            var font = new TextWithFontExtractionStategy();
-
             var lResult = new List<string>();
             for (int page = 1; page <= reader.NumberOfPages; page++)
             {
@@ -79,87 +58,250 @@ namespace SLib.Service
             reader.Close();
             return lResult;
         }
+
+        private void Analyze(List<string> lInput)
+        {
+            var tmp = LayDoanhThu(lInput);
+            var output = new AnalyzeOutputModel
+            {
+                rv = LayDoanhThu(lInput),
+                //pf = LayLoiNhuan(lInput),
+                //inv = LayTonKho(lInput),
+                //bp = LayNguoiMuaTraTienTruoc(lInput),
+                //eq = LayVonChuSoHu(lInput),
+                //la = LayVayNo(lInput),
+                //ce = LayGiaVon(lInput)
+            };
+        }
+
+        private DoanhThuModel LayDoanhThu(List<string> lInput)
+        {
+            try
+            {
+                var output = new DoanhThuModel
+                {
+                    ld = new List<DoanhThuDetailModel>()
+                };
+                int indexMain = -1;
+                foreach (var item in lInput)
+                {
+                    indexMain++;
+                    var textVietnam = item.FormatVietnamese();
+                    var lSplit = textVietnam.Split("\n");
+                    var indexSplit = -1;
+                    var modeDoanhThu = false;
+                    foreach (var row in lSplit)
+                    {
+                        indexSplit++;
+                        if(!modeDoanhThu)
+                        {
+                            foreach (var itemKey in KeyMap.lDoanhThu)
+                            {
+                                if (row.Contains(itemKey))
+                                {
+                                    var lSpace = row.Split(" ");
+                                    foreach (var space in lSpace)
+                                    {
+                                        var isValid = long.TryParse(space.Replace(",", "").Replace(".", ""), out var val);
+                                        if (isValid && Math.Abs(val) >= 1000)
+                                        {
+                                            output.va = val;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            var indexDetail = -1;
+                            foreach (var itemKey in KeyMap.lDoanhThuChiTiet)
+                            {
+                                indexDetail++;
+                                if (row.Contains(itemKey))
+                                {
+                                    var lSpace = row.Split(" ");
+                                    var isPass = false;
+                                    foreach (var space in lSpace)
+                                    {
+                                        var isValid = long.TryParse(space.Replace(",", "").Replace(".", ""), out var val);
+                                        if (isValid && Math.Abs(val) >= 1000)
+                                        {
+                                            output.va = val;
+                                            modeDoanhThu = true;
+                                            isPass = true;
+                                        }
+                                    }
+                                    if (!isPass)
+                                    {
+                                        var prev = lSplit[indexSplit - 1];
+                                        foreach (var itemPrev in prev.Split(" "))
+                                        {
+                                            var isValid = long.TryParse(itemPrev.Replace(",", "").Replace(".", ""), out var val);
+                                            if (isValid && Math.Abs(val) >= 1000)
+                                            {
+                                                output.va = val;
+                                                modeDoanhThu = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var isHeader = row.StartsWith("-");
+                            if (isHeader) 
+                            {
+                                var isPass = false;
+                                foreach (var itemPrev in row.Split(" "))
+                                {
+                                    var isValid = long.TryParse(itemPrev.Replace(",", "").Replace(".", ""), out var val);
+                                    if (isValid && Math.Abs(val) >= 1000)
+                                    {
+                                        var rate = Math.Round(100 * val / output.va, 1);
+                                        if(rate >= 20)
+                                        {
+                                            var indexValue = row.IndexOf(itemPrev);
+                                            output.ld.Add(new DoanhThuDetailModel
+                                            {
+                                                name = row.Substring(0, indexValue).Replace("-","").Trim(),
+                                                va = val,
+                                                rate = rate
+                                            });
+                                            isPass = true;
+                                        }
+                                        break;
+                                    }
+                                }
+                                if(!isPass)
+                                {
+                                    var prev = lSplit[indexSplit - 1];
+                                    foreach (var itemPrev in prev.Split(" "))
+                                    {
+                                        var isValid = long.TryParse(itemPrev.Replace(",", "").Replace(".", ""), out var val);
+                                        if (isValid && Math.Abs(val) >= 1000)
+                                        {
+                                            var rate = Math.Round(100 * val / output.va, 1);
+                                            if (rate >= 20)
+                                            {
+                                                var indexValue = row.IndexOf(itemPrev);
+                                                output.ld.Add(new DoanhThuDetailModel
+                                                {
+                                                    name = row.Replace("-", "").Trim(),
+                                                    va = val,
+                                                    rate = rate
+                                                });
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (output.ld.Sum(x => x.rate) >= 80)
+                                return output;
+                        }
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"BllService.LayDoanhThu|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+        //private decimal LayLoiNhuan(List<string> lInput)
+        //{
+        //}
+        //private TonKhoModel LayTonKho(List<string> lInput)
+        //{
+
+        //}
+        //private NguoiMuaTraTienTruocModel LayNguoiMuaTraTienTruoc(List<string> lInput)
+        //{
+
+        //}
+        //private decimal LayVonChuSoHu(List<string> lInput)
+        //{
+
+        //}
+        //private VayNoModel LayVayNo(List<string> lInput)
+        //{
+
+        //}
+        //private GiaVonModel LayGiaVon(List<string> lInput)
+        //{
+
+        //}
     }
 
-    public class TextWithFontExtractionStategy : iTextSharp.text.pdf.parser.ITextExtractionStrategy
+    public class AnalyzeOutputModel
     {
-        //HTML buffer
-        private StringBuilder result = new StringBuilder();
+        public DoanhThuModel rv { get; set; }//Doanh Thu
+        public decimal pf { get; set; }//LNST
+        public TonKhoModel inv { get; set; }//Tồn kho
+        public NguoiMuaTraTienTruocModel bp { get; set; }//Người mua trả tiền trước
+        public decimal eq { get; set; }//Vốn chủ sở hữu
+        public VayNoModel la { get; set; }//Vay nợ
+        public GiaVonModel ce { get; set; }//Giá vốn
+    }
 
-        //Store last used properties
-        private Vector lastBaseLine;
-        private string lastFont;
-        private float lastFontSize;
+    public class TonKhoModel
+    {
+        public decimal va { get; set; }//Giá trị
+        public List<TonKhoDetailModel> ld { get; set; }//Detail
+    }
+    public class TonKhoDetailModel
+    {
+        public string name { get; set; }
+        public decimal va { get; set; }//Giá trị
+        public decimal rate { get; set; }//Tỉ lệ
+    }
 
-        //http://api.itextpdf.com/itext/com/itextpdf/text/pdf/parser/TextRenderInfo.html
-        private enum TextRenderMode
-        {
-            FillText = 0,
-            StrokeText = 1,
-            FillThenStrokeText = 2,
-            Invisible = 3,
-            FillTextAndAddToPathForClipping = 4,
-            StrokeTextAndAddToPathForClipping = 5,
-            FillThenStrokeTextAndAddToPathForClipping = 6,
-            AddTextToPaddForClipping = 7
-        }
+    public class NguoiMuaTraTienTruocModel
+    {
+        public decimal va { get; set; }//Giá trị
+        public List<NguoiMuaTraTienTruocDetailModel> ld { get; set; }//Detail
+    }
+    public class NguoiMuaTraTienTruocDetailModel
+    {
+        public string name { get; set; }
+        public decimal va { get; set; }//Giá trị
+        public decimal rate { get; set; }
+    }
 
+    public class VayNoModel
+    {
+        public decimal va { get; set; }//Giá trị
+        public List<VayNoDetailModel> ld { get; set; }//Detail
+    }
+    public class VayNoDetailModel
+    {
+        public string name { get; set; }
+        public decimal va { get; set; }//Giá trị
+        public decimal rate { get; set; }
+    }
 
+    public class DoanhThuModel
+    {
+        public decimal va { get; set; }//Giá trị
+        public List<DoanhThuDetailModel> ld { get; set; }//Detail
+    }
+    public class DoanhThuDetailModel
+    {
+        public string name { get; set; }
+        public decimal va { get; set; }//Giá trị
+        public decimal rate { get; set; }
+    }
 
-        public void RenderText(TextRenderInfo renderInfo)
-        {
-            string curFont = renderInfo.GetFont().PostscriptFontName;
-            //Check if faux bold is used
-            if ((renderInfo.GetTextRenderMode() == (int)TextRenderMode.FillThenStrokeText))
-            {
-                curFont += "-Bold";
-            }
-
-            //This code assumes that if the baseline changes then we're on a newline
-            Vector curBaseline = renderInfo.GetBaseline().GetStartPoint();
-            Vector topRight = renderInfo.GetAscentLine().GetEndPoint();
-            iTextSharp.text.Rectangle rect = new iTextSharp.text.Rectangle(curBaseline[Vector.I1], curBaseline[Vector.I2], topRight[Vector.I1], topRight[Vector.I2]);
-            Single curFontSize = rect.Height;
-
-            //See if something has changed, either the baseline, the font or the font size
-            if ((this.lastBaseLine == null) || (curBaseline[Vector.I2] != lastBaseLine[Vector.I2]) || (curFontSize != lastFontSize) || (curFont != lastFont))
-            {
-                //if we've put down at least one span tag close it
-                if ((this.lastBaseLine != null))
-                {
-                    this.result.AppendLine("</span>");
-                }
-                //If the baseline has changed then insert a line break
-                if ((this.lastBaseLine != null) && curBaseline[Vector.I2] != lastBaseLine[Vector.I2])
-                {
-                    this.result.AppendLine("<br />");
-                }
-                //Create an HTML tag with appropriate styles
-                this.result.AppendFormat("<span style=\"font-family:{0};font-size:{1}\">", curFont, curFontSize);
-            }
-
-            //Append the current text
-            this.result.Append(renderInfo.GetText());
-
-            //Set currently used properties
-            this.lastBaseLine = curBaseline;
-            this.lastFontSize = curFontSize;
-            this.lastFont = curFont;
-        }
-
-        public string GetResultantText()
-        {
-            //If we wrote anything then we'll always have a missing closing tag so close it here
-            if (result.Length > 0)
-            {
-                result.Append("</span>");
-            }
-            return result.ToString();
-        }
-
-        //Not needed
-        public void BeginTextBlock() { }
-        public void EndTextBlock() { }
-        public void RenderImage(ImageRenderInfo renderInfo) { }
+    public class GiaVonModel
+    {
+        public decimal va { get; set; }//Giá trị
+        public List<GiaVonDetailModel> ld { get; set; }//Detail
+    }
+    public class GiaVonDetailModel
+    {
+        public string name { get; set; }
+        public decimal va { get; set; }//Giá trị
+        public decimal rate { get; set; }
     }
 }

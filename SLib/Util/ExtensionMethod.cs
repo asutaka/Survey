@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SLib.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -198,9 +199,45 @@ namespace SLib.Util
                         .Replace("cạ", "cơ")
                         .Replace("nh­p", "nhập")
                         .Replace("Lợi nhu­ ", "Lợi nhuận ")
-                        //.Replace("tưạng", "tương")
+                        .Replace("Kù­", "Kỹ")
                         .Replace("°", "ư");
-            return res;
+
+            var res2 = res.Replace("ưạ", "ươ")
+                        .Replace("Tiên", "Tiền")
+                        .Replace("hÓi", "thu hồi")
+                        .Replace("ÆP", "ỆP")
+                        .Replace("Kò", "KỲ")
+                        .Replace("Kó", "Kỳ")
+                        .Replace("UẢN", "UẨN")
+                        .Replace("CHÉ", "CHẾ")
+                        .Replace("IÀN", "IỀN")
+                        .Replace("Æ", "Ệ")
+                        .Replace("Sì", "SỬ")
+                        .Replace("äN", "ỤN")
+                        .Replace("©", "ẩ")
+                        .Replace("t­p", "tập")
+                        .Replace("bÏ", "bỏ")
+                        .Replace("nh­n", "nhận")
+                        .Replace("±", "ằ")
+                        .Replace("»", "ể")
+                        .Replace("éc", "ức")
+                        .Replace("đạn", "đơn")
+                        .Replace("íi", "ửi")
+                        .Replace("Óm", "ồm")
+                        .Replace("ưã", "ượ")
+                        .Replace(")a", "ĩa")
+                        .Replace("BÒ", "BỔ")
+                        .Replace("ä", "Ụ")
+                        .Replace("ÁẮ", "Ả")
+                        .Replace("sí", "sử")
+                        .Replace("Thu­t", "Thuật")
+                        .Replace("Õn­", "ổn")
+                        .Replace("¥­", "ấ")
+                        .Replace("Ë­", "ị")
+                        .Replace("vå", "vụ")
+                        .Replace("cía", "cửa")
+                        .Replace("iÁ", "iề");
+            return res2;
         }
     }
 }

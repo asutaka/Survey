@@ -17,7 +17,10 @@ builder.Services.AddHostedService<Worker>();
 builder.Services.AddHttpClient();
 builder.Services.AddSLib();
 builder.Services.AddSingleton(typeof(GoogleSheetsHelper));
-
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.AllowSynchronousIO = true;
+});
 // Add services to the container.
 var app = builder.Build();
 
