@@ -1,5 +1,5 @@
 
-namespace WebSyncBCTC
+namespace WebAPISyncBCTC
 {
     public class Worker : BackgroundService
     {

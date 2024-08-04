@@ -1,7 +1,6 @@
-using WebSyncBCTC;
-using SLib.Google;
+using WebAPISyncBCTC;
 using SLib.Service;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
+using SLib.Google;
 
 WebApplicationOptions options = new()
 {
@@ -12,7 +11,6 @@ var builder = WebApplication.CreateBuilder(options);
 
 builder.Host.UseWindowsService();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddHostedService<Worker>();
 builder.Services.AddHttpClient();
 builder.Services.AddSLib();
