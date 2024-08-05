@@ -40,4 +40,45 @@
         public string jobId { get; set; }
         public string status { get; set; }
     }
+
+    public class BaseResponse<T>
+    {
+        public List<T> data { get; set; }
+    }
+
+    public class ReportNormResponse : BaseResponse<ReportNormDetailResponse>{}
+
+    public class ReportNormDetailResponse
+    {
+        public int ReportNormId { get; set; }
+        public string ReportNormName { get; set; }
+    }
+
+    public class ReportDataIDResponse : BaseResponse<ReportDataIDDetailResponse> { }
+
+    public class ReportDataIDDetailResponse
+    {
+        public int RowNumber { get; set; }
+        public int ReportDataID { get; set; }
+        public int yearPeriod { get; set; }
+        public int ReportTermID { get; set; }
+        public int Isunited { get; set; }
+    }
+
+
+    public class ReportDataDetailValue_BCTTResponse : BaseResponse<ReportDataDetailValue_BCTTDetailResponse> { }
+
+    public class ReportDataDetailValue_BCTTDetailResponse
+    {
+        public int ReportnormId { get; set; }
+        public double Value1 { get; set; }
+        public double Value2 { get; set; }
+        public double Value3 { get; set; }
+        public double Value4 { get; set; }
+        public double Value5 { get; set; }
+        public double Value6 { get; set; }
+        public double Value7 { get; set; }
+        public double Value8 { get; set; }
+        public double Value9 { get; set; }
+    }
 }

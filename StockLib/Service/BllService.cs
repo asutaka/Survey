@@ -13,6 +13,7 @@ namespace StockLib.Service
     public interface IBllService
     {
         Task SyncDataMainBCTC();
+        Task SyncDataMainBCTCFromWeb();
     }
     public partial class BllService : IBllService
     {

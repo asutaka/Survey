@@ -18,7 +18,7 @@ namespace Stock
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await _stockService.SyncDataMainBCTC();
+                await _stockService.SyncDataMainBCTCFromWeb();
                 await Task.Delay(1000, stoppingToken);
             }
         }

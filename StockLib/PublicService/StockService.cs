@@ -18,6 +18,7 @@ namespace StockLib.PublicService
     public interface IStockService
     {
         Task SyncDataMainBCTC();
+        Task SyncDataMainBCTCFromWeb();
     }
     public class StockService : IStockService
     {
@@ -29,6 +30,11 @@ namespace StockLib.PublicService
         public async Task SyncDataMainBCTC()
         {
             await _bllService.SyncDataMainBCTC();
+        }
+
+        public async Task SyncDataMainBCTCFromWeb()
+        {
+            await _bllService.SyncDataMainBCTCFromWeb();
         }
     }
 }
