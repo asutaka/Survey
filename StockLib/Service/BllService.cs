@@ -12,23 +12,25 @@ namespace StockLib.Service
 {
     public interface IBllService
     {
-        Task SyncDataMainBCTC();
-        Task SyncDataMainBCTCFromWeb();
+        Task SyncBCTC_BatDongSan();
     }
     public partial class BllService : IBllService
     {
         private readonly ILogger<BllService> _logger;
         private readonly IStockRepo _stockRepo;
         private readonly IStockFinancialRepo _financialRepo;
+        private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IAPIService _apiService;
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
                             IStockFinancialRepo financialRepo,
+                            IFinancialBDSRepo financialBDSRepo,
                             IAPIService apiService)
         {
             _logger = logger;
             _stockRepo = stockRepo;
             _financialRepo = financialRepo;
+            _bdsRepo = financialBDSRepo;
             _apiService = apiService;
         }
     }

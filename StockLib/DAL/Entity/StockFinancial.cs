@@ -20,6 +20,7 @@ namespace StockLib.DAL.Entity
         public double tl { get; set; }//Tổng nợ
         public double eq { get; set; }//Vốn chủ sở hữu
         public StockFinancialObject ce { get; set; }//Giá vốn 
+        public int Check { get; set; }
     }
 
     public class StockFinancialDetail

@@ -46,14 +46,6 @@
         public List<T> data { get; set; }
     }
 
-    public class ReportNormResponse : BaseResponse<ReportNormDetailResponse>{}
-
-    public class ReportNormDetailResponse
-    {
-        public int ReportNormId { get; set; }
-        public string ReportNormName { get; set; }
-    }
-
     public class ReportDataIDResponse : BaseResponse<ReportDataIDDetailResponse> { }
 
     public class ReportDataIDDetailResponse
@@ -63,6 +55,7 @@
         public int yearPeriod { get; set; }
         public int ReportTermID { get; set; }
         public int Isunited { get; set; }
+        public int BasePeriodBegin { get; set; }
     }
 
 
