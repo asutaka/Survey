@@ -177,7 +177,7 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_BCTT_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
-                lReportID.data = lReportID.data.Where(x => x.Isunited == 0 && x.yearPeriod >= 2020).ToList();
+                lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.yearPeriod >= 2020).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)
