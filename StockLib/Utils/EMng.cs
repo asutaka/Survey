@@ -18,5 +18,16 @@ namespace StockLib.Utils
         TonKho = 3006,
         [Display(Name = "Người mua trả tiền trước")]
         NguoiMuaTraTienTruoc = 3049,
+
+        [Display(Name = "Thu nhập từ lãi")]
+        ThuNhapLai = 4399,
+        [Display(Name = "Thu nhập từ dịch vụ")]
+        ThuNhapTuDichVu = 4397,
+        [Display(Name = "Chi phí hoạt động")]
+        ChiPhiHD = 4391,
+        [Display(Name = "Trích lập dự phòng")]
+        TrichLap = 4392,
+        [Display(Name = "LNST Ngân Hàng")]
+        LNSTNH = 4378
     }
 }

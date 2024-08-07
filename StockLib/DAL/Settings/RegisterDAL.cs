@@ -9,6 +9,7 @@ namespace StockLib.DAL.Settings
             services.AddSingleton<IStockRepo, StockRepo>();
             services.AddSingleton<IStockFinancialRepo, StockFinancialRepo>();
             services.AddSingleton<IFinancialBDSRepo, FinancialBDSRepo>();
+            services.AddSingleton<IFinancialNHRepo, FinancialNHRepo>();
         }
     }
 }

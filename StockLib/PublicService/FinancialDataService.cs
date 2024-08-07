@@ -25,7 +25,7 @@ namespace StockLib.PublicService
 
         public async Task SyncBCTC_NganHang()
         {
-
+            await _bllService.SyncBCTC_NganHang();
         }
 
         public async Task SyncBCTC_ChungKhoan() 
