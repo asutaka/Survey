@@ -47,7 +47,6 @@ namespace StockLib.Service
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Method = HttpMethod.Post;
                 requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-                client.GenerateCurlInConsole(requestMessage);
 
                 var responseMessage = await client.SendAsync(requestMessage);
                 if (responseMessage.StatusCode == System.Net.HttpStatusCode.OK)
