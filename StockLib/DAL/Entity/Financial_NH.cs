@@ -10,8 +10,8 @@ namespace StockLib.DAL.Entity
     [BsonIgnoreExtraElements]
     public class Financial_NH : BaseFinancialDTO
     {
-        public double costO { get; set; }//Chi phí hoạt động
-        public double costR { get; set; }//Trích lập dự phòng
+        public double cost_o { get; set; }//Chi phí hoạt động
+        public double cost_r { get; set; }//Trích lập dự phòng
         public double nim { get; set; }
         public double casa { get; set; }
         public double cir { get; set; }

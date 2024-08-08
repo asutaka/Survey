@@ -13,9 +13,6 @@ namespace StockLib.Service
         {
             try
             {
-                await SyncBCTC_NganHang_KQKD("MBB");
-                return;
-
                 var lStock = _stockRepo.GetAll();
                 var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).Select(x => x.s);
 
@@ -142,24 +139,25 @@ namespace StockLib.Service
 
                         switch (i)
                         {
-                            //case 0: AssignData(DoanhThu?.Value1, LoiNhuan?.Value1, GiaVon?.Value1); break;
-                            //case 1: AssignData(DoanhThu?.Value2, LoiNhuan?.Value2, GiaVon?.Value2); break;
-                            //case 2: AssignData(DoanhThu?.Value3, LoiNhuan?.Value3, GiaVon?.Value3); break;
-                            //case 3: AssignData(DoanhThu?.Value4, LoiNhuan?.Value4, GiaVon?.Value4); break;
-                            //case 4: AssignData(DoanhThu?.Value5, LoiNhuan?.Value5, GiaVon?.Value5); break;
-                            //case 5: AssignData(DoanhThu?.Value6, LoiNhuan?.Value6, GiaVon?.Value6); break;
-                            //case 6: AssignData(DoanhThu?.Value7, LoiNhuan?.Value7, GiaVon?.Value7); break;
-                            //case 7: AssignData(DoanhThu?.Value8, LoiNhuan?.Value8, GiaVon?.Value8); break;
+                            case 0: AssignData(ThuNhapLai?.Value1, ThuNhapTuDichVu?.Value1, ChiPhiHD?.Value1, TrichLap?.Value1, LNSTNH?.Value1); break;
+                            case 1: AssignData(ThuNhapLai?.Value2, ThuNhapTuDichVu?.Value2, ChiPhiHD?.Value2, TrichLap?.Value2, LNSTNH?.Value2); break;
+                            case 2: AssignData(ThuNhapLai?.Value3, ThuNhapTuDichVu?.Value3, ChiPhiHD?.Value3, TrichLap?.Value3, LNSTNH?.Value3); break;
+                            case 3: AssignData(ThuNhapLai?.Value4, ThuNhapTuDichVu?.Value4, ChiPhiHD?.Value4, TrichLap?.Value4, LNSTNH?.Value4); break;
+                            case 4: AssignData(ThuNhapLai?.Value5, ThuNhapTuDichVu?.Value5, ChiPhiHD?.Value5, TrichLap?.Value5, LNSTNH?.Value5); break;
+                            case 5: AssignData(ThuNhapLai?.Value6, ThuNhapTuDichVu?.Value6, ChiPhiHD?.Value6, TrichLap?.Value6, LNSTNH?.Value6); break;
+                            case 6: AssignData(ThuNhapLai?.Value7, ThuNhapTuDichVu?.Value7, ChiPhiHD?.Value7, TrichLap?.Value7, LNSTNH?.Value7); break;
+                            case 7: AssignData(ThuNhapLai?.Value8, ThuNhapTuDichVu?.Value8, ChiPhiHD?.Value8, TrichLap?.Value8, LNSTNH?.Value8); break;
                             default: break;
                         };
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _nhRepo.Update(entityUpdate);
 
-                        void AssignData(double? doanhthu, double? loinhuan, double? giavon)
+                        void AssignData(double? thunhaplai, double? thunhaptudichvu, double? chiphihd, double? trichlap, double? loinhuan)
                         {
-                            //entityUpdate.rv = doanhthu ?? 0;
-                            //entityUpdate.pf = loinhuan ?? 0;
-                            //entityUpdate.ce = giavon ?? 0;
+                            entityUpdate.rv = (thunhaplai ?? 0) + (thunhaptudichvu ?? 0);
+                            entityUpdate.pf = loinhuan ?? 0;
+                            entityUpdate.cost_o = chiphihd ?? 0;
+                            entityUpdate.cost_r = trichlap ?? 0;
                         }
                     }
                 }
