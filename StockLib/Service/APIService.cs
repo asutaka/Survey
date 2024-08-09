@@ -10,8 +10,10 @@ namespace StockLib.Service
     {
         Task<ReportDataIDResponse> VietStock_CDKT_GetListReportData(string code);
         Task<ReportDataIDResponse> VietStock_KQKD_GetListReportData(string code);
+        Task<ReportTempIDResponse> VietStock_CSTC_GetListTempID(string code);
         Task<ReportDataDetailValue_BCTTResponse> VietStock_GetReportDataDetailValue_KQKD_ByReportDataIds(string body);
         Task<ReportDataDetailValue_BCTTResponse> VietStock_GetReportDataDetailValue_CDKT_ByReportDataIds(string body);
+        Task<TempDetailValue_CSTCResponse> VietStock_GetFinanceIndexDataValue_CSTC_ByListTerms(string body);
     }
     public partial class APIService : IAPIService
     {
@@ -46,6 +48,18 @@ namespace StockLib.Service
         {
             var url = "https://finance.vietstock.vn/data/GetReportDataDetailValue_KQKD_ByReportDataIds";
             return await VietStock_GetReportDataDetailValue(body, url);
+        }
+
+        public async Task<ReportTempIDResponse> VietStock_CSTC_GetListTempID(string code)
+        {
+            var url = "https://finance.vietstock.vn/data/CSTC_GetListTerms";
+            return await VietStock_GetListTempID(code, url);
+        }
+
+        public async Task<TempDetailValue_CSTCResponse> VietStock_GetFinanceIndexDataValue_CSTC_ByListTerms(string body)
+        {
+            var url = "https://finance.vietstock.vn/data/GetFinanceIndexDataValue_CSTC_ByListTerms";
+            return await GetFinanceIndexDataValue(body, url);
         }
     }
 }
