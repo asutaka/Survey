@@ -10,6 +10,7 @@ namespace StockLib.DAL.Entity
         public double casa_r { get; set; }//Tiền gửi KH không kỳ hạn/ Tổng tiền gửi KH
         public double cir_r { get; set; }//Tổng chi phí hoạt động/ Tổng thu nhập hoạt động 
         public double credit_r { get; set; }//Tăng trưởng tín dụng
+        public double cost_r { get; set; }//Giảm chi phí vốn(chi phí lãi và các chi phí tương tự)
         public int debt { get; set; }//Tổng nợ 
         public int debt1 { get; set; }//Nợ mức 1
         public int debt2 { get; set; }//Nợ mức 2

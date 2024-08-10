@@ -39,6 +39,8 @@ namespace StockLib.Utils
         LNSTNH = 4378,
         [Display(Name = "Trích lập dự phòng")]
         TrichLap = 4392,
+        [Display(Name = "Chi phí lãi và các chi phí tương tự")]
+        ChiPhiLai = 4396,
         [Display(Name = "Thu nhập từ dịch vụ")]
         ThuNhapTuDichVu = 4397,
         [Display(Name = "Thu nhập từ lãi")]

@@ -14,7 +14,7 @@ namespace StockLib.Service
         /// <summary>
         /// Doanh thu,LNST, Chi phí vận hành, trích lập dự phòng lấy từ Kết quả kinh doanh
         /// CIR lấy từ chỉ số tài chính
-        /// Nim + Tăng trưởng tín dụng lấy từ bảng cân đối kế toán và kết quả kinh doanh 
+        /// Nim, Tăng trưởng tín dụng, Giảm chi phí vốn lấy từ bảng cân đối kế toán và kết quả kinh doanh 
         /// 
         /// Casa tự tính trên BCTC
 
@@ -28,6 +28,20 @@ namespace StockLib.Service
         /// Nhóm 4 - Nợ nghi ngờ(50%)
         /// Nhóm 5 - Nợ có khả năng mất vốn(100%)
         /// </summary>
+        /// 
+        /// 
+        /// Kết luận
+        /// Doanh thu: càng cao càng tốt
+        /// LNST: càng cao càng tốt
+        /// Trích lập dự phòng: càng nhỏ càng tốt
+        /// CIR: càng nhỏ càng tốt
+        /// Nim: càng cao càng tốt
+        /// Tăng trưởng tín dụng: càng cao càng tốt,
+        /// Giảm chi phí vốn: càng nhỏ càng tốt
+        /// Casa: càng cao càng tốt
+        /// Tỉ lệ nợ xấu: càng nhỏ càng tốt
+        /// Tăng trưởng nợ xấu: càng nhỏ càng tốt
+        /// Bao phủ nợ xấu: càng cao càng tốt
         /// <returns></returns>
         public async Task SyncBCTC_NganHang()
         {
@@ -360,27 +374,29 @@ namespace StockLib.Service
                         var year = element.YearPeriod;
                         var quarter = element.ReportTermID - 1;
                         var LaiThuan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ThuNhapLaiThuan);
+                        var ChiPhiLai = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ChiPhiLai);
 
                         switch (i)
                         {
-                            case 0: AssignData(LaiThuan?.Value1); break;
-                            case 1: AssignData(LaiThuan?.Value2); break;
-                            case 2: AssignData(LaiThuan?.Value3); break;
-                            case 3: AssignData(LaiThuan?.Value4); break;
-                            case 4: AssignData(LaiThuan?.Value5); break;
-                            case 5: AssignData(LaiThuan?.Value6); break;
-                            case 6: AssignData(LaiThuan?.Value7); break;
-                            case 7: AssignData(LaiThuan?.Value8); break;
+                            case 0: AssignData(LaiThuan?.Value1, ChiPhiLai?.Value1); break;
+                            case 1: AssignData(LaiThuan?.Value2, ChiPhiLai?.Value2); break;
+                            case 2: AssignData(LaiThuan?.Value3, ChiPhiLai?.Value3); break;
+                            case 3: AssignData(LaiThuan?.Value4, ChiPhiLai?.Value4); break;
+                            case 4: AssignData(LaiThuan?.Value5, ChiPhiLai?.Value5); break;
+                            case 5: AssignData(LaiThuan?.Value6, ChiPhiLai?.Value6); break;
+                            case 6: AssignData(LaiThuan?.Value7, ChiPhiLai?.Value7); break;
+                            case 7: AssignData(LaiThuan?.Value8, ChiPhiLai?.Value8); break;
                             default: break;
                         };
 
-                        void AssignData(double? LaiThuan)
+                        void AssignData(double? LaiThuan, double? ChiPhiLai)
                         {
                             _lSubKQKD.Add(new SubKQKD
                             {
                                 d = int.Parse($"{year}{quarter}"),
                                 s = code,
-                                ThuNhapLaiThuan = LaiThuan ?? 0
+                                ThuNhapLaiThuan = LaiThuan ?? 0,
+                                ChiPhiLai = ChiPhiLai ?? 0
                             });
                         }
                     }
@@ -555,6 +571,7 @@ namespace StockLib.Service
                     var tindung = Math.Round(100 * (-1 + elementCDKT.ChoVayKH / elementCDKT_1.ChoVayKH), 1);
                     entityUpdate.nim_r = nim;
                     entityUpdate.credit_r = tindung;
+                    entityUpdate.cost_r = Math.Round(100 * (-1 + elementKQKD.ChiPhiLai / elementKQKD_1.ChiPhiLai), 1);
 
                     entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                     _nhRepo.Update(entityUpdate);
@@ -571,6 +588,7 @@ namespace StockLib.Service
             public int d { get; set; }
             public string s { get; set; }
             public double ThuNhapLaiThuan { get; set; }
+            public double ChiPhiLai { get; set; }
         }
 
         public class SubCDKT
