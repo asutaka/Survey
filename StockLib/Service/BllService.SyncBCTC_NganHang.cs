@@ -19,8 +19,14 @@ namespace StockLib.Service
         /// Casa tự tính trên BCTC
 
 
-        /// Nợ xấu các mức tự nhập trên BCTC
+        /// Nợ xấu các mức tự nhập trên BCTC(tỉ lệ nợ xấu, tăng trưởng nợ xấu)
         /// Tỉ lệ bao trùm nợ xấu tự tính trên BCTC
+        /// Cơ chế trích lập dự phòng:
+        /// Nhóm 1 - Nợ đủ tiêu chuẩn(0%)
+        /// Nhóm 2 - Nợ cần chú ý(5%)
+        /// Nhóm 3 - Nợ dưới tiêu chuẩn(20%)
+        /// Nhóm 4 - Nợ nghi ngờ(50%)
+        /// Nhóm 5 - Nợ có khả năng mất vốn(100%)
         /// </summary>
         /// <returns></returns>
         public async Task SyncBCTC_NganHang()
