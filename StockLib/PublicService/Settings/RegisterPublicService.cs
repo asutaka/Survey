@@ -8,6 +8,7 @@ namespace StockLib.PublicService.Settings
         {
             services.AddSingleton<IStockService, StockService>();
             services.AddSingleton<IFinancialDataService, FinancialDataService>();
+            services.AddSingleton<IImportDataAPIService, ImportDataAPIService>();
         }
     }
 }
