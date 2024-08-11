@@ -17,7 +17,7 @@ namespace StockLib.Service
         /// Nim, Tăng trưởng tín dụng, Giảm chi phí vốn lấy từ bảng cân đối kế toán và kết quả kinh doanh 
         /// 
         /// Casa tự tính trên BCTC
-        /// Ngày công bố: Nhập tay từ trang(https://congbothongtin.ssc.gov.vn/)
+        /// Ngày công bố: Nhập tay từ trang(https://congbothongtin.ssc.gov.vn/) hoặc syn tự động từ trang(https://finance.vietstock.vn/)
 
 
         /// Nợ xấu các mức tự nhập trên BCTC(tỉ lệ nợ xấu, tăng trưởng nợ xấu)
@@ -48,17 +48,19 @@ namespace StockLib.Service
         {
             try
             {
-                //var lStock = _stockRepo.GetAll();
-                //var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).Select(x => x.s);
+                var lStock = _stockRepo.GetAll();
+                var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).Select(x => x.s);
 
-                //foreach (var item in lNganHang)
-                //{
-                //    //await SyncBCTC_NganHang_KQKD(item);
-                //    //await SyncBCTC_NganHang_CIR(item);
-                //    await SyncBCTC_NganHang_NIM_TinDung(item);
-                //}
+                foreach (var item in lNganHang)
+                {
+                    //await SyncBCTC_NganHang_KQKD(item);
+                    //await SyncBCTC_NganHang_CIR(item);
+                    //await SyncBCTC_NganHang_NIM_TinDung(item);
+                    await SyncBCTC_NgayCongBo(item);
+                }
 
-                SyncBCTC_TinhCacChiSoConLai();
+                //SyncBCTC_TinhCacChiSoConLai();
+                
             }
             catch (Exception ex)
             {
@@ -598,6 +600,132 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"BllService.SyncBCTC_BatDongSan_KQKD|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        private async Task SyncBCTC_NgayCongBo(string code)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                var lBCTC = await _apiService.VietStock_GetDanhSachBCTC(code, i + 1);
+                if(lBCTC is null || !lBCTC.Any())
+                {
+                    return;
+                }
+
+                foreach (var item in lBCTC)
+                {
+                    var quarter = -1;
+                    var year = -1;
+
+
+                    if (item.Url.Contains("/2028"))
+                    {
+                        year = 2028;
+                    }
+                    else if (item.Url.Contains("/2027"))
+                    {
+                        year = 2027;
+                    }
+                    else if (item.Url.Contains("/2026"))
+                    {
+                        year = 2026;
+                    }
+                    else if (item.Url.Contains("/2025"))
+                    {
+                        year = 2025;
+                    }
+                    else if (item.Url.Contains("/2024"))
+                    {
+                        year = 2024;
+                    }
+                    else if (item.Url.Contains("/2023"))
+                    {
+                        year = 2023;
+                    }
+                    else if (item.Url.Contains("/2022"))
+                    {
+                        year = 2022;
+                    }
+                    else if (item.Url.Contains("/2021"))
+                    {
+                        year = 2021;
+                    }
+                    else if (item.Url.Contains("/2020"))
+                    {
+                        year = 2020;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if(item.Url.ToUpper().Contains("QUY 1"))
+                    {
+                        quarter = 1;
+                    }
+                    else if(item.Url.ToUpper().Contains("QUY 2"))
+                    {
+                        quarter = 2;
+                    }
+                    else if (item.Url.ToUpper().Contains("QUY 3"))
+                    {
+                        quarter = 3;
+                    }
+                    else if (item.Url.ToUpper().Contains("QUY 4"))
+                    {
+                        quarter = 4;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+
+                    if (item.Url.ToUpper().Contains("CONGTYME")
+                        || item.Url.ToUpper().Contains("LE"))
+                    {
+                        continue;
+                    }
+
+
+                    var cleanDate = item.LastUpdate.Replace("/", "").Replace("Date", "").Replace("(", "").Replace(")", "");
+                    var checkDate = long.TryParse(cleanDate, out var longDate);
+                    if (!checkDate)
+                        continue;
+
+                    var date = longDate.UnixTimeStampToDateTime(false);
+
+                    var pl = int.Parse($"{date.Year}{date.Month.To2Digit()}{date.Day.To2Digit()}{date.Hour.To2Digit()}");
+
+                    FilterDefinition<Financial_NH> filter = null;
+                    var builder = Builders<Financial_NH>.Filter;
+                    var lFilter = new List<FilterDefinition<Financial_NH>>
+                        {
+                            builder.Eq(x => x.s, code),
+                            builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
+                        };
+
+                    foreach (var itemFilter in lFilter)
+                    {
+                        if (filter is null)
+                        {
+                            filter = itemFilter;
+                            continue;
+                        }
+                        filter &= itemFilter;
+                    }
+
+                    var lUpdate = _nhRepo.GetByFilter(filter);
+                    Financial_NH entityUpdate = lUpdate.FirstOrDefault();
+                    if (lUpdate is null || !lUpdate.Any())
+                    {
+                        continue;
+                    }
+
+                    entityUpdate.pl = pl;
+                    entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+                    _nhRepo.Update(entityUpdate);
+                }
             }
         }
         

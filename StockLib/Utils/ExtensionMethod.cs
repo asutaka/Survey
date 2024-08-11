@@ -11,11 +11,19 @@ namespace StockLib.Utils
 {
     public static class ExtensionMethod
     {
-        public static DateTime UnixTimeStampToDateTime(this long unixTimeStamp)
+        public static DateTime UnixTimeStampToDateTime(this long unixTimeStamp, bool isSecond = true)
         {
             // Unix timestamp is seconds past epoch
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            if(isSecond)
+            {
+                dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
+            }
+            else
+            {
+                dateTime = dateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
+            }
+            
             return dateTime;
         }
         public static string GetDisplayName(this Enum enumValue)
