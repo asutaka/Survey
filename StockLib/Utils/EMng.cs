@@ -30,6 +30,8 @@ namespace StockLib.Utils
         ChungKhoanKD = 4346,
         [Display(Name = "Cho vay khách hàng")]
         ChoVayKH = 4348,
+        [Display(Name = "Trích lập dự phòng")]
+        TrichLap = 4349,
         [Display(Name = "Chứng khoán đầu tư sẵn sàng để bán")]
         ChungKhoanDauTu = 4350,
         [Display(Name = "Chứng khoán giữ đến đáo hạn")]
@@ -37,8 +39,6 @@ namespace StockLib.Utils
 
         [Display(Name = "LNST Ngân Hàng")]
         LNSTNH = 4378,
-        [Display(Name = "Trích lập dự phòng")]
-        TrichLap = 4392,
         [Display(Name = "Chi phí lãi và các chi phí tương tự")]
         ChiPhiLai = 4396,
         [Display(Name = "Thu nhập từ dịch vụ")]

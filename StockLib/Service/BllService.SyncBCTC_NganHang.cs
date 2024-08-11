@@ -12,9 +12,9 @@ namespace StockLib.Service
     public partial class BllService 
     {
         /// <summary>
-        /// Doanh thu,LNST, Chi phí vận hành, trích lập dự phòng lấy từ Kết quả kinh doanh
+        /// Doanh thu,LNST, Chi phí vận hành lấy từ Kết quả kinh doanh
         /// CIR lấy từ chỉ số tài chính
-        /// Nim, Tăng trưởng tín dụng, Giảm chi phí vốn lấy từ bảng cân đối kế toán và kết quả kinh doanh 
+        /// Nim, Tăng trưởng tín dụng, Giảm chi phí vốn, trích lập dự phòng lấy từ bảng cân đối kế toán và kết quả kinh doanh 
         /// 
         /// Casa tự tính trên BCTC
         /// Ngày công bố: Nhập tay từ trang(https://congbothongtin.ssc.gov.vn/) hoặc syn tự động từ trang(https://finance.vietstock.vn/)
@@ -55,12 +55,12 @@ namespace StockLib.Service
                 {
                     //await SyncBCTC_NganHang_KQKD(item);
                     //await SyncBCTC_NganHang_CIR(item);
-                    //await SyncBCTC_NganHang_NIM_TinDung(item);
-                    await SyncBCTC_NgayCongBo(item);
+                    await SyncBCTC_NganHang_NIM_TinDung(item);
+                    //await SyncBCTC_NgayCongBo(item);
                 }
 
-                //SyncBCTC_TinhCacChiSoConLai();
-                
+                SyncBCTC_TinhCacChiSoConLai();
+
             }
             catch (Exception ex)
             {
@@ -187,30 +187,28 @@ namespace StockLib.Service
                         //
                         var ThuNhapLai = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ThuNhapLai);
                         var ThuNhapTuDichVu = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ThuNhapTuDichVu);
-                        var TrichLap = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TrichLap);
                         var LNSTNH = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.LNSTNH);
 
 
                         switch (i)
                         {
-                            case 0: AssignData(ThuNhapLai?.Value1, ThuNhapTuDichVu?.Value1, TrichLap?.Value1, LNSTNH?.Value1); break;
-                            case 1: AssignData(ThuNhapLai?.Value2, ThuNhapTuDichVu?.Value2, TrichLap?.Value2, LNSTNH?.Value2); break;
-                            case 2: AssignData(ThuNhapLai?.Value3, ThuNhapTuDichVu?.Value3, TrichLap?.Value3, LNSTNH?.Value3); break;
-                            case 3: AssignData(ThuNhapLai?.Value4, ThuNhapTuDichVu?.Value4, TrichLap?.Value4, LNSTNH?.Value4); break;
-                            case 4: AssignData(ThuNhapLai?.Value5, ThuNhapTuDichVu?.Value5, TrichLap?.Value5, LNSTNH?.Value5); break;
-                            case 5: AssignData(ThuNhapLai?.Value6, ThuNhapTuDichVu?.Value6, TrichLap?.Value6, LNSTNH?.Value6); break;
-                            case 6: AssignData(ThuNhapLai?.Value7, ThuNhapTuDichVu?.Value7, TrichLap?.Value7, LNSTNH?.Value7); break;
-                            case 7: AssignData(ThuNhapLai?.Value8, ThuNhapTuDichVu?.Value8, TrichLap?.Value8, LNSTNH?.Value8); break;
+                            case 0: AssignData(ThuNhapLai?.Value1, ThuNhapTuDichVu?.Value1, LNSTNH?.Value1); break;
+                            case 1: AssignData(ThuNhapLai?.Value2, ThuNhapTuDichVu?.Value2, LNSTNH?.Value2); break;
+                            case 2: AssignData(ThuNhapLai?.Value3, ThuNhapTuDichVu?.Value3, LNSTNH?.Value3); break;
+                            case 3: AssignData(ThuNhapLai?.Value4, ThuNhapTuDichVu?.Value4, LNSTNH?.Value4); break;
+                            case 4: AssignData(ThuNhapLai?.Value5, ThuNhapTuDichVu?.Value5, LNSTNH?.Value5); break;
+                            case 5: AssignData(ThuNhapLai?.Value6, ThuNhapTuDichVu?.Value6, LNSTNH?.Value6); break;
+                            case 6: AssignData(ThuNhapLai?.Value7, ThuNhapTuDichVu?.Value7, LNSTNH?.Value7); break;
+                            case 7: AssignData(ThuNhapLai?.Value8, ThuNhapTuDichVu?.Value8, LNSTNH?.Value8); break;
                             default: break;
                         };
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _nhRepo.Update(entityUpdate);
 
-                        void AssignData(double? thunhaplai, double? thunhaptudichvu, double? trichlap, double? loinhuan)
+                        void AssignData(double? thunhaplai, double? thunhaptudichvu, double? loinhuan)
                         {
                             entityUpdate.rv = (thunhaplai ?? 0) + (thunhaptudichvu ?? 0);
                             entityUpdate.pf = loinhuan ?? 0;
-                            entityUpdate.risk = trichlap ?? 0;
                         }
                     }
                 }
@@ -492,21 +490,22 @@ namespace StockLib.Service
                         var ChoVayKH = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ChoVayKH);
                         var ChungKhoanDauTu = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ChungKhoanDauTu);
                         var ChungKhoanDaoHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.ChungKhoanDaoHan);
+                        var TrichLap = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TrichLap);
 
                         switch (i)
                         {
-                            case 0: AssignData(TienGuiNHNN?.Value1, TienGuiTCTD?.Value1, ChoVayTCTD?.Value1, ChungKhoanKD?.Value1, ChoVayKH?.Value1, ChungKhoanDauTu?.Value1, ChungKhoanDaoHan?.Value1); break;
-                            case 1: AssignData(TienGuiNHNN?.Value2, TienGuiTCTD?.Value2, ChoVayTCTD?.Value2, ChungKhoanKD?.Value2, ChoVayKH?.Value2, ChungKhoanDauTu?.Value2, ChungKhoanDaoHan?.Value2); break;
-                            case 2: AssignData(TienGuiNHNN?.Value3, TienGuiTCTD?.Value3, ChoVayTCTD?.Value3, ChungKhoanKD?.Value3, ChoVayKH?.Value3, ChungKhoanDauTu?.Value3, ChungKhoanDaoHan?.Value3); break;
-                            case 3: AssignData(TienGuiNHNN?.Value4, TienGuiTCTD?.Value4, ChoVayTCTD?.Value4, ChungKhoanKD?.Value4, ChoVayKH?.Value4, ChungKhoanDauTu?.Value4, ChungKhoanDaoHan?.Value4); break;
-                            case 4: AssignData(TienGuiNHNN?.Value5, TienGuiTCTD?.Value5, ChoVayTCTD?.Value5, ChungKhoanKD?.Value5, ChoVayKH?.Value5, ChungKhoanDauTu?.Value5, ChungKhoanDaoHan?.Value5); break;
-                            case 5: AssignData(TienGuiNHNN?.Value6, TienGuiTCTD?.Value6, ChoVayTCTD?.Value6, ChungKhoanKD?.Value6, ChoVayKH?.Value6, ChungKhoanDauTu?.Value6, ChungKhoanDaoHan?.Value6); break;
-                            case 6: AssignData(TienGuiNHNN?.Value7, TienGuiTCTD?.Value7, ChoVayTCTD?.Value7, ChungKhoanKD?.Value7, ChoVayKH?.Value7, ChungKhoanDauTu?.Value7, ChungKhoanDaoHan?.Value7); break;
-                            case 7: AssignData(TienGuiNHNN?.Value8, TienGuiTCTD?.Value8, ChoVayTCTD?.Value8, ChungKhoanKD?.Value8, ChoVayKH?.Value8, ChungKhoanDauTu?.Value8, ChungKhoanDaoHan?.Value8); break;
+                            case 0: AssignData(TienGuiNHNN?.Value1, TienGuiTCTD?.Value1, ChoVayTCTD?.Value1, ChungKhoanKD?.Value1, ChoVayKH?.Value1, ChungKhoanDauTu?.Value1, ChungKhoanDaoHan?.Value1, TrichLap?.Value1); break;
+                            case 1: AssignData(TienGuiNHNN?.Value2, TienGuiTCTD?.Value2, ChoVayTCTD?.Value2, ChungKhoanKD?.Value2, ChoVayKH?.Value2, ChungKhoanDauTu?.Value2, ChungKhoanDaoHan?.Value2, TrichLap?.Value2); break;
+                            case 2: AssignData(TienGuiNHNN?.Value3, TienGuiTCTD?.Value3, ChoVayTCTD?.Value3, ChungKhoanKD?.Value3, ChoVayKH?.Value3, ChungKhoanDauTu?.Value3, ChungKhoanDaoHan?.Value3, TrichLap?.Value3); break;
+                            case 3: AssignData(TienGuiNHNN?.Value4, TienGuiTCTD?.Value4, ChoVayTCTD?.Value4, ChungKhoanKD?.Value4, ChoVayKH?.Value4, ChungKhoanDauTu?.Value4, ChungKhoanDaoHan?.Value4, TrichLap?.Value4); break;
+                            case 4: AssignData(TienGuiNHNN?.Value5, TienGuiTCTD?.Value5, ChoVayTCTD?.Value5, ChungKhoanKD?.Value5, ChoVayKH?.Value5, ChungKhoanDauTu?.Value5, ChungKhoanDaoHan?.Value5, TrichLap?.Value5); break;
+                            case 5: AssignData(TienGuiNHNN?.Value6, TienGuiTCTD?.Value6, ChoVayTCTD?.Value6, ChungKhoanKD?.Value6, ChoVayKH?.Value6, ChungKhoanDauTu?.Value6, ChungKhoanDaoHan?.Value6, TrichLap?.Value6); break;
+                            case 6: AssignData(TienGuiNHNN?.Value7, TienGuiTCTD?.Value7, ChoVayTCTD?.Value7, ChungKhoanKD?.Value7, ChoVayKH?.Value7, ChungKhoanDauTu?.Value7, ChungKhoanDaoHan?.Value7, TrichLap?.Value7); break;
+                            case 7: AssignData(TienGuiNHNN?.Value8, TienGuiTCTD?.Value8, ChoVayTCTD?.Value8, ChungKhoanKD?.Value8, ChoVayKH?.Value8, ChungKhoanDauTu?.Value8, ChungKhoanDaoHan?.Value8, TrichLap?.Value8); break;
                             default: break;
                         };
 
-                        void AssignData(double? guiNHNN, double? guiTCTD, double? chovayTCTD, double? ckKD, double? chovayKH, double? ckDauTu, double? ckDaoHan)
+                        void AssignData(double? guiNHNN, double? guiTCTD, double? chovayTCTD, double? ckKD, double? chovayKH, double? ckDauTu, double? ckDaoHan, double? trichlap)
                         {
                             _lSubCDKT.Add(new SubCDKT
                             {
@@ -519,6 +518,7 @@ namespace StockLib.Service
                                 ChoVayKH = chovayKH ?? 0,
                                 ChungKhoanDauTu = ckDauTu ?? 0,
                                 ChungKhoanDaoHan = ckDaoHan ?? 0,
+                                TrichhLap = trichlap ?? 0
                             });
                         }
                     }
@@ -592,6 +592,7 @@ namespace StockLib.Service
                     entityUpdate.nim_r = nim;
                     entityUpdate.credit_r = tindung;
                     entityUpdate.cost_r = Math.Round(100 * (-1 + elementKQKD.ChiPhiLai / elementKQKD_1.ChiPhiLai), 1);
+                    entityUpdate.risk = Math.Abs(elementCDKT.TrichhLap);
 
                     entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                     _nhRepo.Update(entityUpdate);
@@ -748,6 +749,7 @@ namespace StockLib.Service
             public double ChoVayKH { get; set; }
             public double ChungKhoanDauTu { get; set; }
             public double ChungKhoanDaoHan { get; set; }
+            public double TrichhLap { get; set; }
         }
     }
 }
