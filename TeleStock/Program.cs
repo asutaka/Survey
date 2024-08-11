@@ -1,4 +1,4 @@
-using Stock;
+using TeleStock;
 using StockLib.PublicService;
 
 IHost host = Host.CreateDefaultBuilder(args)
@@ -8,6 +8,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHttpClient();
         services.AddSLib();
     })
+    .UseWindowsService()
     .Build();
 
 await host.RunAsync();

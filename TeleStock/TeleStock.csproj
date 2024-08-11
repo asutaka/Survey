@@ -4,12 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>dotnet-Stock-e5b63b26-efa2-4106-8b9a-2a526b36c705</UserSecretsId>
+    <UserSecretsId>dotnet-TeleStock-00276f23-315e-44ca-a5ff-c4cd1e0179d6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="HttpClientToCurl" Version="2.0.6" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.2" />
   </ItemGroup>
 
   <ItemGroup>

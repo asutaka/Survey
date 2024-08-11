@@ -76,8 +76,6 @@ namespace SLib.Service
         }
         public async Task BotSyncUpdate()
         {
-            //await _bllService.BCTCRead("https://cafef1.mediacdn.vn//Images/Uploaded/DuLieuDownload/BCTC/00029644268774703555ctcp-xy-dng-dic-holdings24042024-161118.pdf");
-            //return;
             await func();
 
             async Task func()

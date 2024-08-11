@@ -8,6 +8,7 @@ namespace StockLib.Service.Settings
         {
             services.AddSingleton<IAPIService, APIService>();
             services.AddSingleton<IBllService, BllService>();
+            services.AddSingleton<ITeleService, TeleService>();
         }
     }
 }

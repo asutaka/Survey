@@ -3,9 +3,7 @@ using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Utils;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Xml.Linq;
 
 namespace StockLib.Service
 {
@@ -55,11 +53,11 @@ namespace StockLib.Service
                 {
                     //await SyncBCTC_NganHang_KQKD(item);
                     //await SyncBCTC_NganHang_CIR(item);
-                    await SyncBCTC_NganHang_NIM_TinDung(item);
+                    //await SyncBCTC_NganHang_NIM_TinDung(item);
                     //await SyncBCTC_NgayCongBo(item);
                 }
 
-                SyncBCTC_TinhCacChiSoConLai();
+                //SyncBCTC_TinhCacChiSoConLai();
 
             }
             catch (Exception ex)

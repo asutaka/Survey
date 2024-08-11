@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StockLib.Service.Settings
+﻿namespace StockLib.Service.Settings
 {
-    internal class ServiceSetting
+    public static class ServiceSetting
     {
+        public const string _botToken = "7422438658:AAEPzAwq-5rA-5dLEFRpPrdOBt9yMfnkBxA";
     }
 }

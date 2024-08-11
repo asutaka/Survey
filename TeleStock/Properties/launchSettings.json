@@ -1,6 +1,6 @@
 ﻿{
   "profiles": {
-    "Stock": {
+    "TeleStock": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {

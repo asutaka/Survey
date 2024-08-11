@@ -6,9 +6,9 @@ namespace StockLib.PublicService.Settings
     {
         public static void PublicServiceDependencies(this IServiceCollection services)
         {
-            services.AddSingleton<IStockService, StockService>();
             services.AddSingleton<IFinancialDataService, FinancialDataService>();
             services.AddSingleton<IImportDataAPIService, ImportDataAPIService>();
+            services.AddSingleton<ITeleStockService, TeleStockService>();
         }
     }
 }
