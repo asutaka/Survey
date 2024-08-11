@@ -17,6 +17,7 @@ namespace StockLib.Service
         /// Nim, Tăng trưởng tín dụng, Giảm chi phí vốn lấy từ bảng cân đối kế toán và kết quả kinh doanh 
         /// 
         /// Casa tự tính trên BCTC
+        /// Ngày công bố: Nhập tay từ trang(https://congbothongtin.ssc.gov.vn/)
 
 
         /// Nợ xấu các mức tự nhập trên BCTC(tỉ lệ nợ xấu, tăng trưởng nợ xấu)
@@ -47,19 +48,36 @@ namespace StockLib.Service
         {
             try
             {
-                var lStock = _stockRepo.GetAll();
-                var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).Select(x => x.s);
+                //var lStock = _stockRepo.GetAll();
+                //var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).Select(x => x.s);
 
-                foreach (var item in lNganHang)
-                {
-                    //await SyncBCTC_NganHang_KQKD(item);
-                    //await SyncBCTC_NganHang_CIR(item);
-                    await SyncBCTC_NganHang_NIM_TinDung(item);
-                }
+                //foreach (var item in lNganHang)
+                //{
+                //    //await SyncBCTC_NganHang_KQKD(item);
+                //    //await SyncBCTC_NganHang_CIR(item);
+                //    await SyncBCTC_NganHang_NIM_TinDung(item);
+                //}
+
+                SyncBCTC_TinhCacChiSoConLai();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"BllService.SyncBCTC_NganHang|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        private void SyncBCTC_TinhCacChiSoConLai()
+        {
+            var lData = _nhRepo.GetAll();
+            foreach (var item in lData)
+            {
+                var totalRisk = item.debt3 + item.debt4 + item.debt5;
+                if (totalRisk <= 0)
+                    continue;
+
+                item.cover_r = Math.Round(item.risk * 100 / totalRisk, 1);
+                item.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+                _nhRepo.Update(item);
             }
         }
 
