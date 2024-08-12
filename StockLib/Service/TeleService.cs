@@ -21,13 +21,16 @@ namespace StockLib.Service
 
         private readonly IStockRepo _stockRepo;
         private readonly IUserMessageRepo _userMessageRepo;
+        private readonly IBllService _bllService;
         public TeleService(ILogger<TeleService> logger,
                             IStockRepo stockRepo,
+                            IBllService bllService,
                             IUserMessageRepo userMessageRepo)
         {
             _logger = logger;
             _stockRepo = stockRepo;
             _userMessageRepo = userMessageRepo;
+            _bllService = bllService;
             StockInstance();
         }
 

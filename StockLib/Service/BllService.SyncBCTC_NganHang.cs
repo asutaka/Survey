@@ -51,13 +51,13 @@ namespace StockLib.Service
 
                 foreach (var item in lNganHang)
                 {
-                    //await SyncBCTC_NganHang_KQKD(item);
-                    //await SyncBCTC_NganHang_CIR(item);
-                    //await SyncBCTC_NganHang_NIM_TinDung(item);
-                    //await SyncBCTC_NgayCongBo(item);
+                    await SyncBCTC_NganHang_KQKD(item);
+                    await SyncBCTC_NganHang_CIR(item);
+                    await SyncBCTC_NganHang_NIM_TinDung(item);
+                    await SyncBCTC_NgayCongBo(item);
                 }
 
-                //SyncBCTC_TinhCacChiSoConLai();
+                SyncBCTC_TinhCacChiSoConLai();
 
             }
             catch (Exception ex)
@@ -75,7 +75,7 @@ namespace StockLib.Service
                 if (totalRisk <= 0)
                     continue;
 
-                item.cover_r = Math.Round(item.risk * 100 / totalRisk, 1);
+                item.cover_r = Math.Round(item.risk??0 * 100 / totalRisk, 1);
                 item.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                 _nhRepo.Update(item);
             }
@@ -89,7 +89,7 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
-                lReportID.data = lReportID.data.Where(x => x.Isunited == 0 && x.BasePeriodBegin >= 202001).ToList();
+                lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)
@@ -341,7 +341,7 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
-                lReportID.data = lReportID.data.Where(x => x.Isunited == 0 && x.BasePeriodBegin >= 201901).ToList();
+                lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 201901).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)
@@ -433,7 +433,7 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
-                lReportID.data = lReportID.data.Where(x => x.Isunited == 0 && x.BasePeriodBegin >= 201901).ToList();
+                lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 201901).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)

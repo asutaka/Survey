@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.DAL.Entity;
 using StockLib.Service.Settings;
+using StockLib.Utils;
 using System.Text;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 
 namespace StockLib.Service
 {
@@ -38,6 +40,15 @@ namespace StockLib.Service
                 return;
             }
             input = input.Trim();
+            if(input.StartsWith("[") && input.EndsWith("]"))//Nhóm ngành
+            {
+                input = input.Replace("[", "").Replace("]", "");
+                if(StaticVal._lNganHang.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Ngân Hàng
+                {
+                    await NganhNganHang(userId);
+                    return;
+                }
+            }
 
             //var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.ToUpper()));
             //if (entityStock != null)
@@ -63,7 +74,7 @@ namespace StockLib.Service
             //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
             //    return;
             //}
-          
+
             //if (input.ToUpper().Contains("chart_chienluocdautu".ToUpper())
             //    || input.ToUpper().Contains("chart_cl".ToUpper()))//Chiến lược đầu tư
             //{
@@ -100,6 +111,37 @@ namespace StockLib.Service
             //    //Nợ 
             //    return;
             //}
+        }
+
+        private async Task NganhNganHang(long userId)
+        {
+            try
+            {
+                var lNganHang = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                //Doanh Thu, Loi Nhuan
+                var streamLN = await _bllService.Chart_DoanhThu_LoiNhuan(lNganHang);
+                if (streamLN is null || streamLN.Length <= 0)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+                
+                //Tăng trưởng tín dụng, room tín dụng
+                var streamTinDung = await _bllService.Chart_TangTruongTinDung_RoomTinDung(lNganHang);
+                if (streamTinDung != null && streamTinDung.Length > 0)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTinDung));
+                }
+
+                //Nợ xấu, trích lập dự phòng
+
+                //Tiết giảm chi phí vốn
+
+                //Nim, Casa
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhNganHang|EXCEPTION| INPUT: UserID: { userId }|{ex.Message}");
+            }
         }
     }
 }

@@ -1,12 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.DAL;
-using StockLib.DAL.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Transactions;
 
 namespace StockLib.Service
 {
@@ -14,6 +7,8 @@ namespace StockLib.Service
     {
         Task SyncBCTC_BatDongSan();
         Task SyncBCTC_NganHang();
+        Task<Stream> Chart_DoanhThu_LoiNhuan(IEnumerable<string> lNganHang);
+        Task<Stream> Chart_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang);
     }
     public partial class BllService : IBllService
     {
@@ -22,12 +17,14 @@ namespace StockLib.Service
         private readonly IStockFinancialRepo _financialRepo;
         private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialNHRepo _nhRepo;
+        private readonly IConfigMainRepo _configMainRepo;
         private readonly IAPIService _apiService;
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
                             IStockFinancialRepo financialRepo,
                             IFinancialBDSRepo financialBDSRepo,
                             IFinancialNHRepo financialNHRepo,
+                            IConfigMainRepo configMainRepo,
                             IAPIService apiService)
         {
             _logger = logger;
@@ -35,6 +32,7 @@ namespace StockLib.Service
             _financialRepo = financialRepo;
             _bdsRepo = financialBDSRepo;
             _nhRepo = financialNHRepo;
+            _configMainRepo = configMainRepo;
             _apiService = apiService;
         }
     }
