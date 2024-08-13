@@ -119,20 +119,25 @@ namespace StockLib.Service
             {
                 var lNganHang = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
-                var streamLN = await _bllService.Chart_DoanhThu_LoiNhuan(lNganHang);
-                if (streamLN is null || streamLN.Length <= 0)
-                    return;
+                //var streamLN = await _bllService.Chart_DoanhThu_LoiNhuan(lNganHang);
+                //if (streamLN is null || streamLN.Length <= 0)
+                //    return;
 
-                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+                //await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
                 
-                //Tăng trưởng tín dụng, room tín dụng
-                var streamTinDung = await _bllService.Chart_TangTruongTinDung_RoomTinDung(lNganHang);
-                if (streamTinDung != null && streamTinDung.Length > 0)
-                {
-                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTinDung));
-                }
+                ////Tăng trưởng tín dụng, room tín dụng
+                //var streamTinDung = await _bllService.Chart_TangTruongTinDung_RoomTinDung(lNganHang);
+                //if (streamTinDung != null && streamTinDung.Length > 0)
+                //{
+                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTinDung));
+                //}
 
                 //Nợ xấu, trích lập dự phòng
+                var streamNoXau = await _bllService.Chart_NoXau(lNganHang);
+                if (streamNoXau != null && streamNoXau.Length > 0)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNoXau));
+                }
 
                 //Tiết giảm chi phí vốn
 

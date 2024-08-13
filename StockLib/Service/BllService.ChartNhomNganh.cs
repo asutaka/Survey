@@ -269,31 +269,44 @@ namespace StockLib.Service
                     });
                 }
 
-                //var basicColumn = new HighchartStack($"Báo cáo nợ xấu Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_TangTruongTinDung>
-                //{
-                //    new HighChartSeries_BasicColumn
-                //    {
-                //        type = "column",
-                //        data = lResult.Select(x => x.RoomTinDung).ToList(),
-                //        color = "rgba(158, 159, 163, 0.5)",
-                //        pointPlacement = -0.2,
-                //        dataLabels = new HighChartDataLabel()
-                //    },
-                //    new HighChartSeries_BasicColumn
-                //    {
-                //        type = "column",
-                //        data = lResult.Select(x => x.TangTruongTinDung).ToList(),
-                //        color = "#012060",
-                //        dataLabels = new HighChartDataLabel()
-                //    }
-                //});
-                //var strTitleYAxis = "(Đơn vị: %)";
-                //basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
-                //                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+                var basicColumn = new HighchartStack($"Báo cáo nợ xấu Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        type = "column",
+                        name = "Nợ nhóm 5",
+                        data = lResult.Select(x => x.NoNhom5).ToList(),
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
+                    },
+                     new HighChartSeries_BasicColumn
+                    {
+                        type = "column",
+                        name = "Nợ nhóm 4",
+                        data = lResult.Select(x => x.NoNhom4).ToList(),
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        type = "column",
+                        name = "Nợ nhóm 3",
+                        data = lResult.Select(x => x.NoNhom3).ToList(),
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        type = "column",
+                        name = "Nợ nhóm 2",
+                        data = lResult.Select(x => x.NoNhom2).ToList(),
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
+                    }
+                });
+                var strTitleYAxis = "(Đơn vị: %)";
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
 
-                //var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
-                //var body = JsonConvert.SerializeObject(chart);
-                //return await _apiService.GetChartImage(body);
+                var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
             }
             catch (Exception ex)
             {

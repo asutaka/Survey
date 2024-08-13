@@ -66,7 +66,7 @@
             xAxis = new HighChartXAxis { categories = lCat };
             series = lSeries;
             credits = new HighChartCredits { enabled = false };
-            plotOptions = new HighChartPlotOptions { column = new HighChartPlotOptionsColumn { stacking = "percent", dataLabels = new HighChartDataLabel { format = "{point.percentage:.0f}%" } } }
+            plotOptions = new HighChartPlotOptions { column = new HighChartPlotOptionsColumn { stacking = "percent", dataLabels = new HighChartDataLabel { format = "{point.percentage:.0f}%" } } };
         }
         public HighChartTitle title { get; set; }
         public HighChartXAxis xAxis { get; set; }
