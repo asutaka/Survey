@@ -66,7 +66,9 @@
             xAxis = new HighChartXAxis { categories = lCat };
             series = lSeries;
             credits = new HighChartCredits { enabled = false };
-            plotOptions = new HighChartPlotOptions { column = new HighChartPlotOptionsColumn { stacking = "percent", dataLabels = new HighChartDataLabel { format = "{point.percentage:.0f}%" } } };
+            plotOptions = new HighChartPlotOptions {    column = new HighChartPlotOptionsColumn { stacking = "percent", dataLabels = new HighChartDataLabel { format = "{point.percentage:.0f}%" } },
+                                                        line = new HighChartPlotOptionsLine { dataLabels = new HighChartDataLabel { enabled = true } }  
+                                                    };
         }
         public HighChartTitle title { get; set; }
         public HighChartXAxis xAxis { get; set; }
@@ -223,6 +225,7 @@
     {
         public HighChartPlotOptionsSeries series { get; set; }
         public HighChartPlotOptionsColumn column { get; set; }
+        public HighChartPlotOptionsLine line { get; set; }
     }
 
     public class HighChartPlotOptionsSeries 
@@ -235,6 +238,11 @@
     public class HighChartPlotOptionsColumn
     {
         public string stacking { get; set; }
+        public HighChartDataLabel dataLabels { get; set; }
+    }
+
+    public class HighChartPlotOptionsLine
+    {
         public HighChartDataLabel dataLabels { get; set; }
     }
 

@@ -51,13 +51,13 @@ namespace StockLib.Service
 
                 foreach (var item in lNganHang)
                 {
-                    await SyncBCTC_NganHang_KQKD(item);
-                    await SyncBCTC_NganHang_CIR(item);
+                    //await SyncBCTC_NganHang_KQKD(item);
+                    //await SyncBCTC_NganHang_CIR(item);
                     await SyncBCTC_NganHang_NIM_TinDung(item);
-                    await SyncBCTC_NgayCongBo(item);
+                    //await SyncBCTC_NgayCongBo(item);
                 }
 
-                SyncBCTC_TinhCacChiSoConLai();
+                //SyncBCTC_TinhCacChiSoConLai();
 
             }
             catch (Exception ex)
@@ -576,6 +576,7 @@ namespace StockLib.Service
                     var elementCDKT_1 = _lSubCDKT[i - 1];
                     var elementCDKT_2 = _lSubCDKT[i - 2];
                     var elementCDKT_3 = _lSubCDKT[i - 3];
+                    var lastQuarterPrev = _lSubCDKT.FirstOrDefault(x => x.d == int.Parse($"{-1 + elementCDKT.d / 10}4"));
                     var TuSo = 4 * (elementKQKD.ThuNhapLaiThuan +
                                     elementKQKD_1.ThuNhapLaiThuan +
                                     elementKQKD_2.ThuNhapLaiThuan +
@@ -586,7 +587,11 @@ namespace StockLib.Service
                     var MauSo3 = elementCDKT_2.TienGuiNHNN + elementCDKT_2.TienGuiTCTD + elementCDKT_2.ChoVayTCTD + elementCDKT_2.ChungKhoanKD + elementCDKT_2.ChoVayKH + elementCDKT_2.ChungKhoanDauTu + elementCDKT_2.ChungKhoanDaoHan;
                     var MauSo4 = elementCDKT_3.TienGuiNHNN + elementCDKT_3.TienGuiTCTD + elementCDKT_3.ChoVayTCTD + elementCDKT_3.ChungKhoanKD + elementCDKT_3.ChoVayKH + elementCDKT_3.ChungKhoanDauTu + elementCDKT_3.ChungKhoanDaoHan;
                     var nim = Math.Round(100 * TuSo / (MauSo1 + MauSo2 + MauSo3 + MauSo4), 1);
-                    var tindung = Math.Round(100 * (-1 + elementCDKT.ChoVayKH / elementCDKT_1.ChoVayKH), 1);
+                    double tindung = 0;
+                    if(lastQuarterPrev != null)
+                    {
+                        tindung = Math.Round(100 * (-1 + elementCDKT.ChoVayKH / lastQuarterPrev.ChoVayKH), 1);
+                    }
                     entityUpdate.nim_r = nim;
                     entityUpdate.credit_r = tindung;
                     entityUpdate.cost_r = Math.Round(100 * (-1 + elementKQKD.ChiPhiLai / elementKQKD_1.ChiPhiLai), 1);

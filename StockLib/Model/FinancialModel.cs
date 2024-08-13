@@ -32,6 +32,9 @@
         public double NoNhom3 { get; set; }
         public double NoNhom4 { get; set; }
         public double NoNhom5 { get; set; }
-        public double TrichLapDuPhong { get; set; }
+        public double BaoPhuNoXau { get; set; }
+        public double TileNoXau { get; set; }
+        public double TangTruongTrichLap { get; set; }
+        public double TangTruongNoXau { get; set; }
     }
 }
