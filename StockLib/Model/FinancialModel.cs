@@ -37,4 +37,14 @@
         public double TangTruongTrichLap { get; set; }
         public double TangTruongNoNhom2 { get; set; }
     }
+
+    public class HighChart_NimCasa
+    {
+        public string s { get; set; }
+        public int d { get; set; }
+
+        public double Nim { get; set; }
+        public double Casa { get; set; }
+        public double ChiPhiVon { get; set; }
+    }
 }

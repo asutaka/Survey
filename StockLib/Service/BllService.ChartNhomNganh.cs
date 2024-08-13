@@ -303,7 +303,7 @@ namespace StockLib.Service
                     {
                         data = lResult.Select(x => x.BaoPhuNoXau).ToList(),
                         name = "Bao phủ nợ xấu",
-                        type = "spline",
+                        type = "column",
                         dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
                         color = "#012060"
                     },
@@ -338,6 +338,85 @@ namespace StockLib.Service
                 var strTitleYAxis = "(Bao phủ nợ xấu: %)";
                 basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
                                                                  new HighChartYAxis { title = new HighChartTitle { text = "(Tăng trưởng: %)" }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
+                var body = JsonConvert.SerializeObject(chart);
+                return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> Chart_NimCasaChiPhiVon(IEnumerable<string> lNganHang)
+        {
+            try
+            {
+                lNganHang = lNganHang.Take(15);
+                var configMain = _configMainRepo.GetAll().First();
+                var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                if (!lFinancial.Any())
+                    return null;
+
+                var lResult = new List<HighChart_NimCasa>();
+                foreach (var item in lNganHang)
+                {
+                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
+                    if (cur is null)
+                    {
+                        lResult.Add(new HighChart_NimCasa
+                        {
+                            d = int.Parse($"{configMain.year}{configMain.quarter}"),
+                            s = item
+                        });
+                        continue;
+                    }
+
+                    //tang truong tin dung, room tin dung
+                    lResult.Add(new HighChart_NimCasa
+                    {
+                        s = cur.s,
+                        d = cur.d,
+                        Nim = cur.nim_r ?? 0,
+                        Casa = cur.casa_r ?? 0,
+                        ChiPhiVon = cur.cost_r ?? 0
+                    });
+                }
+
+                var basicColumn = new HighchartBasicColumn($"NIM, CASA, Chi phí vốn Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.Nim).ToList(),
+                        name = "NIM",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.Casa).ToList(),
+                        name = "CASA",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#C00000",
+                        yAxis = 1,
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.ChiPhiVon).ToList(),
+                        name = "Chi phí vốn",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#ffbf00",
+                        yAxis = 1
+                    }
+                });
+                var strTitleYAxis = "(NIM: %)";
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = "(Tỉ lệ: %)" }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
 
                 var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);

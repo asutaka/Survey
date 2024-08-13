@@ -122,28 +122,31 @@ namespace StockLib.Service
                 var lNganHang = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_DoanhThu_LoiNhuan(lNganHang);
-                if (streamLN is null || streamLN.Length <= 1000)
+                if (streamLN is null || streamLN.Length <= 500)
                     return;
 
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
                 Thread.Sleep(1000);
                 //Tăng trưởng tín dụng, room tín dụng
                 var streamTinDung = await _bllService.Chart_TangTruongTinDung_RoomTinDung(lNganHang);
-                if (streamTinDung != null && streamTinDung.Length > 1000)
+                if (streamTinDung != null && streamTinDung.Length > 500)
                 {
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTinDung));
                 }
                 Thread.Sleep(1000);
                 //Nợ xấu, trích lập dự phòng
                 var streamNoXau = await _bllService.Chart_NoXau(lNganHang);
-                if (streamNoXau != null && streamNoXau.Length > 1000)
+                if (streamNoXau != null && streamNoXau.Length > 500)
                 {
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNoXau));
                 }
 
-                //Tiết giảm chi phí vốn
-
-                //Nim, Casa
+                //Tiết giảm chi phí vốn, Nim, Casa
+                var streamNimCasa = await _bllService.Chart_NimCasaChiPhiVon(lNganHang);
+                if (streamNimCasa != null && streamNimCasa.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNimCasa));
+                }
 
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }
