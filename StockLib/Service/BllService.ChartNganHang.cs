@@ -8,7 +8,7 @@ namespace StockLib.Service
 {
     public partial class BllService
     {
-        public async Task<Stream> Chart_DoanhThu_LoiNhuan(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lNganHang)
         {
             try
             {
@@ -137,7 +137,7 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<Stream> Chart_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang)
         {
             try
             {
@@ -219,7 +219,7 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<Stream> Chart_NoXau(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lNganHang)
         {
             try
             {
@@ -350,7 +350,7 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<Stream> Chart_NimCasaChiPhiVon(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lNganHang)
         {
             try
             {

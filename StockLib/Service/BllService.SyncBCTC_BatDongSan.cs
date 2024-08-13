@@ -36,7 +36,7 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
-                lReportID.data = lReportID.data.Where(x => x.Isunited == 0 && x.BasePeriodBegin >= 202001).ToList();
+                lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)
@@ -146,6 +146,9 @@ namespace StockLib.Service
                             case 7: AssignData(DoanhThu?.Value8, LoiNhuan?.Value8, GiaVon?.Value8); break;
                             default: break;
                         };
+
+                        var isKCN = StaticVal._lKCN.Contains(code);
+                        entityUpdate.type = isKCN ? 1 : 0;
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _bdsRepo.Update(entityUpdate);
 
@@ -172,7 +175,7 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
-                lReportID.data = lReportID.data.Where(x => x.Isunited == 0 && x.BasePeriodBegin >= 202001).ToList();
+                lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)
@@ -261,30 +264,31 @@ namespace StockLib.Service
                         //
                         var TonKho = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TonKho);
                         var NguoiMua = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.NguoiMuaTraTienTruoc);
-                        var NoPhaiTra = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.NoPhaiTra);
+                        var VayNganHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VayNganHan);
+                        var VayDaiHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VayDaiHan);
                         var VonChu = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VonChuSoHuu);
 
                         switch(i)
                         {
-                            case 0: AssignData(TonKho?.Value1, NguoiMua?.Value1, NoPhaiTra?.Value1, VonChu?.Value1); break;
-                            case 1: AssignData(TonKho?.Value2, NguoiMua?.Value2, NoPhaiTra?.Value2, VonChu?.Value2); break;
-                            case 2: AssignData(TonKho?.Value3, NguoiMua?.Value3, NoPhaiTra?.Value3, VonChu?.Value3); break;
-                            case 3: AssignData(TonKho?.Value4, NguoiMua?.Value4, NoPhaiTra?.Value4, VonChu?.Value4); break;
-                            case 4: AssignData(TonKho?.Value5, NguoiMua?.Value5, NoPhaiTra?.Value5, VonChu?.Value5); break;
-                            case 5: AssignData(TonKho?.Value6, NguoiMua?.Value6, NoPhaiTra?.Value6, VonChu?.Value6); break;
-                            case 6: AssignData(TonKho?.Value7, NguoiMua?.Value7, NoPhaiTra?.Value7, VonChu?.Value7); break;
-                            case 7: AssignData(TonKho?.Value8, NguoiMua?.Value8, NoPhaiTra?.Value8, VonChu?.Value8); break;
+                            case 0: AssignData(TonKho?.Value1, NguoiMua?.Value1, VayNganHan?.Value1, VayDaiHan?.Value1, VonChu?.Value1); break;
+                            case 1: AssignData(TonKho?.Value2, NguoiMua?.Value2, VayNganHan?.Value2, VayDaiHan?.Value2, VonChu?.Value2); break;
+                            case 2: AssignData(TonKho?.Value3, NguoiMua?.Value3, VayNganHan?.Value3, VayDaiHan?.Value3, VonChu?.Value3); break;
+                            case 3: AssignData(TonKho?.Value4, NguoiMua?.Value4, VayNganHan?.Value4, VayDaiHan?.Value4, VonChu?.Value4); break;
+                            case 4: AssignData(TonKho?.Value5, NguoiMua?.Value5, VayNganHan?.Value5, VayDaiHan?.Value5, VonChu?.Value5); break;
+                            case 5: AssignData(TonKho?.Value6, NguoiMua?.Value6, VayNganHan?.Value6, VayDaiHan?.Value6, VonChu?.Value6); break;
+                            case 6: AssignData(TonKho?.Value7, NguoiMua?.Value7, VayNganHan?.Value7, VayDaiHan?.Value7, VonChu?.Value7); break;
+                            case 7: AssignData(TonKho?.Value8, NguoiMua?.Value8, VayNganHan?.Value8, VayDaiHan?.Value8, VonChu?.Value8); break;
                             default: break;
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _bdsRepo.Update(entityUpdate);
 
-                        void AssignData(double? tonkho, double? nguoimua, double? nophaitra, double? vonchu)
+                        void AssignData(double? tonkho, double? nguoimua, double? vayNganHan, double? vayDaiHan, double? vonchu)
                         {
                             entityUpdate.inv = tonkho ?? 0;
                             entityUpdate.bp = nguoimua ?? 0;
-                            entityUpdate.tl = nophaitra ?? 0;
+                            entityUpdate.debt = vayNganHan ?? 0 + vayDaiHan ?? 0;
                             entityUpdate.eq = vonchu ?? 0;
                         }
                     }

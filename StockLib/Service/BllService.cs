@@ -7,10 +7,12 @@ namespace StockLib.Service
     {
         Task SyncBCTC_BatDongSan();
         Task SyncBCTC_NganHang();
-        Task<Stream> Chart_DoanhThu_LoiNhuan(IEnumerable<string> lNganHang);
-        Task<Stream> Chart_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang);
-        Task<Stream> Chart_NoXau(IEnumerable<string> lNganHang);
-        Task<Stream> Chart_NimCasaChiPhiVon(IEnumerable<string> lNganHang);
+        Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
+        Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
+        Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lInput);
+        Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lInput);
+
+        Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
     }
     public partial class BllService : IBllService
     {
