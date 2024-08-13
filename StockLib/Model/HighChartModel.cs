@@ -45,14 +45,14 @@
             xAxis = new HighChartXAxis { categories = lCat };
             series = lSeries;
             credits = new HighChartCredits { enabled = false };
-            plotOptions = new HighChartPlotOptions { series = new HighChartPlotOptionsSeries { grouping = false } };
+            plotOptions = new HighChartPlotOptionsSimple { series = new HighChartPlotOptionsSeries { grouping = false } };
         }
         public HighChartTitle title { get; set; }
         public HighChartXAxis xAxis { get; set; }
         public List<HighChartYAxis> yAxis { get; set; }
         public List<HighChartSeries_TangTruongTinDung> series { get; set; }
         public HighChartCredits credits { get; set; }
-        public HighChartPlotOptions plotOptions { get; set; }
+        public HighChartPlotOptionsSimple plotOptions { get; set; }
     }
 
     /// <summary>
@@ -209,6 +209,7 @@
 
     public class HighChartSeries_TangTruongTinDung
     {
+        public string name { get; set; }
         public string type { get; set; }
         public string color { get; set; }
         public double pointPlacement { get; set; }
@@ -219,6 +220,11 @@
     public class HighChartCredits
     {
         public bool enabled { get; set; }
+    }
+
+    public class HighChartPlotOptionsSimple
+    {
+        public HighChartPlotOptionsSeries series { get; set; }
     }
 
     public class HighChartPlotOptions

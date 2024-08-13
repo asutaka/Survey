@@ -35,6 +35,6 @@
         public double BaoPhuNoXau { get; set; }
         public double TileNoXau { get; set; }
         public double TangTruongTrichLap { get; set; }
-        public double TangTruongNoXau { get; set; }
+        public double TangTruongNoNhom2 { get; set; }
     }
 }

@@ -188,6 +188,7 @@ namespace StockLib.Service
                 {
                     new HighChartSeries_TangTruongTinDung
                     {
+                        name="Room tín dụng",
                         type = "column",
                         data = lResult.Select(x => x.RoomTinDung).ToList(),
                         color = "rgba(158, 159, 163, 0.5)",
@@ -196,6 +197,7 @@ namespace StockLib.Service
                     },
                     new HighChartSeries_TangTruongTinDung
                     {
+                        name="Tăng trưởng tín dụng",
                         type = "column",
                         data = lResult.Select(x => x.TangTruongTinDung).ToList(),
                         color = "#012060",
@@ -253,164 +255,7 @@ namespace StockLib.Service
                         });
                         continue;
                     }
-                    double baophu = 0, tileNoxau = 0, tangTruongTinDung = 0, tangTruongNoXau = 0;
-                    var noxau = cur.debt3 + cur.debt4 + cur.debt5;
-                    if(noxau > 0)
-                    {
-                        baophu = Math.Round(100 * (cur.risk ?? 0) / noxau, 1);
-                    }    
-                    if(cur.debt > 0)
-                    {
-                        tileNoxau = Math.Round((float)(100 * noxau) / cur.debt, 1);
-                    }  
-                    
-                    var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-                    if(prev != null)
-                    {
-                        if(prev.risk > 0)
-                        {
-                            tangTruongTinDung = Math.Round(100 * (-1 + (cur.risk ?? 0) / (prev.risk ?? 1)), 1);
-                        }
-                        var noxauPrev = prev.debt3 + prev.debt4 + prev.debt5;
-                        if(noxauPrev > 0)
-                        {
-                            tangTruongNoXau = Math.Round(100 * (-1 + (float)noxau / noxauPrev), 1);
-                        }
-                    }
-
-                    //tang truong tin dung, room tin dung
-                    lResult.Add(new HighChart_NoXau
-                    {
-                        s = cur.s,
-                        d = cur.d,
-                        TongNoXau = cur.debt,
-                        NoNhom1 = cur.debt1,
-                        NoNhom2 = cur.debt2,
-                        NoNhom3 = cur.debt3,
-                        NoNhom4 = cur.debt4,
-                        NoNhom5 = cur.debt5,
-                        BaoPhuNoXau = baophu,
-                        TileNoXau = tileNoxau,
-                        TangTruongTrichLap = tangTruongTinDung,
-                        TangTruongNoXau = tangTruongNoXau
-                    });
-                }
-
-                var basicColumn = new HighchartStack($"Báo cáo nợ xấu Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "column",
-                        name = "Nợ nhóm 5",
-                        data = lResult.Select(x => x.NoNhom5).ToList(),
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    },
-                     new HighChartSeries_BasicColumn
-                    {
-                        type = "column",
-                        name = "Nợ nhóm 4",
-                        data = lResult.Select(x => x.NoNhom4).ToList(),
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "column",
-                        name = "Nợ nhóm 3",
-                        data = lResult.Select(x => x.NoNhom3).ToList(),
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "column",
-                        name = "Nợ nhóm 2",
-                        data = lResult.Select(x => x.NoNhom2).ToList(),
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "line",
-                        name = "Nợ xấu",
-                        data = lResult.Select(x => x.TileNoXau).ToList(),
-                        yAxis = 1
-                        //dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "line",
-                        name = "Bao phủ nợ xấu",
-                        data = lResult.Select(x => x.BaoPhuNoXau).ToList(),
-                        yAxis = 1
-                        //dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.value:.0f}%" }
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "line",
-                        name = "Tăng trưởng nợ xấu",
-                        data = lResult.Select(x => x.TangTruongNoXau).ToList(),
-                        yAxis = 1
-                        //dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        type = "line",
-                        name = "Tăng trưởng trích lập",
-                        data = lResult.Select(x => x.TangTruongTrichLap).ToList(),
-                        yAxis = 1
-                        //dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.percentage:.0f}%" }
-                    }
-                });
-                var strTitleYAxis = "(Đơn vị: %)";
-                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
-                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
-
-                var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
-                var body = JsonConvert.SerializeObject(chart);
-                return await _apiService.GetChartImage(body);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-            }
-            return null;
-        }
-
-        public async Task<Stream> Chart_NoXau2(IEnumerable<string> lNganHang)
-        {
-            try
-            {
-                lNganHang = lNganHang.Take(15);
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
-
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
-                {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
-
-                var lResult = new List<HighChart_NoXau>();
-                foreach (var item in lNganHang)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lResult.Add(new HighChart_NoXau
-                        {
-                            d = int.Parse($"{configMain.year}{configMain.quarter}"),
-                            s = item
-                        });
-                        continue;
-                    }
-                    double baophu = 0, tileNoxau = 0, tangTruongTrichLap = 0, tangTruongNoXau = 0;
+                    double baophu = 0, tileNoxau = 0, tangTruongTrichLap = 0, tangTruongNoNhom2 = 0;
                     var noxau = cur.debt3 + cur.debt4 + cur.debt5;
                     if (noxau > 0)
                     {
@@ -428,10 +273,9 @@ namespace StockLib.Service
                         {
                             tangTruongTrichLap = Math.Round(100 * (-1 + (cur.risk ?? 0) / (prev.risk ?? 1)), 1);
                         }
-                        var noxauPrev = prev.debt3 + prev.debt4 + prev.debt5;
-                        if (noxauPrev > 0)
+                        if (prev.debt2 > 0)
                         {
-                            tangTruongNoXau = Math.Round(100 * (-1 + (float)noxau / noxauPrev), 1);
+                            tangTruongNoNhom2 = Math.Round(100 * (-1 + (float)cur.debt2 / prev.debt2), 1);
                         }
                     }
 
@@ -449,7 +293,7 @@ namespace StockLib.Service
                         BaoPhuNoXau = baophu,
                         TileNoXau = tileNoxau,
                         TangTruongTrichLap = tangTruongTrichLap,
-                        TangTruongNoXau = tangTruongNoXau
+                        TangTruongNoNhom2 = tangTruongNoNhom2
                     });
                 }
 
@@ -460,33 +304,40 @@ namespace StockLib.Service
                         data = lResult.Select(x => x.BaoPhuNoXau).ToList(),
                         name = "Bao phủ nợ xấu",
                         type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" }
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#012060"
                     },
                     new HighChartSeries_BasicColumn
                     {
                         data = lResult.Select(x => x.TileNoXau).ToList(),
                         name = "Tỉ lệ nợ xấu",
                         type = "spline",
-                          dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" }
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#C00000",
+                        yAxis = 1,
                     },
                     new HighChartSeries_BasicColumn
                     {
-                        data = lResult.Select(x => x.TangTruongNoXau).ToList(),
-                        name = "Tăng trưởng nợ xấu",
+                        data = lResult.Select(x => x.TangTruongNoNhom2).ToList(),
+                        name = "Tăng trưởng nợ nhóm 2",
                         type = "spline",
-                          dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" }
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#ffbf00",
+                        yAxis = 1
                     },
                     new HighChartSeries_BasicColumn
                     {
                         data = lResult.Select(x => x.TangTruongTrichLap).ToList(),
                         name = "Tăng trưởng trích lập",
                         type = "spline",
-                          dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" }
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "rgba(158, 159, 163, 0.5)",
+                        yAxis = 1
                     }
                 });
-                var strTitleYAxis = "(Đơn vị: %)";
+                var strTitleYAxis = "(Bao phủ nợ xấu: %)";
                 basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
-                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = "(Tăng trưởng: %)" }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
 
                 var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);
