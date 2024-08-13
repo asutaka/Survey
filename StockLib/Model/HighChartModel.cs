@@ -34,6 +34,9 @@
         public HighChartCredits credits { get; set; }
     }
 
+    /// <summary>
+    /// Gồm 1 cột nét và đứng phía sau là một cột mờ
+    /// </summary>
     public class HighchartTangTruongTinDung
     {
         public HighchartTangTruongTinDung(string titl, List<string> lCat, List<HighChartSeries_TangTruongTinDung> lSeries)
@@ -48,6 +51,27 @@
         public HighChartXAxis xAxis { get; set; }
         public List<HighChartYAxis> yAxis { get; set; }
         public List<HighChartSeries_TangTruongTinDung> series { get; set; }
+        public HighChartCredits credits { get; set; }
+        public HighChartPlotOptions plotOptions { get; set; }
+    }
+
+    /// <summary>
+    /// Gồm biểu đồ cột với các giá trị xếp chồng lên nhau
+    /// </summary>
+    public class HighchartStack
+    {
+        public HighchartStack(string titl, List<string> lCat, List<HighChartSeries_BasicColumn> lSeries)
+        {
+            title = new HighChartTitle { text = titl };
+            xAxis = new HighChartXAxis { categories = lCat };
+            series = lSeries;
+            credits = new HighChartCredits { enabled = false };
+            plotOptions = new HighChartPlotOptions { column = new HighChartPlotOptionsColumn { stacking = "percent", dataLabels = new HighChartDataLabel { format = "{point.percentage:.0f}%" } } }
+        }
+        public HighChartTitle title { get; set; }
+        public HighChartXAxis xAxis { get; set; }
+        public List<HighChartYAxis> yAxis { get; set; }
+        public List<HighChartSeries_BasicColumn> series { get; set; }
         public HighChartCredits credits { get; set; }
         public HighChartPlotOptions plotOptions { get; set; }
     }
@@ -198,6 +222,7 @@
     public class HighChartPlotOptions
     {
         public HighChartPlotOptionsSeries series { get; set; }
+        public HighChartPlotOptionsColumn column { get; set; }
     }
 
     public class HighChartPlotOptionsSeries 
@@ -205,6 +230,12 @@
         public int borderWidth { get; set; }
         public HighChartDataLabel dataLabels { get; set; }
         public bool grouping { get; set; }
+    }
+
+    public class HighChartPlotOptionsColumn
+    {
+        public string stacking { get; set; }
+        public HighChartDataLabel dataLabels { get; set; }
     }
 
     public class HighChartDataLabel
@@ -215,6 +246,7 @@
             style = new HighChartStyle();
         }
         public bool enabled { get; set; }
+        public string format { get; set; }
         public HighChartStyle style { get; set; }
     }
 

@@ -136,6 +136,7 @@ namespace StockLib.Service
             }
             return null;
         }
+
         public async Task<Stream> Chart_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang)
         {
             try
@@ -208,6 +209,91 @@ namespace StockLib.Service
                 var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);
                 return await _apiService.GetChartImage(body);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            return null;
+        }
+
+        public async Task<Stream> Chart_NoXau(IEnumerable<string> lNganHang)
+        {
+            try
+            {
+                lNganHang = lNganHang.Take(15);
+                var configMain = _configMainRepo.GetAll().First();
+                var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                if (!lFinancial.Any())
+                    return null;
+
+                var yearPrev = configMain.year;
+                var quarterPrev = configMain.quarter;
+                if (configMain.quarter > 1)
+                {
+                    quarterPrev--;
+                }
+                else
+                {
+                    quarterPrev = 4;
+                    yearPrev--;
+                }
+                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+
+                var lResult = new List<HighChart_NoXau>();
+                foreach (var item in lNganHang)
+                {
+                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
+                    if (cur is null)
+                    {
+                        lResult.Add(new HighChart_NoXau
+                        {
+                            d = int.Parse($"{configMain.year}{configMain.quarter}"),
+                            s = item
+                        });
+                        continue;
+                    }
+
+                    //tang truong tin dung, room tin dung
+                    lResult.Add(new HighChart_NoXau
+                    {
+                        s = cur.s,
+                        d = cur.d,
+                        TongNoXau = cur.debt,
+                        NoNhom1 = cur.debt1,
+                        NoNhom2 = cur.debt2,
+                        NoNhom3 = cur.debt3,
+                        NoNhom4 = cur.debt4,
+                        NoNhom5 = cur.debt5,
+                        TrichLapDuPhong = cur.risk ?? 0
+                    });
+                }
+
+                //var basicColumn = new HighchartStack($"Báo cáo nợ xấu Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_TangTruongTinDung>
+                //{
+                //    new HighChartSeries_BasicColumn
+                //    {
+                //        type = "column",
+                //        data = lResult.Select(x => x.RoomTinDung).ToList(),
+                //        color = "rgba(158, 159, 163, 0.5)",
+                //        pointPlacement = -0.2,
+                //        dataLabels = new HighChartDataLabel()
+                //    },
+                //    new HighChartSeries_BasicColumn
+                //    {
+                //        type = "column",
+                //        data = lResult.Select(x => x.TangTruongTinDung).ToList(),
+                //        color = "#012060",
+                //        dataLabels = new HighChartDataLabel()
+                //    }
+                //});
+                //var strTitleYAxis = "(Đơn vị: %)";
+                //basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
+                //                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                //var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
+                //var body = JsonConvert.SerializeObject(chart);
+                //return await _apiService.GetChartImage(body);
             }
             catch (Exception ex)
             {
