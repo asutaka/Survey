@@ -4,6 +4,7 @@ using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Utils;
 using System.Text;
+using static StockLib.Service.BllService;
 
 namespace StockLib.Service
 {
@@ -51,13 +52,13 @@ namespace StockLib.Service
 
                 foreach (var item in lNganHang)
                 {
-                    //await SyncBCTC_NganHang_KQKD(item);
-                    //await SyncBCTC_NganHang_CIR(item);
+                    await SyncBCTC_NganHang_KQKD(item);
+                    await SyncBCTC_NganHang_CIR(item);
                     await SyncBCTC_NganHang_NIM_TinDung(item);
-                    //await SyncBCTC_NgayCongBo(item);
+                    await SyncBCTC_NgayCongBo(item);
                 }
 
-                //SyncBCTC_TinhCacChiSoConLai();
+                SyncBCTC_TinhCacChiSoConLai();
 
             }
             catch (Exception ex)
@@ -337,8 +338,13 @@ namespace StockLib.Service
         {
             try
             {
+                _lSubKQKD.Clear();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
+                if(lReportID is null)
+                {
+                    return;
+                }
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 201901).ToList();
@@ -429,6 +435,7 @@ namespace StockLib.Service
         {
             try
             {
+                _lSubCDKT.Clear();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
