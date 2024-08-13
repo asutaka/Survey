@@ -14,6 +14,7 @@ namespace StockLib.Service
             try
             {
                 var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x)).Take(15);
+                lBDS = lBDS.Where(x => x != "VIC" && x != "VHM" && x != "VRE");
                 var configMain = _configMainRepo.GetAll().First();
                 var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
