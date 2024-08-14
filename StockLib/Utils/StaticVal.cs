@@ -19,6 +19,14 @@
             "Bất động sản"
         };
 
+        public static List<string> _lChungKhoan = new List<string>
+        {
+            "CK",
+            "ChungKhoan",
+            "Chung Khoan",
+            "Chứng khoán"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "VGC",
