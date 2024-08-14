@@ -45,6 +45,7 @@
 
         public double Nim { get; set; }
         public double Casa { get; set; }
+        public double Cir { get; set; }
         public double ChiPhiVon { get; set; }
     }
 }

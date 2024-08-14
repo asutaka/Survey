@@ -153,7 +153,20 @@ namespace StockLib.Service
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNimCasa));
                 }
 
-                await BotInstance().SendTextMessageAsync(userId, "done!");
+                //Mô tả 
+                var strBuilder = new StringBuilder();
+                strBuilder.AppendLine("- Tỷ suất Lợi nhuận(lợi nhuận/doanh thu): càng cao càng tốt");
+                strBuilder.AppendLine("- Room tín dụng: càng cao càng tốt");
+                strBuilder.AppendLine("- Bao phủ nợ xấu: càng cao càng tốt");
+                strBuilder.AppendLine("- Tỉ lệ nợ xấu: càng nhỏ càng tốt");
+                strBuilder.AppendLine("- Tăng trưởng nợ nhóm 2: càng nhỏ càng tốt");
+                strBuilder.AppendLine("- NIM(Lãi thuần/TS sinh lời bình quân): càng cao càng tốt");
+                strBuilder.AppendLine("- CASA(Tiền gửi không kỳ hạn/Tổng tiền gửi): càng cao càng tốt");
+                strBuilder.AppendLine("- CIR(chi phí hoạt động/doanh thu hoạt động): càng nhỏ càng tốt");
+                strBuilder.AppendLine("- Tăng trưởng chi phí vốn: càng nhỏ càng tốt");
+                strBuilder.AppendLine("done!");
+
+                await BotInstance().SendTextMessageAsync(userId, strBuilder.ToString());
             }
             catch(Exception ex)
             {
@@ -182,3 +195,17 @@ namespace StockLib.Service
         }
     }
 }
+
+/// Kết luận
+/// Doanh thu: càng cao càng tốt
+/// LNST: càng cao càng tốt
+/// Trích lập dự phòng: càng nhỏ càng tốt
+/// CIR: càng nhỏ càng tốt
+/// Nim: càng cao càng tốt
+/// Tăng trưởng tín dụng: càng cao càng tốt,
+/// Giảm chi phí vốn: càng nhỏ càng tốt
+/// Casa: càng cao càng tốt
+/// Tỉ lệ nợ xấu: càng nhỏ càng tốt
+/// Tăng trưởng nợ xấu: càng nhỏ càng tốt
+/// Bao phủ nợ xấu: càng cao càng tốt
+/// <returns></returns>

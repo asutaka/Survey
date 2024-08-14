@@ -8,11 +8,16 @@ namespace StockLib.Service
 {
     public partial class BllService
     {
-        public async Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lInput)
         {
             try
             {
-                lNganHang = lNganHang.Take(15);
+                var lNganHang = lInput.Take(15).ToList();
+                if(!lNganHang.Contains("OCB"))
+                {
+                    lNganHang.Add("OCB");
+                }    
+
                 var configMain = _configMainRepo.GetAll().First();
                 var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
@@ -137,11 +142,16 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput)
         {
             try
             {
-                lNganHang = lNganHang.Take(15);
+                var lNganHang = lInput.Take(15).ToList();
+                if (!lNganHang.Contains("OCB"))
+                {
+                    lNganHang.Add("OCB");
+                }
+
                 var configMain = _configMainRepo.GetAll().First();
                 var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
@@ -219,11 +229,16 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lInput)
         {
             try
             {
-                lNganHang = lNganHang.Take(15);
+                var lNganHang = lInput.Take(15).ToList();
+                if (!lNganHang.Contains("OCB"))
+                {
+                    lNganHang.Add("OCB");
+                }
+
                 var configMain = _configMainRepo.GetAll().First();
                 var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
@@ -350,11 +365,15 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lNganHang)
+        public async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lInput)
         {
             try
             {
-                lNganHang = lNganHang.Take(15);
+                var lNganHang = lInput.Take(15).ToList();
+                if (!lNganHang.Contains("OCB"))
+                {
+                    lNganHang.Add("OCB");
+                }
                 var configMain = _configMainRepo.GetAll().First();
                 var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
@@ -381,11 +400,12 @@ namespace StockLib.Service
                         d = cur.d,
                         Nim = cur.nim_r ?? 0,
                         Casa = cur.casa_r ?? 0,
+                        Cir = cur.cir_r ?? 0,
                         ChiPhiVon = cur.cost_r ?? 0
                     });
                 }
 
-                var basicColumn = new HighchartBasicColumn($"NIM, CASA, Chi phí vốn Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"NIM, CASA, CIR, Chi phí vốn Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
                 {
                     new HighChartSeries_BasicColumn
                     {
@@ -406,11 +426,20 @@ namespace StockLib.Service
                     },
                     new HighChartSeries_BasicColumn
                     {
-                        data = lResult.Select(x => x.ChiPhiVon).ToList(),
-                        name = "Chi phí vốn",
+                        data = lResult.Select(x => x.Cir).ToList(),
+                        name = "CIR",
                         type = "spline",
                         dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
                         color = "#ffbf00",
+                        yAxis = 1,
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lResult.Select(x => x.ChiPhiVon).ToList(),
+                        name = "Tăng trưởng chi phí vốn",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "rgba(158, 159, 163, 0.5)",
                         yAxis = 1
                     }
                 });
