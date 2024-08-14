@@ -52,7 +52,42 @@ namespace StockLib.Utils
 
 
         [Display(Name = "Thu nhập lãi thuần")]
-        ThuNhapLaiThuan = 4385
+        ThuNhapLaiThuan = 4385,
+
+        [Display(Name = "Doanh thu thuần")]
+        DoanhThuThuan = 4590,
+        [Display(Name = "Lợi nhuận kế toán sau thuế")]
+        LNKTST = 4585,
+        [Display(Name = "Lãi từ tự doanh FVTPL")]
+        LaiFVTPL = 5434,
+        [Display(Name = "Lãi từ tự doanh HTM")]
+        LaiHTM = 5435,
+        [Display(Name = "Lãi từ tự doanh AFS")]
+        LaiAFS =5437,
+        [Display(Name = "Lãi từ hoạt động cho vay")]
+        LaiChoVay =5436,
+        [Display(Name = "Doanh thu môi giới")]
+        DoanhThuMoiGioi = 4599,
+
+        [Display(Name = "Lỗ từ tự doanh FVTPL")]
+        LoFVTPL = 5439,
+        [Display(Name = "Lỗ từ tự doanh HTM")]
+        LoHTM = 5440,
+        [Display(Name = "Lỗ từ tự doanh AFS")]
+        LoAFS = 5442,
+        [Display(Name = "Chi phí môi giới")]
+        ChiPhiMoiGioi = 5445,
+
+        [Display(Name = "Tài sản FVTPL")]
+        TaiSanFVTPL = 5372,
+        [Display(Name = "Tài sản HTM")]
+        TaiSanHTM = 5398,
+        [Display(Name = "Tài sản AFS")]
+        TaiSanAFS = 5374,
+        [Display(Name = "Tài sản cho vay")]
+        TaiSanChoVay = 5373,
+        [Display(Name = "Vốn chủ sở hữu")]
+        VonChuSoHuuCK = 4478
     }
 
     public enum EFinanceIndex
