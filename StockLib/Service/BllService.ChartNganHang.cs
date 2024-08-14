@@ -23,18 +23,7 @@ namespace StockLib.Service
                 if (!lFinancial.Any())
                     return null;
 
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if(configMain.quarter > 1)
-                {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
 
                 var lResult = new List<HighChart_LoiNhuanModel>();
                 foreach (var item in lNganHang)
@@ -66,8 +55,8 @@ namespace StockLib.Service
                     }
                     else
                     {
-                        var rateRevenue = (cur.rv / (prev.rv == 0 ? cur.rv : prev.rv));
-                        var rateProfit = (cur.pf / (prev.pf == 0 ? cur.pf : prev.pf));
+                        var rateRevenue = (cur.rv / (prev.rv == 0 ? 0.1 : prev.rv));
+                        var rateProfit = (cur.pf / (prev.pf == 0 ? 0.1 : prev.pf));
 
                         model.TangTruongDoanhThu = (double)Math.Round((-1 + rateRevenue) * 100, 1);
                         model.TangTruongLoiNhuan = (double)Math.Round((-1 + rateProfit) * 100, 1); ;
@@ -83,7 +72,7 @@ namespace StockLib.Service
                 var lTangTruongDoanhThu = lResult.Select(x => x.TangTruongDoanhThu).ToList();
                 var lTangTruongLoiNhuan = lResult.Select(x => x.TangTruongLoiNhuan).ToList();
 
-                var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {configMain.quarter}/{configMain.year} (QoQoY)", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
                 {
                      new HighChartSeries_BasicColumn
                     {
@@ -157,19 +146,6 @@ namespace StockLib.Service
                 if (!lFinancial.Any())
                     return null;
 
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
-                {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
-
                 var lResult = new List<HighChart_TinDung>();
                 foreach (var item in lNganHang)
                 {
@@ -194,7 +170,7 @@ namespace StockLib.Service
                     });
                 }
 
-                var basicColumn = new HighchartTangTruongTinDung($"Tăng trưởng tín dụng Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_TangTruongTinDung>
+                var basicColumn = new HighchartTangTruongTinDung($"Tăng trưởng tín dụng Quý {configMain.quarter}/{configMain.year} (YoY)", lNganHang.ToList(), new List<HighChartSeries_TangTruongTinDung>
                 {
                     new HighChartSeries_TangTruongTinDung
                     {
@@ -312,7 +288,7 @@ namespace StockLib.Service
                     });
                 }
 
-                var basicColumn = new HighchartBasicColumn($"Nợ xấu Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"Nợ xấu Quý {configMain.quarter}/{configMain.year} (QoQ)", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
                 {
                      new HighChartSeries_BasicColumn
                     {
@@ -405,7 +381,7 @@ namespace StockLib.Service
                     });
                 }
 
-                var basicColumn = new HighchartBasicColumn($"NIM, CASA, CIR, Chi phí vốn Quý {configMain.quarter}/{configMain.year}", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"NIM, CASA, CIR, Chi phí vốn Quý {configMain.quarter}/{configMain.year} (QoQ)", lNganHang.ToList(), new List<HighChartSeries_BasicColumn>
                 {
                     new HighChartSeries_BasicColumn
                     {
