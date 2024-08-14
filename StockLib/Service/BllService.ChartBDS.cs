@@ -36,7 +36,7 @@ namespace StockLib.Service
                     quarterPrev = 4;
                     yearPrev--;
                 }
-                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
                 var lResult = new List<HighChart_LoiNhuanModel>();
                 foreach (var item in lBDS)
@@ -75,7 +75,7 @@ namespace StockLib.Service
                         model.TangTruongLoiNhuan = (double)Math.Round((-1 + rateProfit) * 100, 1); ;
                     }
                     //Ty Suat Loi Nhuan
-                    model.TySuatLoiNhuan = model.DoanhThu == 0 ? int.MaxValue : Math.Round(cur.ce * 100 / model.DoanhThu, 1);
+                    model.TySuatLoiNhuan = cur.ce == 0 ? 0 : Math.Round(100 * (-1 + model.DoanhThu / cur.ce), 1);
 
                     lResult.Add(model);
                 }
@@ -119,15 +119,15 @@ namespace StockLib.Service
                         dataLabels = new HighChartDataLabel(),
                         yAxis = 1
                     },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTySuatLN,
-                        name = "Tỷ suất LN",
-                        type = "spline",
-                        color = "#ffbf00",
-                        dataLabels = new HighChartDataLabel(),
-                        yAxis = 1
-                    }
+                    //new HighChartSeries_BasicColumn
+                    //{
+                    //    data = lTySuatLN,
+                    //    name = "Biên LN",
+                    //    type = "spline",
+                    //    color = "#ffbf00",
+                    //    dataLabels = new HighChartDataLabel(),
+                    //    yAxis = 1
+                    //}
                 });
                 var strTitleYAxis = "(Đơn vị: tỷ)";
                 basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strTitleYAxis }, labels = new HighChartLabel{ format = "{value}" } },
