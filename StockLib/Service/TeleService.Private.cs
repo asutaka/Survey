@@ -186,6 +186,30 @@ namespace StockLib.Service
 
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
 
+                Thread.Sleep(1000);
+                //Tồn kho
+                var streamTonKho = await _bllService.Chart_BDS_TonKho(lBDS);
+                if (streamTonKho != null && streamTonKho.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
+                }
+
+                Thread.Sleep(1000);
+                //Người mua trả tiền trước
+                var streamNguoiMua = await _bllService.Chart_BDS_NguoiMua(lBDS);
+                if (streamNguoiMua != null && streamNguoiMua.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNguoiMua));
+                }
+
+                Thread.Sleep(1000);
+                //Nợ trên vốn chủ sở hữu
+                var streamNo = await _bllService.Chart_BDS_NoTrenVonChu(lBDS);
+                if (streamNo != null && streamNo.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                }
+
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }
             catch (Exception ex)

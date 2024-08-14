@@ -48,4 +48,29 @@
         public double Cir { get; set; }
         public double ChiPhiVon { get; set; }
     }
+
+    public class HighChart_TonKho
+    {
+        public string s { get; set; }
+        public int d { get; set; }
+        public double TonKho { get; set; }
+        public double TangTruong { get; set; }
+    }
+
+    public class HighChart_NguoiMua
+    {
+        public string s { get; set; }
+        public int d { get; set; }
+        public double NguoiMua { get; set; }
+        public double TangTruong { get; set; }
+    }
+
+    public class HighChart_NoTrenVonChu
+    {
+        public string s { get; set; }
+        public int d { get; set; }
+        public double VonChu { get; set; }
+        public double No { get; set; }
+        public double NoTrenVonChu { get; set; }
+    }
 }

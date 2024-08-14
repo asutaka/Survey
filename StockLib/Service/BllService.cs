@@ -13,6 +13,9 @@ namespace StockLib.Service
         Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lInput);
 
         Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
+        Task<Stream> Chart_BDS_TonKho(IEnumerable<string> lInput);
+        Task<Stream> Chart_BDS_NguoiMua(IEnumerable<string> lInput);
+        Task<Stream> Chart_BDS_NoTrenVonChu(IEnumerable<string> lInput);
     }
     public partial class BllService : IBllService
     {
