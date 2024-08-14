@@ -55,6 +55,11 @@ namespace StockLib.Service
                     await NganhBatDongSan(userId);
                     return;
                 }
+                if ("VIN".ToUpper().Equals(input.ToUpper()))//Chỉ số cổ phiếu VIN Group
+                {
+                    await VIN_INDEX(userId);
+                    return;
+                }
             }
 
             //var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.ToUpper()));
@@ -215,6 +220,49 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"TeleService.NganhBatDongSan|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task VIN_INDEX(long userId)
+        {
+            try
+            {
+                //Doanh Thu, Loi Nhuan
+                var streamLN = await _bllService.Chart_VIN_DoanhThu_LoiNhuan();
+                if (streamLN is null || streamLN.Length <= 500)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+
+                Thread.Sleep(1000);
+                //Tồn kho
+                var streamTonKho = await _bllService.Chart_VIN_TonKho();
+                if (streamTonKho != null && streamTonKho.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
+                }
+
+                Thread.Sleep(1000);
+                //Người mua trả tiền trước
+                var streamNguoiMua = await _bllService.Chart_VIN_NguoiMua();
+                if (streamNguoiMua != null && streamNguoiMua.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNguoiMua));
+                }
+
+                Thread.Sleep(1000);
+                //Nợ trên vốn chủ sở hữu
+                var streamNo = await _bllService.Chart_VIN_NoTrenVonChu();
+                if (streamNo != null && streamNo.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.VIN_INDEX|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
         }
     }
