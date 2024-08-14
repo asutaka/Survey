@@ -14,8 +14,12 @@ namespace StockLib.Service
             try
             {
                 var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
-                                        //&& x != "KSF"
-                                        ).Take(15);
+                                        ).Take(15).ToList();
+                lBDS.Remove("KSF");
+                lBDS.Remove("VPI");
+                lBDS.Add("DPG");
+                lBDS.Add("NTL");
+
                 var configMain = _configMainRepo.GetAll().First();
                 var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
