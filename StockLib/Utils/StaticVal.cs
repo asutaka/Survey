@@ -41,7 +41,15 @@
             "HPI",
             "NTC",
             "SIP",
-            "SNZ"
+            "SNZ",
+            "TID"
+        };
+
+        public static List<string> _lVin = new List<string>
+        {
+            "VIC",
+            "VHM",
+            "VRE"
         };
     }
 }

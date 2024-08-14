@@ -148,7 +148,13 @@ namespace StockLib.Service
                         };
 
                         var isKCN = StaticVal._lKCN.Contains(code);
-                        entityUpdate.type = isKCN ? 1 : 0;
+                        var type = isKCN ? 1 : 0;
+                        if(StaticVal._lVin.Contains(code))
+                        {
+                            type = 2;
+                        }
+
+                        entityUpdate.type = type;
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _bdsRepo.Update(entityUpdate);
 
