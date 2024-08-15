@@ -96,7 +96,7 @@ namespace StockLib.Service
         {
             try
             {
-                var url = ServiceSetting._chart;
+                var url = ServiceSetting._chartLocal;
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 var requestMessage = new HttpRequestMessage();

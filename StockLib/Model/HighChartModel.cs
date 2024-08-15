@@ -215,6 +215,7 @@
         public double pointPlacement { get; set; }
         public List<double> data { get; set; }
         public HighChartDataLabel dataLabels { get; set; }
+        public int yAxis { get; set; }
     }
 
     public class HighChartCredits

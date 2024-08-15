@@ -25,7 +25,7 @@ namespace StockLib.Service
                     return null;
 
                 var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThu_LoiNhuanBase(lNganHang, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf)));
+                return await Chart_DoanhThu_LoiNhuanBase(lNganHang, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf)), true);
             }
             catch (Exception ex)
             {

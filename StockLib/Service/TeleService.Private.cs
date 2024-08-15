@@ -275,37 +275,37 @@ namespace StockLib.Service
         {
             try
             {
-                var lChungKhoan = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Môi giới chứng khoán", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Môi giới chứng khoán", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
-                var streamLN = await _bllService.Chart_CK_DoanhThu_LoiNhuan(lChungKhoan);
+                var streamLN = await _bllService.Chart_CK_DoanhThu_LoiNhuan(lMaCK);
                 if (streamLN is null || streamLN.Length <= 500)
                     return;
 
                 await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
 
-                //Thread.Sleep(1000);
-                ////Tồn kho
-                //var streamTonKho = await _bllService.Chart_BDS_TonKho(lBDS);
-                //if (streamTonKho != null && streamTonKho.Length > 500)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
-                //}
+                Thread.Sleep(1000);
+                //Tăng trưởng Margin
+                var streamMargin = await _bllService.Chart_CK_TangTruongTinDung_RoomTinDung(lMaCK);
+                if (streamMargin != null && streamMargin.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamMargin));
+                }
 
-                //Thread.Sleep(1000);
-                ////Người mua trả tiền trước
-                //var streamNguoiMua = await _bllService.Chart_BDS_NguoiMua(lBDS);
-                //if (streamNguoiMua != null && streamNguoiMua.Length > 500)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNguoiMua));
-                //}
+                Thread.Sleep(1000);
+                //Thống kê Môi giới
+                var streamMoiGioi = await _bllService.Chart_CK_MoiGioi(lMaCK);
+                if (streamMoiGioi != null && streamMoiGioi.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamMoiGioi));
+                }
 
-                //Thread.Sleep(1000);
-                ////Nợ trên vốn chủ sở hữu
-                //var streamNo = await _bllService.Chart_BDS_NoTrenVonChu(lBDS);
-                //if (streamNo != null && streamNo.Length > 500)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
-                //}
+                Thread.Sleep(1000);
+                //Thống kê tự doanh
+                var streamTuDoanh = await _bllService.Chart_CK_TuDoanh(lMaCK);
+                if (streamTuDoanh != null && streamTuDoanh.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTuDoanh));
+                }
 
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }

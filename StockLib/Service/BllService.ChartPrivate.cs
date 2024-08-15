@@ -49,6 +49,10 @@ namespace StockLib.Service
                     {
                         var rateRevenue = (cur.Item2 / (prev.Item2 == 0 ? 0.1 : prev.Item2));
                         var rateProfit = (cur.Item3 / (prev.Item3 == 0 ? 0.1 : prev.Item3));
+                        if (rateRevenue > 100)
+                            rateRevenue = 100;
+                        if(rateProfit > 100)
+                            rateProfit = 100;
 
                         lTangTruongDoanhThu.Add(Math.Round((-1 + rateRevenue) * 100, 1));
                         lTangTruongLoiNhuan.Add(Math.Round((-1 + rateProfit) * 100, 1));
