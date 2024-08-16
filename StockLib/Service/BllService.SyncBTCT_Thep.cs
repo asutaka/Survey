@@ -3,11 +3,7 @@ using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -264,30 +260,31 @@ namespace StockLib.Service
                         }
 
                         //
-                        var TonKho = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TaiSanFVTPL);
-                        var NoTaiChinh = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TaiSanHTM);
-                        var VonChuSH = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TaiSanAFS);
+                        var TonKho = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TonKhoThep);
+                        var VayNganHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VayNganHan);
+                        var VayDaiHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VayDaiHan);
+                        var VonChuSH = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VonChuSoHuu);
 
                         switch (i)
                         {
-                            case 0: AssignData(TonKho?.Value1, NoTaiChinh?.Value1, VonChuSH?.Value1); break;
-                            case 1: AssignData(TonKho?.Value2, NoTaiChinh?.Value2, VonChuSH?.Value2); break;
-                            case 2: AssignData(TonKho?.Value3, NoTaiChinh?.Value3, VonChuSH?.Value3); break;
-                            case 3: AssignData(TonKho?.Value4, NoTaiChinh?.Value4, VonChuSH?.Value4); break;
-                            case 4: AssignData(TonKho?.Value5, NoTaiChinh?.Value5, VonChuSH?.Value5); break;
-                            case 5: AssignData(TonKho?.Value6, NoTaiChinh?.Value6, VonChuSH?.Value6); break;
-                            case 6: AssignData(TonKho?.Value7, NoTaiChinh?.Value7, VonChuSH?.Value7); break;
-                            case 7: AssignData(TonKho?.Value8, NoTaiChinh?.Value8, VonChuSH?.Value8); break;
+                            case 0: AssignData(TonKho?.Value1, VayNganHan?.Value1, VayDaiHan?.Value1, VonChuSH?.Value1); break;
+                            case 1: AssignData(TonKho?.Value2, VayNganHan?.Value2, VayDaiHan?.Value2, VonChuSH?.Value2); break;
+                            case 2: AssignData(TonKho?.Value3, VayNganHan?.Value3, VayDaiHan?.Value3, VonChuSH?.Value3); break;
+                            case 3: AssignData(TonKho?.Value4, VayNganHan?.Value4, VayDaiHan?.Value4, VonChuSH?.Value4); break;
+                            case 4: AssignData(TonKho?.Value5, VayNganHan?.Value5, VayDaiHan?.Value5, VonChuSH?.Value5); break;
+                            case 5: AssignData(TonKho?.Value6, VayNganHan?.Value6, VayDaiHan?.Value6, VonChuSH?.Value6); break;
+                            case 6: AssignData(TonKho?.Value7, VayNganHan?.Value7, VayDaiHan?.Value7, VonChuSH?.Value7); break;
+                            case 7: AssignData(TonKho?.Value8, VayNganHan?.Value8, VayDaiHan?.Value8, VonChuSH?.Value8); break;
                             default: break;
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _thepRepo.Update(entityUpdate);
 
-                        void AssignData(double? TonKho, double? NoTaiChinh, double? VonChuSH)
+                        void AssignData(double? TonKho, double? VayNganHan, double? VayDaiHan, double? VonChuSH)
                         {
                             entityUpdate.inv = TonKho ?? 0;
-                            entityUpdate.debt = NoTaiChinh ?? 0;
+                            entityUpdate.debt = VayNganHan ?? 0 + VayDaiHan ?? 0;
                             entityUpdate.eq = VonChuSH ?? 0;
                         }
                     }

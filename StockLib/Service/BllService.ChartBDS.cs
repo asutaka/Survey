@@ -242,7 +242,7 @@ namespace StockLib.Service
                         }
                     }
 
-                    //tang truong tin dung, room tin dung
+                    //
                     lVonChu.Add(cur.eq);
                     lNo.Add(cur.debt);
                     lNoTrenVonChu.Add(noTrenVonChu);

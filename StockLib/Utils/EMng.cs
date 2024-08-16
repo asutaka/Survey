@@ -23,6 +23,8 @@ namespace StockLib.Utils
         VonChuSoHuu = 2998,
         [Display(Name = "Tồn kho")]
         TonKho = 3006,
+        [Display(Name = "Tồn kho")]
+        TonKhoThep = 3027,
         [Display(Name = "Người mua trả tiền trước")]
         NguoiMuaTraTienTruoc = 3049,
 

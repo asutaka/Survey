@@ -325,36 +325,28 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Thép và sản phẩm thép", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
-                ////Doanh Thu, Loi Nhuan
-                //var streamLN = await _bllService.Chart_CK_DoanhThu_LoiNhuan(lMaCK);
-                //if (streamLN is null || streamLN.Length <= 500)
-                //    return;
+                //Doanh Thu, Loi Nhuan
+                var streamLN = await _bllService.Chart_Thep_DoanhThu_LoiNhuan(lMaCK);
+                if (streamLN is null || streamLN.Length <= 500)
+                    return;
 
-                //await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
 
-                //Thread.Sleep(1000);
-                ////Tăng trưởng Margin
-                //var streamMargin = await _bllService.Chart_CK_TangTruongTinDung_RoomTinDung(lMaCK);
-                //if (streamMargin != null && streamMargin.Length > 500)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamMargin));
-                //}
+                Thread.Sleep(1000);
+                //Tồn kho
+                var streamTonKho = await _bllService.Chart_Thep_TonKho(lMaCK);
+                if (streamTonKho != null && streamTonKho.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
+                }
 
-                //Thread.Sleep(1000);
-                ////Thống kê Môi giới
-                //var streamMoiGioi = await _bllService.Chart_CK_MoiGioi(lMaCK);
-                //if (streamMoiGioi != null && streamMoiGioi.Length > 500)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamMoiGioi));
-                //}
-
-                //Thread.Sleep(1000);
-                ////Thống kê tự doanh
-                //var streamTuDoanh = await _bllService.Chart_CK_TuDoanh(lMaCK);
-                //if (streamTuDoanh != null && streamTuDoanh.Length > 500)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTuDoanh));
-                //}
+                Thread.Sleep(1000);
+                //Nợ trên vốn chủ sở hữu
+                var streamNo = await _bllService.Chart_Thep_NoTrenVonChu(lMaCK);
+                if (streamNo != null && streamNo.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                }
 
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }

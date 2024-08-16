@@ -13,7 +13,9 @@ namespace StockLib.Service
                                                                 int d,
                                                                 IEnumerable<(string, double, double)> lCur,
                                                                 IEnumerable<(string, double, double)> lPrev,
-                                                                bool tysuatLN = false)
+                                                                bool tysuatLN = false,
+                                                                IEnumerable<(string, double)> lEx = null,
+                                                                bool bienLNGop = false)
         {
             try
             {
@@ -22,6 +24,7 @@ namespace StockLib.Service
                 var lTangTruongDoanhThu = new List<double>();
                 var lTangTruongLoiNhuan = new List<double>();
                 var lTySuatLoiNhuan = new List<double>();
+                var lBienLoiNhuanGop = new List<double>();
                 foreach (var item in lMaChungKhoan)
                 {
                     var cur = lCur.FirstOrDefault(x => x.Item1 == item);
@@ -61,6 +64,13 @@ namespace StockLib.Service
                     {
                         //Ty Suat Loi Nhuan
                         lTySuatLoiNhuan.Add(cur.Item2 == 0 ? 0 : Math.Round(cur.Item3 * 100 / cur.Item2, 1));
+                    }
+                    if (bienLNGop) 
+                    {
+                        if (lEx?.Any() ?? false)
+                        {
+                            lBienLoiNhuanGop.Add(Math.Round(lEx.FirstOrDefault(x => x.Item1 == item).Item2 * 100 / cur.Item2, 1));
+                        }
                     }
                 }
                 var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {configMain.quarter}/{configMain.year} (QoQoY)", lMaChungKhoan.ToList(), new List<HighChartSeries_BasicColumn>
@@ -108,6 +118,19 @@ namespace StockLib.Service
                     {
                         data = lTySuatLoiNhuan,
                         name = "Tỷ suất LN",
+                        type = "spline",
+                        color = "#ffbf00",
+                        dataLabels = new HighChartDataLabel(),
+                        yAxis = 1
+                    });
+                }
+                if(bienLNGop)
+                {
+                    //Biên lợi nhuận gộp
+                    basicColumn.series.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lTySuatLoiNhuan,
+                        name = "Biên LN Gộp",
                         type = "spline",
                         color = "#ffbf00",
                         dataLabels = new HighChartDataLabel(),

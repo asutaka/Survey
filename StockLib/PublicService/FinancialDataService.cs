@@ -35,7 +35,7 @@ namespace StockLib.PublicService
 
         public async Task SyncBCTC_Thep()
         {
-
+            await _bllService.SyncBCTC_Thep();
         }
 
         public async Task SyncBCTC_Khac()
