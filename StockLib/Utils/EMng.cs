@@ -11,6 +11,9 @@ namespace StockLib.Utils
         [Display(Name = "Lợi nhuận sau thuế")]
         LNST = 2212,
 
+        [Display(Name = "Lợi nhuận gộp")]
+        LNGop = 2217,
+
         [Display(Name = "Vay và nợ thuê tài chính ngắn hạn")]
         VayNganHan = 3077,
         [Display(Name = "Vay và nợ thuê tài chính dài hạn")]

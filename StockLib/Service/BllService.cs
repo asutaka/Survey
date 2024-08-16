@@ -8,6 +8,7 @@ namespace StockLib.Service
         Task SyncBCTC_BatDongSan();
         Task SyncBCTC_NganHang();
         Task SyncBCTC_ChungKhoan();
+        Task SyncBCTC_Thep();
 
         Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
@@ -37,6 +38,7 @@ namespace StockLib.Service
         private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialNHRepo _nhRepo;
         private readonly IFinancialCKRepo _ckRepo;
+        private readonly IFinancialThepRepo _thepRepo;
         private readonly IConfigMainRepo _configMainRepo;
         private readonly IAPIService _apiService;
         public BllService(ILogger<BllService> logger,
@@ -45,6 +47,7 @@ namespace StockLib.Service
                             IFinancialBDSRepo financialBDSRepo,
                             IFinancialNHRepo financialNHRepo,
                             IFinancialCKRepo financialCKRepo,
+                            IFinancialThepRepo financialThepRepo,
                             IConfigMainRepo configMainRepo,
                             IAPIService apiService)
         {
@@ -54,6 +57,7 @@ namespace StockLib.Service
             _bdsRepo = financialBDSRepo;
             _nhRepo = financialNHRepo;
             _ckRepo = financialCKRepo;
+            _thepRepo = financialThepRepo;
             _configMainRepo = configMainRepo;
             _apiService = apiService;
         }

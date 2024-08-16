@@ -27,6 +27,13 @@
             "Chứng khoán"
         };
 
+        public static List<string> _lThep = new List<string>
+        {
+            "Thep",
+            "Thép",
+            "Theps"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "VGC",
