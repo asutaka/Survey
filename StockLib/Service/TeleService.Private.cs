@@ -348,6 +348,7 @@ namespace StockLib.Service
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
                 }
 
+                await BotInstance().SendTextMessageAsync(userId, $"Giá HRC: https://tradingeconomics.com/commodity/hrc-steel");
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }
             catch (Exception ex)
