@@ -7,7 +7,7 @@ namespace StockLib.Service
 {
     public partial class BllService
     {
-        public async Task<Stream> Chart_Thep_DoanhThu_LoiNhuan(IEnumerable<string> lInput)
+        public async Task<Stream> Chart_BanLe_DoanhThu_LoiNhuan(IEnumerable<string> lInput)
         {
             try
             {
@@ -15,28 +15,28 @@ namespace StockLib.Service
 
                 var configMain = _configMainRepo.GetAll().First();
                 var d = int.Parse($"{configMain.year}{configMain.quarter}");
-                var lFinancial = _thepRepo.GetByFilter(Builders<Financial_Thep>.Filter.Eq(x => x.d, d));
+                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, d));
                 if (!lFinancial.Any())
                     return null;
 
-                var lFinancialPrev = _thepRepo.GetByFilter(Builders<Financial_Thep>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isBienLoiNhuanGop: true);
+                var lFinancialPrev = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
+                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isBienLoiNhuanRong: true);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.Chart_Thep_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.Chart_BanLe_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
             }
             return null;
         }
 
-        public async Task<Stream> Chart_Thep_TonKho(IEnumerable<string> lInput)
+        public async Task<Stream> Chart_BanLe_TonKho(IEnumerable<string> lInput)
         {
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
 
                 var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _thepRepo.GetByFilter(Builders<Financial_Thep>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
                     return null;
 
@@ -51,7 +51,7 @@ namespace StockLib.Service
                     quarterPrev = 4;
                     yearPrev--;
                 }
-                var lFinancialPrev = _thepRepo.GetByFilter(Builders<Financial_Thep>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+                var lFinancialPrev = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
                 var lTonKho = new List<double>();
                 var lTangTruongTonKho = new List<double>();
@@ -101,19 +101,19 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.Chart_Thep_TonKho|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.Chart_BanLe_TonKho|EXCEPTION| {ex.Message}");
             }
             return null;
         }
 
-        public async Task<Stream> Chart_Thep_NoTrenVonChu(IEnumerable<string> lInput)
+        public async Task<Stream> Chart_BanLe_NoTrenVonChu(IEnumerable<string> lInput)
         {
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
 
                 var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _thepRepo.GetByFilter(Builders<Financial_Thep>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
                 if (!lFinancial.Any())
                     return null;
 
@@ -182,7 +182,7 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.Chart_Thep_NoTrenVonChu|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.Chart_BanLe_NoTrenVonChu|EXCEPTION| {ex.Message}");
             }
             return null;
         }

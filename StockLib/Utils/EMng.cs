@@ -10,9 +10,10 @@ namespace StockLib.Utils
         GiaVon = 2207,
         [Display(Name = "Lợi nhuận sau thuế")]
         LNST = 2212,
-
         [Display(Name = "Lợi nhuận gộp")]
         LNGop = 2217,
+        [Display(Name = "Lợi nhuận ròng")]
+        LNRong = 2208,
 
         [Display(Name = "Vay và nợ thuê tài chính ngắn hạn")]
         VayNganHan = 3077,

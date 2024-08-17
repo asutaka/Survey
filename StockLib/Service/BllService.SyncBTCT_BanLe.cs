@@ -7,30 +7,31 @@ using System.Text;
 
 namespace StockLib.Service
 {
-    public partial class BllService 
+    public partial class BllService
     {
-        public async Task SyncBCTC_BatDongSan()
+        public async Task SyncBCTC_BanLe()
         {
             try
             {
                 var lStock = _stockRepo.GetAll();
-                var lBDS = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2357" 
-                                                                        || y.code == "8600")).Select(x => x.s);
+                var lStockFilter = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5379"
+                                                                                || y.code == "3530"
+                                                                                || y.code == "3577")).Select(x => x.s);
                 var configMain = _configMainRepo.GetAll().First();
 
-                foreach (var item in lBDS)
+                foreach (var item in lStockFilter)
                 {
-                    await SyncBCTC_BatDongSan_KQKD(item, configMain);
-                    await SyncBCTC_BatDongSan_BCCT(item, configMain);
+                    await SyncBCTC_BanLe_KQKD(item, configMain);
+                    await SyncBCTC_BanLe_CDKT(item, configMain);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.SyncBCTC_BatDongSan|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.SyncBCTC_BanLe|EXCEPTION| {ex.Message}");
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_KQKD(string code, ConfigMain config)
+        private async Task SyncBCTC_BanLe_KQKD(string code, ConfigMain config)
         {
             try
             {
@@ -39,31 +40,31 @@ namespace StockLib.Service
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
-                if (last.BasePeriodBegin / 100 > config.year) 
+                if (last.BasePeriodBegin / 100 > config.year)
                 {
                     var div = last.ReportTermID - config.quarter;
                     foreach (var item in lReportID.data)
                     {
                         var term = item.ReportTermID - div;
-                        if(term == 0)
+                        if (term == 0)
                         {
                             term = 4;
                             item.YearPeriod -= 1;
                         }
-                        var month = 0; 
-                        if(term == 1)
+                        var month = 0;
+                        if (term == 1)
                         {
                             month = 1;
                         }
-                        else if(term == 2)
+                        else if (term == 2)
                         {
                             month = 4;
                         }
-                        else if(term == 3)
+                        else if (term == 3)
                         {
                             month = 7;
                         }
-                        else if(term == 4)
+                        else if (term == 4)
                         {
                             month = 10;
                         }
@@ -71,9 +72,7 @@ namespace StockLib.Service
                         item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
                     }
                 }
-
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
-
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
                 for (int i = 0; i < lReportID.data.Count; i++)
@@ -85,11 +84,12 @@ namespace StockLib.Service
                     }
                     lSub.Add(lReportID.data[i]);
                 }
-                if(lSub.Any())
+                if (lSub.Any())
                 {
                     lBatch.Add(lSub.ToList());
                 }
-                
+
+
                 foreach (var item in lBatch)
                 {
                     var strBuilder = new StringBuilder();
@@ -120,26 +120,26 @@ namespace StockLib.Service
                         var year = element.BasePeriodBegin / 100;
                         var month = element.BasePeriodBegin - year * 100;
                         var quarter = 1;
-                        if(month >= 10)
+                        if (month >= 10)
                         {
                             quarter = 4;
                         }
-                        else if(month >= 7)
+                        else if (month >= 7)
                         {
                             quarter = 3;
                         }
-                        else if(month >= 4)
+                        else if (month >= 4)
                         {
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_BDS> filter = null;
-                        var builder = Builders<Financial_BDS>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_BDS>>
-                        {
-                            builder.Eq(x => x.s, code),
-                            builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
-                        };
+                        FilterDefinition<Financial_BanLe> filter = null;
+                        var builder = Builders<Financial_BanLe>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial_BanLe>>
+                            {
+                                builder.Eq(x => x.s, code),
+                                builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
+                            };
 
                         foreach (var itemFilter in lFilter)
                         {
@@ -151,18 +151,18 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _bdsRepo.GetByFilter(filter);
-                        Financial_BDS entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _banleRepo.GetByFilter(filter);
+                        Financial_BanLe entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             //insert
-                            entityUpdate = new Financial_BDS
+                            entityUpdate = new Financial_BanLe
                             {
                                 d = int.Parse($"{year}{quarter}"),
                                 s = code,
                                 t = (int)DateTimeOffset.Now.ToUnixTimeSeconds()
                             };
-                            _bdsRepo.InsertOne(entityUpdate);
+                            _banleRepo.InsertOne(entityUpdate);
                         }
 
                         //
@@ -184,16 +184,8 @@ namespace StockLib.Service
                             default: break;
                         };
 
-                        var isKCN = StaticVal._lKCN.Contains(code);
-                        var type = isKCN ? 1 : 0;
-                        if(StaticVal._lVin.Contains(code))
-                        {
-                            type = 2;
-                        }
-
-                        entityUpdate.type = type;
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _bdsRepo.Update(entityUpdate);
+                        _banleRepo.Update(entityUpdate);
 
                         void AssignData(double? DoanhThu, double? LoiNhuan, double? LoiNhuanGop, double? LoiNhuanRong)
                         {
@@ -207,11 +199,11 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.SyncBCTC_BatDongSan_KQKD|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.SyncBCTC_BanLe_KQKD|EXCEPTION| {ex.Message}");
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_BCCT(string code, ConfigMain config)
+        private async Task SyncBCTC_BanLe_CDKT(string code, ConfigMain config)
         {
             try
             {
@@ -252,7 +244,6 @@ namespace StockLib.Service
                         item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
                     }
                 }
-
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
@@ -314,9 +305,9 @@ namespace StockLib.Service
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_BDS> filter = null;
-                        var builder = Builders<Financial_BDS>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_BDS>>
+                        FilterDefinition<Financial_BanLe> filter = null;
+                        var builder = Builders<Financial_BanLe>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial_BanLe>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -332,49 +323,47 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _bdsRepo.GetByFilter(filter);
-                        Financial_BDS entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _banleRepo.GetByFilter(filter);
+                        Financial_BanLe entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             continue;
                         }
 
                         //
-                        var TonKho = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TonKho);
-                        var NguoiMua = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.NguoiMuaTraTienTruoc);
+                        var TonKho = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.TonKhoThep);
                         var VayNganHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VayNganHan);
                         var VayDaiHan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VayDaiHan);
-                        var VonChu = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VonChuSoHuu);
+                        var VonChuSH = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.VonChuSoHuu);
 
-                        switch(i)
+                        switch (i)
                         {
-                            case 0: AssignData(TonKho?.Value1, NguoiMua?.Value1, VayNganHan?.Value1, VayDaiHan?.Value1, VonChu?.Value1); break;
-                            case 1: AssignData(TonKho?.Value2, NguoiMua?.Value2, VayNganHan?.Value2, VayDaiHan?.Value2, VonChu?.Value2); break;
-                            case 2: AssignData(TonKho?.Value3, NguoiMua?.Value3, VayNganHan?.Value3, VayDaiHan?.Value3, VonChu?.Value3); break;
-                            case 3: AssignData(TonKho?.Value4, NguoiMua?.Value4, VayNganHan?.Value4, VayDaiHan?.Value4, VonChu?.Value4); break;
-                            case 4: AssignData(TonKho?.Value5, NguoiMua?.Value5, VayNganHan?.Value5, VayDaiHan?.Value5, VonChu?.Value5); break;
-                            case 5: AssignData(TonKho?.Value6, NguoiMua?.Value6, VayNganHan?.Value6, VayDaiHan?.Value6, VonChu?.Value6); break;
-                            case 6: AssignData(TonKho?.Value7, NguoiMua?.Value7, VayNganHan?.Value7, VayDaiHan?.Value7, VonChu?.Value7); break;
-                            case 7: AssignData(TonKho?.Value8, NguoiMua?.Value8, VayNganHan?.Value8, VayDaiHan?.Value8, VonChu?.Value8); break;
+                            case 0: AssignData(TonKho?.Value1, VayNganHan?.Value1, VayDaiHan?.Value1, VonChuSH?.Value1); break;
+                            case 1: AssignData(TonKho?.Value2, VayNganHan?.Value2, VayDaiHan?.Value2, VonChuSH?.Value2); break;
+                            case 2: AssignData(TonKho?.Value3, VayNganHan?.Value3, VayDaiHan?.Value3, VonChuSH?.Value3); break;
+                            case 3: AssignData(TonKho?.Value4, VayNganHan?.Value4, VayDaiHan?.Value4, VonChuSH?.Value4); break;
+                            case 4: AssignData(TonKho?.Value5, VayNganHan?.Value5, VayDaiHan?.Value5, VonChuSH?.Value5); break;
+                            case 5: AssignData(TonKho?.Value6, VayNganHan?.Value6, VayDaiHan?.Value6, VonChuSH?.Value6); break;
+                            case 6: AssignData(TonKho?.Value7, VayNganHan?.Value7, VayDaiHan?.Value7, VonChuSH?.Value7); break;
+                            case 7: AssignData(TonKho?.Value8, VayNganHan?.Value8, VayDaiHan?.Value8, VonChuSH?.Value8); break;
                             default: break;
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _bdsRepo.Update(entityUpdate);
+                        _banleRepo.Update(entityUpdate);
 
-                        void AssignData(double? tonkho, double? nguoimua, double? vayNganHan, double? vayDaiHan, double? vonchu)
+                        void AssignData(double? TonKho, double? VayNganHan, double? VayDaiHan, double? VonChuSH)
                         {
-                            entityUpdate.inv = tonkho ?? 0;
-                            entityUpdate.bp = nguoimua ?? 0;
-                            entityUpdate.debt = (vayNganHan ?? 0) + (vayDaiHan ?? 0);
-                            entityUpdate.eq = vonchu ?? 0;
+                            entityUpdate.inv = TonKho ?? 0;
+                            entityUpdate.debt = (VayNganHan ?? 0) + (VayDaiHan ?? 0);
+                            entityUpdate.eq = VonChuSH ?? 0;
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.SyncBCTC_BatDongSan_KQKD|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.SyncBCTC_BanLe_CDKT|EXCEPTION| {ex.Message}");
             }
         }
     }

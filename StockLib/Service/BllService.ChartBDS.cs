@@ -12,12 +12,12 @@ namespace StockLib.Service
         {
             try
             {
-                var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
+                var lMaCK = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
                                         ).Take(15).ToList();
-                lBDS.Remove("KSF");
-                lBDS.Remove("VPI");
-                lBDS.Add("DPG");
-                lBDS.Add("NTL");
+                lMaCK.Remove("KSF");
+                lMaCK.Remove("VPI");
+                lMaCK.Add("DPG");
+                lMaCK.Add("NTL");
 
                 var configMain = _configMainRepo.GetAll().First();
                 var d = int.Parse($"{configMain.year}{configMain.quarter}");
@@ -26,7 +26,7 @@ namespace StockLib.Service
                     return null;
 
                 var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThu_LoiNhuanBase(lBDS, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf)));
+                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
             }
             catch (Exception ex)
             {
@@ -298,7 +298,7 @@ namespace StockLib.Service
                     return null;
 
                 var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year-1}{configMain.quarter}")));
-                return await Chart_DoanhThu_LoiNhuanBase(StaticVal._lVin, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf)));
+                return await Chart_DoanhThuBase(StaticVal._lVin, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
             }
             catch (Exception ex)
             {

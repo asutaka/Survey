@@ -10,5 +10,7 @@ namespace StockLib.DAL.Entity
         public int t { get; set; }
         public double rv { get; set; }//Doanh thu
         public double pf { get; set; }//Lợi nhuận
+        public double pfg { get; set; }//Lợi nhuận Gộp 
+        public double pfn { get; set; }//Lợi nhuận Ròng
     }
 }

@@ -34,6 +34,13 @@
             "Theps"
         };
 
+        public static List<string> _lBanLe = new List<string>
+        {
+            "BanLe",
+            "Bán Lẻ",
+            "Ban Le"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "VGC",

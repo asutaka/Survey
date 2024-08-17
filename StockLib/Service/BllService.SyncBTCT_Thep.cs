@@ -14,12 +14,13 @@ namespace StockLib.Service
             try
             {
                 var lStock = _stockRepo.GetAll();
-                var lStockFilter = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Thép và sản phẩm thép")).Select(x => x.s);
+                var lStockFilter = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).Select(x => x.s);
+                var configMain = _configMainRepo.GetAll().First();
 
                 foreach (var item in lStockFilter)
                 {
-                    await SyncBCTC_Thep_KQKD(item);
-                    await SyncBCTC_Thep_BCCT(item);
+                    await SyncBCTC_Thep_KQKD(item, configMain);
+                    await SyncBCTC_Thep_BCCT(item, configMain);
                 }
             }
             catch (Exception ex)
@@ -28,7 +29,7 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_Thep_KQKD(string code)
+        private async Task SyncBCTC_Thep_KQKD(string code, ConfigMain config)
         {
             try
             {
@@ -36,6 +37,39 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
+                var last = lReportID.data.Last();
+                if (last.BasePeriodBegin / 100 > config.year)
+                {
+                    var div = last.ReportTermID - config.quarter;
+                    foreach (var item in lReportID.data)
+                    {
+                        var term = item.ReportTermID - div;
+                        if (term == 0)
+                        {
+                            term = 4;
+                            item.YearPeriod -= 1;
+                        }
+                        var month = 0;
+                        if (term == 1)
+                        {
+                            month = 1;
+                        }
+                        else if (term == 2)
+                        {
+                            month = 4;
+                        }
+                        else if (term == 3)
+                        {
+                            month = 7;
+                        }
+                        else if (term == 4)
+                        {
+                            month = 10;
+                        }
+
+                        item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
+                    }
+                }
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
@@ -133,28 +167,30 @@ namespace StockLib.Service
                         var DoanhThu = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.DoanhThu);
                         var LoiNhuan = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.LNST);
                         var LoiNhuanGop = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.LNGop);
+                        var LoiNhuanRong = lData?.data.FirstOrDefault(x => x.ReportnormId == (int)EReportNormId.LNRong);
 
                         switch (i)
                         {
-                            case 0: AssignData(DoanhThu?.Value1, LoiNhuan?.Value1, LoiNhuanGop?.Value1); break;
-                            case 1: AssignData(DoanhThu?.Value2, LoiNhuan?.Value2, LoiNhuanGop?.Value2); break;
-                            case 2: AssignData(DoanhThu?.Value3, LoiNhuan?.Value3, LoiNhuanGop?.Value3); break;
-                            case 3: AssignData(DoanhThu?.Value4, LoiNhuan?.Value4, LoiNhuanGop?.Value4); break;
-                            case 4: AssignData(DoanhThu?.Value5, LoiNhuan?.Value5, LoiNhuanGop?.Value5); break;
-                            case 5: AssignData(DoanhThu?.Value6, LoiNhuan?.Value6, LoiNhuanGop?.Value6); break;
-                            case 6: AssignData(DoanhThu?.Value7, LoiNhuan?.Value7, LoiNhuanGop?.Value7); break;
-                            case 7: AssignData(DoanhThu?.Value8, LoiNhuan?.Value8, LoiNhuanGop?.Value8); break;
+                            case 0: AssignData(DoanhThu?.Value1, LoiNhuan?.Value1, LoiNhuanGop?.Value1, LoiNhuanRong?.Value1); break;
+                            case 1: AssignData(DoanhThu?.Value2, LoiNhuan?.Value2, LoiNhuanGop?.Value2, LoiNhuanRong?.Value2); break;
+                            case 2: AssignData(DoanhThu?.Value3, LoiNhuan?.Value3, LoiNhuanGop?.Value3, LoiNhuanRong?.Value3); break;
+                            case 3: AssignData(DoanhThu?.Value4, LoiNhuan?.Value4, LoiNhuanGop?.Value4, LoiNhuanRong?.Value4); break;
+                            case 4: AssignData(DoanhThu?.Value5, LoiNhuan?.Value5, LoiNhuanGop?.Value5, LoiNhuanRong?.Value5); break;
+                            case 5: AssignData(DoanhThu?.Value6, LoiNhuan?.Value6, LoiNhuanGop?.Value6, LoiNhuanRong?.Value6); break;
+                            case 6: AssignData(DoanhThu?.Value7, LoiNhuan?.Value7, LoiNhuanGop?.Value7, LoiNhuanRong?.Value7); break;
+                            case 7: AssignData(DoanhThu?.Value8, LoiNhuan?.Value8, LoiNhuanGop?.Value8, LoiNhuanRong?.Value8); break;
                             default: break;
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
                         _thepRepo.Update(entityUpdate);
 
-                        void AssignData(double? DoanhThu, double? LoiNhuan, double? LoiNhuanGop)
+                        void AssignData(double? DoanhThu, double? LoiNhuan, double? LoiNhuanGop, double? LoiNhuanRong)
                         {
                             entityUpdate.rv = DoanhThu ?? 0;
                             entityUpdate.pf = LoiNhuan ?? 0;
                             entityUpdate.pfg = LoiNhuanGop ?? 0;
+                            entityUpdate.pfn = LoiNhuanRong ?? 0;
                         }
                     }
                 }
@@ -165,7 +201,7 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_Thep_BCCT(string code)
+        private async Task SyncBCTC_Thep_BCCT(string code, ConfigMain config)
         {
             try
             {
@@ -173,6 +209,39 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
+                var last = lReportID.data.Last();
+                if (last.BasePeriodBegin / 100 > config.year)
+                {
+                    var div = last.ReportTermID - config.quarter;
+                    foreach (var item in lReportID.data)
+                    {
+                        var term = item.ReportTermID - div;
+                        if (term == 0)
+                        {
+                            term = 4;
+                            item.YearPeriod -= 1;
+                        }
+                        var month = 0;
+                        if (term == 1)
+                        {
+                            month = 1;
+                        }
+                        else if (term == 2)
+                        {
+                            month = 4;
+                        }
+                        else if (term == 3)
+                        {
+                            month = 7;
+                        }
+                        else if (term == 4)
+                        {
+                            month = 10;
+                        }
+
+                        item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
+                    }
+                }
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
@@ -284,7 +353,7 @@ namespace StockLib.Service
                         void AssignData(double? TonKho, double? VayNganHan, double? VayDaiHan, double? VonChuSH)
                         {
                             entityUpdate.inv = TonKho ?? 0;
-                            entityUpdate.debt = VayNganHan ?? 0 + VayDaiHan ?? 0;
+                            entityUpdate.debt = (VayNganHan ?? 0) + (VayDaiHan ?? 0);
                             entityUpdate.eq = VonChuSH ?? 0;
                         }
                     }

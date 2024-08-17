@@ -48,13 +48,14 @@ namespace StockLib.Service
             try
             {
                 var lStock = _stockRepo.GetAll();
-                var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name == "Ngân hàng")).Select(x => x.s);
+                var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).Select(x => x.s);
+                var configMain = _configMainRepo.GetAll().First();
 
                 foreach (var item in lNganHang)
                 {
-                    await SyncBCTC_NganHang_KQKD(item);
+                    await SyncBCTC_NganHang_KQKD(item, configMain);
                     await SyncBCTC_NganHang_CIR(item);
-                    await SyncBCTC_NganHang_NIM_TinDung(item);
+                    await SyncBCTC_NganHang_NIM_TinDung(item, configMain);
                     await SyncBCTC_NgayCongBo(item);
                 }
 
@@ -82,7 +83,7 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_KQKD(string code)
+        private async Task SyncBCTC_NganHang_KQKD(string code, ConfigMain config)
         {
             try
             {
@@ -90,6 +91,39 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
+                var last = lReportID.data.Last();
+                if (last.BasePeriodBegin / 100 > config.year)
+                {
+                    var div = last.ReportTermID - config.quarter;
+                    foreach (var item in lReportID.data)
+                    {
+                        var term = item.ReportTermID - div;
+                        if (term == 0)
+                        {
+                            term = 4;
+                            item.YearPeriod -= 1;
+                        }
+                        var month = 0;
+                        if (term == 1)
+                        {
+                            month = 1;
+                        }
+                        else if (term == 2)
+                        {
+                            month = 4;
+                        }
+                        else if (term == 3)
+                        {
+                            month = 7;
+                        }
+                        else if (term == 4)
+                        {
+                            month = 10;
+                        }
+
+                        item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
+                    }
+                }
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 202001).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
@@ -334,7 +368,7 @@ namespace StockLib.Service
 
 
         private List<SubKQKD> _lSubKQKD = new List<SubKQKD>();
-        private async Task SubBCTC_KQKD(string code)
+        private async Task SubBCTC_KQKD(string code, ConfigMain config)
         {
             try
             {
@@ -347,6 +381,39 @@ namespace StockLib.Service
                 }
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
+                var last = lReportID.data.Last();
+                if (last.BasePeriodBegin / 100 > config.year)
+                {
+                    var div = last.ReportTermID - config.quarter;
+                    foreach (var item in lReportID.data)
+                    {
+                        var term = item.ReportTermID - div;
+                        if (term == 0)
+                        {
+                            term = 4;
+                            item.YearPeriod -= 1;
+                        }
+                        var month = 0;
+                        if (term == 1)
+                        {
+                            month = 1;
+                        }
+                        else if (term == 2)
+                        {
+                            month = 4;
+                        }
+                        else if (term == 3)
+                        {
+                            month = 7;
+                        }
+                        else if (term == 4)
+                        {
+                            month = 10;
+                        }
+
+                        item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
+                    }
+                }
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 201901).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
@@ -431,7 +498,7 @@ namespace StockLib.Service
         }
 
         private List<SubCDKT> _lSubCDKT = new List<SubCDKT>();
-        private async Task SubBCTC_CDKT(string code)
+        private async Task SubBCTC_CDKT(string code, ConfigMain config)
         {
             try
             {
@@ -440,6 +507,39 @@ namespace StockLib.Service
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
+                var last = lReportID.data.Last();
+                if (last.BasePeriodBegin / 100 > config.year)
+                {
+                    var div = last.ReportTermID - config.quarter;
+                    foreach (var item in lReportID.data)
+                    {
+                        var term = item.ReportTermID - div;
+                        if (term == 0)
+                        {
+                            term = 4;
+                            item.YearPeriod -= 1;
+                        }
+                        var month = 0;
+                        if (term == 1)
+                        {
+                            month = 1;
+                        }
+                        else if (term == 2)
+                        {
+                            month = 4;
+                        }
+                        else if (term == 3)
+                        {
+                            month = 7;
+                        }
+                        else if (term == 4)
+                        {
+                            month = 10;
+                        }
+
+                        item.BasePeriodBegin = int.Parse($"{item.YearPeriod}{month.To2Digit()}");
+                    }
+                }
                 lReportID.data = lReportID.data.Where(x => (x.Isunited == 0 || x.Isunited == 1) && x.BasePeriodBegin >= 201901).ToList();
                 var lBatch = new List<List<ReportDataIDDetailResponse>>();
                 var lSub = new List<ReportDataIDDetailResponse>();
@@ -535,12 +635,12 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_NIM_TinDung(string code)
+        private async Task SyncBCTC_NganHang_NIM_TinDung(string code, ConfigMain config)
         {
             try
             {
-                await SubBCTC_KQKD(code);
-                await SubBCTC_CDKT(code);
+                await SubBCTC_KQKD(code, config);
+                await SubBCTC_CDKT(code, config);
 
                 var count = _lSubKQKD.Count();
 

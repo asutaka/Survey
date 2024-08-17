@@ -12,10 +12,10 @@ namespace StockLib.Service
         {
             try
             {
-                var lNganHang = lInput.Take(15).ToList();
-                if(!lNganHang.Contains("OCB"))
+                var lMaCK = lInput.Take(15).ToList();
+                if(!lMaCK.Contains("OCB"))
                 {
-                    lNganHang.Add("OCB");
+                    lMaCK.Add("OCB");
                 }    
 
                 var configMain = _configMainRepo.GetAll().First();
@@ -25,7 +25,7 @@ namespace StockLib.Service
                     return null;
 
                 var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThu_LoiNhuanBase(lNganHang, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf)), true);
+                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
             }
             catch (Exception ex)
             {

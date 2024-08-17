@@ -65,6 +65,11 @@ namespace StockLib.Service
                     await NganhThep(userId);
                     return;
                 }
+                if (StaticVal._lBanLe.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Bán Lẻ
+                {
+                    await NganhBanLe(userId);
+                    return;
+                }
                 if ("VIN".ToUpper().Equals(input.ToUpper()))//Chỉ số cổ phiếu VIN Group
                 {
                     await VIN_INDEX(userId);
@@ -139,7 +144,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lNganHang = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Ngân hàng", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lNganHang = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_NganHang_DoanhThu_LoiNhuan(lNganHang);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -193,7 +198,8 @@ namespace StockLib.Service
         {
             try
             {
-                var lBDS = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Bất động sản", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lBDS = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2357"
+                                                                        || y.code == "8600")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_BDS_DoanhThu_LoiNhuan(lBDS);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -280,7 +286,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Môi giới chứng khoán", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8777")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_CK_DoanhThu_LoiNhuan(lMaCK);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -324,7 +330,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.name.Equals("Thép và sản phẩm thép", StringComparison.OrdinalIgnoreCase))).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_Thep_DoanhThu_LoiNhuan(lMaCK);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -354,6 +360,44 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"TeleService.NganhThep|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhBanLe(long userId)
+        {
+            try
+            {
+                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5379"
+                                                                                || y.code == "3530"
+                                                                                || y.code == "3577")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                //Doanh Thu, Loi Nhuan
+                var streamLN = await _bllService.Chart_BanLe_DoanhThu_LoiNhuan(lMaCK);
+                if (streamLN is null || streamLN.Length <= 500)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+
+                Thread.Sleep(1000);
+                //Tồn kho
+                var streamTonKho = await _bllService.Chart_BanLe_TonKho(lMaCK);
+                if (streamTonKho != null && streamTonKho.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
+                }
+
+                Thread.Sleep(1000);
+                //Nợ trên vốn chủ sở hữu
+                var streamNo = await _bllService.Chart_BanLe_NoTrenVonChu(lMaCK);
+                if (streamNo != null && streamNo.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhBanLe|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
         }
     }

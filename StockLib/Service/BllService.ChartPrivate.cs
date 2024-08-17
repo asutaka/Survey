@@ -8,14 +8,17 @@ namespace StockLib.Service
     public partial class BllService
     {
         //Item1: s; Item2: rv; Item3: pf
-        private async Task<Stream> Chart_DoanhThu_LoiNhuanBase(List<string> lMaChungKhoan,
+        private async Task<Stream> Chart_DoanhThuBase(List<string> lMaChungKhoan,
                                                                 ConfigMain configMain,
                                                                 int d,
-                                                                IEnumerable<(string, double, double)> lCur,
-                                                                IEnumerable<(string, double, double)> lPrev,
-                                                                bool tysuatLN = false,
+                                                                IEnumerable<(string, double, double, double, double)> lCur,
+                                                                IEnumerable<(string, double, double, double, double)> lPrev,
                                                                 IEnumerable<(string, double)> lEx = null,
-                                                                bool bienLNGop = false)
+                                                                bool isTangTruongDoanhThu = false,
+                                                                bool isTangTruongLoiNhuan = false,
+                                                                bool isBienLoiNhuan = false,
+                                                                bool isBienLoiNhuanGop = false,
+                                                                bool isBienLoiNhuanRong = false)
         {
             try
             {
@@ -23,8 +26,9 @@ namespace StockLib.Service
                 var lLoiNhuan = new List<double>();
                 var lTangTruongDoanhThu = new List<double>();
                 var lTangTruongLoiNhuan = new List<double>();
-                var lTySuatLoiNhuan = new List<double>();
+                var lBienLoiNhuan = new List<double>();
                 var lBienLoiNhuanGop = new List<double>();
+                var lBienLoiNhuanRong = new List<double>();
                 foreach (var item in lMaChungKhoan)
                 {
                     var cur = lCur.FirstOrDefault(x => x.Item1 == item);
@@ -34,7 +38,7 @@ namespace StockLib.Service
                         lLoiNhuan.Add(0);
                         lTangTruongDoanhThu.Add(0);
                         lTangTruongLoiNhuan.Add(0);
-                        lTySuatLoiNhuan.Add(0);
+                        lBienLoiNhuan.Add(0);
                         continue;
                     }
                     var prev = lPrev.FirstOrDefault(x => x.Item1 == item);
@@ -43,34 +47,54 @@ namespace StockLib.Service
                     lDoanhThu.Add(cur.Item2);
                     lLoiNhuan.Add(cur.Item3);
 
-                    if (prev.Item1 is null)
+                    if(isTangTruongDoanhThu)
                     {
-                        lTangTruongDoanhThu.Add(0);
-                        lTangTruongLoiNhuan.Add(0);
-                    }
-                    else
-                    {
-                        var rateRevenue = (cur.Item2 / (prev.Item2 == 0 ? 0.1 : prev.Item2));
-                        var rateProfit = (cur.Item3 / (prev.Item3 == 0 ? 0.1 : prev.Item3));
-                        if (rateRevenue > 100)
-                            rateRevenue = 100;
-                        if(rateProfit > 100)
-                            rateProfit = 100;
-
-                        lTangTruongDoanhThu.Add(Math.Round((-1 + rateRevenue) * 100, 1));
-                        lTangTruongLoiNhuan.Add(Math.Round((-1 + rateProfit) * 100, 1));
-                    }
-                    if(tysuatLN)
-                    {
-                        //Ty Suat Loi Nhuan
-                        lTySuatLoiNhuan.Add(cur.Item2 == 0 ? 0 : Math.Round(cur.Item3 * 100 / cur.Item2, 1));
-                    }
-                    if (bienLNGop) 
-                    {
-                        if (lEx?.Any() ?? false)
+                        if (prev.Item1 is null)
                         {
-                            lBienLoiNhuanGop.Add(Math.Round(lEx.FirstOrDefault(x => x.Item1 == item).Item2 * 100 / cur.Item2, 1));
+                            lTangTruongDoanhThu.Add(0);
                         }
+                        else
+                        {
+                            var rateRevenue = (cur.Item2 / (prev.Item2 == 0 ? 0.9 : prev.Item2));
+                            if (rateRevenue > 100)
+                                rateRevenue = 100;
+
+                            lTangTruongDoanhThu.Add(Math.Round((-1 + rateRevenue) * 100, 1));
+                        }
+                    }
+
+                    if (isTangTruongLoiNhuan)
+                    {
+                        if (prev.Item1 is null)
+                        {
+                            lTangTruongLoiNhuan.Add(0);
+                        }
+                        else
+                        {
+                            var rateProfit = (cur.Item3 / (prev.Item3 == 0 ? 0.9 : prev.Item3));
+                            if (rateProfit > 100)
+                                rateProfit = 100;
+
+                            lTangTruongLoiNhuan.Add(Math.Round((-1 + rateProfit) * 100, 1));
+                        }
+                    }
+                   
+                    if(isBienLoiNhuan)
+                    {
+                        //Biên Lợi Nhuận
+                        lBienLoiNhuan.Add(cur.Item2 == 0 ? 0 : Math.Round(cur.Item3 * 100 / cur.Item2, 1));
+                    }
+
+                    if (isBienLoiNhuanGop)
+                    {
+                        //Biên Lợi Nhuận Gộp
+                        lBienLoiNhuanGop.Add(cur.Item2 == 0 ? 0 : Math.Round(cur.Item4 * 100 / cur.Item2, 1));
+                    }
+
+                    if (isBienLoiNhuanRong)
+                    {
+                        //Biên Lợi Nhuận Ròng
+                        lBienLoiNhuanRong.Add(cur.Item2 == 0 ? 0 : Math.Round(cur.Item5 * 100 / cur.Item2, 1));
                     }
                 }
                 var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {configMain.quarter}/{configMain.year} (QoQoY)", lMaChungKhoan.ToList(), new List<HighChartSeries_BasicColumn>
@@ -88,8 +112,15 @@ namespace StockLib.Service
                         name = "Lợi nhuận",
                         type = "column",
                         color = "#C00000"
-                    },
-                    new HighChartSeries_BasicColumn
+                    }
+                });
+                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = "(Đơn vị: tỷ)" }, labels = new HighChartLabel{ format = "{value}" } },
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+
+                if (isTangTruongDoanhThu)
+                {
+                    //Tăng trưởng Doanh Thu
+                    basicColumn.series.Add(new HighChartSeries_BasicColumn
                     {
                         data = lTangTruongDoanhThu,
                         name = "Tăng trưởng DT",
@@ -97,8 +128,13 @@ namespace StockLib.Service
                         color = "#012060",
                         dataLabels = new HighChartDataLabel(),
                         yAxis = 1
-                    },
-                    new HighChartSeries_BasicColumn
+                    });
+                }
+
+                if (isTangTruongLoiNhuan)
+                {
+                    //Tăng trưởng Lợi Nhuận
+                    basicColumn.series.Add(new HighChartSeries_BasicColumn
                     {
                         data = lTangTruongLoiNhuan,
                         name = "Tăng trưởng LN",
@@ -106,31 +142,16 @@ namespace StockLib.Service
                         color = "#C00000",
                         dataLabels = new HighChartDataLabel(),
                         yAxis = 1
-                    }
-                });
-                basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = "(Đơn vị: tỷ)" }, labels = new HighChartLabel{ format = "{value}" } },
-                                                                 new HighChartYAxis { title = new HighChartTitle { text = string.Empty }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
-
-                if(tysuatLN)
-                {
-                    //Ty Suat Loi Nhuan
-                    basicColumn.series.Add(new HighChartSeries_BasicColumn
-                    {
-                        data = lTySuatLoiNhuan,
-                        name = "Tỷ suất LN",
-                        type = "spline",
-                        color = "#ffbf00",
-                        dataLabels = new HighChartDataLabel(),
-                        yAxis = 1
                     });
                 }
-                if(bienLNGop)
+
+                if (isBienLoiNhuan)
                 {
-                    //Biên lợi nhuận gộp
+                    //Biên Lợi Nhuận
                     basicColumn.series.Add(new HighChartSeries_BasicColumn
                     {
-                        data = lTySuatLoiNhuan,
-                        name = "Biên LN Gộp",
+                        data = lBienLoiNhuan,
+                        name = "Biên Lợi Nhuận",
                         type = "spline",
                         color = "#ffbf00",
                         dataLabels = new HighChartDataLabel(),
@@ -138,6 +159,33 @@ namespace StockLib.Service
                     });
                 }
 
+                if (isBienLoiNhuanGop)
+                {
+                    //Biên Lợi Nhuận Gộp
+                    basicColumn.series.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lBienLoiNhuanGop,
+                        name = "Biên Lợi Nhuận Gộp",
+                        type = "spline",
+                        color = "#ffbf00",
+                        dataLabels = new HighChartDataLabel(),
+                        yAxis = 1
+                    });
+                }
+
+                if (isBienLoiNhuanRong)
+                {
+                    //Biên Lợi Nhuận Ròng
+                    basicColumn.series.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lBienLoiNhuanRong,
+                        name = "Biên Lợi Nhuận Ròng",
+                        type = "spline",
+                        color = "#ffbf00",
+                        dataLabels = new HighChartDataLabel(),
+                        yAxis = 1
+                    });
+                }
                 var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);
                 return await _apiService.GetChartImage(body);
