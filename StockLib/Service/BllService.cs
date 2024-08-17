@@ -10,6 +10,7 @@ namespace StockLib.Service
         Task SyncBCTC_ChungKhoan();
         Task SyncBCTC_Thep();
         Task SyncBCTC_BanLe();
+        Task SyncBCTC_Dien();
 
         Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
@@ -38,6 +39,9 @@ namespace StockLib.Service
         Task<Stream> Chart_BanLe_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         Task<Stream> Chart_BanLe_TonKho(IEnumerable<string> lInput);
         Task<Stream> Chart_BanLe_NoTrenVonChu(IEnumerable<string> lInput);
+
+        Task<Stream> Chart_Dien_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
+        Task<Stream> Chart_Dien_NoTrenVonChu(IEnumerable<string> lInput);
     }
     public partial class BllService : IBllService
     {
@@ -49,6 +53,7 @@ namespace StockLib.Service
         private readonly IFinancialCKRepo _ckRepo;
         private readonly IFinancialThepRepo _thepRepo;
         private readonly IFinancialBanLeRepo _banleRepo;
+        private readonly IFinancialDienRepo _dienRepo;
         private readonly IConfigMainRepo _configMainRepo;
         private readonly IAPIService _apiService;
         public BllService(ILogger<BllService> logger,
@@ -59,6 +64,7 @@ namespace StockLib.Service
                             IFinancialCKRepo financialCKRepo,
                             IFinancialThepRepo financialThepRepo,
                             IFinancialBanLeRepo financialBanLeRepo,
+                            IFinancialDienRepo financialDienRepo,
                             IConfigMainRepo configMainRepo,
                             IAPIService apiService)
         {
@@ -70,6 +76,7 @@ namespace StockLib.Service
             _ckRepo = financialCKRepo;
             _thepRepo = financialThepRepo;
             _banleRepo = financialBanLeRepo;
+            _dienRepo = financialDienRepo;
             _configMainRepo = configMainRepo;
             _apiService = apiService;
         }

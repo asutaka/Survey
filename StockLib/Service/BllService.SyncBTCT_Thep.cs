@@ -20,7 +20,7 @@ namespace StockLib.Service
                 foreach (var item in lStockFilter)
                 {
                     await SyncBCTC_Thep_KQKD(item, configMain);
-                    await SyncBCTC_Thep_BCCT(item, configMain);
+                    await SyncBCTC_Thep_CDKT(item, configMain);
                 }
             }
             catch (Exception ex)
@@ -201,7 +201,7 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_Thep_BCCT(string code, ConfigMain config)
+        private async Task SyncBCTC_Thep_CDKT(string code, ConfigMain config)
         {
             try
             {
@@ -361,7 +361,7 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.SyncBCTC_Thep_BCCT|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.SyncBCTC_Thep_CDKT|EXCEPTION| {ex.Message}");
             }
         }
     }

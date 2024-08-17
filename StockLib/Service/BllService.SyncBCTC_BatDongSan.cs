@@ -21,7 +21,7 @@ namespace StockLib.Service
                 foreach (var item in lBDS)
                 {
                     await SyncBCTC_BatDongSan_KQKD(item, configMain);
-                    await SyncBCTC_BatDongSan_BCCT(item, configMain);
+                    await SyncBCTC_BatDongSan_CDKT(item, configMain);
                 }
             }
             catch (Exception ex)
@@ -211,7 +211,7 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_BCCT(string code, ConfigMain config)
+        private async Task SyncBCTC_BatDongSan_CDKT(string code, ConfigMain config)
         {
             try
             {
@@ -374,7 +374,7 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.SyncBCTC_BatDongSan_KQKD|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.SyncBCTC_BatDongSan_CDKT|EXCEPTION| {ex.Message}");
             }
         }
     }

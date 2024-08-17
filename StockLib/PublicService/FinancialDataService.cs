@@ -9,6 +9,7 @@ namespace StockLib.PublicService
         Task SyncBCTC_ChungKhoan();
         Task SyncBCTC_Thep();
         Task SyncBCTC_BanLe();
+        Task SyncBCTC_Dien();
         Task SyncBCTC_Khac();
     }
     public class FinancialDataService : IFinancialDataService
@@ -42,6 +43,11 @@ namespace StockLib.PublicService
         public async Task SyncBCTC_BanLe()
         {
             await _bllService.SyncBCTC_BanLe();
+        }
+
+        public async Task SyncBCTC_Dien()
+        {
+            await _bllService.SyncBCTC_Dien();
         }
 
         public async Task SyncBCTC_Khac()

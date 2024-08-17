@@ -41,6 +41,12 @@
             "Ban Le"
         };
 
+        public static List<string> _lDien = new List<string>
+        {
+            "Dien",
+            "Điện"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "VGC",

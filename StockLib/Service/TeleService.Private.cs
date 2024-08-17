@@ -70,6 +70,11 @@ namespace StockLib.Service
                     await NganhBanLe(userId);
                     return;
                 }
+                if (StaticVal._lDien.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Điện
+                {
+                    await NganhDien(userId);
+                    return;
+                }
                 if ("VIN".ToUpper().Equals(input.ToUpper()))//Chỉ số cổ phiếu VIN Group
                 {
                     await VIN_INDEX(userId);
@@ -388,6 +393,34 @@ namespace StockLib.Service
                 Thread.Sleep(1000);
                 //Nợ trên vốn chủ sở hữu
                 var streamNo = await _bllService.Chart_BanLe_NoTrenVonChu(lMaCK);
+                if (streamNo != null && streamNo.Length > 500)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhBanLe|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhDien(long userId)
+        {
+            try
+            {
+                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7535")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                //Doanh Thu, Loi Nhuan
+                var streamLN = await _bllService.Chart_Dien_DoanhThu_LoiNhuan(lMaCK);
+                if (streamLN is null || streamLN.Length <= 500)
+                    return;
+
+                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
+
+                Thread.Sleep(1000);
+                //Nợ trên vốn chủ sở hữu
+                var streamNo = await _bllService.Chart_Dien_NoTrenVonChu(lMaCK);
                 if (streamNo != null && streamNo.Length > 500)
                 {
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
