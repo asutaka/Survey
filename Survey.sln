@@ -26,6 +26,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzeStock", "AnalyzeStock\AnalyzeStock.csproj", "{B03CC15E-C010-4984-9049-9026760E0298}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +138,18 @@ Global
 		{BA73BD59-89F6-4A1F-B84D-7BD73D661F32}.Release|x64.Build.0 = Release|Any CPU
 		{BA73BD59-89F6-4A1F-B84D-7BD73D661F32}.Release|x86.ActiveCfg = Release|Any CPU
 		{BA73BD59-89F6-4A1F-B84D-7BD73D661F32}.Release|x86.Build.0 = Release|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Debug|x64.Build.0 = Debug|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Debug|x86.Build.0 = Debug|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Release|x64.ActiveCfg = Release|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Release|x64.Build.0 = Release|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Release|x86.ActiveCfg = Release|Any CPU
+		{B03CC15E-C010-4984-9049-9026760E0298}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

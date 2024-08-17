@@ -10,3 +10,6 @@ ImportDataAPI
 TeleStock
 - Dùng để lắng nghe các event của người dùng để trả lời hoặc cung cấp thông tin cho người dùng
 
+AnalyzeStock
+- Dùng để thống kê và noti tự động cho nhóm những thông số, chỉ báo và tín hiệu
+
