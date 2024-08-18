@@ -5,10 +5,6 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Survey", "Survey\Survey.csproj", "{B7E06635-7CE2-4B03-A1A0-B70FC1C205ED}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockBridge", "BridgeStock\StockBridge.csproj", "{75EE64F5-0768-422C-9BB3-30039F60199A}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockBridgeAPI", "StockBridgeAPI\StockBridgeAPI.csproj", "{072E9D11-F627-42E0-9EF3-6EBAAE509E29}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SLib", "SLib\SLib.csproj", "{C5170F2B-EE61-4887-AC2E-81C021253BBD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockScout", "StockScout\StockScout.csproj", "{27B10A25-F630-4435-8177-5601358CD24D}"
@@ -26,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnalyzeStock", "AnalyzeStock\AnalyzeStock.csproj", "{B03CC15E-C010-4984-9049-9026760E0298}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzeStock", "AnalyzeStock\AnalyzeStock.csproj", "{B03CC15E-C010-4984-9049-9026760E0298}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,26 +42,6 @@ Global
 		{B7E06635-7CE2-4B03-A1A0-B70FC1C205ED}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B7E06635-7CE2-4B03-A1A0-B70FC1C205ED}.Release|x64.ActiveCfg = Release|Any CPU
 		{B7E06635-7CE2-4B03-A1A0-B70FC1C205ED}.Release|x86.ActiveCfg = Release|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Release|x64.ActiveCfg = Release|Any CPU
-		{75EE64F5-0768-422C-9BB3-30039F60199A}.Release|x86.ActiveCfg = Release|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|x64.Build.0 = Debug|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Debug|x86.Build.0 = Debug|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|Any CPU.Build.0 = Release|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|x64.ActiveCfg = Release|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|x64.Build.0 = Release|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|x86.ActiveCfg = Release|Any CPU
-		{072E9D11-F627-42E0-9EF3-6EBAAE509E29}.Release|x86.Build.0 = Release|Any CPU
 		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5170F2B-EE61-4887-AC2E-81C021253BBD}.Debug|x64.ActiveCfg = Debug|Any CPU
