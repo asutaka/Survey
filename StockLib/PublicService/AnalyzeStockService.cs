@@ -80,19 +80,19 @@ namespace StockLib.PublicService
                         return;
                     }
                     #endregion
-                    ////Thống kê nhóm ngành
-                    //try
-                    //{
-                    //    var chibao = await _analyzeService.ThongkeNhomNganh();
-                    //    if (chibao.Item1 > 0)
-                    //    {
-                    //        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                    //    }
-                    //}
-                    //catch (Exception ex)
-                    //{
-                    //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongkeNhomNganh)| {ex.Message}");
-                    //}
+                    //Thống kê nhóm ngành
+                    try
+                    {
+                        var chibao = await _analyzeService.ThongkeNhomNganh();
+                        if (chibao.Item1 > 0)
+                        {
+                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongkeNhomNganh)| {ex.Message}");
+                    }
 
                     //Thống kê Foreign
                     try
