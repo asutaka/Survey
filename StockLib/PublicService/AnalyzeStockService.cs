@@ -17,6 +17,7 @@ namespace StockLib.PublicService
         private readonly ILogger<AnalyzeStockService> _logger;
         private readonly ITeleService _teleService;
         private readonly IAnalyzeService _analyzeService;
+        private readonly ICalculateService _calculateService;
 
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
@@ -24,11 +25,13 @@ namespace StockLib.PublicService
         private const long _idMain = 1066022551;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
                                     ITeleService teleService,
-                                    IAnalyzeService analyzeService)
+                                    IAnalyzeService analyzeService,
+                                    ICalculateService calculateService)
         {
             _logger = logger;
             _teleService = teleService;
             _analyzeService = analyzeService;
+            _calculateService = calculateService;
         }
         public async Task AnalyzeJob()
         {
@@ -148,6 +151,23 @@ namespace StockLib.PublicService
                     catch (Exception ex)
                     {
                         _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongKeTuDoanhHSX)| {ex.Message}");
+                    }
+
+                    //Chỉ báo kỹ thuật
+                    try
+                    {
+                        var chibao = await _calculateService.ChiBaoKyThuat(dt);
+                        if (chibao.Item1 > 0)
+                        {
+                            foreach (var item in chibao.Item2)
+                            {
+                                await _teleService.SendTextMessageAsync(_idMain, item);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongkeNhomNganh)| {ex.Message}");
                     }
                 }
                 else
