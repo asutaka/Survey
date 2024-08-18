@@ -49,7 +49,7 @@ namespace SLib.Service
         {
             _logger = logger;
             _client = httpClientFactory; 
-        }
+        }  
         public async Task<Stream> GetTuDoanhHNX(EHnxExchange mode)
         {
             try

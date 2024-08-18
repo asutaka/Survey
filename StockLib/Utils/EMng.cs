@@ -101,4 +101,44 @@ namespace StockLib.Utils
         [Display(Name = "Tỷ lệ chi phí hoạt động/Tổng thu nhập HĐKD trước dự phòng (CIR)")]
         CIR = 109
     }
+
+    public enum EMoney24hTimeType
+    {
+        [Display(Name = "today")]
+        today = 1,
+        [Display(Name = "week")]
+        week = 2,
+        [Display(Name = "month")]
+        month = 3
+    }
+
+    public enum EMoney24hExchangeMode
+    {
+        [Display(Name = "10")]
+        HSX = 1,
+        [Display(Name = "02")]
+        HNX = 2,
+        [Display(Name = "03")]
+        UPCOM = 3
+    }
+
+    public enum EConfigDataType
+    {
+        TuDoanhHNX = 1,
+        TuDoanhUpcom = 2,
+        TuDoanhHose = 3,
+        GDNN_today = 10,
+        GDNN_week = 11,
+        GDNN_month = 12,
+        ThongKeNhomNganh_today = 20,
+        ThongKeNhomNganh_week = 21,
+        ThongKeNhomNganh_month = 22,
+        ChiBaoKyThuat = 30,
+    }
+
+    public enum EHnxExchange
+    {
+        NY = 1,
+        UP = 2
+    }
 }

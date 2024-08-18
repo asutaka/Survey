@@ -117,5 +117,35 @@ namespace StockLib.Service
             }
             return null;
         }
+
+        private async Task<List<Money24h_PTKTResponse>> Money24h_GetMaTheoChiBao(string chibao)
+        {
+            var lOutput = new List<Money24h_PTKTResponse>();
+            try
+            {
+                var body = "{\"floor_codes\":[\"10\",\"11\",\"02\",\"03\"],\"group_ids\":[\"0001\",\"1000\",\"2000\",\"3000\",\"4000\",\"5000\",\"6000\",\"7000\",\"8000\",\"8301\",\"9000\"],\"signals\":[{\"" + chibao + "\":\"up\"}]}";
+                var url = "https://api-finance-t19.24hmoney.vn/v2/web/indices/technical-signal-filter?sort=asc&page=1&per_page=50";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
+
+                var responseMessage = await client.SendAsync(requestMessage);
+                var resultArray = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<Money24h_PTKT_LV1Response>(resultArray);
+                if (responseModel.status == 200
+                    && responseModel.data.total_symbol > 0
+                    && responseModel.data.data.Any())
+                {
+                    return responseModel.data.data;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Money24h_GetMaTheoChiBao|EXCEPTION| {ex.Message}");
+            }
+            return lOutput;
+        }
     }
 }

@@ -9,6 +9,7 @@ namespace StockLib.Service
     public interface ITeleService
     {
         Task BotSyncUpdate();
+        Task SendTextMessageAsync(long channelID, string mes);
     }
     public partial class TeleService : ITeleService
     {
@@ -32,6 +33,11 @@ namespace StockLib.Service
             _userMessageRepo = userMessageRepo;
             _bllService = bllService;
             StockInstance();
+        }
+
+        public async Task SendTextMessageAsync(long channelID, string mes)
+        {
+            await BotInstance().SendTextMessageAsync(channelID, mes);
         }
 
         public async Task BotSyncUpdate()
