@@ -13,11 +13,11 @@ namespace StockLib.Service
     {
         Task<(int, string)> ChiBaoMA20();
         Task<(int, string)> ChiBao52W();
-        Task<(int, string)> ThongkeNhomNganh();
-        Task<(int, string)> ThongkeForeign();
-        Task<(int, string)> ThongKeTuDoanhHNX();
-        Task<(int, string)> ThongKeTuDoanhUp();
-        Task<(int, string)> ThongKeTuDoanhHSX();
+        Task<(int, string)> ThongkeNhomNganh(DateTime dt);
+        Task<(int, string)> ThongkeForeign(DateTime dt);
+        Task<(int, string)> ThongKeTuDoanhHNX(DateTime dt);
+        Task<(int, string)> ThongKeTuDoanhUp(DateTime dt);
+        Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt);
     }
     public class AnalyzeService : IAnalyzeService
     {
@@ -201,9 +201,8 @@ namespace StockLib.Service
             return (0, null);
         }
 
-        public async Task<(int, string)> ThongkeNhomNganh()
+        public async Task<(int, string)> ThongkeNhomNganh(DateTime dt)
         {
-            var dt = DateTime.Now;
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             var dTime = new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day)).ToUnixTimeSeconds();
             try
@@ -306,9 +305,8 @@ namespace StockLib.Service
             return (0, null);
         }
 
-        public async Task<(int, string)> ThongkeForeign()
+        public async Task<(int, string)> ThongkeForeign(DateTime dt)
         {
-            var dt = DateTime.Now;
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             var dTime = new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day)).ToUnixTimeSeconds();
             try
@@ -373,9 +371,8 @@ namespace StockLib.Service
             return (0, null);
         }
 
-        public async Task<(int, string)> ThongKeTuDoanhHNX()
+        public async Task<(int, string)> ThongKeTuDoanhHNX(DateTime dt)
         {
-            var dt = DateTime.Now;
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             try
             {
@@ -435,9 +432,8 @@ namespace StockLib.Service
             return (0, string.Empty);
         }
 
-        public async Task<(int, string)> ThongKeTuDoanhUp()
+        public async Task<(int, string)> ThongKeTuDoanhUp(DateTime dt)
         {
-            var dt = DateTime.Now;
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             try
             {
@@ -497,9 +493,8 @@ namespace StockLib.Service
             return (0, string.Empty);
         }
 
-        public async Task<(int, string)> ThongKeTuDoanhHSX()
+        public async Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt)
         {
-            var dt = DateTime.Now;
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             try
             {

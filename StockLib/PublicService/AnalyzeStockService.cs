@@ -86,7 +86,7 @@ namespace StockLib.PublicService
                     //Thống kê nhóm ngành
                     try
                     {
-                        var chibao = await _analyzeService.ThongkeNhomNganh();
+                        var chibao = await _analyzeService.ThongkeNhomNganh(dt);
                         if (chibao.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
@@ -100,7 +100,7 @@ namespace StockLib.PublicService
                     //Thống kê Foreign
                     try
                     {
-                        var chibao = await _analyzeService.ThongkeForeign();
+                        var chibao = await _analyzeService.ThongkeForeign(dt);
                         if (chibao.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
@@ -114,7 +114,7 @@ namespace StockLib.PublicService
                     //Thống kê Tự doanh HNX
                     try
                     {
-                        var chibao = await _analyzeService.ThongKeTuDoanhHNX();
+                        var chibao = await _analyzeService.ThongKeTuDoanhHNX(dt);
                         if (chibao.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
@@ -128,7 +128,7 @@ namespace StockLib.PublicService
                     //Thống kê Tự doanh Upcom
                     try
                     {
-                        var chibao = await _analyzeService.ThongKeTuDoanhUp();
+                        var chibao = await _analyzeService.ThongKeTuDoanhUp(dt);
                         if (chibao.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
@@ -142,7 +142,7 @@ namespace StockLib.PublicService
                     //Thống kê Tự doanh HSX
                     try
                     {
-                        var chibao = await _analyzeService.ThongKeTuDoanhHSX();
+                        var chibao = await _analyzeService.ThongKeTuDoanhHSX(dt);
                         if (chibao.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
