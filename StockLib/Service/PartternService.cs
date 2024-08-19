@@ -4,14 +4,17 @@ namespace StockLib.Service
 {
     public interface IPartternService
     {
-
+        Task SurveyIchimoku(string code);
     }
     public partial class PartternService : IPartternService
     {
         private readonly ILogger<PartternService> _logger;
-        public PartternService(ILogger<PartternService> logger) 
+        private readonly IAPIService _apiService;
+        public PartternService(ILogger<PartternService> logger,
+                                IAPIService apiService) 
         {
             _logger = logger;
+            _apiService = apiService;
         }
     }
 }

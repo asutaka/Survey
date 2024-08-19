@@ -1,20 +1,23 @@
-﻿using Microsoft.Extensions.Logging;
-using Org.BouncyCastle.Ocsp;
+﻿ using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
-using StockLib.DAL.Entity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 
 namespace StockLib.Service
 {
     public partial class PartternService
     {
-        public async Task SurveyIchimoku(List<Quote> lData)
+        public async Task SurveyIchimoku(string code)
+        {
+            try
+            {
+                var lData = await _apiService.SSI_GetDataStock(code);
+                await SurveyIchimoku(lData);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"PartternService.SurveyIchimoku|EXCEPTION| {ex.Message}");
+            }
+        }
+        private async Task SurveyIchimoku(List<Quote> lData)
         {
             int t1 = 12, t2 = 26, t3 = 65, t4 = 129;
             try
@@ -27,7 +30,6 @@ namespace StockLib.Service
                 for (int i = t4 - 1; i < count; i++)
                 {
                     var item_Cur = lData[i];
-                    //var itemIchiCur = lIchi.ElementAt(i);
 
                     var SL_Cur = SL_Indicator(i);
                     var TL_Cur = TL_Indicator(i);
@@ -36,9 +38,44 @@ namespace StockLib.Service
                     var Span1 = Span1_Indicator(i);
                     var Span2 = Span2_Indicator(i);
 
-                    var aboveKumoCur = aboveKumo_Indicator(i, item_Cur);
+                    var aboveKumo_Cur = aboveKumo_Indicator(i, item_Cur);
+                    var dlUp = lData[i - (t2 + 1)].Close > item_Cur.Close && lData[i - t2].Close < item_Cur.Close && item_Cur.Close > lData[i - 1].Close;
                     //Kumo Breakout
-                    var BuyKumoBreakout = aboveKumoCur && !aboveKumo_Indicator(i - 1, lData[i - 1]) && item_Cur.Close > SL_Cur;
+                    var BuyKumoBreakout = aboveKumo_Cur && !aboveKumo_Indicator(i - 1, lData[i - 1]) && item_Cur.Close > SL_Cur;
+                    //TK Cross
+                    var BuyStrongTKCross = Cross_Indicator(TL_Cur, SL_Cur, TL_Indicator(i - 1), SL_Indicator(i - 1)) && aboveKumo_Cur && item_Cur.Close > TL_Cur;
+                    //Price Cross
+                    var BuyStrongPriceCross = Cross_Indicator(item_Cur.Close, SL_Cur, lData[i - 1].Close, SL_Indicator(i - 1)) && item_Cur.Close > TL_Cur && TL_Cur > SL_Cur && aboveKumo_Cur;
+                    //SenkouSpan Cross
+                    var BuyStongSenkouSpanCross = aboveKumo_Cur && Cross_Indicator(Span1, Span2, Span1_Indicator(i - 1), Span2_Indicator(i - 1));
+                    //ChikouSpan Cross
+                    var BuyStrongChikouSpanCross = aboveKumo_Cur && dlUp && item_Cur.Close > TL_Cur;
+
+                    var content = string.Empty;
+                    if(BuyKumoBreakout)
+                    {
+                        content += "Kumo Breakout,";
+                    }
+                    if (BuyStrongTKCross)
+                    {
+                        content += "TK Cross,";
+                    }
+                    if (BuyStrongPriceCross) 
+                    {
+                        content += "Price Cross,";
+                    }
+                    if (BuyStongSenkouSpanCross)
+                    {
+                        content += "SenkouSpan Cross,";
+                    }
+                    if (BuyStrongChikouSpanCross)
+                    {
+                        content += "ChikouSpan Cross,";
+                    }
+                    if(!string.IsNullOrWhiteSpace(content))
+                    {
+                        Console.WriteLine($"{item_Cur.Date.ToString("dd/MM/yyyy")}:{content}");
+                    }
                 }
             }
             catch (Exception ex)
@@ -90,26 +127,10 @@ namespace StockLib.Service
                 return aboveKumoCur;
             }
 
-            //bool Cross_Indicator(decimal x, decimal y, decimal x_1, decimal y_1)
-            //{
-
-            //}
+            bool Cross_Indicator(decimal x, decimal y, decimal x_1, decimal y_1)
+            {
+                return x > y && x_1 <= y_1;
+            }
         }
     }
 }
-
-
-//aboveKumo = IIf((C >= Ref(Span1, -t2) AND C >= Ref(Span2, -t2)),1,0);
-//withinKumo = IIf((C >= Ref(Span2, -t2) AND C <= Ref(Span1, -t2)),1,0) OR IIf((C>=Ref(Span1,-t2) AND C<=Ref(Span2,-t2)),1,0);
-//belowKumo = IIf((C <= Ref(Span1, -t2) AND C <= Ref(Span2, -t2)),1,0);
-
-//BuyStrongTKCross = Cross(TL, SL) AND aboveKumo AND C > TL; 
-//BuyStrongPriceCross = Cross(C, SL)AND(C > TL) AND(TL > SL) AND aboveKumo;
-//BuyStongSenkouSpanCross = aboveKumo AND Cross(span1,span2);
-//BuyStrongChikouSpanCross = aboveKumo AND dlUp AND C > TL;
-
-
-
-//public decimal? TenkanSen { get; set; } // conversion line
-//public decimal? KijunSen { get; set; } // base line
-//public decimal? ChikouSpan { get; set; } // lagging span

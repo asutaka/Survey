@@ -6,10 +6,10 @@ namespace StockTestCase
     public class App
     {
         private readonly ILogger<App> _logger;
-        private readonly IFinancialDataService _service;
+        private readonly IStockTestCaseService _service;
 
         public App(ILogger<App> logger,
-                        IFinancialDataService service)
+                        IStockTestCaseService service)
         {
             _logger = logger;
             _service = service;
@@ -17,9 +17,7 @@ namespace StockTestCase
 
         public async Task Run(string[] args)
         {
-            Console.WriteLine("test");
-            Console.ReadLine();
-            //await _service.SyncBCTC_BatDongSan();
+            await _service.SurveyIndicator("DPG");
         }
     }
 }
