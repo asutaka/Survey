@@ -13,3 +13,6 @@ TeleStock
 AnalyzeStock
 - Dùng để thống kê và noti tự động cho nhóm những thông số, chỉ báo và tín hiệu
 
+StockTestCase
+- Dùng để đánh giá độ hiệu quả của từng chỉ báo, BackTest dữ liệu
+

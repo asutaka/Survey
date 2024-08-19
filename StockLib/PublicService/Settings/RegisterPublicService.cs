@@ -10,6 +10,7 @@ namespace StockLib.PublicService.Settings
             services.AddSingleton<IImportDataAPIService, ImportDataAPIService>();
             services.AddSingleton<ITeleStockService, TeleStockService>();
             services.AddSingleton<IAnalyzeStockService, AnalyzeStockService>();
+            services.AddSingleton<IStockTestCaseService, StockTestCaseService>();
         }
     }
 }

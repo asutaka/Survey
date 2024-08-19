@@ -22,7 +22,7 @@ namespace StockLib.PublicService
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
-        private const long _idMain = 1066022551;
+        private const long _idMain = -1002247826353;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
                                     ITeleService teleService,
                                     IAnalyzeService analyzeService,
@@ -41,14 +41,14 @@ namespace StockLib.PublicService
                 var isDayOfWork = dt.DayOfWeek >= DayOfWeek.Monday && dt.DayOfWeek <= DayOfWeek.Friday;
                 var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;
+                var isPreTrade = dt.Hour < 9;
                 //fake
-                isDayOfWork = true;
-                isTimePrint = true;
+                //isDayOfWork = true;
+                //isTimePrint = true;
                 //isRealTime = true;
 
-                if (isDayOfWork && isTimePrint)
+                if (isDayOfWork && isTimePrint && !isPreTrade)
                 {
-
                     #region RealTime
                     if(isRealTime)
                     {

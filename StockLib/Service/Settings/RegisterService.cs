@@ -12,6 +12,7 @@ namespace StockLib.Service.Settings
             services.AddSingleton<ICalculateService, CalculateService>();
             services.AddSingleton<IAnalyzeService, AnalyzeService>();
             services.AddSingleton<IFileService, FileService>();
+            services.AddSingleton<IPartternService, PartternService>();
         }
     }
 }
