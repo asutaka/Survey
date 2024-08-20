@@ -5,6 +5,7 @@ namespace StockLib.PublicService
     public interface IStockTestCaseService
     {
         Task SurveyIndicator(string code);
+        Task SurveySuperTrend(string code);
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -17,6 +18,11 @@ namespace StockLib.PublicService
         public async Task SurveyIndicator(string code)
         {
             await _partternService.SurveyIchimoku(code);
+        }
+
+        public async Task SurveySuperTrend(string code)
+        {
+            await _partternService.SurveySuperTrend(code);
         }
     }
 }

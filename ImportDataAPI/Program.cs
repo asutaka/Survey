@@ -47,10 +47,10 @@ app.MapPost("/upload", async (HttpRequest request, IImportDataAPIService service
     var dic = new Dictionary<int, string>();
     ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
     bool isRead = false;
-    using (ExcelPackage package = new ExcelPackage(stream))
+    using (var package = new ExcelPackage(stream))
     {
         //get the first sheet from the excel file
-        ExcelWorksheet sheet = package.Workbook.Worksheets[0];
+        var sheet = package.Workbook.Worksheets[0];
 
         //loop all rows in the sheet
         for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
