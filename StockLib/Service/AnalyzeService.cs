@@ -528,8 +528,8 @@ namespace StockLib.Service
                 var index = 1;
                 foreach (var item in lTopBuy)
                 {
-                    item.net = Math.Round(item.net / 1000, 1);
-                    item.net_pt = Math.Round(item.net_pt / 1000, 1);
+                    item.net = Math.Round(item.net / 1000000, 1);
+                    item.net_pt = Math.Round(item.net_pt / 1000000, 1);
                     if (item.net == 0)
                         continue;
 
@@ -548,8 +548,8 @@ namespace StockLib.Service
                 index = 1;
                 foreach (var item in lTopSell)
                 {
-                    item.net = Math.Round(item.net / 1000, 1);
-                    item.net_pt = Math.Round(item.net_pt / 1000, 1);
+                    item.net = Math.Round(item.net / 1000000, 1);
+                    item.net_pt = Math.Round(item.net_pt / 1000000, 1);
                     if (item.net == 0)
                         continue;
 
