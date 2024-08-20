@@ -533,16 +533,17 @@ namespace StockLib.Service
                     if (item.net == 0)
                         continue;
 
-                    var content = $"{index++}. {item.s} (Mua ròng {item.net} tỷ)";
+                    var content = $"{index++}. {item.s} (Mua ròng {Math.Abs(item.net).ToString("#,##0.#")} tỷ)";
                     if (item.net_pt != 0)
                     {
                         var buySell_pt = item.net_pt > 0 ? "Thỏa thuận mua" : "Thỏa thuận bán";
-                        content += $" - {buySell_pt} {Math.Abs(item.net_pt)} tỷ";
+                        content += $" - {buySell_pt} {Math.Abs(item.net_pt).ToString("#,##0.#")} tỷ";
                     }
                     strOutput.AppendLine(content);
                 }
                 if (lTopSell.Any())
                 {
+                    strOutput.AppendLine();
                     strOutput.AppendLine($"*Top bán ròng:");
                 }
                 index = 1;
@@ -553,11 +554,11 @@ namespace StockLib.Service
                     if (item.net == 0)
                         continue;
 
-                    var content = $"{index++}. {item.s} (Bán ròng {item.net} tỷ)";
+                    var content = $"{index++}. {item.s} (Bán ròng {Math.Abs(item.net).ToString("#,##0.#")} tỷ)";
                     if (item.net_pt != 0)
                     {
                         var buySell_pt = item.net_pt > 0 ? "Thỏa thuận mua" : "Thỏa thuận bán";
-                        content += $" - {buySell_pt} {Math.Abs(item.net_pt)} tỷ";
+                        content += $" - {buySell_pt} {Math.Abs(item.net_pt).ToString("#,##0.#")} tỷ";
                     }
                     strOutput.AppendLine(content);
                 }
