@@ -3,11 +3,7 @@ using MongoDB.Driver;
 using OfficeOpenXml;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -42,37 +38,45 @@ namespace StockLib.Service
                 foreach (var sheet in lSheet)
                 {
                     if (false) { }
-                    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        KhachQuocTe(sheet, dt);
+                        //IIP(sheet, dt);
                     }
-                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        VanTaiHangHoa(sheet, dt);
+                        //SanPhamCongNghiep(sheet, dt);
                     }
-                    else if (_lCPI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        CPI(sheet, dt);
+                        //VonDauTuNhaNuoc(sheet, dt);
                     }
-                    else if (_lXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lFDI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        XuatKhau(sheet, dt);
+                        //FDI(sheet, dt);
+                    }
+                    else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    {
+                        //BanLe(sheet, dt);
                     }
                     else if (_lNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
                         NhapKhau(sheet, dt);
                     }
-                    else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        BanLe(sheet, dt);
+                        XuatKhau(sheet, dt);
                     }
-                    else if (_lFDI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lCPI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        FDI(sheet, dt);
+                        CPI(sheet, dt);
                     }
-                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        VonDauTuNhaNuoc(sheet, dt);
+                        VanTaiHangHoa(sheet, dt);
+                    }
+                    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
+                    {
+                        KhachQuocTe(sheet, dt);
                     }
                 }
             }
@@ -84,11 +88,59 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        private List<string> _lIIP = new List<string>
+        {
+            "IIP",
+        };
         private void IIP(ExcelWorksheet sheet, DateTime dt)
         {
             try
             {
+                var colQoQ = -1;
+                var colQoQoY = -1;
+                var isBanLe = false;
+                //loop all rows in the sheet
+                for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
+                {
+                    //loop all columns in a row
+                    for (int j = sheet.Dimension.Start.Column; j <= sheet.Dimension.End.Column; j++)
+                    {
+                        //do something with the current cell value
+                        var cellValueCur = sheet.Cells[i, j].Value?.ToString().Trim() ?? string.Empty;
+                        if (colQoQ < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"THANG {dt.Month}"))
+                        {
+                            colQoQ = j;
+                            continue;
+                        }
 
+                        if (colQoQ < 0)
+                            continue;
+
+                        if (colQoQoY < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"THANG {dt.Month}"))
+                        {
+                            colQoQoY = j;
+                            break;
+                        }
+
+                        if (colQoQoY < 0)
+                            continue;
+
+                        if (string.IsNullOrWhiteSpace(cellValueCur))
+                            break;
+
+                        var isDouble1 = double.TryParse(sheet.Cells[i, colQoQ].Value?.ToString().Trim().Replace(",", ""), out var val1);
+                        var isDouble2 = double.TryParse(sheet.Cells[i, colQoQoY].Value?.ToString().Trim().Replace(",", ""), out var val2);
+                        _thongkeRepo.InsertOne(new ThongKe
+                        {
+                            d = int.Parse($"{dt.Year}{dt.Month.To2Digit()}"),
+                            key = (int)EKeyTongCucThongKe.IIP,
+                            content = cellValueCur,
+                            va = isDouble1 ? Math.Round(val1, 1) : 0,
+                            va2 = isDouble2 ? Math.Round(val2, 1) : 0,
+                        });
+                        break;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -96,15 +148,70 @@ namespace StockLib.Service
             }
         }
 
+        private List<string> _lSPCongNghiep = new List<string>
+        {
+            "SP CN",
+        };
         private void SanPhamCongNghiep(ExcelWorksheet sheet, DateTime dt)
         {
             try
             {
+                var colUocTinh = -1;
+                var col = -1;
+                var isBanLe = false;
+                var curUnit = string.Empty;
+                //loop all rows in the sheet
+                for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
+                {
+                    //loop all columns in a row
+                    for (int j = sheet.Dimension.Start.Column; j <= sheet.Dimension.End.Column; j++)
+                    {
+                        //do something with the current cell value
+                        var cellValueCur = sheet.Cells[i, j].Value?.ToString().Trim() ?? string.Empty;
+                        if (colUocTinh < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"Uoc Tinh".ToUpper()))
+                        {
+                            colUocTinh = j;
+                            break;
+                        }
 
+                        if (colUocTinh < 0)
+                            continue;
+
+                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"THANG {dt.Month}"))
+                        {
+                            if (j == colUocTinh)
+                            {
+                                col = j;
+                                break;
+                            }
+                        }
+
+                        if (col < 0)
+                        {
+                            continue;
+                        }
+
+                        if (string.IsNullOrWhiteSpace(cellValueCur))
+                            break;
+
+                        var isDouble = double.TryParse(sheet.Cells[i, col].Value?.ToString().Trim().Replace(",", ""), out var val);
+                        var curUnitLocal = sheet.Cells[i, j + 1].Value?.ToString().Trim().Replace("'", "").Replace("\"","");
+                        curUnit = string.IsNullOrWhiteSpace(curUnitLocal) ? curUnit : curUnitLocal;
+
+                        _thongkeRepo.InsertOne(new ThongKe
+                        {
+                            d = int.Parse($"{dt.Year}{dt.Month.To2Digit()}"),
+                            key = (int)EKeyTongCucThongKe.SP_CongNghiep,
+                            content = $"{cellValueCur}({curUnit})",
+                            va = isDouble ? Math.Round(val, 1) : 0
+                        });
+                        break;
+                    }
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"SanPhamCongNghiep.IIP|EXCEPTION| {ex.Message}");
+                _logger.LogError($"AnalyzeService.SanPhamCongNghiep|EXCEPTION| {ex.Message}");
             }
         }
 
@@ -118,8 +225,7 @@ namespace StockLib.Service
             try
             {
                 var col = -1;
-                var isTrungUong = false;
-                var isDiaPhuong = false;
+                var isTong = false;
                 //loop all rows in the sheet
                 for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
                 {
@@ -131,7 +237,7 @@ namespace StockLib.Service
                         if (string.IsNullOrWhiteSpace(cellValueCur.ToString()))
                             continue;
 
-                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Equals($"THANG {dt.Month}"))
+                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"THANG {dt.Month}"))
                         {
                             col = j;
                             break;
@@ -142,16 +248,13 @@ namespace StockLib.Service
                             continue;
                         }
 
-                        if (!isTrungUong)
+                        if (!isTong)
                         {
-                            isTrungUong = InsertThongKe(EKeyTongCucThongKe.DauTuCong_TrungUong, "Trung Uong", cellValueCur, i, col, dt, sheet);
+                            isTong = InsertThongKe(EKeyTongCucThongKe.DauTuCong, "TONG SO", cellValueCur, i, col, dt, sheet);
                         }
 
-                        if (!isDiaPhuong)
-                        {
-                            isDiaPhuong = InsertThongKe(EKeyTongCucThongKe.DauTuCong_DiaPhuong, "Dia Phuong", cellValueCur, i, col, dt, sheet);
+                        if (isTong)
                             return;
-                        }
                     }
                 }
             }
@@ -180,11 +283,11 @@ namespace StockLib.Service
                     for (int j = sheet.Dimension.Start.Column; j <= sheet.Dimension.End.Column; j++)
                     {
                         //do something with the current cell value
-                        var cellValueCur = sheet.Cells[i, j].Value?.ToString().Trim().RemoveSignVietnamese().ToUpper() ?? string.Empty;
+                        var cellValueCur = sheet.Cells[i, j].Value?.ToString().Trim() ?? string.Empty;
                         if (string.IsNullOrWhiteSpace(cellValueCur.ToString()))
                             continue;
 
-                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Equals($"Von Dang Ky"))
+                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"Von Dang Ky".ToUpper()))
                         {
                             col = j;
                             break;
@@ -197,7 +300,7 @@ namespace StockLib.Service
 
                         if (!isDiaPhuong)
                         {
-                            isDiaPhuong = cellValueCur.Contains("Dia Phuong");
+                            isDiaPhuong = cellValueCur.RemoveSignVietnamese().ToUpper().Contains("Dia Phuong".ToUpper());
                             if (isDiaPhuong)
                             {
                                 colName = j;
@@ -205,20 +308,23 @@ namespace StockLib.Service
                             }
                         }
 
+                        if (!isDiaPhuong)
+                            continue;
+
                         if (!isLanhTho)
                         {
-                            isLanhTho = cellValueCur.Contains("Lanh Tho");
+                            isLanhTho = cellValueCur.RemoveSignVietnamese().ToUpper().Contains("Lanh Tho".ToUpper());
                             if (isLanhTho)
                                 return;
                         }
 
-                        var isDecimal = decimal.TryParse(sheet.Cells[i, col].Value?.ToString().Trim().Replace(",", ""), out var val);
+                        var isDouble = double.TryParse(sheet.Cells[i, col].Value?.ToString().Trim().Replace(",", ""), out var val);
                         _thongkeRepo.InsertOne(new ThongKe
                         {
                             d = int.Parse($"{dt.Year}{dt.Month.To2Digit()}"),
                             key = (int)EKeyTongCucThongKe.FDI,
                             content = sheet.Cells[i, colName + 1].Value?.ToString().Trim(),
-                            va = isDecimal ? Math.Round(val, 1) : 0
+                            va = isDouble ? Math.Round(val, 1) : 0
                         });
                         break;
                     }
@@ -253,12 +359,12 @@ namespace StockLib.Service
                         if (string.IsNullOrWhiteSpace(cellValueCur.ToString()))
                             continue;
 
-                        if (colUocTinh < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Equals($"Uoc Tinh"))
+                        if (colUocTinh < 0 && cellValueCur.Contains($"Uoc Tinh".ToUpper()))
                         {
                             colUocTinh = j;
                             break;
                         }
-                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Equals($"THANG {dt.Month}"))
+                        if (col < 0 && cellValueCur.Contains($"THANG {dt.Month}"))
                         {
                             if(j == colUocTinh)
                             {
@@ -275,7 +381,8 @@ namespace StockLib.Service
                         if (!isBanLe)
                         {
                             isBanLe = InsertThongKe(EKeyTongCucThongKe.BanLe, "Ban Le", cellValueCur, i, col, dt, sheet);
-                            return;
+                            if(isBanLe)
+                                return;
                         }
                     }
                 }
@@ -373,25 +480,23 @@ namespace StockLib.Service
                         if (!isCaoSu)
                         {
                             isCaoSu = InsertThongKe(EKeyTongCucThongKe.XK_CaoSu, "Cao Su", cellValueCur, i, col, dt, sheet, offset: 1);
-                            return;
                         }
 
                         if (!isGo)
                         {
                             isGo = InsertThongKe(EKeyTongCucThongKe.XK_Go, "Go", cellValueCur, i, col, dt, sheet, offset: 1);
-                            return;
                         }
 
                         if (!isDetMay)
                         {
                             isDetMay = InsertThongKe(EKeyTongCucThongKe.XK_DetMay, "Det", cellValueCur, i, col, dt, sheet, offset: 1);
-                            return;
                         }
 
                         if (!isSatThep)
                         {
                             isSatThep = InsertThongKe(EKeyTongCucThongKe.XK_SatThep, "Sat Thep", cellValueCur, i, col, dt, sheet, offset: 1);
-                            return;
+                            if(isSatThep)
+                                return;
                         }
                     }
                 }
@@ -480,7 +585,8 @@ namespace StockLib.Service
                         if (!isOto)
                         {
                             isOto = InsertThongKe(EKeyTongCucThongKe.NK_Oto, "O To", cellValueCur, i, col, dt, sheet, offset: 1);
-                            return;
+                            if(isOto)
+                                return;
                         }
                     }
                 }
@@ -544,7 +650,8 @@ namespace StockLib.Service
                         if (!isLamPhat)
                         {
                             isLamPhat = InsertThongKe(EKeyTongCucThongKe.CPI_LamPhat, "Lam Phat", cellValueCur, i, col, dt, sheet);
-                            return;
+                            if(isLamPhat)
+                                return;
                         }
                     }
                 }
@@ -627,7 +734,8 @@ namespace StockLib.Service
                         if (!isHangKhong)
                         {
                             isHangKhong = InsertThongKe(EKeyTongCucThongKe.VanTai_HangKhong, "Hang Khong", cellValueCur, i, col, dt, sheet);
-                            return;
+                            if(isHangKhong)
+                                return;
                         }
                     }
                 }
@@ -675,7 +783,8 @@ namespace StockLib.Service
                         if (!isTong)
                         {
                             isTong = InsertThongKe(EKeyTongCucThongKe.DuLich, "TONG SO", cellValueCur, i, col, dt, sheet);
-                            return;
+                            if (isTong)
+                                return;
                         }
                     }
                 }
@@ -700,12 +809,12 @@ namespace StockLib.Service
             var valStr = sheet.Cells[i, col + offset].Value?.ToString().Trim() ?? string.Empty;
             if (!string.IsNullOrWhiteSpace(valStr))
             {
-                var isDecimal = decimal.TryParse(valStr.Replace(",", ""), out var val);
+                var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
                 _thongkeRepo.InsertOne(new ThongKe
                 {
                     d = int.Parse($"{dt.Year}{dt.Month.To2Digit()}"),
                     key = (int)eThongKe,
-                    va = isDecimal ? Math.Round(val, 1) : 0
+                    va = isDouble ? Math.Round(val, 1) : 0
                 });
             }
             return true;

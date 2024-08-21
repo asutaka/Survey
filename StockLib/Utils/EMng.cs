@@ -215,9 +215,11 @@ namespace StockLib.Utils
         BanLe = 33,
         [Display(Name = "FDI(triệu USD)")]
         FDI = 34,
-        [Display(Name = "Đầu tư công - Trung ương(tỷ)")]
-        DauTuCong_TrungUong = 35,
-        [Display(Name = "Đầu tư công - Địa phương(tỷ)")]
-        DauTuCong_DiaPhuong = 36,
+        [Display(Name = "Đầu tư công(tỷ)")]
+        DauTuCong = 35,
+        [Display(Name = "Sản phẩm công nghiệp")]
+        SP_CongNghiep = 36,
+        [Display(Name = "IIP")]
+        IIP = 37
     }
 }

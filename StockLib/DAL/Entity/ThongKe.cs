@@ -8,6 +8,7 @@ namespace StockLib.DAL.Entity
         public int d { get; set; }
         public int key { get; set; }
         public string content { get; set; }
-        public decimal va { get; set; }
+        public double va { get; set; }
+        public double va2 { get; set; }
     }
 }
