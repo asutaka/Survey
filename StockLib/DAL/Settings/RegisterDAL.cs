@@ -19,6 +19,7 @@ namespace StockLib.DAL.Settings
             services.AddSingleton<IConfigDataRepo, ConfigDataRepo>();
             services.AddSingleton<ICategoryRepo, CategoryRepo>();
             services.AddSingleton<ITuDoanhRepo, TuDoanhRepo>();
+            services.AddSingleton<IThongKeRepo, ThongKeRepo>();
         }
     }
 }

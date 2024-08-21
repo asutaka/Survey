@@ -47,6 +47,21 @@ namespace StockLib.PublicService
                 //isTimePrint = true;
                 //isRealTime = true;
 
+                try
+                {
+                    var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-1));//for test
+                    if (chibao.Item1 > 0)
+                    {
+                        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                }
+                return;
+
+
                 if (isDayOfWork && isTimePrint && !isPreTrade)
                 {
                     #region RealTime
@@ -172,13 +187,12 @@ namespace StockLib.PublicService
                 }
                 else
                 {
-                    if(true)
-                    //if(dt.Day >= 28 && dt.Hour >= 15)
+                    if (dt.Day >= 28 && dt.Hour >= 15)
                     {
                         //Tổng cục thống kê
                         try
                         {
-                            var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-1));//for test
+                            var chibao = await _analyzeService.TongCucThongKe(dt);
                             if (chibao.Item1 > 0)
                             {
                                 await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);

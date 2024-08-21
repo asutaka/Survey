@@ -142,4 +142,82 @@ namespace StockLib.Utils
         NY = 1,
         UP = 2
     }
+    /// <summary>
+    /// CPI: QoQoY
+    /// </summary>
+    public enum EKeyTongCucThongKe
+    {
+        [Display(Name = "Du lịch")]
+        DuLich = 1,
+        [Display(Name = "Vận tải đường Sắt(nghìn tấn)")]
+        VanTai_DuongSat = 2,
+        [Display(Name = "Vận tải đường Biển(nghìn tấn)")]
+        VanTai_DuongBien = 3,
+        [Display(Name = "Vận tải đường Thủy nội địa(nghìn tấn)")]
+        VanTai_DuongThuy = 4,
+        [Display(Name = "Vận tải đường Bộ(nghìn tấn)")]
+        VanTai_DuongBo = 5,
+        [Display(Name = "Vận tải Hàng không(nghìn tấn)")]
+        VanTai_HangKhong = 6,
+        [Display(Name = "Vận tải trong nước(nghìn tấn)")]
+        VanTai_TrongNuoc = 7,
+        [Display(Name = "Vận tải nước ngoài(nghìn tấn)")]
+        VanTai_NuocNgoai = 8,
+        [Display(Name = "Chỉ số giá tiêu dùng(%)")]
+        CPI_GiaTieuDung = 9,
+        [Display(Name = "Giá Vàng(%)")]
+        CPI_GiaVang = 10,
+        [Display(Name = "USD(%)")]
+        CPI_DoLa = 11,
+        [Display(Name = "Lạm phát(%)")]
+        CPI_LamPhat = 12,
+        [Display(Name = "Xuất khẩu từ DN(triệu USD)")]
+        XK_TrongNuoc = 13,
+        [Display(Name = "Xuất khẩu từ DN FDI(triệu USD)")]
+        XK_FDI = 14,
+        [Display(Name = "Xuất khẩu thủy sản(triệu USD)")]
+        XK_ThuySan = 15,
+        [Display(Name = "Xuất khẩu gạo(triệu USD)")]
+        XK_Gao = 16,
+        [Display(Name = "Xuất khẩu xi măng(triệu USD)")]
+        XK_Ximang = 17,
+        [Display(Name = "Xuất khẩu hóa chất(triệu USD)")]
+        XK_HoaChat = 18,
+        [Display(Name = "Xuất khẩu SP hóa chất(triệu USD)")]
+        XK_SPHoaChat = 19,
+        [Display(Name = "Xuất khẩu SP chất dẻo(triệu USD)")]
+        XK_SPChatDeo = 20,
+        [Display(Name = "Xuất khẩu cao su(triệu USD)")]
+        XK_CaoSu = 21,
+        [Display(Name = "Xuất khẩu gỗ(triệu USD)")]
+        XK_Go = 22,
+        [Display(Name = "Xuất khẩu dệt may(triệu USD)")]
+        XK_DetMay = 23,
+        [Display(Name = "Xuất khẩu sắt thép(triệu USD)")]
+        XK_SatThep = 24,
+        [Display(Name = "Nhập khẩu từ DN(triệu USD)")]
+        NK_TrongNuoc = 25,
+        [Display(Name = "Nhập khẩu từ DN FDI(triệu USD)")]
+        NK_FDI = 26,
+        [Display(Name = "Nhập khẩu thức ăn gia súc(triệu USD)")]
+        NK_ThucAnGiaSuc = 27,
+        [Display(Name = "Nhập khẩu phân bón(triệu USD)")]
+        NK_PhanBon = 28,
+        [Display(Name = "Nhập khẩu vải(triệu USD)")]
+        NK_Vai = 29,
+        [Display(Name = "Nhập khẩu sắt thép(triệu USD)")]
+        NK_SatThep = 30,
+        [Display(Name = "Nhập khẩu SP sắt thép(triệu USD)")]
+        NK_SPSatThep = 31,
+        [Display(Name = "Nhập khẩu ô tô(triệu USD)")]
+        NK_Oto = 32,
+        [Display(Name = "Bán lẻ(tỷ đồng)")]
+        BanLe = 33,
+        [Display(Name = "FDI(triệu USD)")]
+        FDI = 34,
+        [Display(Name = "Đầu tư công - Trung ương(tỷ)")]
+        DauTuCong_TrungUong = 35,
+        [Display(Name = "Đầu tư công - Địa phương(tỷ)")]
+        DauTuCong_DiaPhuong = 36,
+    }
 }

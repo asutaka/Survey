@@ -23,13 +23,15 @@ namespace StockLib.Service
         private readonly IConfigDataRepo _configRepo;
         private readonly ICategoryRepo _categoryRepo;
         private readonly ITuDoanhRepo _tudoanhRepo;
+        private readonly IThongKeRepo _thongkeRepo;
         public AnalyzeService(ILogger<AnalyzeService> logger,
                             IAPIService apiService,
                             IFileService fileService,
                             IStockRepo stockRepo,
                             IConfigDataRepo configRepo,
                             ICategoryRepo categoryRepo,
-                            ITuDoanhRepo tudoanhRepo) 
+                            ITuDoanhRepo tudoanhRepo,
+                            IThongKeRepo thongkeRepo) 
         {
             _logger = logger;
             _apiService = apiService;
@@ -38,6 +40,7 @@ namespace StockLib.Service
             _configRepo = configRepo;
             _categoryRepo = categoryRepo;
             _tudoanhRepo = tudoanhRepo;
+            _thongkeRepo = thongkeRepo;
         }
     }
 }
