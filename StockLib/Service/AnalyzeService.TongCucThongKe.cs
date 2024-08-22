@@ -42,6 +42,10 @@ namespace StockLib.Service
                     {
                         GDP(sheet, dt);
                     }
+                    else if (_lChanNuoi.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                    {
+                        ChanNuoi(sheet, dt);
+                    }
                     else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ","").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
                         IIP(sheet, dt);
@@ -868,6 +872,78 @@ namespace StockLib.Service
                             va = isDouble ? Math.Round(val, 1) : 0
                         });
                         break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.GDP|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        private List<string> _lChanNuoi = new List<string>
+        {
+            "ChanNuoi"
+        };
+        private void ChanNuoi(ExcelWorksheet sheet, DateTime dt)
+        {
+            try
+            {
+                var quarter = dt.GetQuarter();
+                var quarterStr = dt.GetQuarterStr();
+
+                var colUocTinh = -1;
+                var col = -1;
+                var isBanLe = false;
+                var curUnit = "Nghìn Tấn";
+                //loop all rows in the sheet
+                for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
+                {
+                    //loop all columns in a row
+                    for (int j = sheet.Dimension.Start.Column; j <= sheet.Dimension.End.Column; j++)
+                    {
+                        //do something with the current cell value
+                        var cellValueCur = sheet.Cells[i, j].Value?.ToString().Trim() ?? string.Empty;
+                        if (colUocTinh < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"Uoc Tinh".ToUpper()))
+                        {
+                            colUocTinh = j;
+                            break;
+                        }
+
+                        if (colUocTinh < 0)
+                            continue;
+
+                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"Quy {quarterStr}".ToUpper()))
+                        {
+                            if (j == colUocTinh)
+                            {
+                                col = j;
+                                break;
+                            }
+                        }
+
+                        if (col < 0)
+                        {
+                            continue;
+                        }
+
+                        if (string.IsNullOrWhiteSpace(cellValueCur)
+                            || j > 1)
+                            continue;
+
+                        if(cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"Thit Lon".ToUpper()))
+                        {
+                            var isDouble = double.TryParse(sheet.Cells[i, col].Value?.ToString().Trim().Replace(",", ""), out var val);
+
+                            _thongkeQuyRepo.InsertOne(new ThongKeQuy
+                            {
+                                d = int.Parse($"{dt.Year}{quarter}"),
+                                key = (int)EKeyTongCucThongKe.ChanNuoiLon,
+                                content = $"{cellValueCur}({curUnit})",
+                                va = isDouble ? Math.Round(val, 1) : 0
+                            });
+                            return;
+                        }    
                     }
                 }
             }

@@ -222,6 +222,8 @@ namespace StockLib.Utils
         [Display(Name = "IIP")]
         IIP = 37,
         [Display(Name = "GDP")]
-        GDP = 38
+        GDP = 38,
+        [Display(Name = "Chăn Nuôi Lợn")]
+        ChanNuoiLon = 39
     }
 }
