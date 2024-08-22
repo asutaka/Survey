@@ -66,6 +66,28 @@ namespace StockLib.Utils
             return $"0{val}";
         }
 
+        public static int GetQuarter(this DateTime dt)
+        {
+            if (dt.Month <= 3)
+                return 1;
+            if (dt.Month <= 6)
+                return 2;
+            if(dt.Month <= 9)
+                return 3;
+            return 4;
+        }
+
+        public static string GetQuarterStr(this DateTime dt)
+        {
+            if (dt.Month <= 3)
+                return "I";
+            if (dt.Month <= 6)
+                return "II";
+            if (dt.Month <= 9)
+                return "III";
+            return "IV";
+        }
+
         public static DateTime ToDateTime(this string val, string format)
         {
             try

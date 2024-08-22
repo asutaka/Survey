@@ -220,6 +220,8 @@ namespace StockLib.Utils
         [Display(Name = "Sản phẩm công nghiệp")]
         SP_CongNghiep = 36,
         [Display(Name = "IIP")]
-        IIP = 37
+        IIP = 37,
+        [Display(Name = "GDP")]
+        GDP = 38
     }
 }
