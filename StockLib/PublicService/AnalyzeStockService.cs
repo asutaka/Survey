@@ -49,7 +49,7 @@ namespace StockLib.PublicService
 
                 try
                 {
-                    var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-1));//for test
+                    var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-2));//for test
                     if (chibao.Item1 > 0)
                     {
                         await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);

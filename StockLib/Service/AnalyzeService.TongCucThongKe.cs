@@ -91,6 +91,7 @@ namespace StockLib.Service
         private List<string> _lIIP = new List<string>
         {
             "IIP",
+            "IIPThang"
         };
         private void IIP(ExcelWorksheet sheet, DateTime dt)
         {
@@ -151,6 +152,8 @@ namespace StockLib.Service
         private List<string> _lSPCongNghiep = new List<string>
         {
             "SP CN",
+            "SPCN",
+            "SPCNThang"
         };
         private void SanPhamCongNghiep(ExcelWorksheet sheet, DateTime dt)
         {
@@ -218,7 +221,8 @@ namespace StockLib.Service
         private List<string> _lVonDauTu = new List<string>
         {
             "VDT",
-            "Von Dau Tu"
+            "Von Dau Tu",
+            "VDT TTNSNN"
         };
         private void VonDauTuNhaNuoc(ExcelWorksheet sheet, DateTime dt)
         {
@@ -396,7 +400,8 @@ namespace StockLib.Service
         private List<string> _lXK = new List<string>
         {
             "XK",
-            "Xuat Khau"
+            "Xuat Khau",
+            "XK Thang"
         };
         private void XuatKhau(ExcelWorksheet sheet, DateTime dt)
         {
@@ -510,7 +515,8 @@ namespace StockLib.Service
         private List<string> _lNK = new List<string>
         {
             "NK",
-            "Nhap Khau"
+            "Nhap Khau",
+            "NK Thang"
         };
         private void NhapKhau(ExcelWorksheet sheet, DateTime dt)
         {
@@ -665,7 +671,9 @@ namespace StockLib.Service
         private List<string> _lVanTaiHangHoa = new List<string>
         {
             "VT HH",
-            "Hang Hoa"
+            "Hang Hoa",
+            "VanTai HH",
+            "Van Tai HH"
         };
         private void VanTaiHangHoa(ExcelWorksheet sheet, DateTime dt)
         {
