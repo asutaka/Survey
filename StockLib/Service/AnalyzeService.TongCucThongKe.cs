@@ -80,7 +80,7 @@ namespace StockLib.Service
                     }
                     else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
-                        BanLe(sheet, dt);
+                         BanLe(sheet, dt);
                     }
                     else if (_lNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
