@@ -224,6 +224,14 @@ namespace StockLib.Utils
         [Display(Name = "GDP")]
         GDP = 38,
         [Display(Name = "Chăn Nuôi Lợn")]
-        ChanNuoiLon = 39
+        ChanNuoiLon = 39,
+        [Display(Name = "Giá sản xuất(%)")]
+        GiaSX = 40,
+        [Display(Name = "Giá vận tải(%)")]
+        GiaVT = 41,
+        [Display(Name = "Giá xuất khẩu(%)")]
+        GiaXK = 42,
+        [Display(Name = "Giá nhập khẩu(%)")]
+        GiaNK = 43,
     }
 }

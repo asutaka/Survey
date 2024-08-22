@@ -46,6 +46,22 @@ namespace StockLib.Service
                     {
                         ChanNuoi(sheet, dt);
                     }
+                    else if (_lGiaSX.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                    {
+                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaSX);
+                    }
+                    else if (_lGiaVT.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                    {
+                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaVT);
+                    }
+                    else if (_lGiaNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                    {
+                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaNK);
+                    }
+                    else if (_lGiaXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                    {
+                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaXK);
+                    }
                     else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ","").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
                         IIP(sheet, dt);
@@ -950,6 +966,77 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"AnalyzeService.GDP|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        private List<string> _lGiaSX = new List<string>
+        {
+            "Gia SX"
+        };
+        private List<string> _lGiaVT = new List<string>
+        {
+            "Gia VT",
+            "Gia Van Tai"
+        };
+        private List<string> _lGiaXK = new List<string>
+        {
+            "Gia XK"
+        };
+        private List<string> _lGiaNK = new List<string>
+        {
+            "Gia NK"
+        };
+
+        private void GiaCa(ExcelWorksheet sheet, DateTime dt, EKeyTongCucThongKe type)
+        {
+            try
+            {
+                var quarter = dt.GetQuarter();
+                var quarterStr = dt.GetQuarterStr();
+
+                var col = -1;
+                var isBanLe = false;
+                //loop all rows in the sheet
+                for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
+                {
+                    //loop all columns in a row
+                    for (int j = sheet.Dimension.Start.Column; j <= sheet.Dimension.End.Column; j++)
+                    {
+                        //do something with the current cell value
+                        var cellValueCur = sheet.Cells[i, j].Value?.ToString().Trim() ?? string.Empty;
+
+                        if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Contains($"Quy {quarterStr}".ToUpper()))
+                        {
+                            col = j;
+                            break;
+                        }
+
+                        if (col < 0)
+                        {
+                            continue;
+                        }
+
+                        if (string.IsNullOrWhiteSpace(cellValueCur)
+                            || j > 1)
+                            continue;
+
+                        var isDouble = double.TryParse(sheet.Cells[i, col].Value?.ToString().Trim().Replace(",", ""), out var val);
+                        if (!isDouble || val <= 0)
+                            continue;
+
+                        _thongkeQuyRepo.InsertOne(new ThongKeQuy
+                        {
+                            d = int.Parse($"{dt.Year}{quarter}"),
+                            key = (int)type,
+                            content = cellValueCur,
+                            va = isDouble ? Math.Round(val, 1) : 0
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.GiaCa|EXCEPTION| {ex.Message}");
             }
         }
 
