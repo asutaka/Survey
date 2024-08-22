@@ -40,23 +40,23 @@ namespace StockLib.Service
                     if (false) { }
                     else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        //IIP(sheet, dt);
+                        IIP(sheet, dt);
                     }
                     else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        //SanPhamCongNghiep(sheet, dt);
+                        SanPhamCongNghiep(sheet, dt);
                     }
                     else if (_lVonDauTu.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        //VonDauTuNhaNuoc(sheet, dt);
+                        VonDauTuNhaNuoc(sheet, dt);
                     }
                     else if (_lFDI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        //FDI(sheet, dt);
+                        FDI(sheet, dt);
                     }
                     else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
-                        //BanLe(sheet, dt);
+                        BanLe(sheet, dt);
                     }
                     else if (_lNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().EndsWith(x.ToUpper())))
                     {
