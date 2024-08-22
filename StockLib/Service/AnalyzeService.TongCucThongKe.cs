@@ -4,6 +4,7 @@ using OfficeOpenXml;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
 using System.Text;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -62,7 +63,7 @@ namespace StockLib.Service
                     {
                         GiaCa(sheet, dt, EKeyTongCucThongKe.GiaXK);
                     }
-                    else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ","").EndsWith(x.ToUpper().Replace(" ", ""))))
+                    else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
                         IIP(sheet, dt);
                     }
@@ -80,7 +81,7 @@ namespace StockLib.Service
                     }
                     else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
-                         BanLe(sheet, dt);
+                        BanLe(sheet, dt);
                     }
                     else if (_lNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
                     {
@@ -103,6 +104,15 @@ namespace StockLib.Service
                         KhachQuocTe(sheet, dt);
                     }
                 }
+
+                if (dt.Month % 3 == 0)
+                {
+                    EveryQuarter(dt);
+                }
+                else
+                {
+                    EveryMonth(dt);
+                }
             }
             catch (Exception ex)
             {
@@ -110,6 +120,43 @@ namespace StockLib.Service
             }
 
             return (0, null);
+        }
+
+        private string EveryMonth(DateTime dt)
+        {
+            var filter = Builders<ThongKe>.Filter.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}"));
+            var lData = _thongkeRepo.GetByFilter(filter);
+            if (!(lData?.Any() ?? false))
+                return string.Empty;
+
+            var strBuilder = new StringBuilder();
+            strBuilder.AppendLine($"[Thông báo] Thống kê số liệu tháng {dt.Month}");
+            strBuilder.AppendLine();
+
+            var GiaTieuDung = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_GiaTieuDung);
+            var GiaVang = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_GiaVang);
+            var GiaUSD = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_DoLa);
+            var LamPhat = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_LamPhat);
+
+            strBuilder.AppendLine($"*CPI tháng {dt.Month}:");
+            strBuilder.AppendLine($"1. Chỉ số giá tiêu dùng:");
+            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaTieuDung?.va2 ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaTieuDung?.va ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($"2. Giá Vàng:");
+            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaVang?.va2 ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaVang?.va ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($"3. Đô la Mỹ:");
+            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaUSD?.va2 ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.va ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($"4. Lạm phát: {LamPhat?.va2 ?? 0} %");
+            strBuilder.AppendLine();
+
+            return strBuilder.ToString();
+        }
+
+        private string EveryQuarter(DateTime dt)
+        {
+            return string.Empty;
         }
 
         private List<string> _lIIP = new List<string>
@@ -636,6 +683,7 @@ namespace StockLib.Service
             try
             {
                 var col = -1;
+                var colLastYear = -1;
                 var isChiSoGiaTieuDung = false;
                 var isGiaVang = false;
                 var isUSD = false;
@@ -654,7 +702,6 @@ namespace StockLib.Service
                         if (col < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Equals($"THANG {dt.Month}"))
                         {
                             col = j;
-                            break;
                         }
 
                         if (col < 0)
@@ -662,24 +709,35 @@ namespace StockLib.Service
                             continue;
                         }
 
+                        if (colLastYear < 0 && cellValueCur.RemoveSignVietnamese().ToUpper().Equals($"THANG 12"))
+                        {
+                            colLastYear = j;
+                            break;
+                        }
+
+                        if (colLastYear < 0)
+                        {
+                            continue;
+                        }
+
                         if (!isChiSoGiaTieuDung)
                         {
-                            isChiSoGiaTieuDung = InsertThongKe(EKeyTongCucThongKe.CPI_GiaTieuDung, "Chi So Gia Tieu Dung", cellValueCur, i, col, dt, sheet);
+                            isChiSoGiaTieuDung = InsertThongKe(EKeyTongCucThongKe.CPI_GiaTieuDung, "Chi So Gia Tieu Dung", cellValueCur, i, col, dt, sheet, col2: colLastYear);
                         }
 
                         if (!isGiaVang)
                         {
-                            isGiaVang = InsertThongKe(EKeyTongCucThongKe.CPI_GiaVang, "Gia Vang", cellValueCur, i, col, dt, sheet);
+                            isGiaVang = InsertThongKe(EKeyTongCucThongKe.CPI_GiaVang, "Gia Vang", cellValueCur, i, col, dt, sheet, col2: colLastYear);
                         }
 
                         if (!isUSD)
                         {
-                            isUSD = InsertThongKe(EKeyTongCucThongKe.CPI_DoLa, "Do La", cellValueCur, i, col, dt, sheet);
+                            isUSD = InsertThongKe(EKeyTongCucThongKe.CPI_DoLa, "Do La", cellValueCur, i, col, dt, sheet, col2: colLastYear);
                         }
 
                         if (!isLamPhat)
                         {
-                            isLamPhat = InsertThongKe(EKeyTongCucThongKe.CPI_LamPhat, "Lam Phat", cellValueCur, i, col, dt, sheet);
+                            isLamPhat = InsertThongKe(EKeyTongCucThongKe.CPI_LamPhat, "Lam Phat", cellValueCur, i, col, dt, sheet, col2: col + 3);
                             if(isLamPhat)
                                 return;
                         }
@@ -688,7 +746,7 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AnalyzeService.VanTaiHangHoa|EXCEPTION| {ex.Message}");
+                _logger.LogError($"AnalyzeService.CPI|EXCEPTION| {ex.Message}");
             }
         }
 
@@ -1040,7 +1098,7 @@ namespace StockLib.Service
             }
         }
 
-        private bool InsertThongKe(EKeyTongCucThongKe eThongKe, string textCompare, string text, int i, int col, DateTime dt, ExcelWorksheet sheet, string textCompare2 = null, int offset = 0)
+        private bool InsertThongKe(EKeyTongCucThongKe eThongKe, string textCompare, string text, int i, int col, DateTime dt, ExcelWorksheet sheet, string textCompare2 = null, int offset = 0, int col2 = 0)
         {
             if (!text.Contains(textCompare.ToUpper()))
                 return false;
@@ -1055,11 +1113,18 @@ namespace StockLib.Service
             if (!string.IsNullOrWhiteSpace(valStr))
             {
                 var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
+                var isDouble2 = false;
+                double val2 = 0;
+                if(col2 > 0)
+                {
+                    isDouble2 = double.TryParse((sheet.Cells[i, col2 + offset].Value?.ToString().Trim() ?? string.Empty).Replace(",", ""), out val2);
+                }    
                 _thongkeRepo.InsertOne(new ThongKe
                 {
                     d = int.Parse($"{dt.Year}{dt.Month.To2Digit()}"),
                     key = (int)eThongKe,
-                    va = isDouble ? Math.Round(val, 1) : 0
+                    va = isDouble ? Math.Round(val, 1) : 0,
+                    va2 = isDouble2 ? Math.Round(val2, 1) : 0
                 });
             }
             return true;

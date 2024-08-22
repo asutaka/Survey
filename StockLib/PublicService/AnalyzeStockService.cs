@@ -22,7 +22,7 @@ namespace StockLib.PublicService
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
-        private const long _idMain = -1002247826353;
+        private const long _idMain = 1066022551;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
                                     ITeleService teleService,
                                     IAnalyzeService analyzeService,
@@ -49,7 +49,7 @@ namespace StockLib.PublicService
 
                 try
                 {
-                    var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-2));//for test
+                    var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-1));//for test
                     if (chibao.Item1 > 0)
                     {
                         await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
