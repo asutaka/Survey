@@ -4,7 +4,6 @@ using OfficeOpenXml;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
 using System.Text;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -15,95 +14,95 @@ namespace StockLib.Service
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             try
             {
-                var builder = Builders<ConfigData>.Filter;
-                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKe);
-                var lConfig = _configRepo.GetByFilter(filter);
-                if (lConfig.Any())
-                {
-                    if (lConfig.Any(x => x.t == t))
-                        return (0, null);
+                //var builder = Builders<ConfigData>.Filter;
+                //FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKe);
+                //var lConfig = _configRepo.GetByFilter(filter);
+                //if (lConfig.Any())
+                //{
+                //    if (lConfig.Any(x => x.t == t))
+                //        return (0, null);
 
-                    _configRepo.DeleteMany(filter);
-                }
+                //    _configRepo.DeleteMany(filter);
+                //}
 
-                var strOutput = new StringBuilder();
-                var stream = await _apiService.TongCucThongKe(dt);
-                if (stream is null
-                    || stream.Length < 1000)
-                    return (0, null);
+                //var strOutput = new StringBuilder();
+                //var stream = await _apiService.TongCucThongKe(dt);
+                //if (stream is null
+                //    || stream.Length < 1000)
+                //    return (0, null);
 
-                var dic = new Dictionary<int, string>();
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                var package = new ExcelPackage(stream);
-                var lSheet = package.Workbook.Worksheets;
-                foreach (var sheet in lSheet)
-                {
-                    if (false) { }
-                    else if (_lGDP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        GDP(sheet, dt);
-                    }
-                    else if (_lChanNuoi.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        ChanNuoi(sheet, dt);
-                    }
-                    else if (_lGiaSX.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaSX);
-                    }
-                    else if (_lGiaVT.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaVT);
-                    }
-                    else if (_lGiaNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaNK);
-                    }
-                    else if (_lGiaXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaXK);
-                    }
-                    else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        IIP(sheet, dt);
-                    }
-                    else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        SanPhamCongNghiep(sheet, dt);
-                    }
-                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        VonDauTuNhaNuoc(sheet, dt);
-                    }
-                    else if (_lFDI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        FDI(sheet, dt);
-                    }
-                    else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        BanLe(sheet, dt);
-                    }
-                    else if (_lNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        NhapKhau(sheet, dt);
-                    }
-                    else if (_lXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        XuatKhau(sheet, dt);
-                    }
-                    else if (_lCPI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        CPI(sheet, dt);
-                    }
-                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        VanTaiHangHoa(sheet, dt);
-                    }
-                    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
-                    {
-                        KhachQuocTe(sheet, dt);
-                    }
-                }
+                //var dic = new Dictionary<int, string>();
+                //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                //var package = new ExcelPackage(stream);
+                //var lSheet = package.Workbook.Worksheets;
+                //foreach (var sheet in lSheet)
+                //{
+                //    if (false) { }
+                //    else if (_lGDP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        GDP(sheet, dt);
+                //    }
+                //    else if (_lChanNuoi.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        ChanNuoi(sheet, dt);
+                //    }
+                //    else if (_lGiaSX.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaSX);
+                //    }
+                //    else if (_lGiaVT.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaVT);
+                //    }
+                //    else if (_lGiaNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaNK);
+                //    }
+                //    else if (_lGiaXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        GiaCa(sheet, dt, EKeyTongCucThongKe.GiaXK);
+                //    }
+                //    else if (_lIIP.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        IIP(sheet, dt);
+                //    }
+                //    else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        SanPhamCongNghiep(sheet, dt);
+                //    }
+                //    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        VonDauTuNhaNuoc(sheet, dt);
+                //    }
+                //    else if (_lFDI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        FDI(sheet, dt);
+                //    }
+                //    else if (_lBanLe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        BanLe(sheet, dt);
+                //    }
+                //    else if (_lNK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        NhapKhau(sheet, dt);
+                //    }
+                //    else if (_lXK.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        XuatKhau(sheet, dt);
+                //    }
+                //    else if (_lCPI.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        CPI(sheet, dt);
+                //    }
+                //    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        VanTaiHangHoa(sheet, dt);
+                //    }
+                //    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith(x.ToUpper().Replace(" ", ""))))
+                //    {
+                //        KhachQuocTe(sheet, dt);
+                //    }
+                //}
 
                 if (dt.Month % 3 == 0)
                 {
@@ -111,7 +110,8 @@ namespace StockLib.Service
                 }
                 else
                 {
-                    EveryMonth(dt);
+                    var mes = EveryMonth(dt);
+                    return (1, mes);
                 }
             }
             catch (Exception ex)
@@ -122,6 +122,18 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        private (double, double, double) GetSpecialData(List<ThongKe> lData, DateTime dt, EKeyTongCucThongKe key)
+        {
+            var Cur = lData.FirstOrDefault(x => x.key == (int)key);
+            var filterByKey = Builders<ThongKe>.Filter.Eq(x => x.key, (int)key);
+            var lDataFilter = _thongkeRepo.GetByFilter(filterByKey);
+            var ValLastMonth = lData.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
+            var ValMonthLastYear = lData.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
+            var RateLastMonth = (ValLastMonth?.va ?? 0) > 0 ? Math.Round(100 * (-1 + (Cur?.va ?? 0) / (ValLastMonth?.va ?? 0)), 1) : 0;
+            var RateMonthLastYear = (ValMonthLastYear?.va ?? 0) > 0 ? Math.Round(100 * (-1 + (Cur?.va ?? 0) / (ValMonthLastYear?.va ?? 0)), 1) : 0;
+            return ((Cur?.va ?? 0), RateLastMonth, RateMonthLastYear);
+        }
+
         private string EveryMonth(DateTime dt)
         {
             var filter = Builders<ThongKe>.Filter.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}"));
@@ -130,7 +142,7 @@ namespace StockLib.Service
                 return string.Empty;
 
             var strBuilder = new StringBuilder();
-            strBuilder.AppendLine($"[Thông báo] Thống kê số liệu tháng {dt.Month}");
+            strBuilder.AppendLine($"[Thông báo] Tình hình kinh tế - xã hội tháng {dt.Month}");
             strBuilder.AppendLine();
 
             var GiaTieuDung = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_GiaTieuDung);
@@ -148,7 +160,86 @@ namespace StockLib.Service
             strBuilder.AppendLine($"3. Đô la Mỹ:");
             strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaUSD?.va2 ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.va ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($"4. Lạm phát: {LamPhat?.va2 ?? 0} %");
+            strBuilder.AppendLine($"4. Lạm phát: {Math.Round(LamPhat?.va2 ?? 0, 1)} %");
+            strBuilder.AppendLine();
+
+            var NhapKhauTrongNuoc = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.NK_TrongNuoc);
+            var NhapKhauFDI = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.NK_FDI);
+            var TongNhapKhau = (NhapKhauTrongNuoc?.va ?? 0) + (NhapKhauFDI?.va ?? 0);
+            if(TongNhapKhau <= 0)
+            {
+                TongNhapKhau = 1;
+            }
+
+            var XuatKhauTrongNuoc = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.XK_TrongNuoc);
+            var XuatKhauFDI = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.XK_FDI);
+            var TongXuatKhau = (XuatKhauTrongNuoc?.va ?? 0) + (XuatKhauFDI?.va ?? 0);
+            if (TongXuatKhau <= 0)
+            {
+                TongXuatKhau = 1;
+            }
+
+            strBuilder.AppendLine($"*Xuất nhập khẩu tháng {dt.Month}:");
+            strBuilder.AppendLine($"+ Xuất Khẩu: {Math.Round(TongXuatKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((XuatKhauFDI?.va ?? 0) / TongXuatKhau))} %)");
+            strBuilder.AppendLine($"+ Nhập Khẩu: {Math.Round(TongNhapKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((NhapKhauFDI?.va ?? 0) / TongNhapKhau))} %)");
+            strBuilder.AppendLine($"+ Cán cân thương mại: {Math.Round((TongXuatKhau - TongNhapKhau) / 1000, 1)} tỷ USD");
+            strBuilder.AppendLine();
+
+            #region Du Lịch
+            var DuLich = GetSpecialData(lData, dt, EKeyTongCucThongKe.DuLich);
+            strBuilder.AppendLine($"*Nhóm ngành du lịch:");
+            strBuilder.AppendLine($"1. Khách quốc tế: {Math.Round(DuLich.Item1 / 1000000, 1)} triệu lượt khách");
+            strBuilder.AppendLine($" + So với tháng trước: {DuLich.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuLich.Item3} %");
+            strBuilder.AppendLine();
+            #endregion
+
+            #region Bán lẻ
+            var BanLe = GetSpecialData(lData, dt, EKeyTongCucThongKe.BanLe);
+            strBuilder.AppendLine($"*Nhóm ngành bán lẻ:");
+            strBuilder.AppendLine($"1. Tổng mức bản lẻ hàng hóa: {Math.Round(BanLe.Item1 / 1000000, 1)} tỷ");
+            strBuilder.AppendLine($" + So với tháng trước: {BanLe.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {BanLe.Item3} %");
+            strBuilder.AppendLine();
+            #endregion
+
+            #region KCN
+            var filterFDI = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.FDI);
+            var lDataFDI = _thongkeRepo.GetByFilter(filterFDI);
+            var lDataCur = lDataFDI.Where(x => x.d == int.Parse($"{dt.Year}{dt.Month.To2Digit()}")).OrderByDescending(x => x.va).Take(5);
+            strBuilder.AppendLine($"*Nhóm ngành KCN:");
+            var iFDI = 1;
+            foreach (var item in lDataCur)
+            {
+                strBuilder.AppendLine($"{iFDI++}. {item.content}({item.va} triệu USD)");
+                strBuilder.AppendLine($"   + So với tháng trước: {BanLe.Item2 zz} %");
+                strBuilder.AppendLine($"   + Cùng kỳ: {BanLe.Item3 zz} %");
+            }
+            strBuilder.AppendLine();
+            #endregion
+
+            var DuongBien = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongBien);
+            var DuongBo = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongBo);
+            var DuongThuy = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongThuy);
+            var DuongSat = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongSat);
+            var DuongHangKhong = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_HangKhong);
+
+            strBuilder.AppendLine($"*Nhóm ngành cảng biển, Logistic:");
+            strBuilder.AppendLine($"1. Vận tải đường Biển:");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongBien.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongBien.Item3} %");
+            strBuilder.AppendLine($"2. Vận tải đường Bộ:");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongBo.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongBo.Item3} %");
+            strBuilder.AppendLine($"3. Vận tải đường Thủy:");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongThuy.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongThuy.Item3} %");
+            strBuilder.AppendLine($"4. Vận tải đường Sắt:");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongSat.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongSat.Item3} %");
+            strBuilder.AppendLine($"5. Vận tải đường Hàng Không:");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongHangKhong.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongHangKhong.Item3} %");
             strBuilder.AppendLine();
 
             return strBuilder.ToString();

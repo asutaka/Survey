@@ -18,6 +18,24 @@ namespace StockLib.DAL.Settings
         /// </summary>
         /// <returns>collection of entities</returns>
         List<T> GetAll();
+        /*
+            FilterDefinition<revox_content> filter = null;
+            var builder = Builders<revox_content>.Filter;
+            var lFilter = new List<FilterDefinition<revox_content>>()
+            {
+                builder.Eq(x => x.date, content.date),
+                builder.Eq(x => x.symbol, content.symbol),
+            };
+            foreach (var item in lFilter)
+            {
+                if (filter is null)
+                {
+                    filter = item;
+                    continue;
+                }
+                filter &= item;
+            }
+         */
         //Example: FilterDefinition<Stock> filter = Builders<Stock>.Filter.Eq(x => x.s, itemMa.symbol);
         List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0);
 
