@@ -197,9 +197,43 @@ namespace StockLib.Service
             #region Bán lẻ
             var BanLe = GetSpecialData(lData, dt, EKeyTongCucThongKe.BanLe);
             strBuilder.AppendLine($"*Nhóm ngành bán lẻ:");
-            strBuilder.AppendLine($"1. Tổng mức bản lẻ hàng hóa: {Math.Round(BanLe.Item1 / 1000000, 1)} tỷ");
+            strBuilder.AppendLine($"1. Tổng mức bản lẻ hàng hóa: {Math.Round(BanLe.Item1 / 1000, 1)} nghìn tỷ");
             strBuilder.AppendLine($" + So với tháng trước: {BanLe.Item2} %");
             strBuilder.AppendLine($" + Cùng kỳ: {BanLe.Item3} %");
+            strBuilder.AppendLine();
+            #endregion
+
+            #region Đầu tư công
+            var DauTuCong = GetSpecialData(lData, dt, EKeyTongCucThongKe.DauTuCong);
+            strBuilder.AppendLine($"*Nhóm ngành đầu tư công: {Math.Round(DuLich.Item1 / 1000, 1)} nghìn tỉ");
+            strBuilder.AppendLine($" + So với tháng trước: {DauTuCong.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DauTuCong.Item3} %");
+            strBuilder.AppendLine();
+            #endregion
+
+            #region Điện
+            FilterDefinition<ThongKe> filterIIP = null;
+            var builderIIP = Builders<ThongKe>.Filter;
+            var lFilterIIP = new List<FilterDefinition<ThongKe>>()
+            {
+                builderIIP.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}")),
+                builderIIP.Eq(x => x.key, (int)EKeyTongCucThongKe.IIP),
+            };
+            foreach (var item in lFilterIIP)
+            {
+                if (filterIIP is null)
+                {
+                    filterIIP = item;
+                    continue;
+                }
+                filterIIP &= item;
+            }
+            var lDataIIP = _thongkeRepo.GetByFilter(filterIIP);
+            var Dien = lDataIIP.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith("Phan Phoi Dien".ToUpper()));
+
+            strBuilder.AppendLine($"*Nhóm ngành điện:");
+            strBuilder.AppendLine($" + So với tháng trước: {Dien.va} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Dien.va2} %");
             strBuilder.AppendLine();
             #endregion
 
@@ -211,9 +245,22 @@ namespace StockLib.Service
             var iFDI = 1;
             foreach (var item in lDataCur)
             {
-                strBuilder.AppendLine($"{iFDI++}. {item.content}({item.va} triệu USD)");
-                strBuilder.AppendLine($"   + So với tháng trước: {BanLe.Item2 zz} %");
-                strBuilder.AppendLine($"   + Cùng kỳ: {BanLe.Item3 zz} %");
+                var prev = lDataFDI.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{(dt.AddMonths(-1).Month - 1).To2Digit()}") && x.content.Replace(" ", "").Equals(item.content.Replace(" ", "")));
+                var last = lDataFDI.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}") && x.content.Replace(" ", "").Equals(item.content.Replace(" ", "")));
+                var ratePrev = (prev is null || prev.va <= 0) ? 0 : Math.Round(100 * (-1 + item.va / prev.va));
+                var rateLast = (last is null || last.va <= 0) ? 0 : Math.Round(100 * (-1 + item.va / last.va));
+
+                var unit = "triệu USD";
+                if(item.va >= 1000)
+                {
+                    unit = "tỷ USD";
+                    item.va = Math.Round(item.va / 1000, 1);
+                }
+
+
+                strBuilder.AppendLine($"{iFDI++}. {item.content}({item.va} {unit})");
+                strBuilder.AppendLine($"   + So với tháng trước: {ratePrev} %");
+                strBuilder.AppendLine($"   + Cùng kỳ: {rateLast} %");
             }
             strBuilder.AppendLine();
             #endregion

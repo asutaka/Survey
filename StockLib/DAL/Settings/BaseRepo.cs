@@ -19,9 +19,9 @@ namespace StockLib.DAL.Settings
         /// <returns>collection of entities</returns>
         List<T> GetAll();
         /*
-            FilterDefinition<revox_content> filter = null;
-            var builder = Builders<revox_content>.Filter;
-            var lFilter = new List<FilterDefinition<revox_content>>()
+            FilterDefinition<ThongKe> filter = null;
+            var builder = Builders<ThongKe>.Filter;
+            var lFilter = new List<FilterDefinition<ThongKe>>()
             {
                 builder.Eq(x => x.date, content.date),
                 builder.Eq(x => x.symbol, content.symbol),
