@@ -134,17 +134,9 @@ namespace StockLib.Service
             return ((Cur?.va ?? 0), RateLastMonth, RateMonthLastYear);
         }
 
-        private string EveryMonth(DateTime dt)
+        private string CPIStr(DateTime dt, List<ThongKe> lData)
         {
-            var filter = Builders<ThongKe>.Filter.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}"));
-            var lData = _thongkeRepo.GetByFilter(filter);
-            if (!(lData?.Any() ?? false))
-                return string.Empty;
-
             var strBuilder = new StringBuilder();
-            strBuilder.AppendLine($"[Thông báo] Tình hình kinh tế - xã hội tháng {dt.Month}");
-            strBuilder.AppendLine();
-
             var GiaTieuDung = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_GiaTieuDung);
             var GiaVang = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_GiaVang);
             var GiaUSD = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_DoLa);
@@ -161,12 +153,16 @@ namespace StockLib.Service
             strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaUSD?.va2 ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.va ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($"4. Lạm phát: {Math.Round(LamPhat?.va2 ?? 0, 1)} %");
-            strBuilder.AppendLine();
+            return strBuilder.ToString();
+        }
 
+        private string CanCanThuongMaiStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             var NhapKhauTrongNuoc = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.NK_TrongNuoc);
             var NhapKhauFDI = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.NK_FDI);
             var TongNhapKhau = (NhapKhauTrongNuoc?.va ?? 0) + (NhapKhauFDI?.va ?? 0);
-            if(TongNhapKhau <= 0)
+            if (TongNhapKhau <= 0)
             {
                 TongNhapKhau = 1;
             }
@@ -183,35 +179,45 @@ namespace StockLib.Service
             strBuilder.AppendLine($"+ Xuất Khẩu: {Math.Round(TongXuatKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((XuatKhauFDI?.va ?? 0) / TongXuatKhau))} %)");
             strBuilder.AppendLine($"+ Nhập Khẩu: {Math.Round(TongNhapKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((NhapKhauFDI?.va ?? 0) / TongNhapKhau))} %)");
             strBuilder.AppendLine($"+ Cán cân thương mại: {Math.Round((TongXuatKhau - TongNhapKhau) / 1000, 1)} tỷ USD");
-            strBuilder.AppendLine();
+            return strBuilder.ToString();
+        }
 
-            #region Du Lịch
+        private string DulichStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             var DuLich = GetSpecialData(lData, dt, EKeyTongCucThongKe.DuLich);
             strBuilder.AppendLine($"*Nhóm ngành du lịch:");
             strBuilder.AppendLine($"1. Khách quốc tế: {Math.Round(DuLich.Item1 / 1000000, 1)} triệu lượt khách");
             strBuilder.AppendLine($" + So với tháng trước: {DuLich.Item2} %");
             strBuilder.AppendLine($" + Cùng kỳ: {DuLich.Item3} %");
-            strBuilder.AppendLine();
-            #endregion
+            return strBuilder.ToString();
+        }
 
-            #region Bán lẻ
+        private string BanleStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             var BanLe = GetSpecialData(lData, dt, EKeyTongCucThongKe.BanLe);
             strBuilder.AppendLine($"*Nhóm ngành bán lẻ:");
             strBuilder.AppendLine($"1. Tổng mức bản lẻ hàng hóa: {Math.Round(BanLe.Item1 / 1000, 1)} nghìn tỷ");
             strBuilder.AppendLine($" + So với tháng trước: {BanLe.Item2} %");
             strBuilder.AppendLine($" + Cùng kỳ: {BanLe.Item3} %");
-            strBuilder.AppendLine();
-            #endregion
+            return strBuilder.ToString();
+        }
 
-            #region Đầu tư công
+        private string DautucongStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             var DauTuCong = GetSpecialData(lData, dt, EKeyTongCucThongKe.DauTuCong);
-            strBuilder.AppendLine($"*Nhóm ngành đầu tư công: {Math.Round(DuLich.Item1 / 1000, 1)} nghìn tỉ");
+            strBuilder.AppendLine($"*Nhóm ngành đầu tư công:");
+            strBuilder.AppendLine($"1. Giải ngân: {Math.Round(DauTuCong.Item1 / 1000, 1)} nghìn tỉ");
             strBuilder.AppendLine($" + So với tháng trước: {DauTuCong.Item2} %");
             strBuilder.AppendLine($" + Cùng kỳ: {DauTuCong.Item3} %");
-            strBuilder.AppendLine();
-            #endregion
+            return strBuilder.ToString();
+        }
 
-            #region Điện
+        private string DienStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             FilterDefinition<ThongKe> filterIIP = null;
             var builderIIP = Builders<ThongKe>.Filter;
             var lFilterIIP = new List<FilterDefinition<ThongKe>>()
@@ -229,15 +235,17 @@ namespace StockLib.Service
                 filterIIP &= item;
             }
             var lDataIIP = _thongkeRepo.GetByFilter(filterIIP);
-            var Dien = lDataIIP.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith("Phan Phoi Dien".ToUpper()));
+            var Dien = lDataIIP.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Replace(" ", "").EndsWith("Phan Phoi Dien".Replace(" ", "").ToUpper()));
 
             strBuilder.AppendLine($"*Nhóm ngành điện:");
             strBuilder.AppendLine($" + So với tháng trước: {Dien.va} %");
             strBuilder.AppendLine($" + Cùng kỳ: {Dien.va2} %");
-            strBuilder.AppendLine();
-            #endregion
+            return strBuilder.ToString();
+        }
 
-            #region KCN
+        private string KCNStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             var filterFDI = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.FDI);
             var lDataFDI = _thongkeRepo.GetByFilter(filterFDI);
             var lDataCur = lDataFDI.Where(x => x.d == int.Parse($"{dt.Year}{dt.Month.To2Digit()}")).OrderByDescending(x => x.va).Take(5);
@@ -251,7 +259,7 @@ namespace StockLib.Service
                 var rateLast = (last is null || last.va <= 0) ? 0 : Math.Round(100 * (-1 + item.va / last.va));
 
                 var unit = "triệu USD";
-                if(item.va >= 1000)
+                if (item.va >= 1000)
                 {
                     unit = "tỷ USD";
                     item.va = Math.Round(item.va / 1000, 1);
@@ -262,9 +270,12 @@ namespace StockLib.Service
                 strBuilder.AppendLine($"   + So với tháng trước: {ratePrev} %");
                 strBuilder.AppendLine($"   + Cùng kỳ: {rateLast} %");
             }
-            strBuilder.AppendLine();
-            #endregion
+            return strBuilder.ToString();
+        }
 
+        private string CangbienStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
             var DuongBien = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongBien);
             var DuongBo = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongBo);
             var DuongThuy = GetSpecialData(lData, dt, EKeyTongCucThongKe.VanTai_DuongThuy);
@@ -287,8 +298,31 @@ namespace StockLib.Service
             strBuilder.AppendLine($"5. Vận tải đường Hàng Không:");
             strBuilder.AppendLine($" + So với tháng trước: {DuongHangKhong.Item2} %");
             strBuilder.AppendLine($" + Cùng kỳ: {DuongHangKhong.Item3} %");
-            strBuilder.AppendLine();
+            return strBuilder.ToString();
+        }
 
+        private string EveryMonth(DateTime dt)
+        {
+            var filter = Builders<ThongKe>.Filter.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}"));
+            var lData = _thongkeRepo.GetByFilter(filter);
+            if (!(lData?.Any() ?? false))
+                return string.Empty;
+
+            var strBuilder = new StringBuilder();
+            if (dt.Month % 3 > 0) 
+            {
+                strBuilder.AppendLine($"[Thông báo] Tình hình kinh tế - xã hội tháng {dt.Month}");
+                strBuilder.AppendLine();
+            }
+
+            strBuilder.AppendLine(CPIStr(dt, lData));
+            strBuilder.AppendLine(CanCanThuongMaiStr(dt, lData));
+            strBuilder.AppendLine(DulichStr(dt, lData));
+            strBuilder.AppendLine(BanleStr(dt, lData));
+            strBuilder.AppendLine(DautucongStr(dt, lData));
+            strBuilder.AppendLine(DienStr(dt, lData));
+            strBuilder.AppendLine(KCNStr(dt, lData));
+            strBuilder.AppendLine(CangbienStr(dt, lData));
             return strBuilder.ToString();
         }
 
