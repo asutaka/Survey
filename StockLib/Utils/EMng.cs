@@ -233,5 +233,7 @@ namespace StockLib.Utils
         GiaXK = 42,
         [Display(Name = "Giá nhập khẩu(%)")]
         GiaNK = 43,
+        [Display(Name = "Xuất khẩu SP sắt thép(triệu USD)")]
+        XK_SPSatThep = 44,
     }
 }
