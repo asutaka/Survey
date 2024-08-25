@@ -235,5 +235,7 @@ namespace StockLib.Utils
         GiaNK = 43,
         [Display(Name = "Xuất khẩu SP sắt thép(triệu USD)")]
         XK_SPSatThep = 44,
+        [Display(Name = "Thủy sản(Nghìn tấn)")]
+        ThuySan = 45
     }
 }

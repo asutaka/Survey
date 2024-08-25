@@ -42,10 +42,6 @@ namespace StockLib.PublicService
                 var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;
                 var isPreTrade = dt.Hour < 9;
-                //fake
-                //isDayOfWork = true;
-                //isTimePrint = true;
-                //isRealTime = true;
 
                 try
                 {
