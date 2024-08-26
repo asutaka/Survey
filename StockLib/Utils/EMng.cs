@@ -200,8 +200,6 @@ namespace StockLib.Utils
         NK_TrongNuoc = 25,
         [Display(Name = "Nhập khẩu từ DN FDI(triệu USD)")]
         NK_FDI = 26,
-        [Display(Name = "Nhập khẩu thức ăn gia súc(triệu USD)")]
-        NK_ThucAnGiaSuc = 27,
         [Display(Name = "Nhập khẩu phân bón(triệu USD)")]
         NK_PhanBon = 28,
         [Display(Name = "Nhập khẩu vải(triệu USD)")]

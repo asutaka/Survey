@@ -103,6 +103,11 @@ namespace StockLib.Utils
             }
         }
 
+        public static string RemoveSpace(this string val)
+        {
+            return val.Replace(" ","").Trim();
+        }
+
         public static string RemoveSignVietnamese(this string val)
         {
             var VietnameseSigns = new string[]

@@ -408,17 +408,17 @@ namespace StockLib.Service
         private string ChannuoiStr(DateTime dt, List<ThongKe> lData)
         {
             var strBuilder = new StringBuilder();
-            var data = GetSpecialData(lData, dt, EKeyTongCucThongKe.NK_ThucAnGiaSuc);
-            var unit = "triệu USD";
-            if (data.Item1 >= 1000)
-            {
-                unit = "tỷ USD";
-                data.Item1 = Math.Round(data.Item1 / 1000, 1);
-            }
-            strBuilder.AppendLine($"*Nhóm ngành chăn nuôi:");
-            strBuilder.AppendLine($"1. Nhập khẩu thức ăn gia súc: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            //var data = GetSpecialData(lData, dt, EKeyTongCucThongKe.NK_ThucAnGiaSuc);
+            //var unit = "triệu USD";
+            //if (data.Item1 >= 1000)
+            //{
+            //    unit = "tỷ USD";
+            //    data.Item1 = Math.Round(data.Item1 / 1000, 1);
+            //}
+            //strBuilder.AppendLine($"*Nhóm ngành chăn nuôi:");
+            //strBuilder.AppendLine($"1. Nhập khẩu thức ăn gia súc: {Math.Round(data.Item1, 1)} {unit}");
+            //strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
+            //strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
             return strBuilder.ToString();
         }
 
