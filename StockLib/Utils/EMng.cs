@@ -134,7 +134,8 @@ namespace StockLib.Utils
         ThongKeNhomNganh_week = 21,
         ThongKeNhomNganh_month = 22,
         ChiBaoKyThuat = 30,
-        TongCucThongKe = 40
+        TongCucThongKeThang = 41,
+        TongCucThongKeQuy = 42
     }
 
     public enum EHnxExchange

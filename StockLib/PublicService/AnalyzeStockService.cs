@@ -45,7 +45,7 @@ namespace StockLib.PublicService
 
                 try
                 {
-                    var chibao = await _analyzeService.TongCucThongKe(dt.AddMonths(-1));//for test
+                    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
                     if (chibao.Item1 > 0)
                     {
                         await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
@@ -188,7 +188,7 @@ namespace StockLib.PublicService
                         //Tổng cục thống kê
                         try
                         {
-                            var chibao = await _analyzeService.TongCucThongKe(dt);
+                            var chibao = await _analyzeService.TongCucThongKeThang(dt);
                             if (chibao.Item1 > 0)
                             {
                                 await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);

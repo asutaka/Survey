@@ -121,15 +121,15 @@ namespace StockLib.Service
 
             strBuilder.AppendLine($"*CPI tháng {dt.Month}:");
             strBuilder.AppendLine($"1. Chỉ số giá tiêu dùng:");
-            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaTieuDung?.va2 ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaTieuDung?.qoq ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaTieuDung?.va ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($"2. Giá Vàng:");
-            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaVang?.va2 ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaVang?.qoq ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaVang?.va ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($"3. Đô la Mỹ:");
-            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaUSD?.va2 ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaUSD?.qoq ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.va ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($"4. Lạm phát: {Math.Round(LamPhat?.va2 ?? 0, 1)} %");
+            strBuilder.AppendLine($"4. Lạm phát: {Math.Round(LamPhat?.qoq ?? 0, 1)} %");
             return strBuilder.ToString();
         }
 
@@ -231,7 +231,7 @@ namespace StockLib.Service
 
             strBuilder.AppendLine($"*Nhóm ngành điện:");
             strBuilder.AppendLine($" + So với tháng trước: {Dien.va} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Dien.va2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Dien.qoq} %");
             return strBuilder.ToString();
         }
 
@@ -315,12 +315,12 @@ namespace StockLib.Service
             var entity = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains("Go ".ToUpper()));
             strBuilder.AppendLine($"2. Chế biến gỗ:");
             strBuilder.AppendLine($" + So với tháng trước: {entity?.va ?? 0} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {entity?.va2 ?? 0} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {entity?.qoq ?? 0} %");
 
             var entity2 = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains("Giuong".ToUpper()));
             strBuilder.AppendLine($"3. Giường, tủ, bàn ghế:");
             strBuilder.AppendLine($" + So với tháng trước: {entity2?.va ?? 0} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {entity2?.va2 ?? 0} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {entity2?.qoq ?? 0} %");
 
             return strBuilder.ToString();
         }
@@ -346,7 +346,7 @@ namespace StockLib.Service
             var entity = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains("Cao Su".ToUpper()));
             strBuilder.AppendLine($"2. Sản xuất nhựa và cao su:");
             strBuilder.AppendLine($" + So với tháng trước: {entity?.va ?? 0} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {entity?.va2 ?? 0} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {entity?.qoq ?? 0} %");
             return strBuilder.ToString();
         }
 
@@ -476,7 +476,7 @@ namespace StockLib.Service
             strBuilder.AppendLine($" + Cùng kỳ: {dataNK.Item3} %");
             strBuilder.AppendLine($"3. Sản xuất trang phục:");
             strBuilder.AppendLine($" + So với tháng trước: {entity?.va ?? 0} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {entity?.va2 ?? 0} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {entity?.qoq ?? 0} %");
             return strBuilder.ToString();
         }
 
@@ -535,7 +535,7 @@ namespace StockLib.Service
             var entity = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains("Cao Su".ToUpper()));
             strBuilder.AppendLine($"2. Sản xuất nhựa và cao su:");
             strBuilder.AppendLine($" + So với tháng trước: {entity?.va ?? 0} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {entity?.va2 ?? 0} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {entity?.qoq ?? 0} %");
 
             return strBuilder.ToString();
         }
@@ -602,7 +602,7 @@ namespace StockLib.Service
             return strBuilder.ToString();
         }
 
-        private string PrintEveryMonth(DateTime dt)
+        private string TongCucThongKeThangPrint(DateTime dt)
         {
             var filter = Builders<ThongKe>.Filter.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}"));
             var lData = _thongkeRepo.GetByFilter(filter);
