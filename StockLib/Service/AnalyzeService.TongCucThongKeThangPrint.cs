@@ -121,15 +121,17 @@ namespace StockLib.Service
 
             strBuilder.AppendLine($"*CPI tháng {dt.Month}:");
             strBuilder.AppendLine($"1. Chỉ số giá tiêu dùng:");
-            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaTieuDung?.qoq ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaTieuDung?.va ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((GiaTieuDung?.qoqoy ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaTieuDung?.qoq ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($"2. Giá Vàng:");
-            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaVang?.qoq ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaVang?.va ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((GiaVang?.qoqoy ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaVang?.qoq ?? 0) - 100, 1)} %");
             strBuilder.AppendLine($"3. Đô la Mỹ:");
-            strBuilder.AppendLine($" + Từ đầu năm: {Math.Round((GiaUSD?.qoq ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.va ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($"4. Lạm phát: {Math.Round(LamPhat?.qoq ?? 0, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((GiaUSD?.qoqoy ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($"4. Lạm phát:");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((LamPhat?.qoqoy ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((LamPhat?.qoq ?? 0) - 100, 1)} %");
             return strBuilder.ToString();
         }
 
