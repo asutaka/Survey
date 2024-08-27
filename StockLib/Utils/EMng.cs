@@ -148,6 +148,7 @@ namespace StockLib.Utils
     /// </summary>
     public enum EKeyTongCucThongKe
     {
+        None = 0,
         [Display(Name = "Du lịch")]
         DuLich = 1,
         [Display(Name = "Vận tải đường Sắt(nghìn tấn)")]

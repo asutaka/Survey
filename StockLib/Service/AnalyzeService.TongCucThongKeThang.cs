@@ -109,7 +109,7 @@ namespace StockLib.Service
         };
         private void SanPhamCongNghiep(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKe(EKeyTongCucThongKe.SP_CongNghiep, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: 2);
+            InsertThongKe(EKeyTongCucThongKe.SP_CongNghiep, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: 7, colUnit: 2);
         }
 
         private List<string> _lVonDauTu = new List<string>
