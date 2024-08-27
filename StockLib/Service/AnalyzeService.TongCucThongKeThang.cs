@@ -91,6 +91,88 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        public async Task<(int, string)> TongCucThongKeThangTest(DateTime dt)
+        {
+            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+            try
+            {
+                var builder = Builders<ConfigData>.Filter;
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKeThang);
+                var lConfig = _configRepo.GetByFilter(filter);
+                if (lConfig.Any())
+                {
+                    if (lConfig.Any(x => x.t == t))
+                        return (0, null);
+
+                    _configRepo.DeleteMany(filter);
+                }
+
+                var strOutput = new StringBuilder();
+                var stream = await _apiService.TongCucThongKeTest(dt);
+                if (stream is null
+                    || stream.Length < 1000)
+                    return (0, null);
+
+                var dic = new Dictionary<int, string>();
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var package = new ExcelPackage(stream);
+                var lSheet = package.Workbook.Worksheets;
+                foreach (var sheet in lSheet)
+                {
+                    if (false) { }
+                    else if (_lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        IIP(sheet, dt);
+                    }
+                    else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        SanPhamCongNghiep(sheet, dt);
+                    }
+                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VonDauTuNhaNuoc(sheet, dt);
+                    }
+                    else if (_lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        FDI(sheet, dt);
+                    }
+                    else if (_lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        BanLe(sheet, dt);
+                    }
+                    else if (_lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        XuatKhau(sheet, dt);
+                    }
+                    else if (_lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        NhapKhau(sheet, dt);
+                    }
+                    else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        CPI(sheet, dt);
+                    }
+                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VanTaiHangHoa(sheet, dt);
+                    }
+                    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        KhachQuocTe(sheet, dt);
+                    }
+                }
+
+                //var mes = TongCucThongKeThangPrint(dt);
+                //return (1, mes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.TongCucThongKeThang|EXCEPTION| {ex.Message}");
+            }
+
+            return (0, null);
+        }
+
         private List<string> _lIIP = new List<string>
         {
             "IIP",
@@ -116,7 +198,9 @@ namespace StockLib.Service
         {
             "VDT",
             "Von Dau Tu",
-            "VDT TTNSNN"
+            "NSNN",
+            "NSNN Thang",
+            "Von DT"
         };
         private void VonDauTuNhaNuoc(ExcelWorksheet sheet, DateTime dt)
         {
@@ -139,14 +223,20 @@ namespace StockLib.Service
 
         private void BanLe(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 1, colVal: 3, colQoQ: 6, colQoQoY: -1, colUnit: -1, "Ban Le");
+            var res = InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 1, colVal: 3, colQoQ: 6, colQoQoY: -1, colUnit: -1, "Ban Le");
+            if(!res)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 2, colVal: 4, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Ban Le");
+            }
         }
 
         private List<string> _lXK = new List<string>
         {
             "XK",
             "Xuat Khau",
-            "XK Thang"
+            "XK Thang",
+            "XK HH",
+            "Xuat Khau Thang"
         };
         private void XuatKhau(ExcelWorksheet sheet, DateTime dt)
         {
@@ -169,7 +259,9 @@ namespace StockLib.Service
         {
             "NK",
             "Nhap Khau",
-            "NK Thang"
+            "NK Thang",
+            "NK HH",
+            "Nhap Khau Thang"
         };
         private void NhapKhau(ExcelWorksheet sheet, DateTime dt)
         {
@@ -203,19 +295,55 @@ namespace StockLib.Service
         };
         private void VanTaiHangHoa(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_TrongNuoc, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Trong Nuoc");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Ngoai Nuoc");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongSat, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Sat");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Bien");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongThuy, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Thuy");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Bo");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Hang Khong");
+            var resTrongNuoc = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_TrongNuoc, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Trong Nuoc");
+            if (!resTrongNuoc)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_TrongNuoc, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Trong Nuoc");
+            }
+
+            var resNgoaiNuoc = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Ngoai Nuoc");
+            if (!resNgoaiNuoc)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Ngoai Nuoc");
+            }
+
+            var resDuongSat = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongSat, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Sat");
+            if (!resDuongSat)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongSat, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Sat");
+            }
+
+            var resDuongBien = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Bien");
+            if (!resDuongBien)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Bien");
+            }
+
+            var resDuongThuy = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongThuy, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Thuy");
+            if (!resDuongThuy)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongThuy, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Thuy");
+            }
+
+            var resDuongBo = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Bo");
+            if (!resDuongBo)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Bo");
+            }
+
+            var resHangKhong = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Hang Khong");
+            if (!resHangKhong)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Hang Khong");
+            }
         }
 
         private List<string> _lKhachQuocTe = new List<string>
         {
             "KQT",
-            "Du Lich"
+            "Du Lich",
+            "Khach QT",
+            "Khach Quoc Te"
         };
         private void KhachQuocTe(ExcelWorksheet sheet, DateTime dt)
         {
