@@ -115,73 +115,6 @@ namespace StockLib.Service
             return (curVal, Math.Round(valQoQ - 100, 1), Math.Round(valYear - 100, 1));
         }
 
-        //private (double, double, double) GetSpecialData(DateTime dt, string textContant)
-        //{
-        //    var filter = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.SP_CongNghiep);
-        //    var lDataSP = _thongkeRepo.GetByFilter(filter);
-        //    var lDataCur = lDataSP.Where(x => x.d == int.Parse($"{dt.Year}{dt.Month.To2Digit()}")).OrderByDescending(x => x.va);
-        //    var lDataKey = lDataSP.Where(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant.ToUpper()));
-        //    var entity = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant.ToUpper()));
-
-        //    var ValLastMonth = lDataKey.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
-        //    var ValMonthLastYear = lDataKey.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
-        //    var RateLastMonth = (ValLastMonth?.va ?? 0) > 0 ? Math.Round(100 * (-1 + (entity?.va ?? 0) / (ValLastMonth?.va ?? 0)), 1) : 0;
-        //    var RateMonthLastYear = (ValMonthLastYear?.va ?? 0) > 0 ? Math.Round(100 * (-1 + (entity?.va ?? 0) / (ValMonthLastYear?.va ?? 0)), 1) : 0;
-        //    return (Math.Round((entity?.va ?? 0), 1), RateLastMonth, RateMonthLastYear);
-        //}
-
-        //private (double, double, double) GetSpecialData(DateTime dt, string textContant, string textContant2)
-        //{
-        //    var filter = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.SP_CongNghiep);
-        //    var lDataSP = _thongkeRepo.GetByFilter(filter);
-        //    var lDataCur = lDataSP.Where(x => x.d == int.Parse($"{dt.Year}{dt.Month.To2Digit()}")).OrderByDescending(x => x.va);
-        //    var lDataKey1 = lDataSP.Where(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant.ToUpper()));
-        //    var entity1 = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant.ToUpper()));
-        //    var lDataKey2 = lDataSP.Where(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant2.ToUpper()));
-        //    var entity2 = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant2.ToUpper()));
-        //    var Cur = (entity1?.va ?? 0) + (entity2?.va ?? 0);
-
-        //    var ValLastMonth1 = lDataKey1.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
-        //    var ValMonthLastYear1 = lDataKey1.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
-        //    var ValLastMonth2 = lDataKey2.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
-        //    var ValMonthLastYear2 = lDataKey2.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
-
-        //    var ValLastMonth = (ValLastMonth1?.va ?? 0) + (ValLastMonth2?.va ?? 0);
-        //    var ValMonthLastYear = (ValMonthLastYear1?.va ?? 0) + (ValMonthLastYear2?.va ?? 0);
-
-        //    var RateLastMonth = ValLastMonth > 0 ? Math.Round(100 * (-1 + Cur / ValLastMonth), 1) : 0;
-        //    var RateMonthLastYear = ValMonthLastYear > 0 ? Math.Round(100 * (-1 + Cur / ValMonthLastYear), 1) : 0;
-        //    return (Math.Round(Cur, 1), RateLastMonth, RateMonthLastYear);
-        //}
-
-        //private (double, double, double) GetSpecialData(DateTime dt, string textContant, string textContant2, string textContant3)
-        //{
-        //    var filter = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.SP_CongNghiep);
-        //    var lDataSP = _thongkeRepo.GetByFilter(filter);
-        //    var lDataCur = lDataSP.Where(x => x.d == int.Parse($"{dt.Year}{dt.Month.To2Digit()}")).OrderByDescending(x => x.va).Take(5);
-        //    var lDataKey1 = lDataSP.Where(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant.ToUpper()));
-        //    var entity1 = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant.ToUpper()));
-        //    var lDataKey2 = lDataSP.Where(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant2.ToUpper()));
-        //    var entity2 = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant2.ToUpper()));
-        //    var lDataKey3 = lDataSP.Where(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant3.ToUpper()));
-        //    var entity3 = lDataCur.FirstOrDefault(x => x.content.RemoveSignVietnamese().ToUpper().Contains(textContant3.ToUpper()));
-        //    var Cur = (entity1?.va ?? 0) + (entity2?.va ?? 0) + (entity3?.va ?? 0);
-
-        //    var ValLastMonth1 = lDataKey1.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
-        //    var ValMonthLastYear1 = lDataKey1.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
-        //    var ValLastMonth2 = lDataKey2.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
-        //    var ValMonthLastYear2 = lDataKey2.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
-        //    var ValLastMonth3 = lDataKey3.FirstOrDefault(x => x.d == int.Parse($"{dt.AddMonths(-1).Year}{dt.AddMonths(-1).Month.To2Digit()}"));
-        //    var ValMonthLastYear3 = lDataKey3.FirstOrDefault(x => x.d == int.Parse($"{dt.AddYears(-1).Year}{dt.Month.To2Digit()}"));
-
-        //    var ValLastMonth = (ValLastMonth1?.va ?? 0) + (ValLastMonth2?.va ?? 0) + (ValLastMonth3?.va ?? 0);
-        //    var ValMonthLastYear = (ValMonthLastYear1?.va ?? 0) + (ValMonthLastYear2?.va ?? 0) + (ValLastMonth3?.va ?? 0);
-
-        //    var RateLastMonth = ValLastMonth > 0 ? Math.Round(100 * (-1 + Cur / ValLastMonth), 1) : 0;
-        //    var RateMonthLastYear = ValMonthLastYear > 0 ? Math.Round(100 * (-1 + Cur / ValMonthLastYear), 1) : 0;
-        //    return (Math.Round(Cur, 1), RateLastMonth, RateMonthLastYear);
-        //}
-
         private string CPIStr(DateTime dt, List<ThongKe> lData)
         {
             var strBuilder = new StringBuilder();
@@ -277,17 +210,6 @@ namespace StockLib.Service
             return strBuilder.ToString();
         }
 
-        private string DulichStr(DateTime dt, List<ThongKe> lData)
-        {
-            var strBuilder = new StringBuilder();
-            var DuLich = GetDataWithRate(lData, dt, EKeyTongCucThongKe.DuLich);
-            strBuilder.AppendLine($"*Nhóm ngành du lịch:");
-            strBuilder.AppendLine($"1. Khách quốc tế: {Math.Round(DuLich.Item1 / 1000000, 1)} triệu lượt khách");
-            strBuilder.AppendLine($" + So với tháng trước: {DuLich.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuLich.Item3} %");
-            return strBuilder.ToString();
-        }
-
         private string BanleStr(DateTime dt, List<ThongKe> lData)
         {
             var strBuilder = new StringBuilder();
@@ -299,18 +221,29 @@ namespace StockLib.Service
 
             var data = GetDataSPCN(dt, "Sua Tuoi");
             strBuilder.AppendLine($"2. Sản lượng sữa tươi: {data.Item1}(Triệu lít)");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item2} %");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data.Item3} %");
 
             var data2 = GetDataSPCN(dt, "Sua Bot");
             strBuilder.AppendLine($"3. Sản lượng sữa bột: {data2.Item1}(Nghìn tấn)");
-            strBuilder.AppendLine($" + So với tháng trước: {data2.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item2} %");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data2.Item3} %");
 
             var data3 = GetDataSPCN(dt, "Bia");
             strBuilder.AppendLine($"4. Sản lượng bia: {data2.Item1}(Triệu lít)");
-            strBuilder.AppendLine($" + So với tháng trước: {data2.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item2} %");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data2.Item3} %");
+            return strBuilder.ToString();
+        }
+
+        private string DulichStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
+            var DuLich = GetDataWithRate(lData, dt, EKeyTongCucThongKe.DuLich);
+            strBuilder.AppendLine($"*Nhóm ngành du lịch:");
+            strBuilder.AppendLine($"1. Khách quốc tế: {Math.Round(DuLich.Item1 / 1000000, 1)} triệu lượt khách");
+            strBuilder.AppendLine($" + So với tháng trước: {DuLich.Item2} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuLich.Item3} %");
             return strBuilder.ToString();
         }
 
@@ -691,8 +624,8 @@ namespace StockLib.Service
 
             //strBuilder.AppendLine(CPIStr(dt, lData));
             //strBuilder.AppendLine(CanCanThuongMaiStr(dt, lData));
-            strBuilder.AppendLine(ThepStr(dt, lData));
-            //strBuilder.AppendLine(BanleStr(dt, lData));
+            //strBuilder.AppendLine(ThepStr(dt, lData));
+            strBuilder.AppendLine(BanleStr(dt, lData));
             //strBuilder.AppendLine(ThuysanStr(dt, lData));
             //strBuilder.AppendLine(CangbienStr(dt, lData));
             //strBuilder.AppendLine(KCNStr(dt, lData));
