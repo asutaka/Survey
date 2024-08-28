@@ -2,7 +2,6 @@
 using StockLib.DAL.Entity;
 using StockLib.Utils;
 using System.Text;
-using static UglyToad.PdfPig.Core.PdfSubpath;
 
 namespace StockLib.Service
 {

@@ -14,6 +14,9 @@ namespace StockLib.Service
         Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt);
         Task<(int, string)> TongCucThongKeThang(DateTime dt);
         Task<(int, string)> TongCucThongKeThangTest(DateTime dt);
+
+        Task<(int, string)> TongCucThongKeQuy(DateTime dt);
+        Task<(int, string)> TongCucThongKeQuyTest(DateTime dt);
     }
     public partial class AnalyzeService : IAnalyzeService
     {

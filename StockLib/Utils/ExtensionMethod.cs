@@ -105,7 +105,7 @@ namespace StockLib.Utils
 
         public static string RemoveSpace(this string val)
         {
-            return val.Replace(" ","").Trim();
+            return val.Replace(" ","").Replace(",","").Replace(".","").Replace("-","").Replace("_","").Trim();
         }
 
         public static string RemoveSignVietnamese(this string val)

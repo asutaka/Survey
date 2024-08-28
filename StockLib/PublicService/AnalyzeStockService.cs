@@ -45,10 +45,16 @@ namespace StockLib.PublicService
 
                 try
                 {
-                    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
-                    if (chibao.Item1 > 0)
+                    //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
+                    //if (chibao.Item1 > 0)
+                    //{
+                    //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                    //}
+
+                    var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt.AddMonths(-2));
+                    if (chibaoQuy.Item1 > 0)
                     {
-                        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                        await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
                     }
                 }
                 catch (Exception ex)
@@ -66,6 +72,12 @@ namespace StockLib.PublicService
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
                         }
+
+                        var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt.AddMonths(-i));
+                        if (chibaoQuy.Item1 > 0)
+                        {
+                            await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                        }
                     }
 
                     for (int i = 11; i <= 19; i++)
@@ -74,6 +86,12 @@ namespace StockLib.PublicService
                         if (chibao.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                        }
+
+                        var chibaoQuy = await _analyzeService.TongCucThongKeQuyTest(dt.AddMonths(-i));
+                        if (chibaoQuy.Item1 > 0)
+                        {
+                            await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
                         }
                     }
                 }
