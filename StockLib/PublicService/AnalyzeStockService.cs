@@ -44,45 +44,45 @@ namespace StockLib.PublicService
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;
                 var isPreTrade = dt.Hour < 9;
 
-                try
-                {
-                    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
-                    if (chibao.Item1 > 0)
-                    {
-                        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                }
-                return;
+                //try
+                //{
+                //    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
+                //    if (chibao.Item1 > 0)
+                //    {
+                //        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                //}
+                //return;
 
-                try
-                {
-                    for (int i = 1; i <= 10; i++)
-                    {
-                        //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
-                        //if (chibao.Item1 > 0)
-                        //{
-                        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        //}
-                    }
+                //try
+                //{
+                //    for (int i = 1; i <= 10; i++)
+                //    {
+                //        //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
+                //        //if (chibao.Item1 > 0)
+                //        //{
+                //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                //        //}
+                //    }
 
-                    for (int i = 11; i <= 19; i++)
-                    {
-                        //var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
-                        //if (chibao.Item1 > 0)
-                        //{
-                        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        //}
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                }
-                return;
+                //    for (int i = 11; i <= 19; i++)
+                //    {
+                //        //var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
+                //        //if (chibao.Item1 > 0)
+                //        //{
+                //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                //        //}
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                //}
+                //return;
 
 
                 if (isDayOfWork && isTimePrint && !isPreTrade)
@@ -208,36 +208,33 @@ namespace StockLib.PublicService
                         _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ChiBaoKyThuat)| {ex.Message}");
                     }
                 }
-                else
-                {
-                    if ((dt.Day >= 28 || dt.Day <= 5) && dt.Hour >= 12)
-                    {
-                        //Tổng cục thống kê
-                        try
-                        {
-                            var chibao = await _analyzeService.TongCucThongKeThang(dt);
-                            if (chibao.Item1 > 0)
-                            {
-                                await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                                Thread.Sleep(1000);
-                            }
 
-                            if (dt.Month % 3 <= 1)
-                            {
-                                var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
-                                if (chibaoQuy.Item1 > 0)
-                                {
-                                    await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
-                                }
-                            }
-                        }
-                        catch (Exception ex)
+                if ((dt.Day >= 28 || dt.Day <= 5) && dt.Hour >= 12)
+                {
+                    //Tổng cục thống kê
+                    try
+                    {
+                        var chibao = await _analyzeService.TongCucThongKeThang(dt);
+                        if (chibao.Item1 > 0)
                         {
-                            _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                            Thread.Sleep(1000);
+                        }
+
+                        if (dt.Month % 3 <= 1)
+                        {
+                            var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
+                            if (chibaoQuy.Item1 > 0)
+                            {
+                                await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                            }
                         }
                     }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                    }
                 }
-
             }
             catch(Exception ex)
             {
