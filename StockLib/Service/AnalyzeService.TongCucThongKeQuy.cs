@@ -9,172 +9,26 @@ namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
+        //28 -> 5
         public async Task<(int, string)> TongCucThongKeQuy(DateTime dt)
         {
-            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
-            try
+            if((dt.Day <= 5 && dt.Month % 3 == 0)
+                || (dt.Day >= 28 && dt.Month % 3 == 1))
             {
-                if (dt.Month % 3 != 0)
-                    return (0, null);
-
-                //var builder = Builders<ConfigData>.Filter;
-                //FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKeQuy);
-                //var lConfig = _configRepo.GetByFilter(filter);
-                //if (lConfig.Any())
-                //{
-                //    if (lConfig.Any(x => x.t == t))
-                //        return (0, null);
-
-                //    _configRepo.DeleteMany(filter);
-                //}
-
-                //var strOutput = new StringBuilder();
-                //var stream = await _apiService.TongCucThongKe(dt);
-                //if (stream is null
-                //    || stream.Length < 1000)
-                //    return (0, null);
-
-                //var dic = new Dictionary<int, string>();
-                //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                //var package = new ExcelPackage(stream);
-                //var lSheet = package.Workbook.Worksheets;
-                //bool isXK = false, isNK = false, isVTHH = false, isGDP = false, isDauTuCong = false, isBanLe = false, isDuLich = false, isSPCN = false, isIIP = false;
-                //foreach (var sheet in lSheet)
-                //{
-                //    if (false) { }
-                //    else if (_lGiaVT.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        GiaVanTai(sheet, dt);
-                //    }
-                //    else if (_lGiaNVL.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        GiaNguyenVatLieu(sheet, dt);
-                //    }
-                //    else if (_lGiaXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        GiaXuatKhau(sheet, dt);
-                //    }
-                //    else if (_lGiaNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        GiaNhapKhau(sheet, dt);
-                //    }
-                //    else if (_lGDP_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isGDP = true;
-                //        GDP_Quy(sheet, dt);
-                //    }
-                //    else if (_lChanNuoi_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        ChanNuoi_Quy(sheet, dt);
-                //    }
-                //    else if (_lThuySan_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        ThuySan_Quy(sheet, dt);
-                //    }
-                //    else if (_lIIP_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isIIP = true;
-                //        IIP_Quy(sheet, dt);
-                //    }
-                //    else if (_lSPCongNghiep_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isSPCN = true;
-                //        SanPhamCongNghiep_Quy(sheet, dt);
-                //    }
-                //    else if (_lVonDauTu_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isDauTuCong = true;
-                //        VonDauTuNhaNuoc_Quy(sheet, dt);
-                //    }
-                //    else if (_lBanLe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isBanLe = true;
-                //        BanLe_Quy(sheet, dt);
-                //    }
-                //    else if (_lXK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isXK = true;
-                //        XuatKhau_Quy(sheet, dt);
-                //    }
-                //    else if (_lNK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isNK = true;
-                //        NhapKhau_Quy(sheet, dt);
-                //    }
-                //    else if (_lVanTaiHangHoa_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isVTHH = true;
-                //        VanTaiHangHoa_Quy(sheet, dt);
-                //    }
-                //    else if (_lKhachQuocTe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        isDuLich = true;
-                //        KhachQuocTe_Quy(sheet, dt);
-                //    }
-                //}
-                //foreach (var sheet in lSheet)
-                //{
-                //    if (false) { }
-                //    else if (!isXK && _lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        XuatKhau_Quy(sheet, dt);
-                //    }
-                //    else if (!isNK && _lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        NhapKhau_Quy(sheet, dt);
-                //    }
-                //    else if (!isVTHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        VanTaiHangHoa_Quy(sheet, dt);
-                //    }
-                //    else if (!isGDP && _lGDP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        GDP(sheet, dt);
-                //    }
-                //    else if (!isDauTuCong && _lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        VonDauTuNhaNuoc_Quy(sheet, dt);
-                //    }
-                //    else if (!isBanLe && _lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        BanLe_Quy_Custom(sheet, dt);
-                //    }
-                //    else if (!isDuLich && _lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        KhachQuocTe_Quy_Custom(sheet, dt);
-                //    }
-                //    else if (!isSPCN && _lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        SanPhamCongNghiep_Quy_Custom(sheet, dt);
-                //    }
-                //    else if (!isIIP && _lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        IIP_Quy_Custom(sheet, dt);
-                //    }
-                //}
-
-                //return (0, null);
-                var mes = TongCucThongKeQuyPrint(dt);
-                return (1, mes);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"AnalyzeService.TongCucThongKeQuy|EXCEPTION| {ex.Message}");
+                return (0, null);
             }
 
-            return (0, null);
-        }
-
-        public async Task<(int, string)> TongCucThongKeQuyTest(DateTime dt)
-        {
-            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+            if (dt.Day <= 5 && dt.Month % 3 == 1)
+            {
+                dt = dt.AddMonths(-1);
+            }
+            var t = long.Parse($"{dt.Year}{dt.GetQuarter()}"); 
+                
             try
             {
-                if (dt.Month % 3 != 0)
-                    return (0, null);
-
+                var mode = EConfigDataType.TongCucThongKeQuy;
                 var builder = Builders<ConfigData>.Filter;
-                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKeQuy);
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
                 var lConfig = _configRepo.GetByFilter(filter);
                 if (lConfig.Any())
                 {
@@ -185,7 +39,7 @@ namespace StockLib.Service
                 }
 
                 var strOutput = new StringBuilder();
-                var stream = await _apiService.TongCucThongKeTest(dt);
+                var stream = await _apiService.TongCucThongKe(dt);
                 if (stream is null
                     || stream.Length < 1000)
                     return (0, null);
@@ -194,7 +48,7 @@ namespace StockLib.Service
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage(stream);
                 var lSheet = package.Workbook.Worksheets;
-                bool isXK = false, isNK = false, isVTHH = false, isGDP = false, isDauTuCong = false, isBanLe = false, isDuLich = false, isSPCN = false, isIIP = false; 
+                bool isXK = false, isNK = false, isVTHH = false, isGDP = false, isDauTuCong = false, isBanLe = false, isDuLich = false, isSPCN = false, isIIP = false;
                 foreach (var sheet in lSheet)
                 {
                     if (false) { }
@@ -268,7 +122,6 @@ namespace StockLib.Service
                         KhachQuocTe_Quy(sheet, dt);
                     }
                 }
-
                 foreach (var sheet in lSheet)
                 {
                     if (false) { }
@@ -309,12 +162,18 @@ namespace StockLib.Service
                         IIP_Quy_Custom(sheet, dt);
                     }
                 }
-                //var mes = TongCucThongKeThangPrint(dt);
-                //return (1, mes);
+
+                var mes = TongCucThongKeQuyPrint(dt);
+                _configRepo.InsertOne(new ConfigData
+                {
+                    ty = (int)mode,
+                    t = t
+                });
+                return (1, mes);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AnalyzeService.TongCucThongKeThang|EXCEPTION| {ex.Message}");
+                _logger.LogError($"AnalyzeService.TongCucThongKeQuy|EXCEPTION| {ex.Message}");
             }
 
             return (0, null);

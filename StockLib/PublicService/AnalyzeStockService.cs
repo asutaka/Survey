@@ -51,13 +51,6 @@ namespace StockLib.PublicService
                     //{
                     //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
                     //}
-
-                    var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt.AddMonths(-2));
-                    if (chibaoQuy.Item1 > 0)
-                    {
-                        await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
-                        Thread.Sleep(1000);
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -74,13 +67,6 @@ namespace StockLib.PublicService
                         //{
                         //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
                         //}
-
-                        var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt.AddMonths(-i));
-                        if (chibaoQuy.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
-                            Thread.Sleep(1000);
-                        }
                     }
 
                     for (int i = 11; i <= 19; i++)
@@ -90,12 +76,6 @@ namespace StockLib.PublicService
                         //{
                         //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
                         //}
-
-                        var chibaoQuy = await _analyzeService.TongCucThongKeQuyTest(dt.AddMonths(-i));
-                        if (chibaoQuy.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
-                        }
                     }
                 }
                 catch (Exception ex)
@@ -230,7 +210,7 @@ namespace StockLib.PublicService
                 }
                 else
                 {
-                    if (dt.Day >= 28 && dt.Hour >= 15)
+                    if ((dt.Day >= 28 || dt.Day <= 5) && dt.Hour >= 12)
                     {
                         //Tổng cục thống kê
                         try
@@ -239,6 +219,16 @@ namespace StockLib.PublicService
                             if (chibao.Item1 > 0)
                             {
                                 await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                                Thread.Sleep(1000);
+                            }
+
+                            if (dt.Month % 3 <= 1)
+                            {
+                                var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
+                                if (chibaoQuy.Item1 > 0)
+                                {
+                                    await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                                }
                             }
                         }
                         catch (Exception ex)
