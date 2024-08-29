@@ -255,55 +255,41 @@ namespace StockLib.Service
             strBuilder.AppendLine($" + cùng kỳ: {DuongBien.Item3} %");
 
             var dataGiaVTBien = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_Bien);
-            strBuilder.AppendLine($"3. Giá Vận tải đường biển:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaVTBien.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaVTBien.Item3} %");
+            strBuilder.AppendLine($"3. Giá Vận tải đường biển:(quý trước: {dataGiaVTBien.Item2}%, cùng kỳ: {dataGiaVTBien.Item3}%)");
 
             strBuilder.AppendLine($"4. Vận tải đường Bộ(Nghìn tấn):");
-            strBuilder.AppendLine($" + So với quý trước: {DuongBo.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {DuongBo.Item3} %");
+            strBuilder.AppendLine($" + So với quý trước: {DuongBo.Item2}%");
+            strBuilder.AppendLine($" + cùng kỳ: {DuongBo.Item3}%");
 
             var dataGiaVTBo = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_DuongBo);
-            strBuilder.AppendLine($"5. Giá Vận tải đường bộ:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaVTBo.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaVTBo.Item3} %");
+            strBuilder.AppendLine($"5. Giá Vận tải đường bộ:(quý trước: {dataGiaVTBo.Item2}%, cùng kỳ: {dataGiaVTBo.Item3}%)");
 
             strBuilder.AppendLine($"6. Vận tải đường Thủy(Nghìn tấn):");
-            strBuilder.AppendLine($" + So với quý trước: {DuongThuy.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {DuongThuy.Item3} %");
+            strBuilder.AppendLine($" + So với quý trước: {DuongThuy.Item2}%");
+            strBuilder.AppendLine($" + cùng kỳ: {DuongThuy.Item3}%");
 
             var dataGiaVTThuy = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_DuongThuy);
-            strBuilder.AppendLine($"7. Giá Vận tải đường Thủy:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaVTThuy.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaVTThuy.Item3} %");
+            strBuilder.AppendLine($"7. Giá Vận tải đường Thủy:(quý trước: {dataGiaVTThuy.Item2}%, cùng kỳ: {dataGiaVTThuy.Item3}%)");
 
             strBuilder.AppendLine($"8. Vận tải đường Sắt(Nghìn tấn):");
-            strBuilder.AppendLine($" + So với quý trước: {DuongSat.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {DuongSat.Item3} %");
+            strBuilder.AppendLine($" + So với quý trước: {DuongSat.Item2}%");
+            strBuilder.AppendLine($" + cùng kỳ: {DuongSat.Item3}%");
 
             var dataGiaVTSat = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_DuongSat);
-            strBuilder.AppendLine($"9. Giá Vận tải đường Thủy:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaVTSat.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaVTSat.Item3} %");
+            strBuilder.AppendLine($"9. Giá Vận tải đường Thủy:(quý trước: {dataGiaVTSat.Item2}%, cùng kỳ: {dataGiaVTSat.Item3}%)");
 
             strBuilder.AppendLine($"10. Vận tải đường Hàng Không(Nghìn tấn):");
-            strBuilder.AppendLine($" + So với quý trước: {DuongHangKhong.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {DuongHangKhong.Item3} %");
+            strBuilder.AppendLine($" + So với quý trước: {DuongHangKhong.Item2}%");
+            strBuilder.AppendLine($" + cùng kỳ: {DuongHangKhong.Item3}%");
 
             var dataGiaVTHangKhong = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_HangKhong);
-            strBuilder.AppendLine($"11. Giá Vận tải đường Hàng không:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaVTHangKhong.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaVTHangKhong.Item3} %");
+            strBuilder.AppendLine($"11. Giá Vận tải Hàng không:(quý trước: {dataGiaVTHangKhong.Item2}%, cùng kỳ: {dataGiaVTHangKhong.Item3}%)");
 
             var dataGiaBuuChinh = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_BuuChinh);
-            strBuilder.AppendLine($"12. Giá Vận tải bưu chính - chuyển phát:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaBuuChinh.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaBuuChinh.Item3} %");
+            strBuilder.AppendLine($"12. Giá Vận tải bưu chính - chuyển phát:(quý trước: {dataGiaBuuChinh.Item2}%, cùng kỳ: {dataGiaBuuChinh.Item3}%)");
 
             var dataGiaKhoBai = GetCurrentData_Quy(lData, dt, EKeyTongCucThongKe.GiaVT_KhoBai);
-            strBuilder.AppendLine($"13. Giá cước kho bãi:");
-            strBuilder.AppendLine($" + So với quý trước: {dataGiaKhoBai.Item2} %");
-            strBuilder.AppendLine($" + cùng kỳ: {dataGiaKhoBai.Item3} %");
+            strBuilder.AppendLine($"13. Giá cước kho bãi:(quý trước: {dataGiaKhoBai.Item2}%, cùng kỳ: {dataGiaKhoBai.Item3}%)");
 
             return strBuilder.ToString();
         }
