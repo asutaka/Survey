@@ -38,7 +38,7 @@ namespace StockLib.Service
                 //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 //var package = new ExcelPackage(stream);
                 //var lSheet = package.Workbook.Worksheets;
-                //bool isXK = false, isNK = false, isVTHH = false;
+                //bool isXK = false, isNK = false, isVTHH = false, isGDP = false, isDauTuCong = false, isBanLe = false, isDuLich = false, isSPCN = false, isIIP = false;
                 //foreach (var sheet in lSheet)
                 //{
                 //    if (false) { }
@@ -60,6 +60,7 @@ namespace StockLib.Service
                 //    }
                 //    else if (_lGDP_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isGDP = true;
                 //        GDP_Quy(sheet, dt);
                 //    }
                 //    else if (_lChanNuoi_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
@@ -72,18 +73,22 @@ namespace StockLib.Service
                 //    }
                 //    else if (_lIIP_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isIIP = true;
                 //        IIP_Quy(sheet, dt);
                 //    }
                 //    else if (_lSPCongNghiep_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isSPCN = true;
                 //        SanPhamCongNghiep_Quy(sheet, dt);
                 //    }
                 //    else if (_lVonDauTu_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isDauTuCong = true;
                 //        VonDauTuNhaNuoc_Quy(sheet, dt);
                 //    }
                 //    else if (_lBanLe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isBanLe = true;
                 //        BanLe_Quy(sheet, dt);
                 //    }
                 //    else if (_lXK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
@@ -103,6 +108,7 @@ namespace StockLib.Service
                 //    }
                 //    else if (_lKhachQuocTe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isDuLich = true;
                 //        KhachQuocTe_Quy(sheet, dt);
                 //    }
                 //}
@@ -120,6 +126,30 @@ namespace StockLib.Service
                 //    else if (!isVTHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
                 //        VanTaiHangHoa_Quy(sheet, dt);
+                //    }
+                //    else if (!isGDP && _lGDP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        GDP(sheet, dt);
+                //    }
+                //    else if (!isDauTuCong && _lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        VonDauTuNhaNuoc_Quy(sheet, dt);
+                //    }
+                //    else if (!isBanLe && _lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        BanLe_Quy_Custom(sheet, dt);
+                //    }
+                //    else if (!isDuLich && _lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        KhachQuocTe_Quy_Custom(sheet, dt);
+                //    }
+                //    else if (!isSPCN && _lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        SanPhamCongNghiep_Quy_Custom(sheet, dt);
+                //    }
+                //    else if (!isIIP && _lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        IIP_Quy_Custom(sheet, dt);
                 //    }
                 //}
 
@@ -164,7 +194,7 @@ namespace StockLib.Service
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage(stream);
                 var lSheet = package.Workbook.Worksheets;
-                bool isXK = false, isNK = false, isVTHH = false;
+                bool isXK = false, isNK = false, isVTHH = false, isGDP = false, isDauTuCong = false, isBanLe = false, isDuLich = false, isSPCN = false, isIIP = false; 
                 foreach (var sheet in lSheet)
                 {
                     if (false) { }
@@ -186,6 +216,7 @@ namespace StockLib.Service
                     }
                     else if (_lGDP_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isGDP = true;
                         GDP_Quy(sheet, dt);
                     }
                     else if (_lChanNuoi_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
@@ -198,26 +229,32 @@ namespace StockLib.Service
                     }
                     else if (_lIIP_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isIIP = true;
                         IIP_Quy(sheet, dt);
                     }
                     else if (_lSPCongNghiep_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isSPCN = true;
                         SanPhamCongNghiep_Quy(sheet, dt);
                     }
                     else if (_lVonDauTu_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isDauTuCong = true;
                         VonDauTuNhaNuoc_Quy(sheet, dt);
                     }
                     else if (_lBanLe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isBanLe = true;
                         BanLe_Quy(sheet, dt);
                     }
                     else if (_lXK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isXK = true;
                         XuatKhau_Quy(sheet, dt);
                     }
                     else if (_lNK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isNK = true;
                         NhapKhau_Quy(sheet, dt);
                     }
                     else if (_lVanTaiHangHoa_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
@@ -227,6 +264,7 @@ namespace StockLib.Service
                     }
                     else if (_lKhachQuocTe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isDuLich = true;
                         KhachQuocTe_Quy(sheet, dt);
                     }
                 }
@@ -245,6 +283,30 @@ namespace StockLib.Service
                     else if (!isVTHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
                         VanTaiHangHoa_Quy(sheet, dt);
+                    }
+                    else if (!isGDP && _lGDP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        GDP(sheet, dt);
+                    }
+                    else if (!isDauTuCong && _lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VonDauTuNhaNuoc_Quy(sheet, dt);
+                    }
+                    else if (!isBanLe && _lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        BanLe_Quy_Custom(sheet, dt);
+                    }
+                    else if (!isDuLich && _lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        KhachQuocTe_Quy_Custom(sheet, dt);
+                    }
+                    else if (!isSPCN && _lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        SanPhamCongNghiep_Quy_Custom(sheet, dt);
+                    }
+                    else if (!isIIP && _lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        IIP_Quy_Custom(sheet, dt);
                     }
                 }
                 //var mes = TongCucThongKeThangPrint(dt);
@@ -297,7 +359,11 @@ namespace StockLib.Service
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_PhanBon, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "Phan Bon");
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_SPChatDeo, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "Chat Deo");
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_Go, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "Go");
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_DetMay, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "Det May");
+            var resDetMay = InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_DetMay, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "Det May");
+            if(!resDetMay)
+            {
+                InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_DetMay, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "May Mac");
+            }
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GiaXK_SatThep, dt, sheet, colContent: 1, colVal: -1, colQoQ: 2, colQoQoY: 3, colUnit: -1, "Sat Thep");
         }
 
@@ -316,6 +382,7 @@ namespace StockLib.Service
         {
             "GDP HH"
         };
+      
         private void GDP_Quy(ExcelWorksheet sheet, DateTime dt)
         {
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_NongNghiep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Nong Nghiep");
@@ -328,15 +395,32 @@ namespace StockLib.Service
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_BatDongSan, dt, sheet, colContent: 2, colVal: 4, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Bat Dong San");
         }
 
+        private List<string> _lGDP = new List<string>
+        {
+            "GDP"
+        };
+        private void GDP(ExcelWorksheet sheet, DateTime dt)
+        {
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_NongNghiep, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Nong Nghiep");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_LamNghiep, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Lam Nghiep", textIgnore: "Thuy San");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_ThuySan, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Thuy San", textIgnore: "Lam Nghiep");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_XayDung, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Xay Dung");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_Oto, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "O to");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_VanTaiKhoBai, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Van Tai");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_NganHangBaoHiem, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Ngan Hang");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.GDP_BatDongSan, dt, sheet, colContent: 2, colVal: 3, colQoQ: 4, colQoQoY: -1, colUnit: -1, "Bat Dong San");
+        }
+
         private List<string> _lChanNuoi_Quy = new List<string>
         {
-            "Chan Nuoi"
+            "Chan Nuoi",
+            "Chan Nuoi Lam Nghiep"
         };
 
         private void ChanNuoi_Quy(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ChanNuoi_Lon, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Lon");
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ChanNuoi_Sua, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Sua");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ChanNuoi_Lon, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Lon", colQoQTry: 4);
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ChanNuoi_Sua, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Sua", colQoQTry: 4);
         }
 
         private List<string> _lThuySan_Quy = new List<string>
@@ -346,8 +430,8 @@ namespace StockLib.Service
 
         private void ThuySan_Quy(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ThuySan_Ca, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Ca");
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ThuySan_Tom, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Tom");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ThuySan_Ca, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Ca", colQoQTry: 4);
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.ThuySan_Tom, dt, sheet, colContent: 1, colVal: 3, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Tom", colQoQTry: 4);
         }
 
         private List<string> _lIIP_Quy = new List<string>
@@ -359,6 +443,11 @@ namespace StockLib.Service
             InsertThongKe_Quy(EKeyTongCucThongKe.IIP, dt, sheet, colContent: 1, colVal: -1, colQoQ: 3, colQoQoY: -1, colUnit: -1);
         }
 
+        private void IIP_Quy_Custom(ExcelWorksheet sheet, DateTime dt)
+        {
+            InsertThongKe_Quy(EKeyTongCucThongKe.IIP, dt, sheet, colContent: 1, colVal: -1, colQoQ: 5, colQoQoY: -1, colUnit: -1);
+        }
+
         private List<string> _lSPCongNghiep_Quy = new List<string>
         {
             "SPCNQuy"
@@ -368,19 +457,23 @@ namespace StockLib.Service
             InsertThongKe_Quy(EKeyTongCucThongKe.SP_CongNghiep, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: 2);
         }
 
+        private void SanPhamCongNghiep_Quy_Custom(ExcelWorksheet sheet, DateTime dt)
+        {
+            InsertThongKe_Quy(EKeyTongCucThongKe.SP_CongNghiep, dt, sheet, colContent: 1, colVal: 5, colQoQ: 7, colQoQoY: -1, colUnit: 2);
+        }
+
         private List<string> _lVonDauTu_Quy = new List<string>
         {
             "VDT Quy",
             "Von Dau Tu Quy",
             "NSNN Quy",
-            "NSNN Thang Quy",
-            "Von DT Quy"
+            "Von DT Quy",
+            "Thuc Hien Quy"
         };
         private void VonDauTuNhaNuoc_Quy(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.DauTuCong, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, "Tong So");
+            InsertThongKeOnlyDTC_Quy(EKeyTongCucThongKe.DauTuCong, dt, sheet, colContent: 1, "Tong So");
         }
-
         private List<string> _lBanLe_Quy = new List<string>
         {
             "Tongmuc Quy",
@@ -395,6 +488,11 @@ namespace StockLib.Service
             {
                 InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 2, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, "Ban Le");
             }
+        }
+
+        private void BanLe_Quy_Custom(ExcelWorksheet sheet, DateTime dt)
+        {
+            var res = InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 1, colVal: 4, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Ban Le");
         }
 
         private List<string> _lXK_Quy = new List<string>
@@ -415,7 +513,11 @@ namespace StockLib.Service
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_SPChatDeo, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "San Pham Tu Chat Deo");
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_CaoSu, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "Cao Su");
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_Go, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "Go");
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_DetMay, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "Det May");
+            var resDetMay = InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_DetMay, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "Det May");
+            if(!resDetMay)
+            {
+                InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_DetMay, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "May Mac");
+            }
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_SatThep, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "Sat Thep");
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.XK_SPSatThep, dt, sheet, colContent: 2, colVal: 7, colQoQ: 13, colQoQoY: -1, colUnit: -1, "San Pham Tu Sat Thep");
         }
@@ -501,7 +603,12 @@ namespace StockLib.Service
             InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.DuLich, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, "Tong So");
         }
 
-        private bool InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit, string textCompare, string textIgnore = "")
+        private void KhachQuocTe_Quy_Custom(ExcelWorksheet sheet, DateTime dt)
+        {
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.DuLich, dt, sheet, colContent: 1, colVal: 5, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Tong So");
+        }
+
+        private bool InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit, string textCompare, string textIgnore = "", int colQoQTry = -1)
         {
             try
             {
@@ -516,10 +623,10 @@ namespace StockLib.Service
                     if (string.IsNullOrWhiteSpace(valContent))
                         continue;
 
-                    if (!valContent.RemoveSpace().RemoveSignVietnamese().ToUpper().Replace(",", "").Contains(textCompare.RemoveSpace().RemoveSignVietnamese().ToUpper()))
+                    if (!valContent.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains(textCompare.RemoveSpace().RemoveSignVietnamese().ToUpper()))
                         continue;
 
-                    if (!string.IsNullOrWhiteSpace(textIgnore) && valContent.RemoveSpace().RemoveSignVietnamese().ToUpper().Replace(",", "").Contains(textIgnore.RemoveSpace().RemoveSignVietnamese().ToUpper()))
+                    if (!string.IsNullOrWhiteSpace(textIgnore) && valContent.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains(textIgnore.RemoveSpace().RemoveSignVietnamese().ToUpper()))
                         continue;
 
                     var model = new ThongKeQuy
@@ -541,6 +648,13 @@ namespace StockLib.Service
                         var valStr = sheet.Cells[i, colQoQ].Value?.ToString().Trim() ?? string.Empty;
                         var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
                         model.qoq = isDouble ? Math.Round(val, 1) : 0;
+
+                        if(model.qoq == 0 && colQoQTry > 0)
+                        {
+                            valStr = sheet.Cells[i, colQoQTry].Value?.ToString().Trim() ?? string.Empty;
+                            isDouble = double.TryParse(valStr.Replace(",", ""), out var valTry);
+                            model.qoq = isDouble ? Math.Round(valTry, 1) : 0;
+                        }
                     }
 
                     if (colQoQoY > 0)
@@ -571,6 +685,89 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"AnalyzeService.InsertThongKeOnlyRecord_Quy|EXCEPTION| {ex.Message}");
+            }
+            return false;
+        }
+
+        private bool InsertThongKeOnlyDTC_Quy(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, string textCompare, string textIgnore = "")
+        {
+            try
+            {
+                if (colContent <= 0)
+                    return false;
+
+                var unitStr = string.Empty;
+                var quarterStr = dt.GetQuarterStr();
+                var colVal = -1;
+                //loop all rows in the sheet
+                for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
+                {
+                    
+                    for (int j = colContent + 1; j < sheet.Dimension.Columns; j++)
+                    {
+                        var valCheck = (sheet.Cells[i, j].Value?.ToString().Trim() ?? string.Empty).RemoveSpace().RemoveSignVietnamese().ToUpper();
+                        if (string.IsNullOrWhiteSpace(valCheck))
+                            continue;
+
+                        if(valCheck.Contains("Uoc Tinh".RemoveSpace().RemoveSignVietnamese().ToUpper()))
+                        {
+                            if(valCheck.Contains($"Quy {quarterStr}".RemoveSpace().RemoveSignVietnamese().ToUpper())
+                                || valCheck.Contains($"QUÝ{quarterStr}"))
+                            {
+                                colVal = j;
+                                break;
+                            }
+                            else
+                            {
+                                var valCheckNext = (sheet.Cells[i + 1, j].Value?.ToString().Trim() ?? string.Empty).RemoveSpace().RemoveSignVietnamese().ToUpper();
+                                if (valCheckNext.Contains($"Quy {quarterStr}".RemoveSpace().RemoveSignVietnamese().ToUpper())
+                                    || valCheckNext.Contains($"QUÝ{quarterStr}"))
+                                {
+                                    colVal = j;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (colVal <= 0)
+                        continue;
+
+
+                    var valContent = sheet.Cells[i, colContent].Value?.ToString().Trim() ?? string.Empty;
+                    if (string.IsNullOrWhiteSpace(valContent))
+                        continue;
+
+                    if (!valContent.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains(textCompare.RemoveSpace().RemoveSignVietnamese().ToUpper()))
+                        continue;
+
+                    if (!string.IsNullOrWhiteSpace(textIgnore) && valContent.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains(textIgnore.RemoveSpace().RemoveSignVietnamese().ToUpper()))
+                        continue;
+
+                    var model = new ThongKeQuy
+                    {
+                        d = int.Parse($"{dt.Year}{dt.GetQuarter()}"),
+                        key = (int)eThongKe
+                    };
+                    model.content = valContent;
+
+                    if (colVal > 0)
+                    {
+                        var valStr = sheet.Cells[i, colVal].Value?.ToString().Trim() ?? string.Empty;
+                        var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
+                        model.va = isDouble ? Math.Round(val, 1) : 0;
+                    }
+
+                    if (model.va <= 0)
+                        continue;
+
+                    _thongkeQuyRepo.InsertOne(model);
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.InsertThongKeOnlyDTC_Quy|EXCEPTION| {ex.Message}");
             }
             return false;
         }
