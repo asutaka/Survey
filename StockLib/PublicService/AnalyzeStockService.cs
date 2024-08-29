@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.PublicService
 {
@@ -55,6 +56,7 @@ namespace StockLib.PublicService
                     if (chibaoQuy.Item1 > 0)
                     {
                         await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                        Thread.Sleep(1000);
                     }
                 }
                 catch (Exception ex)
@@ -67,26 +69,27 @@ namespace StockLib.PublicService
                 {
                     for (int i = 1; i <= 10; i++)
                     {
-                        var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
+                        //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
+                        //if (chibao.Item1 > 0)
+                        //{
+                        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                        //}
 
                         var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt.AddMonths(-i));
                         if (chibaoQuy.Item1 > 0)
                         {
                             await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                            Thread.Sleep(1000);
                         }
                     }
 
                     for (int i = 11; i <= 19; i++)
                     {
-                        var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
+                        //var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
+                        //if (chibao.Item1 > 0)
+                        //{
+                        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                        //}
 
                         var chibaoQuy = await _analyzeService.TongCucThongKeQuyTest(dt.AddMonths(-i));
                         if (chibaoQuy.Item1 > 0)

@@ -38,6 +38,7 @@ namespace StockLib.Service
                 //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 //var package = new ExcelPackage(stream);
                 //var lSheet = package.Workbook.Worksheets;
+                //bool isXK = false, isNK = false, isVTHH = false;
                 //foreach (var sheet in lSheet)
                 //{
                 //    if (false) { }
@@ -87,14 +88,17 @@ namespace StockLib.Service
                 //    }
                 //    else if (_lXK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isXK = true;
                 //        XuatKhau_Quy(sheet, dt);
                 //    }
                 //    else if (_lNK_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isNK = true;
                 //        NhapKhau_Quy(sheet, dt);
                 //    }
                 //    else if (_lVanTaiHangHoa_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                 //    {
+                //        isVTHH = true;
                 //        VanTaiHangHoa_Quy(sheet, dt);
                 //    }
                 //    else if (_lKhachQuocTe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
@@ -102,6 +106,24 @@ namespace StockLib.Service
                 //        KhachQuocTe_Quy(sheet, dt);
                 //    }
                 //}
+                //foreach (var sheet in lSheet)
+                //{
+                //    if (false) { }
+                //    else if (!isXK && _lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        XuatKhau_Quy(sheet, dt);
+                //    }
+                //    else if (!isNK && _lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        NhapKhau_Quy(sheet, dt);
+                //    }
+                //    else if (!isVTHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                //    {
+                //        VanTaiHangHoa_Quy(sheet, dt);
+                //    }
+                //}
+
+                //return (0, null);
                 var mes = TongCucThongKeQuyPrint(dt);
                 return (1, mes);
             }
@@ -142,6 +164,7 @@ namespace StockLib.Service
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage(stream);
                 var lSheet = package.Workbook.Worksheets;
+                bool isXK = false, isNK = false, isVTHH = false;
                 foreach (var sheet in lSheet)
                 {
                     if (false) { }
@@ -199,11 +222,29 @@ namespace StockLib.Service
                     }
                     else if (_lVanTaiHangHoa_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
+                        isVTHH = true;
                         VanTaiHangHoa_Quy(sheet, dt);
                     }
                     else if (_lKhachQuocTe_Quy.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
                         KhachQuocTe_Quy(sheet, dt);
+                    }
+                }
+
+                foreach (var sheet in lSheet)
+                {
+                    if (false) { }
+                    else if (!isXK && _lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        XuatKhau_Quy(sheet, dt);
+                    }
+                    else if (!isNK && _lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        NhapKhau_Quy(sheet, dt);
+                    }
+                    else if (!isVTHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VanTaiHangHoa_Quy(sheet, dt);
                     }
                 }
                 //var mes = TongCucThongKeThangPrint(dt);
