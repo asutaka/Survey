@@ -46,11 +46,11 @@ namespace StockLib.PublicService
 
                 try
                 {
-                    //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
-                    //if (chibao.Item1 > 0)
-                    //{
-                    //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                    //}
+                    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
+                    if (chibao.Item1 > 0)
+                    {
+                        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                    }
                 }
                 catch (Exception ex)
                 {

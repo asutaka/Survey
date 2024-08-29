@@ -124,18 +124,10 @@ namespace StockLib.Service
             var LamPhat = lData.FirstOrDefault(x => x.key == (int)EKeyTongCucThongKe.CPI_LamPhat);
 
             strBuilder.AppendLine($"*CPI tháng {dt.Month}:");
-            strBuilder.AppendLine($"1. Chỉ số giá tiêu dùng:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((GiaTieuDung?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaTieuDung?.qoq ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($"2. Giá Vàng:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((GiaVang?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaVang?.qoq ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($"3. Đô la Mỹ:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((GiaUSD?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((GiaUSD?.qoq ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($"4. Lạm phát:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((LamPhat?.qoqoy ?? 0), 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((LamPhat?.qoq ?? 0), 1)} %");
+            strBuilder.AppendLine($"1. Giá tiêu dùng:(tháng trước: {Math.Round((GiaTieuDung?.qoqoy ?? 0) - 100, 1)}%, cùng kỳ: {Math.Round((GiaTieuDung?.qoq ?? 0) - 100, 1)}%)");
+            strBuilder.AppendLine($"2. Giá Vàng:(tháng trước: {Math.Round((GiaVang?.qoqoy ?? 0) - 100, 1)}%, cùng kỳ: {Math.Round((GiaVang?.qoq ?? 0) - 100, 1)}%)");
+            strBuilder.AppendLine($"3. Đô la Mỹ:(tháng trước: {Math.Round((GiaUSD?.qoqoy ?? 0) - 100, 1)}%, cùng kỳ: {Math.Round((GiaUSD?.qoq ?? 0) - 100, 1)}%)");
+            strBuilder.AppendLine($"4. Lạm phát:(tháng trước: {Math.Round((LamPhat?.qoqoy ?? 0), 1)}%, cùng kỳ: {Math.Round((LamPhat?.qoq ?? 0), 1)}%)");
             return strBuilder.ToString();
         }
 
@@ -158,9 +150,9 @@ namespace StockLib.Service
                 TongXuatKhau = 1;
             }
 
-            strBuilder.AppendLine($"*Xuất nhập khẩu tháng {dt.Month}:");
-            strBuilder.AppendLine($"+ Xuất Khẩu: {Math.Round(TongXuatKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((XuatKhauFDI?.va ?? 0) / TongXuatKhau))} %)");
-            strBuilder.AppendLine($"+ Nhập Khẩu: {Math.Round(TongNhapKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((NhapKhauFDI?.va ?? 0) / TongNhapKhau))} %)");
+            strBuilder.AppendLine($"*Xuất nhập khẩu:");
+            strBuilder.AppendLine($"+ Xuất Khẩu: {Math.Round(TongXuatKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((XuatKhauFDI?.va ?? 0) / TongXuatKhau))}%)");
+            strBuilder.AppendLine($"+ Nhập Khẩu: {Math.Round(TongNhapKhau / 1000, 1)} tỷ USD(FDI: {Math.Round(100 * ((NhapKhauFDI?.va ?? 0) / TongNhapKhau))}%)");
             strBuilder.AppendLine($"+ Cán cân thương mại: {Math.Round((TongXuatKhau - TongNhapKhau) / 1000, 1)} tỷ USD");
             return strBuilder.ToString();
         }
@@ -178,8 +170,8 @@ namespace StockLib.Service
 
             strBuilder.AppendLine($"*Nhóm ngành thép:");
             strBuilder.AppendLine($"1. Xuất khẩu: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             var data2 = GetDataWithRate(lData, dt, EKeyTongCucThongKe.NK_SatThep);
             var unit2 = "triệu USD";
@@ -189,8 +181,8 @@ namespace StockLib.Service
                 data2.Item1 = Math.Round(data.Item1 / 1000, 1);
             }
             strBuilder.AppendLine($"2. Nhập khẩu sắt thép: {Math.Round(data2.Item1, 1)} {unit2}");
-            strBuilder.AppendLine($" + So với tháng trước: {data2.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data2.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item3}%");
 
             var data3 = GetDataWithRate(lData, dt, EKeyTongCucThongKe.NK_SPSatThep);
             var unit3 = "triệu USD";
@@ -200,13 +192,13 @@ namespace StockLib.Service
                 data3.Item1 = Math.Round(data.Item1 / 1000, 1);
             }
             strBuilder.AppendLine($"3. Nhập khẩu SP sắt thép: {Math.Round(data3.Item1, 1)} {unit3}");
-            strBuilder.AppendLine($" + So với tháng trước: {data3.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data3.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data3.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data3.Item3}%");
 
             var data4 = GetDataSPCN(dt, "Sat", "Thep Can", "Thep Thanh");
             strBuilder.AppendLine($"4. Sản lượng Thép: {data4.Item1}(nghìn tấn)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data4.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data4.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data4.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data4.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -216,23 +208,23 @@ namespace StockLib.Service
             var BanLe = GetDataWithRate(lData, dt, EKeyTongCucThongKe.BanLe);
             strBuilder.AppendLine($"*Nhóm ngành bán lẻ:");
             strBuilder.AppendLine($"1. Tổng mức bản lẻ hàng hóa: {Math.Round(BanLe.Item1 / 1000, 1)} nghìn tỷ");
-            strBuilder.AppendLine($" + So với tháng trước: {BanLe.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {BanLe.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {BanLe.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {BanLe.Item3}%");
 
             var data = GetDataSPCN(dt, "Sua Tuoi");
             strBuilder.AppendLine($"2. Sản lượng sữa tươi: {data.Item1}(Triệu lít)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data.Item3}%");
 
             var data2 = GetDataSPCN(dt, "Sua Bot");
             strBuilder.AppendLine($"3. Sản lượng sữa bột: {data2.Item1}(Nghìn tấn)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data2.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data2.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data2.Item3}%");
 
             var data3 = GetDataSPCN(dt, "Bia");
             strBuilder.AppendLine($"4. Sản lượng bia: {data3.Item1}(Triệu lít)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data3.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data3.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data3.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data3.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -248,13 +240,13 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành thủy sản:");
             strBuilder.AppendLine($"1. Xuất khẩu: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             var data1 = GetDataSPCN(dt, "Thuy Hai San");
             strBuilder.AppendLine($"2. Sản lượng thủy sản chế biến: {data1.Item1}(nghìn tấn)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data1.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data1.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data1.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data1.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -269,20 +261,20 @@ namespace StockLib.Service
 
             strBuilder.AppendLine($"*Nhóm ngành cảng biển, Logistic:");
             strBuilder.AppendLine($"1. Vận tải đường Biển:");
-            strBuilder.AppendLine($" + So với tháng trước: {DuongBien.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuongBien.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongBien.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongBien.Item3}%");
             strBuilder.AppendLine($"2. Vận tải đường Bộ:");
-            strBuilder.AppendLine($" + So với tháng trước: {DuongBo.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuongBo.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongBo.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongBo.Item3}%");
             strBuilder.AppendLine($"3. Vận tải đường Thủy:");
-            strBuilder.AppendLine($" + So với tháng trước: {DuongThuy.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuongThuy.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongThuy.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongThuy.Item3}%");
             strBuilder.AppendLine($"4. Vận tải đường Sắt:");
-            strBuilder.AppendLine($" + So với tháng trước: {DuongSat.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuongSat.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongSat.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongSat.Item3}%");
             strBuilder.AppendLine($"5. Vận tải đường Hàng Không:");
-            strBuilder.AppendLine($" + So với tháng trước: {DuongHangKhong.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuongHangKhong.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DuongHangKhong.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuongHangKhong.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -310,8 +302,8 @@ namespace StockLib.Service
 
 
                 strBuilder.AppendLine($"{iFDI++}. {item.content}({item.va} {unit})");
-                strBuilder.AppendLine($"   + So với tháng trước: {rateQoQoY} %");
-                strBuilder.AppendLine($"   + Cùng kỳ: {rateQoQ} %");
+                strBuilder.AppendLine($"   + So với tháng trước: {rateQoQoY}%");
+                strBuilder.AppendLine($"   + Cùng kỳ: {rateQoQ}%");
             }
             return strBuilder.ToString();
         }
@@ -339,8 +331,8 @@ namespace StockLib.Service
             var Dien = lDataIIP.FirstOrDefault(x => x.content.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains("Phan Phoi Dien".RemoveSpace().ToUpper()));
 
             strBuilder.AppendLine($"*Nhóm ngành điện:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((Dien?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((Dien?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((Dien?.qoqoy ?? 0) - 100, 1)}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((Dien?.qoq ?? 0) - 100, 1)}%");
             return strBuilder.ToString();
         }
 
@@ -350,8 +342,8 @@ namespace StockLib.Service
             var DauTuCong = GetDataWithRate(lData, dt, EKeyTongCucThongKe.DauTuCong);
             strBuilder.AppendLine($"*Nhóm ngành đầu tư công:");
             strBuilder.AppendLine($"1. Giải ngân: {Math.Round(DauTuCong.Item1 / 1000, 1)} nghìn tỉ");
-            strBuilder.AppendLine($" + So với tháng trước: {DauTuCong.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DauTuCong.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DauTuCong.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DauTuCong.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -367,13 +359,13 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành xi măng:");
             strBuilder.AppendLine($"1. Xuất khẩu: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             var data1 = GetDataSPCN(dt, "Xi mang");
             strBuilder.AppendLine($"2. Sản lượng xi măng: {data1.Item1}(triệu tấn)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data1.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data1.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data1.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data1.Item3}%");
             return strBuilder.ToString();
         }
         
@@ -389,8 +381,8 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành cao su:");
             strBuilder.AppendLine($"1. Xuất khẩu: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             FilterDefinition<ThongKe> filterIIP = null;
             var builderIIP = Builders<ThongKe>.Filter;
@@ -411,8 +403,8 @@ namespace StockLib.Service
             var lDataIIP = _thongkeRepo.GetByFilter(filterIIP);
             var CaoSu = lDataIIP.FirstOrDefault(x => x.content.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains("Cao Su".RemoveSpace().ToUpper()));
             strBuilder.AppendLine($"2. Sản xuất nhựa và cao su:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((CaoSu?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((CaoSu?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((CaoSu?.qoqoy ?? 0) - 100, 1)}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((CaoSu?.qoq ?? 0) - 100, 1)}%");
             return strBuilder.ToString();
         }
 
@@ -428,8 +420,8 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành dệt may:");
             strBuilder.AppendLine($"1. Xuất khẩu dệt may: {Math.Round(dataXK.Item1, 1)} {unit1}");
-            strBuilder.AppendLine($" + So với tháng trước: {dataXK.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {dataXK.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {dataXK.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {dataXK.Item3}%");
 
             var dataNK = GetDataWithRate(lData, dt, EKeyTongCucThongKe.NK_Vai);
             var unit2 = "triệu USD";
@@ -439,8 +431,8 @@ namespace StockLib.Service
                 dataNK.Item1 = Math.Round(dataNK.Item1 / 1000, 1);
             }
             strBuilder.AppendLine($"2. Nhập khẩu vải: {Math.Round(dataNK.Item1, 1)} {unit2}");
-            strBuilder.AppendLine($" + So với tháng trước: {dataNK.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {dataNK.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {dataNK.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {dataNK.Item3}%");
 
             FilterDefinition<ThongKe> filterIIP = null;
             var builderIIP = Builders<ThongKe>.Filter;
@@ -461,8 +453,8 @@ namespace StockLib.Service
             var lDataIIP = _thongkeRepo.GetByFilter(filterIIP);
             var DetMay = lDataIIP.FirstOrDefault(x => x.content.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains("Trang Phuc".RemoveSpace().ToUpper()));
             strBuilder.AppendLine($"3. Sản xuất trang phục:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((DetMay?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((DetMay?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((DetMay?.qoqoy ?? 0) - 100, 1)}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((DetMay?.qoq ?? 0) - 100, 1)}%");
             return strBuilder.ToString();
         }
 
@@ -478,13 +470,13 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành phân bón:");
             strBuilder.AppendLine($"1. Nhập khẩu phân bón: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             var data1 = GetDataSPCN(dt, "U re", "Phan hon hop");
             strBuilder.AppendLine($"2. Sản lượng phân bón: {data1.Item1}(nghìn tấn)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data1.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data1.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data1.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data1.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -500,8 +492,8 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành hóa chất:");
             strBuilder.AppendLine($"1. Xuất khẩu: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -517,8 +509,8 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành nhựa:");
             strBuilder.AppendLine($"1. Xuất khẩu SP chất dẻo: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             FilterDefinition<ThongKe> filterIIP = null;
             var builderIIP = Builders<ThongKe>.Filter;
@@ -539,8 +531,8 @@ namespace StockLib.Service
             var lDataIIP = _thongkeRepo.GetByFilter(filterIIP);
             var CaoSu = lDataIIP.FirstOrDefault(x => x.content.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains("Cao Su".RemoveSpace().ToUpper()));
             strBuilder.AppendLine($"2. Sản xuất nhựa và cao su:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((CaoSu?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((CaoSu?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((CaoSu?.qoqoy ?? 0) - 100, 1)}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((CaoSu?.qoq ?? 0) - 100, 1)}%");
 
             return strBuilder.ToString();
         }
@@ -551,8 +543,8 @@ namespace StockLib.Service
             var DuLich = GetDataWithRate(lData, dt, EKeyTongCucThongKe.DuLich);
             strBuilder.AppendLine($"*Nhóm ngành du lịch:");
             strBuilder.AppendLine($"1. Khách quốc tế: {Math.Round(DuLich.Item1 / 1000000, 1)} triệu lượt khách");
-            strBuilder.AppendLine($" + So với tháng trước: {DuLich.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {DuLich.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {DuLich.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {DuLich.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -569,8 +561,8 @@ namespace StockLib.Service
 
             strBuilder.AppendLine($"*Nhóm ngành gỗ:");
             strBuilder.AppendLine($"1. Xuất khẩu: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
 
             FilterDefinition<ThongKe> filterIIP = null;
             var builderIIP = Builders<ThongKe>.Filter;
@@ -591,13 +583,13 @@ namespace StockLib.Service
             var lDataIIP = _thongkeRepo.GetByFilter(filterIIP);
             var Go = lDataIIP.FirstOrDefault(x => x.content.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains("Go ".RemoveSpace().ToUpper()));
             strBuilder.AppendLine($"2. Chế biến gỗ:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((Go?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((Go?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((Go?.qoqoy ?? 0) - 100, 1)}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((Go?.qoq ?? 0) - 100, 1)}%");
 
             var Giuong = lDataIIP.FirstOrDefault(x => x.content.RemoveSpace().RemoveSignVietnamese().ToUpper().Contains("San Xuat Giuong".RemoveSpace().ToUpper()));
             strBuilder.AppendLine($"3. Giường, tủ, bàn ghế:");
-            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((Giuong?.qoqoy ?? 0) - 100, 1)} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((Giuong?.qoq ?? 0) - 100, 1)} %");
+            strBuilder.AppendLine($" + So với tháng trước: {Math.Round((Giuong?.qoqoy ?? 0) - 100, 1)}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {Math.Round((Giuong?.qoq ?? 0) - 100, 1)}%");
             return strBuilder.ToString();
         }
 
@@ -613,8 +605,8 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành ô tô:");
             strBuilder.AppendLine($"1. Nhập khẩu ô tô: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -630,8 +622,8 @@ namespace StockLib.Service
             }
             strBuilder.AppendLine($"*Nhóm ngành nông nghiệp:");
             strBuilder.AppendLine($"1. Xuất khẩu gạo: {Math.Round(data.Item1, 1)} {unit}");
-            strBuilder.AppendLine($" + So với tháng trước: {data.Item2} %");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + So với tháng trước: {data.Item2}%");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item3}%");
             return strBuilder.ToString();
         }
 
@@ -641,8 +633,8 @@ namespace StockLib.Service
             strBuilder.AppendLine($"*Nhóm ngành đường:");
             var data = GetDataSPCN(dt, "Duong");
             strBuilder.AppendLine($"1. Sản lượng đường: {data.Item1}(nghìn tấn)");
-            strBuilder.AppendLine($" + Cùng kỳ: {data.Item2} %");
-            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data.Item3} %");
+            strBuilder.AppendLine($" + Cùng kỳ: {data.Item2}%");
+            strBuilder.AppendLine($" + Lũy kế so với cùng kỳ: {data.Item3}%");
             return strBuilder.ToString();
         }
 
