@@ -9,7 +9,6 @@ namespace StockLib.Service
     {
         //Item1: s; Item2: rv; Item3: pf
         private async Task<Stream> Chart_DoanhThuBase(List<string> lMaChungKhoan,
-                                                                ConfigMain configMain,
                                                                 int d,
                                                                 IEnumerable<(string, double, double, double, double)> lCur,
                                                                 IEnumerable<(string, double, double, double, double)> lPrev,
@@ -22,6 +21,7 @@ namespace StockLib.Service
         {
             try
             {
+                var time = GetCurrentTime();
                 var lDoanhThu = new List<double>();
                 var lLoiNhuan = new List<double>();
                 var lTangTruongDoanhThu = new List<double>();
@@ -97,7 +97,7 @@ namespace StockLib.Service
                         lBienLoiNhuanRong.Add(cur.Item2 == 0 ? 0 : Math.Round(cur.Item5 * 100 / cur.Item2, 1));
                     }
                 }
-                var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {configMain.quarter}/{configMain.year} (QoQoY)", lMaChungKhoan.ToList(), new List<HighChartSeries_BasicColumn>
+                var basicColumn = new HighchartBasicColumn($"Doanh Thu, Lợi Nhuận Quý {time.Item3}/{time.Item2} (QoQoY)", lMaChungKhoan.ToList(), new List<HighChartSeries_BasicColumn>
                 {
                      new HighChartSeries_BasicColumn
                     {

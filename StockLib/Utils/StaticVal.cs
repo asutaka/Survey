@@ -2,6 +2,7 @@
 {
     public static class StaticVal
     {
+        public static (long, long, long, long) _currentTime;//yearquarter + year + quarter + flag
         public static List<string> _lNganHang = new List<string>
         {
             "NH",
@@ -78,6 +79,13 @@
             "VIC",
             "VHM",
             "VRE"
+        };
+
+        public static List<string> _lXayDung = new List<string>
+        {
+            "CTD",
+            "FCN",
+            "HBC"
         };
     }
 }

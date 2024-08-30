@@ -12,15 +12,13 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
-
-                var configMain = _configMainRepo.GetAll().First();
-                var d = int.Parse($"{configMain.year}{configMain.quarter}");
-                var lFinancial = _dienRepo.GetByFilter(Builders<Financial_Dien>.Filter.Eq(x => x.d, d));
+                var time = GetCurrentTime();
+                var lFinancial = _dienRepo.GetByFilter(Builders<Financial_Dien>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
-                var lFinancialPrev = _dienRepo.GetByFilter(Builders<Financial_Dien>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
+                var lFinancialPrev = _dienRepo.GetByFilter(Builders<Financial_Dien>.Filter.Eq(x => x.d, int.Parse($"{time.Item2 - 1}{time.Item3}")));
+                return await Chart_DoanhThuBase(lMaCK, (int)time.Item1, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
             }
             catch (Exception ex)
             {
@@ -34,9 +32,9 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
+                var time = GetCurrentTime();
 
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _dienRepo.GetByFilter(Builders<Financial_Dien>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                var lFinancial = _dienRepo.GetByFilter(Builders<Financial_Dien>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
@@ -101,7 +99,7 @@ namespace StockLib.Service
                     }
                 };
 
-                return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", lMaCK, lSeries);
+                return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {time.Item3}/{time.Item2}", lMaCK, lSeries);
             }
             catch (Exception ex)
             {

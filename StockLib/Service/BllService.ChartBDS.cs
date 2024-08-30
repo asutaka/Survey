@@ -3,537 +3,573 @@ using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Utils;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
     public partial class BllService
     {
-        public async Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(IEnumerable<string> lInput)
+        public async Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput)
         {
             try
             {
-                var lMaCK = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
-                                        ).Take(15).ToList();
-                lMaCK.Remove("KSF");
-                lMaCK.Remove("VPI");
-                lMaCK.Add("DPG");
-                lMaCK.Add("NTL");
+                var time = GetCurrentTime();
+                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
+                lFinancial = lFinancial.Where(x => lInput.Contains(x.s))
+                                        .Where(x => x.bp >= 500 && x.inv >= 500).ToList();
 
-                var configMain = _configMainRepo.GetAll().First();
-                var d = int.Parse($"{configMain.year}{configMain.quarter}");
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, d));
-                if (!lFinancial.Any())
-                    return null;
-
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_BDS_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
-
-        public async Task<Stream> Chart_BDS_TonKho(IEnumerable<string> lInput)
-        {
-            try
-            {
-                var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
-                                       ).Take(15).ToList();
-                lBDS.Remove("KSF");
-                lBDS.Remove("VPI");
-                lBDS.Add("DPG");
-                lBDS.Add("NTL");
-
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
-
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
+                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
+                var lClean = new List<(string, double)>();
+                foreach (var item in lFinancial)
                 {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
-
-                var lTonKho = new List<double>();
-                var lTangTruongTonKho = new List<double>();
-                foreach (var item in lBDS)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lTonKho.Add(0);
-                        lTangTruongTonKho.Add(0);
+                    var itemPrev = lFinancialPrev.FirstOrDefault(x => x.s == item.s);
+                    if (itemPrev is null)
                         continue;
-                    }
 
-                    double tangTruong = 0;
-                    var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-                    if (prev is not null && prev.inv > 0)
-                    {
-                        tangTruong = Math.Round(100 * (-1 + cur.inv / prev.inv), 1);
-                    }
-
-                    //tang truong tin dung, room tin dung
-                    lTonKho.Add(cur.inv);
-                    lTangTruongTonKho.Add(tangTruong);
+                    var rate = Math.Round(item.bp * 100 / itemPrev.bp, 1);
+                    lClean.Add((item.s, rate));
                 }
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTonKho,
-                        name = "Tồn kho",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTangTruongTonKho,
-                        name = "Tăng trưởng tồn kho",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
 
-                return await Chart_BasicBase($"Tồn kho Quý {configMain.quarter}/{configMain.year} (QoQ)", lBDS, lSeries);
+                var lSymbol = lClean.OrderByDescending(x => x.Item2).Select(x => x);//.Take(15);
+
+
+                var tmp = 1;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.Chart_BDS_TonKho|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.Chart_BatDongSan|EXCEPTION| {ex.Message}");
             }
             return null;
         }
 
-        public async Task<Stream> Chart_BDS_NguoiMua(IEnumerable<string> lInput)
-        {
-            try
-            {
-                var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
-                                       ).Take(15).ToList();
-                lBDS.Remove("KSF");
-                lBDS.Remove("VPI");
-                lBDS.Add("DPG");
-                lBDS.Add("NTL");
+        //public async Task<Stream> Chart_BDS_NguoiMua(IEnumerable<string> lInput)
+        //{
+        //    try
+        //    {
+        //        var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
+        //                               ).Take(15).ToList();
+        //        lBDS.Remove("KSF");
+        //        lBDS.Remove("VPI");
+        //        lBDS.Add("DPG");
+        //        lBDS.Add("NTL");
 
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
-                {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+        //        var yearPrev = configMain.year;
+        //        var quarterPrev = configMain.quarter;
+        //        if (configMain.quarter > 1)
+        //        {
+        //            quarterPrev--;
+        //        }
+        //        else
+        //        {
+        //            quarterPrev = 4;
+        //            yearPrev--;
+        //        }
+        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
-                var lNguoiMua = new List<double>();
-                var lTangTruong = new List<double>();
-                foreach (var item in lBDS)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lNguoiMua.Add(0);
-                        lTangTruong.Add(0);
-                        continue;
-                    }
+        //        var lNguoiMua = new List<double>();
+        //        var lTangTruong = new List<double>();
+        //        foreach (var item in lBDS)
+        //        {
+        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
+        //            if (cur is null)
+        //            {
+        //                lNguoiMua.Add(0);
+        //                lTangTruong.Add(0);
+        //                continue;
+        //            }
 
-                    double tangTruong = 0;
-                    var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-                    if (prev is not null && prev.bp > 0)
-                    {
-                        tangTruong = Math.Round(100 * (-1 + cur.bp / prev.bp), 1);
-                    }
+        //            double tangTruong = 0;
+        //            var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
+        //            if (prev is not null && prev.bp > 0)
+        //            {
+        //                tangTruong = Math.Round(100 * (-1 + cur.bp / prev.bp), 1);
+        //            }
 
-                    //tang truong tin dung, room tin dung
-                    lNguoiMua.Add(cur.bp);
-                    lTangTruong.Add(tangTruong);
-                }
+        //            //tang truong tin dung, room tin dung
+        //            lNguoiMua.Add(cur.bp);
+        //            lTangTruong.Add(tangTruong);
+        //        }
 
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lNguoiMua,
-                        name = "Người mua trả tiền trước",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTangTruong,
-                        name = "Tăng trưởng người mua",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
+        //        var lSeries = new List<HighChartSeries_BasicColumn>
+        //        {
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lNguoiMua,
+        //                name = "Người mua trả tiền trước",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#012060"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lTangTruong,
+        //                name = "Tăng trưởng người mua",
+        //                type = "spline",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+        //                color = "#C00000",
+        //                yAxis = 1,
+        //            }
+        //        };
 
-                return await Chart_BasicBase($"Người mua trả tiền trước Quý {configMain.quarter}/{configMain.year} (QoQ)", lBDS, lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_BDS_NguoiMua|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
+        //        return await Chart_BasicBase($"Người mua trả tiền trước Quý {configMain.quarter}/{configMain.year} (QoQ)", lBDS, lSeries);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_BDS_NguoiMua|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
 
-        public async Task<Stream> Chart_BDS_NoTrenVonChu(IEnumerable<string> lInput)
-        {
-            try
-            {
-                var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
-                                       ).Take(15).ToList();
-                lBDS.Remove("KSF");
-                lBDS.Remove("VPI");
-                lBDS.Add("DPG");
-                lBDS.Add("NTL");
+        //public async Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(IEnumerable<string> lInput)
+        //{
+        //    try
+        //    {
+        //        var lMaCK = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
+        //                                ).Take(15).ToList();
+        //        lMaCK.Remove("KSF");
+        //        lMaCK.Remove("VPI");
+        //        lMaCK.Add("DPG");
+        //        lMaCK.Add("NTL");
 
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var d = int.Parse($"{configMain.year}{configMain.quarter}");
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, d));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                var lVonChu = new List<double>();
-                var lNo = new List<double>();
-                var lNoTrenVonChu = new List<double>();
-                foreach (var item in lBDS)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lVonChu.Add(0);
-                        lNo.Add(0);
-                        lNoTrenVonChu.Add(0);
-                        continue;
-                    }
+        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
+        //        return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_BDS_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
 
-                    double noTrenVonChu = 0;
-                    if (cur.eq != 0)
-                    {
-                        var sign = cur.eq >= cur.debt;
+        //public async Task<Stream> Chart_BDS_TonKho(IEnumerable<string> lInput)
+        //{
+        //    try
+        //    {
+        //        var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
+        //                               ).Take(15).ToList();
+        //        lBDS.Remove("KSF");
+        //        lBDS.Remove("VPI");
+        //        lBDS.Add("DPG");
+        //        lBDS.Add("NTL");
 
-                        noTrenVonChu = Math.Abs(Math.Round(100 * (cur.debt / cur.eq), 1));
-                        if (!sign)
-                        {
-                            noTrenVonChu = -noTrenVonChu;
-                        }
-                    }
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                    //
-                    lVonChu.Add(cur.eq);
-                    lNo.Add(cur.debt);
-                    lNoTrenVonChu.Add(noTrenVonChu);
-                }
+        //        var yearPrev = configMain.year;
+        //        var quarterPrev = configMain.quarter;
+        //        if (configMain.quarter > 1)
+        //        {
+        //            quarterPrev--;
+        //        }
+        //        else
+        //        {
+        //            quarterPrev = 4;
+        //            yearPrev--;
+        //        }
+        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lVonChu,
-                        name = "Vốn chủ sở hữu",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lNo,
-                        name = "Nợ",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lNoTrenVonChu,
-                        name = "Nợ trên vố chủ sở hữu",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
+        //        var lTonKho = new List<double>();
+        //        var lTangTruongTonKho = new List<double>();
+        //        foreach (var item in lBDS)
+        //        {
+        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
+        //            if (cur is null)
+        //            {
+        //                lTonKho.Add(0);
+        //                lTangTruongTonKho.Add(0);
+        //                continue;
+        //            }
 
-                return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", lBDS, lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_BDS_NoTrenVonChu|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
+        //            double tangTruong = 0;
+        //            var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
+        //            if (prev is not null && prev.inv > 0)
+        //            {
+        //                tangTruong = Math.Round(100 * (-1 + cur.inv / prev.inv), 1);
+        //            }
+
+        //            //tang truong tin dung, room tin dung
+        //            lTonKho.Add(cur.inv);
+        //            lTangTruongTonKho.Add(tangTruong);
+        //        }
+        //        var lSeries = new List<HighChartSeries_BasicColumn>
+        //        {
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lTonKho,
+        //                name = "Tồn kho",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#012060"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lTangTruongTonKho,
+        //                name = "Tăng trưởng tồn kho",
+        //                type = "spline",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+        //                color = "#C00000",
+        //                yAxis = 1,
+        //            }
+        //        };
+
+        //        return await Chart_BasicBase($"Tồn kho Quý {configMain.quarter}/{configMain.year} (QoQ)", lBDS, lSeries);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_BDS_TonKho|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
 
 
-        public async Task<Stream> Chart_VIN_DoanhThu_LoiNhuan()
-        {
-            try
-            {
-                var configMain = _configMainRepo.GetAll().First();
-                var d = int.Parse($"{configMain.year}{configMain.quarter}");
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, d));
-                if (!lFinancial.Any())
-                    return null;
 
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year-1}{configMain.quarter}")));
-                return await Chart_DoanhThuBase(StaticVal._lVin, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_VIN_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
+        //public async Task<Stream> Chart_BDS_NoTrenVonChu(IEnumerable<string> lInput)
+        //{
+        //    try
+        //    {
+        //        var lBDS = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
+        //                               ).Take(15).ToList();
+        //        lBDS.Remove("KSF");
+        //        lBDS.Remove("VPI");
+        //        lBDS.Add("DPG");
+        //        lBDS.Add("NTL");
 
-        public async Task<Stream> Chart_VIN_TonKho()
-        {
-            try
-            {
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
-                {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+        //        var lVonChu = new List<double>();
+        //        var lNo = new List<double>();
+        //        var lNoTrenVonChu = new List<double>();
+        //        foreach (var item in lBDS)
+        //        {
+        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
+        //            if (cur is null)
+        //            {
+        //                lVonChu.Add(0);
+        //                lNo.Add(0);
+        //                lNoTrenVonChu.Add(0);
+        //                continue;
+        //            }
 
-                var lTonKho = new List<double>();
-                var lTangTruongTonKho = new List<double>();
-                foreach (var item in StaticVal._lVin)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lTonKho.Add(0);
-                        lTangTruongTonKho.Add(0);
-                        continue;
-                    }
+        //            double noTrenVonChu = 0;
+        //            if (cur.eq != 0)
+        //            {
+        //                var sign = cur.eq >= cur.debt;
 
-                    double tangTruong = 0;
-                    var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-                    if (prev is not null && prev.inv > 0)
-                    {
-                        tangTruong = Math.Round(100 * (-1 + cur.inv / prev.inv), 1);
-                    }
+        //                noTrenVonChu = Math.Abs(Math.Round(100 * (cur.debt / cur.eq), 1));
+        //                if (!sign)
+        //                {
+        //                    noTrenVonChu = -noTrenVonChu;
+        //                }
+        //            }
 
-                    //tang truong tin dung, room tin dung
-                    lTonKho.Add(cur.inv);
-                    lTangTruongTonKho.Add(tangTruong);
-                }
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTonKho,
-                        name = "Tồn kho",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTangTruongTonKho,
-                        name = "Tăng trưởng tồn kho",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
-                return await Chart_BasicBase($"Tồn kho Quý {configMain.quarter}/{configMain.year} (QoQ)", StaticVal._lVin, lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_VIN_TonKho|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
+        //            //
+        //            lVonChu.Add(cur.eq);
+        //            lNo.Add(cur.debt);
+        //            lNoTrenVonChu.Add(noTrenVonChu);
+        //        }
 
-        public async Task<Stream> Chart_VIN_NguoiMua()
-        {
-            try
-            {
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
+        //        var lSeries = new List<HighChartSeries_BasicColumn>
+        //        {
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lVonChu,
+        //                name = "Vốn chủ sở hữu",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#012060"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lNo,
+        //                name = "Nợ",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#C00000"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lNoTrenVonChu,
+        //                name = "Nợ trên vố chủ sở hữu",
+        //                type = "spline",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+        //                color = "#C00000",
+        //                yAxis = 1,
+        //            }
+        //        };
 
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
-                {
-                    quarterPrev--;
-                }
-                else
-                {
-                    quarterPrev = 4;
-                    yearPrev--;
-                }
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+        //        return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", lBDS, lSeries);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_BDS_NoTrenVonChu|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
 
-                var lNguoiMua = new List<double>();
-                var lTangTruong = new List<double>();
-                foreach (var item in StaticVal._lVin)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lNguoiMua.Add(0);
-                        lTangTruong.Add(0);
-                        continue;
-                    }
 
-                    double tangTruong = 0;
-                    var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-                    if (prev is not null && prev.bp > 0)
-                    {
-                        tangTruong = Math.Round(100 * (-1 + cur.bp / prev.bp), 1);
-                    }
+        //public async Task<Stream> Chart_VIN_DoanhThu_LoiNhuan()
+        //{
+        //    try
+        //    {
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var d = int.Parse($"{configMain.year}{configMain.quarter}");
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, d));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                    //tang truong tin dung, room tin dung
-                    lNguoiMua.Add(cur.bp);
-                    lTangTruong.Add(tangTruong);
-                }
+        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year-1}{configMain.quarter}")));
+        //        return await Chart_DoanhThuBase(StaticVal._lVin, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_VIN_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
 
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lNguoiMua,
-                        name = "Người mua trả tiền trước",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTangTruong,
-                        name = "Tăng trưởng người mua",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
+        //public async Task<Stream> Chart_VIN_TonKho()
+        //{
+        //    try
+        //    {
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                return await Chart_BasicBase($"Người mua trả tiền trước Quý {configMain.quarter}/{configMain.year} (QoQ)", StaticVal._lVin, lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_VIN_NguoiMua|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
+        //        var yearPrev = configMain.year;
+        //        var quarterPrev = configMain.quarter;
+        //        if (configMain.quarter > 1)
+        //        {
+        //            quarterPrev--;
+        //        }
+        //        else
+        //        {
+        //            quarterPrev = 4;
+        //            yearPrev--;
+        //        }
+        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
-        public async Task<Stream> Chart_VIN_NoTrenVonChu()
-        {
-            try
-            {
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-                if (!lFinancial.Any())
-                    return null;
+        //        var lTonKho = new List<double>();
+        //        var lTangTruongTonKho = new List<double>();
+        //        foreach (var item in StaticVal._lVin)
+        //        {
+        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
+        //            if (cur is null)
+        //            {
+        //                lTonKho.Add(0);
+        //                lTangTruongTonKho.Add(0);
+        //                continue;
+        //            }
 
-                var lVonChu = new List<double>();
-                var lNo = new List<double>();
-                var lNoTrenVonChu = new List<double>();
-                foreach (var item in StaticVal._lVin)
-                {
-                    var cur = lFinancial.FirstOrDefault(x => x.s == item);
-                    if (cur is null)
-                    {
-                        lVonChu.Add(0);
-                        lNo.Add(0);
-                        lNoTrenVonChu.Add(0);
-                        continue;
-                    }
+        //            double tangTruong = 0;
+        //            var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
+        //            if (prev is not null && prev.inv > 0)
+        //            {
+        //                tangTruong = Math.Round(100 * (-1 + cur.inv / prev.inv), 1);
+        //            }
 
-                    double noTrenVonChu = 0;
-                    if (cur.eq != 0)
-                    {
-                        var sign = cur.eq >= cur.debt;
+        //            //tang truong tin dung, room tin dung
+        //            lTonKho.Add(cur.inv);
+        //            lTangTruongTonKho.Add(tangTruong);
+        //        }
+        //        var lSeries = new List<HighChartSeries_BasicColumn>
+        //        {
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lTonKho,
+        //                name = "Tồn kho",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#012060"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lTangTruongTonKho,
+        //                name = "Tăng trưởng tồn kho",
+        //                type = "spline",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+        //                color = "#C00000",
+        //                yAxis = 1,
+        //            }
+        //        };
+        //        return await Chart_BasicBase($"Tồn kho Quý {configMain.quarter}/{configMain.year} (QoQ)", StaticVal._lVin, lSeries);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_VIN_TonKho|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
 
-                        noTrenVonChu = Math.Abs(Math.Round(100 * (cur.debt / cur.eq), 1));
-                        if (!sign)
-                        {
-                            noTrenVonChu = -noTrenVonChu;
-                        }
-                    }
+        //public async Task<Stream> Chart_VIN_NguoiMua()
+        //{
+        //    try
+        //    {
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+        //        if (!lFinancial.Any())
+        //            return null;
 
-                    //tang truong tin dung, room tin dung
-                    lVonChu.Add(cur.eq);
-                    lNo.Add(cur.debt);
-                    lNoTrenVonChu.Add(noTrenVonChu);
-                }
+        //        var yearPrev = configMain.year;
+        //        var quarterPrev = configMain.quarter;
+        //        if (configMain.quarter > 1)
+        //        {
+        //            quarterPrev--;
+        //        }
+        //        else
+        //        {
+        //            quarterPrev = 4;
+        //            yearPrev--;
+        //        }
+        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lVonChu,
-                        name = "Vốn chủ sở hữu",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lNo,
-                        name = "Nợ",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lNoTrenVonChu,
-                        name = "Nợ trên vố chủ sở hữu",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
+        //        var lNguoiMua = new List<double>();
+        //        var lTangTruong = new List<double>();
+        //        foreach (var item in StaticVal._lVin)
+        //        {
+        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
+        //            if (cur is null)
+        //            {
+        //                lNguoiMua.Add(0);
+        //                lTangTruong.Add(0);
+        //                continue;
+        //            }
 
-                return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", StaticVal._lVin, lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_VIN_NoTrenVonChu|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
+        //            double tangTruong = 0;
+        //            var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
+        //            if (prev is not null && prev.bp > 0)
+        //            {
+        //                tangTruong = Math.Round(100 * (-1 + cur.bp / prev.bp), 1);
+        //            }
+
+        //            //tang truong tin dung, room tin dung
+        //            lNguoiMua.Add(cur.bp);
+        //            lTangTruong.Add(tangTruong);
+        //        }
+
+        //        var lSeries = new List<HighChartSeries_BasicColumn>
+        //        {
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lNguoiMua,
+        //                name = "Người mua trả tiền trước",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#012060"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lTangTruong,
+        //                name = "Tăng trưởng người mua",
+        //                type = "spline",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+        //                color = "#C00000",
+        //                yAxis = 1,
+        //            }
+        //        };
+
+        //        return await Chart_BasicBase($"Người mua trả tiền trước Quý {configMain.quarter}/{configMain.year} (QoQ)", StaticVal._lVin, lSeries);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_VIN_NguoiMua|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
+
+        //public async Task<Stream> Chart_VIN_NoTrenVonChu()
+        //{
+        //    try
+        //    {
+        //        var configMain = _configMainRepo.GetAll().First();
+        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+        //        if (!lFinancial.Any())
+        //            return null;
+
+        //        var lVonChu = new List<double>();
+        //        var lNo = new List<double>();
+        //        var lNoTrenVonChu = new List<double>();
+        //        foreach (var item in StaticVal._lVin)
+        //        {
+        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
+        //            if (cur is null)
+        //            {
+        //                lVonChu.Add(0);
+        //                lNo.Add(0);
+        //                lNoTrenVonChu.Add(0);
+        //                continue;
+        //            }
+
+        //            double noTrenVonChu = 0;
+        //            if (cur.eq != 0)
+        //            {
+        //                var sign = cur.eq >= cur.debt;
+
+        //                noTrenVonChu = Math.Abs(Math.Round(100 * (cur.debt / cur.eq), 1));
+        //                if (!sign)
+        //                {
+        //                    noTrenVonChu = -noTrenVonChu;
+        //                }
+        //            }
+
+        //            //tang truong tin dung, room tin dung
+        //            lVonChu.Add(cur.eq);
+        //            lNo.Add(cur.debt);
+        //            lNoTrenVonChu.Add(noTrenVonChu);
+        //        }
+
+        //        var lSeries = new List<HighChartSeries_BasicColumn>
+        //        {
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lVonChu,
+        //                name = "Vốn chủ sở hữu",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#012060"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lNo,
+        //                name = "Nợ",
+        //                type = "column",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+        //                color = "#C00000"
+        //            },
+        //            new HighChartSeries_BasicColumn
+        //            {
+        //                data = lNoTrenVonChu,
+        //                name = "Nợ trên vố chủ sở hữu",
+        //                type = "spline",
+        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+        //                color = "#C00000",
+        //                yAxis = 1,
+        //            }
+        //        };
+
+        //        return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", StaticVal._lVin, lSeries);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.Chart_VIN_NoTrenVonChu|EXCEPTION| {ex.Message}");
+        //    }
+        //    return null;
+        //}
     }
 }

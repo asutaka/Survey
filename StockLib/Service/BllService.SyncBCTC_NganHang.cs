@@ -49,13 +49,12 @@ namespace StockLib.Service
             {
                 var lStock = _stockRepo.GetAll();
                 var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).Select(x => x.s);
-                var configMain = _configMainRepo.GetAll().First();
 
                 foreach (var item in lNganHang)
                 {
-                    await SyncBCTC_NganHang_KQKD(item, configMain);
+                    await SyncBCTC_NganHang_KQKD(item);
                     await SyncBCTC_NganHang_CIR(item);
-                    await SyncBCTC_NganHang_NIM_TinDung(item, configMain);
+                    await SyncBCTC_NganHang_NIM_TinDung(item);
                     await SyncBCTC_NgayCongBo(item);
                 }
 
@@ -83,18 +82,19 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_KQKD(string code, ConfigMain config)
+        private async Task SyncBCTC_NganHang_KQKD(string code)
         {
             try
             {
                 var batchCount = 8;
+                var time = GetCurrentTime();
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
-                if (last.BasePeriodBegin / 100 > config.year)
+                if (last.BasePeriodBegin / 100 > time.Item2)
                 {
-                    var div = last.ReportTermID - config.quarter;
+                    var div = last.ReportTermID - time.Item3;
                     foreach (var item in lReportID.data)
                     {
                         var term = item.ReportTermID - div;
@@ -368,7 +368,7 @@ namespace StockLib.Service
 
 
         private List<SubKQKD> _lSubKQKD = new List<SubKQKD>();
-        private async Task SubBCTC_KQKD(string code, ConfigMain config)
+        private async Task SubBCTC_KQKD(string code)
         {
             try
             {
@@ -380,11 +380,12 @@ namespace StockLib.Service
                     return;
                 }
                 Thread.Sleep(1000);
+                var time = GetCurrentTime();
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
-                if (last.BasePeriodBegin / 100 > config.year)
+                if (last.BasePeriodBegin / 100 > time.Item2)
                 {
-                    var div = last.ReportTermID - config.quarter;
+                    var div = last.ReportTermID - time.Item3;
                     foreach (var item in lReportID.data)
                     {
                         var term = item.ReportTermID - div;
@@ -498,7 +499,7 @@ namespace StockLib.Service
         }
 
         private List<SubCDKT> _lSubCDKT = new List<SubCDKT>();
-        private async Task SubBCTC_CDKT(string code, ConfigMain config)
+        private async Task SubBCTC_CDKT(string code)
         {
             try
             {
@@ -506,11 +507,12 @@ namespace StockLib.Service
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
+                var time = GetCurrentTime();
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
-                if (last.BasePeriodBegin / 100 > config.year)
+                if (last.BasePeriodBegin / 100 > time.Item2)
                 {
-                    var div = last.ReportTermID - config.quarter;
+                    var div = last.ReportTermID - time.Item3;
                     foreach (var item in lReportID.data)
                     {
                         var term = item.ReportTermID - div;
@@ -635,12 +637,12 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_NIM_TinDung(string code, ConfigMain config)
+        private async Task SyncBCTC_NganHang_NIM_TinDung(string code)
         {
             try
             {
-                await SubBCTC_KQKD(code, config);
-                await SubBCTC_CDKT(code, config);
+                await SubBCTC_KQKD(code);
+                await SubBCTC_CDKT(code);
 
                 var count = _lSubKQKD.Count();
 

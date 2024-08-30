@@ -12,15 +12,13 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
-
-                var configMain = _configMainRepo.GetAll().First();
-                var d = int.Parse($"{configMain.year}{configMain.quarter}");
-                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, d));
+                var time = GetCurrentTime();
+                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
-                var lFinancialPrev = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-                return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isBienLoiNhuanRong: true);
+                var lFinancialPrev = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{time.Item2 - 1}{time.Item3}")));
+                return await Chart_DoanhThuBase(lMaCK, (int)time.Item1, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isBienLoiNhuanRong: true);
             }
             catch (Exception ex)
             {
@@ -34,15 +32,15 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
+                var time = GetCurrentTime();
 
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
-                var yearPrev = configMain.year;
-                var quarterPrev = configMain.quarter;
-                if (configMain.quarter > 1)
+                var yearPrev = time.Item2;
+                var quarterPrev = time.Item3;
+                if (time.Item3 > 1)
                 {
                     quarterPrev--;
                 }
@@ -97,7 +95,7 @@ namespace StockLib.Service
                     }
                 };
 
-                return await Chart_BasicBase($"Tồn kho Quý {configMain.quarter}/{configMain.year} (QoQ)", lMaCK, lSeries);
+                return await Chart_BasicBase($"Tồn kho Quý {time.Item3}/{time.Item2} (QoQ)", lMaCK, lSeries);
             }
             catch (Exception ex)
             {
@@ -111,9 +109,9 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = lInput.Take(15).ToList();
+                var time = GetCurrentTime();
 
-                var configMain = _configMainRepo.GetAll().First();
-                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
+                var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
@@ -178,7 +176,7 @@ namespace StockLib.Service
                     }
                 };
 
-                return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", lMaCK, lSeries);
+                return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {time.Item3}/{time.Item2}", lMaCK, lSeries);
             }
             catch (Exception ex)
             {

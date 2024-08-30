@@ -66,6 +66,22 @@ namespace StockLib.Utils
             return $"0{val}";
         }
 
+        public static long GetPrevQuarter(this long time)
+        {
+            var year = time / 10;
+            var quarter = time - year * 10;
+            if(quarter == 1)
+            {
+                year--;
+                quarter = 4;
+            }
+            else
+            {
+                quarter--;
+            }
+            return long.Parse($"{year}{quarter}");
+        }
+
         public static int GetQuarter(this DateTime dt)
         {
             if (dt.Month <= 3)

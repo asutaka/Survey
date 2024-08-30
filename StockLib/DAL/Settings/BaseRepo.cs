@@ -38,7 +38,7 @@ namespace StockLib.DAL.Settings
          */
         //Example: FilterDefinition<Stock> filter = Builders<Stock>.Filter.Eq(x => x.s, itemMa.symbol);
         List<T> GetByFilter(FilterDefinition<T> filter, int offset = 0, int limit = 0);
-
+        T GetEntityByFilter(FilterDefinition<T> filter);
 
         /// <summary>
         /// Get async entity by identifier 
@@ -245,6 +245,11 @@ namespace StockLib.DAL.Settings
 
                 return _collection.Find(filter).ToList();
             }
+        }
+
+        public T GetEntityByFilter(FilterDefinition<T> filter)
+        {
+            return _collection.Find(filter).FirstOrDefault();
         }
     }
 }

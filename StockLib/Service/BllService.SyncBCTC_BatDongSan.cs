@@ -16,12 +16,10 @@ namespace StockLib.Service
                 var lStock = _stockRepo.GetAll();
                 var lBDS = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2357" 
                                                                         || y.code == "8600")).Select(x => x.s);
-                var configMain = _configMainRepo.GetAll().First();
-
                 foreach (var item in lBDS)
                 {
-                    await SyncBCTC_BatDongSan_KQKD(item, configMain);
-                    await SyncBCTC_BatDongSan_CDKT(item, configMain);
+                    await SyncBCTC_BatDongSan_KQKD(item);
+                    await SyncBCTC_BatDongSan_CDKT(item);
                 }
             }
             catch (Exception ex)
@@ -30,18 +28,19 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_KQKD(string code, ConfigMain config)
+        private async Task SyncBCTC_BatDongSan_KQKD(string code)
         {
             try
             {
+                var time = GetCurrentTime();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
-                if (last.BasePeriodBegin / 100 > config.year) 
+                if (last.BasePeriodBegin / 100 > time.Item2) 
                 {
-                    var div = last.ReportTermID - config.quarter;
+                    var div = last.ReportTermID - time.Item3;
                     foreach (var item in lReportID.data)
                     {
                         var term = item.ReportTermID - div;
@@ -211,18 +210,19 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_CDKT(string code, ConfigMain config)
+        private async Task SyncBCTC_BatDongSan_CDKT(string code)
         {
             try
             {
+                var time = GetCurrentTime();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
                 Thread.Sleep(1000);
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
-                if (last.BasePeriodBegin / 100 > config.year)
+                if (last.BasePeriodBegin / 100 > time.Item2)
                 {
-                    var div = last.ReportTermID - config.quarter;
+                    var div = last.ReportTermID - time.Item3;
                     foreach (var item in lReportID.data)
                     {
                         var term = item.ReportTermID - div;
