@@ -9,6 +9,7 @@ namespace StockLib.Service
 {
     public partial class BllService
     {
+
         public async Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput)
         {
             try
@@ -18,22 +19,78 @@ namespace StockLib.Service
                 lFinancial = lFinancial.Where(x => lInput.Contains(x.s))
                                         .Where(x => x.bp >= 500 && x.inv >= 500).ToList();
 
-                var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
-                var lClean = new List<(string, double)>();
+                var lFinancialPrev1 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
+                var lFinancialPrev2 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev3 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev4 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev5 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
+
+                var lLast = new List<(string, double, double, double, double, double, int)>();
+                var lClean1 = DetectSymbol(lFinancial, lFinancialPrev1);
+                var lClean2 = DetectSymbol(lFinancialPrev1, lFinancialPrev2);
+                var lClean3 = DetectSymbol(lFinancialPrev2, lFinancialPrev3);
+                var lClean4 = DetectSymbol(lFinancialPrev3, lFinancialPrev4);
+                var lClean5 = DetectSymbol(lFinancialPrev4, lFinancialPrev5);
+
+                var lClean11 = lFinancial.Where(x => lClean1.Any(y => y.Item1 == x.s)).ToList();
+                var lClean12 = lFinancial.Where(x => lClean2.Any(y => y.Item1 == x.s)).ToList();
+                var lClean13 = lFinancial.Where(x => lClean3.Any(y => y.Item1 == x.s)).ToList();
+                var lClean14 = lFinancial.Where(x => lClean4.Any(y => y.Item1 == x.s)).ToList();
+                var lClean15 = lFinancial.Where(x => lClean5.Any(y => y.Item1 == x.s)).ToList();
+
                 foreach (var item in lFinancial)
                 {
-                    var itemPrev = lFinancialPrev.FirstOrDefault(x => x.s == item.s);
-                    if (itemPrev is null)
-                        continue;
+                    var count = 0;
 
-                    var rate = Math.Round(item.bp * 100 / itemPrev.bp, 1);
-                    lClean.Add((item.s, rate));
+                    if(lClean11.Any(x => x.s == item.s))
+                        count++;
+
+                    if (lClean12.Any(x => x.s == item.s))
+                        count++;
+
+                    if (lClean13.Any(x => x.s == item.s))
+                        count++;
+
+                    if (lClean14.Any(x => x.s == item.s))
+                        count++;
+
+                    if (lClean15.Any(x => x.s == item.s))
+                        count++;
+
+                    if(count >= 3)
+                    {
+                        var clean1 = lClean1.FirstOrDefault(x => x.Item1 == item.s);
+                        var clean2 = lClean2.FirstOrDefault(x => x.Item1 == item.s);
+                        var clean3 = lClean3.FirstOrDefault(x => x.Item1 == item.s);
+                        var clean4 = lClean4.FirstOrDefault(x => x.Item1 == item.s);
+                        var clean5 = lClean5.FirstOrDefault(x => x.Item1 == item.s);
+                        lLast.Add((item.s, clean1.Item2, clean2.Item2, clean3.Item2, clean4.Item2, clean5.Item2, count));
+                    }
                 }
 
-                var lSymbol = lClean.OrderByDescending(x => x.Item2).Select(x => x);//.Take(15);
-
+                var tmp1 = lLast.OrderByDescending(x => x.Item7).Take(15);
 
                 var tmp = 1;
+
+                List<(string, double)> DetectSymbol(List<Financial_BDS> lCur, List<Financial_BDS> lPrev)
+                {
+                    var lClean = new List<(string, double)>();
+                    foreach (var item in lCur)
+                    {
+                        var itemPrev = lPrev.FirstOrDefault(x => x.s == item.s);
+                        if (itemPrev is null)
+                            continue;
+
+                        var rate = Math.Round(item.bp * 100 / itemPrev.bp, 1);
+                        if (rate >= 105)
+                        {
+                            lClean.Add((item.s, rate));
+                        }
+                    }
+
+
+                    return lClean;
+                }
             }
             catch (Exception ex)
             {
