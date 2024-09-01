@@ -15,7 +15,6 @@ namespace StockLib.Service
     {
         private readonly ILogger<TeleService> _logger;
         private static TelegramBotClient _bot = null;
-        private static List<Stock> _lStock = new List<Stock>();
         private static List<UserMessage> _lUserMes = new List<UserMessage>();
         private readonly int _numThread = 1;
         private object objLock = 1;

@@ -66,6 +66,36 @@ namespace StockLib.Utils
             return $"0{val}";
         }
 
+        public static long GetPrevQuarter(this int time)
+        {
+            var year = time / 10;
+            var quarter = time - year * 10;
+            if (quarter == 1)
+            {
+                year--;
+                quarter = 4;
+            }
+            else
+            {
+                quarter--;
+            }
+            return int.Parse($"{year}{quarter}");
+        }
+
+        public static long GetYoyQuarter(this int time)
+        {
+            var year = time / 10;
+            var quarter = time - year * 10;
+            return int.Parse($"{year - 1}{quarter}");
+        }
+
+        public static string GetNameQuarter(this int time)
+        {
+            var year = time / 10;
+            var quarter = time - year * 10;
+            return $"{quarter}/{year - 2000}";
+        }
+
         public static long GetPrevQuarter(this long time)
         {
             var year = time / 10;

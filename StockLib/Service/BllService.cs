@@ -46,6 +46,8 @@ namespace StockLib.Service
 
         Task<Stream> Chart_Dien_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         Task<Stream> Chart_Dien_NoTrenVonChu(IEnumerable<string> lInput);
+
+        Task<List<Stream>> Chart_MaCK(string input);
     }
     public partial class BllService : IBllService
     {
@@ -83,6 +85,7 @@ namespace StockLib.Service
             _dienRepo = financialDienRepo;
             _configRepo = configRepo;
             _apiService = apiService;
+            StockInstance();
         }
 
         private (long, long, long) GetCurrentTime()
@@ -99,6 +102,14 @@ namespace StockLib.Service
             }
 
             return (StaticVal._currentTime.Item1, StaticVal._currentTime.Item2, StaticVal._currentTime.Item3);
+        }
+
+        private List<Stock> StockInstance()
+        {
+            if (StaticVal._lStock != null && StaticVal._lStock.Any())
+                return StaticVal._lStock;
+            StaticVal._lStock = _stockRepo.GetAll();
+            return StaticVal._lStock;
         }
     }
 }

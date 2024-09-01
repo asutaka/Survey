@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using StockLib.DAL.Entity;
 using StockLib.Model;
 
 namespace StockLib.Service

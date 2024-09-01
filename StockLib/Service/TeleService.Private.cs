@@ -24,13 +24,6 @@ namespace StockLib.Service
 
             return _bot;
         }
-        private List<Stock> StockInstance()
-        {
-            if (_lStock != null && _lStock.Any())
-                return _lStock;
-            _lStock = _stockRepo.GetAll();
-            return _lStock;
-        }
 
         private async Task Analyze(long userId, string input)
         {
@@ -39,47 +32,51 @@ namespace StockLib.Service
             {
                 return;
             }
-            input = input.Trim();
+            input = input.Trim().ToUpper();
             if((input.StartsWith("[") && input.EndsWith("]"))
                 || (input.StartsWith("*") && input.EndsWith("*"))
                 || (input.StartsWith("@") && input.EndsWith("@")))//Nhóm ngành
             {
                 input = input.Replace("[", "").Replace("]", "").Replace("*", "").Replace("@", "");
-                if(StaticVal._lNganHang.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Ngân Hàng
+                if(StaticVal._lNganHang.Any(x => x.ToUpper().Equals(input)))//Ngành Ngân Hàng
                 {
                     await NganhNganHang(userId);
                     return;
                 }
-                if (StaticVal._lBatDongSan.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Bất động sản
+                if (StaticVal._lBatDongSan.Any(x => x.ToUpper().Equals(input)))//Ngành Bất động sản
                 {
                     await NganhBatDongSan(userId);
                     return;
                 }
-                if (StaticVal._lChungKhoan.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Chứng khoán
+                if (StaticVal._lChungKhoan.Any(x => x.ToUpper().Equals(input)))//Ngành Chứng khoán
                 {
                     await NganhChungKhoan(userId);
                     return;
                 }
-                if (StaticVal._lThep.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Thép
+                if (StaticVal._lThep.Any(x => x.ToUpper().Equals(input)))//Ngành Thép
                 {
                     await NganhThep(userId);
                     return;
                 }
-                if (StaticVal._lBanLe.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Bán Lẻ
+                if (StaticVal._lBanLe.Any(x => x.ToUpper().Equals(input)))//Ngành Bán Lẻ
                 {
                     await NganhBanLe(userId);
                     return;
                 }
-                if (StaticVal._lDien.Any(x => x.ToUpper().Equals(input.ToUpper())))//Ngành Điện
+                if (StaticVal._lDien.Any(x => x.ToUpper().Equals(input)))//Ngành Điện
                 {
                     await NganhDien(userId);
                     return;
                 }
-                if ("VIN".ToUpper().Equals(input.ToUpper()))//Chỉ số cổ phiếu VIN Group
+                if ("VIN".ToUpper().Equals(input))//Chỉ số cổ phiếu VIN Group
                 {
                     await VIN_INDEX(userId);
                     return;
                 }
+            }
+            else if(input.Length == 3) //Mã chứng khoán
+            {
+                await MaChungKhoan(userId, input);
             }
 
             //var entityStock = _lStock.FirstOrDefault(x => x.s.Equals(input.ToUpper()));
@@ -145,11 +142,19 @@ namespace StockLib.Service
             //}
         }
 
+        private List<Stock> StockInstance()
+        {
+            if (StaticVal._lStock != null && StaticVal._lStock.Any())
+                return StaticVal._lStock;
+            StaticVal._lStock = _stockRepo.GetAll();
+            return StaticVal._lStock;
+        }
+
         private async Task NganhNganHang(long userId)
         {
             try
             {
-                var lNganHang = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lNganHang = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_NganHang_DoanhThu_LoiNhuan(lNganHang);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -199,11 +204,29 @@ namespace StockLib.Service
             }
         }
 
+        private async Task MaChungKhoan(long userId, string input)
+        {
+            try
+            {
+                var lStream = await _bllService.Chart_MaCK(input);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"TeleService.MaChungKhoan|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
         private async Task NganhBatDongSan(long userId)
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 
                                             && x.h24.Any(y => y.code == "2357"
                                                         || y.code == "8600"))
                                     .Where(x => !StaticVal._lXayDung.Contains(x.s))
@@ -305,7 +328,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8777")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8777")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_CK_DoanhThu_LoiNhuan(lMaCK);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -349,7 +372,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_Thep_DoanhThu_LoiNhuan(lMaCK);
                 if (streamLN is null || streamLN.Length <= 500)
@@ -386,7 +409,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5379"
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5379"
                                                                                 || y.code == "3530"
                                                                                 || y.code == "3577")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
@@ -424,7 +447,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = _lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7535")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7535")).OrderByDescending(x => x.p.lv).Select(x => x.s);
                 //Doanh Thu, Loi Nhuan
                 var streamLN = await _bllService.Chart_Dien_DoanhThu_LoiNhuan(lMaCK);
                 if (streamLN is null || streamLN.Length <= 500)

@@ -47,8 +47,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lStock = _stockRepo.GetAll();
-                var lNganHang = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).Select(x => x.s);
+                var lNganHang = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).Select(x => x.s);
 
                 foreach (var item in lNganHang)
                 {

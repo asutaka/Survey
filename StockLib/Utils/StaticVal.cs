@@ -1,8 +1,14 @@
-﻿namespace StockLib.Utils
+﻿using StockLib.DAL.Entity;
+
+namespace StockLib.Utils
 {
     public static class StaticVal
     {
         public static (long, long, long, long) _currentTime;//yearquarter + year + quarter + flag
+        public static int _TAKE = 10;
+        public static List<Stock> _lStock = new List<Stock>();
+        public static int _MaxRate = 500;
+
         public static List<string> _lNganHang = new List<string>
         {
             "NH",

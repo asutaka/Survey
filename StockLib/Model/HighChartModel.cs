@@ -176,7 +176,7 @@
     public class HighChartXAxis
     {
         public string type { get; set; }
-        public List<string> categories { get; set; }
+        public IEnumerable<string> categories { get; set; }
     }
 
     public class HighChartYAxis
@@ -191,7 +191,7 @@
         public string type { get; set; }
         public string name { get; set; }
         public int yAxis { get; set; }
-        public List<string> colors { get; set; }
+        public IEnumerable<string> colors { get; set; }
         public string color { get; set; }
         public bool colorByPoint { get; set; }
         public HighChartDataLabel dataLabels { get; set; }
@@ -199,7 +199,7 @@
 
     public class HighChartSeries_BasicColumn : HighChartSeries
     {
-        public List<double> data { get; set; }
+        public IEnumerable<double> data { get; set; }
     }
 
     public class HighChartSeries_BasicColumnCustomColor : HighChartSeries
