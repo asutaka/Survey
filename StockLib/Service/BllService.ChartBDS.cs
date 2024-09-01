@@ -1,16 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using StockLib.DAL.Entity;
-using StockLib.Model;
 using StockLib.Utils;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
     public partial class BllService
     {
-
-        public async Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput)
+        private async Task<IEnumerable<string>> GetList(IEnumerable<string> lInput) 
         {
             try
             {
@@ -42,7 +39,7 @@ namespace StockLib.Service
                 {
                     var count = 0;
 
-                    if(lClean11.Any(x => x.s == item.s))
+                    if (lClean11.Any(x => x.s == item.s))
                         count++;
 
                     if (lClean12.Any(x => x.s == item.s))
@@ -57,7 +54,7 @@ namespace StockLib.Service
                     if (lClean15.Any(x => x.s == item.s))
                         count++;
 
-                    if(count >= 3)
+                    if (count >= 3)
                     {
                         var clean1 = lClean1.FirstOrDefault(x => x.Item1 == item.s);
                         var clean2 = lClean2.FirstOrDefault(x => x.Item1 == item.s);
@@ -68,9 +65,7 @@ namespace StockLib.Service
                     }
                 }
 
-                var tmp1 = lLast.OrderByDescending(x => x.Item7).Take(15);
-
-                var tmp = 1;
+                return lLast.OrderByDescending(x => x.Item7).Take(15).Select(x => x.Item1);
 
                 List<(string, double)> DetectSymbol(List<Financial_BDS> lCur, List<Financial_BDS> lPrev)
                 {
@@ -96,6 +91,19 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_BatDongSan|EXCEPTION| {ex.Message}");
             }
+
+            return null;
+        }
+        public async Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput)
+        {
+            var lMaCK = GetList(lInput);
+            if (lMaCK is null)
+                return null;
+
+            //Người mua, tồn kho, tỉ lệ người mua/tồn kho
+
+
+
             return null;
         }
 
