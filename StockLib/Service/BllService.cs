@@ -19,22 +19,8 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_NganHang(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_ChungKhoan(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_Thep(IEnumerable<string> lInput);
-
-        //Task<Stream> Chart_CK_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        //Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
-        //Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput);
-        //Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput);
-
-        //Task<Stream> Chart_Thep_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        //Task<Stream> Chart_Thep_TonKho(IEnumerable<string> lInput);
-        //Task<Stream> Chart_Thep_NoTrenVonChu(IEnumerable<string> lInput);
-
-        Task<Stream> Chart_BanLe_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        Task<Stream> Chart_BanLe_TonKho(IEnumerable<string> lInput);
-        Task<Stream> Chart_BanLe_NoTrenVonChu(IEnumerable<string> lInput);
-
-        Task<Stream> Chart_Dien_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        Task<Stream> Chart_Dien_NoTrenVonChu(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_BanLe(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_Dien(IEnumerable<string> lInput);
 
         Task<List<Stream>> Chart_MaCK(string input);
     }
@@ -50,6 +36,8 @@ namespace StockLib.Service
         private readonly IFinancialBanLeRepo _banleRepo;
         private readonly IFinancialDienRepo _dienRepo;
         private readonly IConfigDataRepo _configRepo;
+        private readonly IThongKeRepo _thongkeRepo;
+        private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IAPIService _apiService;
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
@@ -61,6 +49,8 @@ namespace StockLib.Service
                             IFinancialBanLeRepo financialBanLeRepo,
                             IFinancialDienRepo financialDienRepo,
                             IConfigDataRepo configRepo,
+                            IThongKeRepo thongkeRepo,
+                            IThongKeQuyRepo thongkequyRepo,
                             IAPIService apiService)
         {
             _logger = logger;
@@ -73,6 +63,8 @@ namespace StockLib.Service
             _banleRepo = financialBanLeRepo;
             _dienRepo = financialDienRepo;
             _configRepo = configRepo;
+            _thongkequyRepo = thongkequyRepo;
+            _thongkeRepo = thongkeRepo;
             _apiService = apiService;
             StockInstance();
         }

@@ -93,7 +93,14 @@ namespace StockLib.Utils
         {
             var year = time / 10;
             var quarter = time - year * 10;
-            return $"{quarter}/{year - 2000}";
+            return $"{quarter.To2Digit()}/{year - 2000}";
+        }
+
+        public static string GetNameMonth(this int time)
+        {
+            var year = time / 100;
+            var month = time - year * 100;
+            return $"{month.To2Digit()}/{year - 2000}";
         }
 
         public static long GetPrevQuarter(this long time)

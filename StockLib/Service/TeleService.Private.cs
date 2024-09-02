@@ -194,7 +194,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).OrderByDescending(x => x.p.lv).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
                 var lStream = await _bllService.Chart_NganHang(lMaCK);
                 if (lStream is null)
                     return;
@@ -232,6 +232,7 @@ namespace StockLib.Service
                 var lMaCK = StaticVal._lStock.Where(x => x.status == 1
                                             && x.h24.Any(y => y.code == "8777"))
                                     .OrderByDescending(x => x.p.lv)
+                                    .Take(StaticVal._TAKE)
                                     .Select(x => x.s);
 
                 var lStream = await _bllService.Chart_ChungKhoan(lMaCK);
@@ -279,28 +280,14 @@ namespace StockLib.Service
             {
                 var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5379"
                                                                                 || y.code == "3530"
-                                                                                || y.code == "3577")).OrderByDescending(x => x.p.lv).Select(x => x.s);
-                //Doanh Thu, Loi Nhuan
-                var streamLN = await _bllService.Chart_BanLe_DoanhThu_LoiNhuan(lMaCK);
-                if (streamLN is null || streamLN.Length <= 500)
+                                                                                || y.code == "3577")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+
+                var lStream = await _bllService.Chart_BanLe(lMaCK);
+                if (lStream is null)
                     return;
-
-                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
-
-                Thread.Sleep(1000);
-                //Tồn kho
-                var streamTonKho = await _bllService.Chart_BanLe_TonKho(lMaCK);
-                if (streamTonKho != null && streamTonKho.Length > 500)
+                foreach (var stream in lStream)
                 {
-                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
-                }
-
-                Thread.Sleep(1000);
-                //Nợ trên vốn chủ sở hữu
-                var streamNo = await _bllService.Chart_BanLe_NoTrenVonChu(lMaCK);
-                if (streamNo != null && streamNo.Length > 500)
-                {
-                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 }
 
                 await BotInstance().SendTextMessageAsync(userId, "done!");
@@ -315,27 +302,21 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7535")).OrderByDescending(x => x.p.lv).Select(x => x.s);
-                //Doanh Thu, Loi Nhuan
-                var streamLN = await _bllService.Chart_Dien_DoanhThu_LoiNhuan(lMaCK);
-                if (streamLN is null || streamLN.Length <= 500)
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7535")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+
+                var lStream = await _bllService.Chart_Dien(lMaCK);
+                if (lStream is null)
                     return;
-
-                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
-
-                Thread.Sleep(1000);
-                //Nợ trên vốn chủ sở hữu
-                var streamNo = await _bllService.Chart_Dien_NoTrenVonChu(lMaCK);
-                if (streamNo != null && streamNo.Length > 500)
+                foreach (var stream in lStream)
                 {
-                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 }
 
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"TeleService.NganhBanLe|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+                _logger.LogError($"TeleService.NganhDien|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
         }
     }

@@ -1,9 +1,4 @@
 ﻿using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -43,6 +38,19 @@ namespace StockLib.Service
             if (isThep)
             {
                 return await Chart_Thep(input);
+            }
+            var isBanLe = stock.h24.Any(y => y.code == "5379"
+                                        || y.code == "3530"
+                                        || y.code == "3577");
+            if (isBanLe)
+            {
+                return await Chart_BanLe(input);
+            }
+
+            var isDien = stock.h24.Any(y => y.code == "7535");
+            if (isDien)
+            {
+                return await Chart_Dien(input);
             }
             return null;
         }
