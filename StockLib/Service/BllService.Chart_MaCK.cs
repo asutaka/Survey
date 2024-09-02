@@ -39,6 +39,11 @@ namespace StockLib.Service
             {
                 return await Chart_ChungKhoan(input);
             }
+            var isThep = stock.h24.Any(y => y.code == "1757");
+            if (isThep)
+            {
+                return await Chart_Thep(input);
+            }
             return null;
         }
     }

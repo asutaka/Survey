@@ -30,8 +30,7 @@ namespace StockLib.Service
 
             return lOutput;
         }
-
-        public async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
+        private async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
         {
             try
             {
@@ -135,8 +134,7 @@ namespace StockLib.Service
             }
             return null;
         }
-
-        public async Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
+        private async Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
         {
             try
             {
@@ -206,8 +204,7 @@ namespace StockLib.Service
             }
             return null;
         }
-
-        public async Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
+        private async Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
         {
             try
             {

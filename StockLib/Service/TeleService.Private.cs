@@ -254,28 +254,14 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).OrderByDescending(x => x.p.lv).Select(x => x.s);
-                //Doanh Thu, Loi Nhuan
-                var streamLN = await _bllService.Chart_Thep_DoanhThu_LoiNhuan(lMaCK);
-                if (streamLN is null || streamLN.Length <= 500)
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+
+                var lStream = await _bllService.Chart_Thep(lMaCK);
+                if (lStream is null)
                     return;
-
-                await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamLN));
-
-                Thread.Sleep(1000);
-                //Tồn kho
-                var streamTonKho = await _bllService.Chart_Thep_TonKho(lMaCK);
-                if (streamTonKho != null && streamTonKho.Length > 500)
+                foreach (var stream in lStream)
                 {
-                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamTonKho));
-                }
-
-                Thread.Sleep(1000);
-                //Nợ trên vốn chủ sở hữu
-                var streamNo = await _bllService.Chart_Thep_NoTrenVonChu(lMaCK);
-                if (streamNo != null && streamNo.Length > 500)
-                {
-                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(streamNo));
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 }
 
                 await BotInstance().SendTextMessageAsync(userId, $"Giá HRC: https://tradingeconomics.com/commodity/hrc-steel");

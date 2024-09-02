@@ -18,15 +18,16 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_NganHang(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_ChungKhoan(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_Thep(IEnumerable<string> lInput);
 
         //Task<Stream> Chart_CK_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         //Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
         //Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput);
         //Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput);
 
-        Task<Stream> Chart_Thep_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        Task<Stream> Chart_Thep_TonKho(IEnumerable<string> lInput);
-        Task<Stream> Chart_Thep_NoTrenVonChu(IEnumerable<string> lInput);
+        //Task<Stream> Chart_Thep_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
+        //Task<Stream> Chart_Thep_TonKho(IEnumerable<string> lInput);
+        //Task<Stream> Chart_Thep_NoTrenVonChu(IEnumerable<string> lInput);
 
         Task<Stream> Chart_BanLe_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         Task<Stream> Chart_BanLe_TonKho(IEnumerable<string> lInput);
