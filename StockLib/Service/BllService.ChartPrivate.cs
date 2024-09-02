@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using StockLib.DAL.Entity;
 using StockLib.Model;
+using StockLib.Utils;
 
 namespace StockLib.Service
 {
@@ -194,6 +196,76 @@ namespace StockLib.Service
                 _logger.LogError($"BllService.Chart_DoanhThu_LoiNhuanBase|EXCEPTION| {ex.Message}");
             }
 
+            return null;
+        }
+
+        public async Task<Stream> Chart_DoanhThu_LoiNhuan(List<BaseFinancialDTO> lFinancial, string code)
+        {
+            try
+            {
+                var time = GetCurrentTime();
+                var lTangTruong = new List<double>();
+                foreach (var item in lFinancial)
+                {
+                    double tangTruong = 0;
+                    var prevQuarter = item.d.GetYoyQuarter();
+                    var prev = lFinancial.FirstOrDefault(x => x.d == prevQuarter);
+                    if (prev is not null && prev.pf != 0)
+                    {
+                        tangTruong = Math.Round(100 * (-1 + item.pf / prev.pf), 1);
+                        if (item.pf > prev.pf)
+                        {
+                            tangTruong = Math.Abs(tangTruong);
+                        }
+                        if (tangTruong >= StaticVal._MaxRate)
+                        {
+                            tangTruong = StaticVal._MaxRate;
+                        }
+                        if (tangTruong <= -StaticVal._MaxRate)
+                        {
+                            tangTruong = -StaticVal._MaxRate;
+                        }
+                    }
+
+                    lTangTruong.Add(tangTruong);
+                }
+                var lTake = lFinancial.TakeLast(StaticVal._TAKE);
+
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTake.Select(x => x.rv),
+                        name = "Doanh thu",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    },
+                     new HighChartSeries_BasicColumn
+                    {
+                        data = lTake.Select(x => x.pf),
+                        name = "Lợi nhuận",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                        color = "#C00000"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTangTruong.TakeLast(StaticVal._TAKE),
+                        name = "Tăng trưởng lợi nhuận",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#C00000",
+                        yAxis = 1,
+                    }
+                };
+
+                return await Chart_BasicBase($"{code} - Doanh thu, Lợi nhuận Quý {time.Item3}/{time.Item2} (QoQ)", lTake.Select(x => x.d.GetNameQuarter()).ToList(), lSeries);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_BDS_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
+            }
             return null;
         }
 

@@ -20,11 +20,24 @@ namespace StockLib.Service
             var isKCN = StaticVal._lKCN.Any(x => x == stock.s);
             if(isKCN) { }
             var isVin = StaticVal._lVin.Any(x => x == stock.s);
-            if(isVin) { }
+            if(isVin) 
+            {
+                return await Chart_BatDongSan(input);
+            }
             var isBDS = !isXayDung && !isKCN && !isVin && stock.h24.Any(y => y.code == "2357" || y.code == "8600");
             if(isBDS) 
             {
                 return await Chart_BatDongSan(input);
+            }
+            var isNganHang = stock.h24.Any(y => y.code == "8300");
+            if (isNganHang)
+            {
+                return await Chart_NganHang(input);
+            }
+            var isChungKhoan = stock.h24.Any(y => y.code == "8777");
+            if (isChungKhoan)
+            {
+                return await Chart_ChungKhoan(input);
             }
             return null;
         }

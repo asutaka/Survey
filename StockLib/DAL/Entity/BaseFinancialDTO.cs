@@ -2,7 +2,7 @@
 
 namespace StockLib.DAL.Entity
 {
-    public abstract class BaseFinancialDTO : BaseDTO
+    public class BaseFinancialDTO : BaseDTO
     {
         public int d { get; set; }//Năm - Quý
         public string s { get; set; }//Mã CK

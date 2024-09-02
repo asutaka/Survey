@@ -15,26 +15,14 @@ namespace StockLib.Service
         Task SyncBCTC_BanLe();
         Task SyncBCTC_Dien();
 
-        Task<Stream> Chart_NganHang_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
-        Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lInput);
-        Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lInput);
-
         Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput);
-        //Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        //Task<Stream> Chart_BDS_TonKho(IEnumerable<string> lInput);
-        //Task<Stream> Chart_BDS_NguoiMua(IEnumerable<string> lInput);
-        //Task<Stream> Chart_BDS_NoTrenVonChu(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_NganHang(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_ChungKhoan(IEnumerable<string> lInput);
 
-        //Task<Stream> Chart_VIN_DoanhThu_LoiNhuan();
-        //Task<Stream> Chart_VIN_TonKho();
-        //Task<Stream> Chart_VIN_NguoiMua();
-        //Task<Stream> Chart_VIN_NoTrenVonChu();
-
-        Task<Stream> Chart_CK_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
-        Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
-        Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput);
-        Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput);
+        //Task<Stream> Chart_CK_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
+        //Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput);
+        //Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput);
+        //Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput);
 
         Task<Stream> Chart_Thep_DoanhThu_LoiNhuan(IEnumerable<string> lInput);
         Task<Stream> Chart_Thep_TonKho(IEnumerable<string> lInput);

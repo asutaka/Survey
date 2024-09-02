@@ -8,7 +8,70 @@ namespace StockLib.Service
 {
     public partial class BllService
     {
-        private async Task<IEnumerable<string>> GetList5Quarter(IEnumerable<string> lInput) 
+        public async Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput)
+        {
+            var lOutput = new List<Stream>();
+            var lMaCK5Quarter = GetList5Quarter(lInput);
+            if(lMaCK5Quarter is null)
+                lMaCK5Quarter= new List<string>();
+
+            var lMaCK1Quarter = GetList1Quarter(lInput);
+            if(lMaCK1Quarter is null)
+                lMaCK1Quarter= new List<string>();
+
+            if (!lMaCK5Quarter.Any()
+                && !lMaCK1Quarter.Any())
+                return null;
+
+            //Người mua, tồn kho, tỉ lệ người mua/tồn kho
+            var time = GetCurrentTime();
+            var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
+            if (!lFinancial.Any())
+                return null;
+
+            var lMaCKSort = StaticVal._lStock.Where(x => lMaCK5Quarter.Contains(x.s) || lMaCK1Quarter.Contains(x.s)).OrderBy(x => x.rank).Select(x => x.s);
+            var lFinancialFilter = new List<Financial_BDS>();
+            foreach (var item in lMaCKSort)
+            {
+                var first = lFinancial.FirstOrDefault(x => x.s == item);
+                lFinancialFilter.Add(first);
+            }
+
+            var lSeries = new List<HighChartSeries_BasicColumn>
+            {
+                new HighChartSeries_BasicColumn
+                {
+                    data = lFinancialFilter.Select(x => x.inv),
+                    name = "Tồn kho",
+                    type = "column",
+                    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                    color = "#012060"
+                },
+                 new HighChartSeries_BasicColumn
+                {
+                    data = lFinancialFilter.Select(x => x.bp),
+                    name = "Người mua trả tiền trước",
+                    type = "column",
+                    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                    color = "#C00000"
+                },
+                new HighChartSeries_BasicColumn
+                {
+                    data = lFinancialFilter.Select(x => Math.Round(x.bp*100/x.inv, 1)),
+                    name = "Tỉ lệ người mua/tồn kho",
+                    type = "spline",
+                    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                    color = "#ffbf00",
+                    yAxis = 1,
+                }
+            };
+
+            var streamBDS = await Chart_BasicBase($"Nhóm Ngành Bất Động Sản", lMaCKSort.ToList(), lSeries);
+            lOutput.Add(streamBDS);
+
+            return lOutput;
+        }
+        private IEnumerable<string> GetList5Quarter(IEnumerable<string> lInput)
         {
             try
             {
@@ -95,7 +158,7 @@ namespace StockLib.Service
 
             return null;
         }
-        private async Task<IEnumerable<string>> GetList1Quarter(IEnumerable<string> lInput)
+        private IEnumerable<string> GetList1Quarter(IEnumerable<string> lInput)
         {
             try
             {
@@ -146,71 +209,8 @@ namespace StockLib.Service
 
             return null;
         }
-        public async Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput)
-        {
-            var lOutput = new List<Stream>();
-            var lMaCK5Quarter = await GetList5Quarter(lInput);
-            if(lMaCK5Quarter is null)
-                lMaCK5Quarter= new List<string>();
 
-            var lMaCK1Quarter = await GetList1Quarter(lInput);
-            if(lMaCK1Quarter is null)
-                lMaCK1Quarter= new List<string>();
-
-            if (!lMaCK5Quarter.Any()
-                && !lMaCK1Quarter.Any())
-                return null;
-
-            //Người mua, tồn kho, tỉ lệ người mua/tồn kho
-            var time = GetCurrentTime();
-            var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
-            if (!lFinancial.Any())
-                return null;
-
-            var lMaCKSort = StaticVal._lStock.Where(x => lMaCK5Quarter.Contains(x.s) || lMaCK1Quarter.Contains(x.s)).OrderBy(x => x.rank).Select(x => x.s);
-            var lFinancialFilter = new List<Financial_BDS>();
-            foreach (var item in lMaCKSort)
-            {
-                var first = lFinancial.FirstOrDefault(x => x.s == item);
-                lFinancialFilter.Add(first);
-            }
-
-            var lSeries = new List<HighChartSeries_BasicColumn>
-            {
-                new HighChartSeries_BasicColumn
-                {
-                    data = lFinancialFilter.Select(x => x.inv),
-                    name = "Tồn kho",
-                    type = "column",
-                    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                    color = "#012060"
-                },
-                 new HighChartSeries_BasicColumn
-                {
-                    data = lFinancialFilter.Select(x => x.bp),
-                    name = "Người mua trả tiền trước",
-                    type = "column",
-                    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                    color = "#C00000"
-                },
-                new HighChartSeries_BasicColumn
-                {
-                    data = lFinancialFilter.Select(x => Math.Round(x.bp*100/x.inv, 1)),
-                    name = "Tỉ lệ người mua/tồn kho",
-                    type = "spline",
-                    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                    color = "#ffbf00",
-                    yAxis = 1,
-                }
-            };
-
-            var streamBDS = await Chart_BasicBase($"Nhóm Ngành Bất Động Sản", lMaCKSort.ToList(), lSeries);
-            lOutput.Add(streamBDS);
-
-            return lOutput;
-        }
-
-        public async Task<List<Stream>> Chart_BatDongSan(string code)
+        private async Task<List<Stream>> Chart_BatDongSan(string code)
         {
             var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
@@ -221,14 +221,13 @@ namespace StockLib.Service
             lFinancial = lFinancial.OrderBy(x => x.d).ToList();
             var streamNguoiMua = await Chart_BDS_NguoiMua(lFinancial, code);
             var streamTonKho = await Chart_BDS_TonKho(lFinancial, code);
-            var streamDoanhThu = await Chart_BDS_DoanhThu_LoiNhuan(lFinancial, code);
+            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf}).ToList(), code);
             lOutput.Add(streamNguoiMua);
             lOutput.Add(streamTonKho);
             lOutput.Add(streamDoanhThu);
             return lOutput;
         }
-
-        public async Task<Stream> Chart_BDS_NguoiMua(List<Financial_BDS> lFinancial, string code)
+        private async Task<Stream> Chart_BDS_NguoiMua(List<Financial_BDS> lFinancial, string code)
         {
             try
             {
@@ -277,7 +276,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        public async Task<Stream> Chart_BDS_TonKho(List<Financial_BDS> lFinancial, string code)
+        private async Task<Stream> Chart_BDS_TonKho(List<Financial_BDS> lFinancial, string code)
         {
             try
             {
@@ -326,350 +325,5 @@ namespace StockLib.Service
             }
             return null;
         }
-        public async Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(List<Financial_BDS> lFinancial, string code)
-        {
-            try
-            {
-                var time = GetCurrentTime();
-                var lTangTruong = new List<double>();
-                foreach (var item in lFinancial)
-                {
-                    double tangTruong = 0;
-                    var prevQuarter = item.d.GetYoyQuarter();
-                    var prev = lFinancial.FirstOrDefault(x => x.d == prevQuarter);
-                    if (prev is not null && prev.pf != 0)
-                    {
-                        tangTruong = Math.Round(100 * (-1 + item.pf / prev.pf), 1);
-                        if(item.pf > prev.pf)
-                        {
-                            tangTruong = Math.Abs(tangTruong);
-                        }
-                        if(tangTruong >= StaticVal._MaxRate)
-                        {
-                            tangTruong = StaticVal._MaxRate;
-                        }
-                        if(tangTruong <= -StaticVal._MaxRate)
-                        {
-                            tangTruong = -StaticVal._MaxRate;
-                        }
-                    }
-
-                    lTangTruong.Add(tangTruong);
-                }
-                var lTake = lFinancial.TakeLast(StaticVal._TAKE);
-
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTake.Select(x => x.rv),
-                        name = "Doanh thu",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                     new HighChartSeries_BasicColumn
-                    {
-                        data = lTake.Select(x => x.pf),
-                        name = "Lợi nhuận",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTangTruong.TakeLast(StaticVal._TAKE),
-                        name = "Tăng trưởng lợi nhuận",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
-
-                return await Chart_BasicBase($"{code} - Doanh thu, Lợi nhuận Quý {time.Item3}/{time.Item2} (QoQ)", lTake.Select(x => x.d.GetNameQuarter()).ToList(), lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_BDS_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
-        //public async Task<Stream> Chart_BDS_DoanhThu_LoiNhuan(List<Financial_BDS> lFinancial, string code)
-        //{
-        //    try
-        //    {
-        //        var lMaCK = lInput.Where(x => !StaticVal._lKCN.Contains(x) && !StaticVal._lVin.Contains(x)
-        //                                ).Take(15).ToList();
-        //        lMaCK.Remove("KSF");
-        //        lMaCK.Remove("VPI");
-        //        lMaCK.Add("DPG");
-        //        lMaCK.Add("NTL");
-
-        //        var configMain = _configMainRepo.GetAll().First();
-        //        var d = int.Parse($"{configMain.year}{configMain.quarter}");
-        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, d));
-        //        if (!lFinancial.Any())
-        //            return null;
-
-        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year - 1}{configMain.quarter}")));
-        //        return await Chart_DoanhThuBase(lMaCK, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"BllService.Chart_BDS_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
-        //    }
-        //    return null;
-        //}
-
-
-        //public async Task<Stream> Chart_VIN_DoanhThu_LoiNhuan()
-        //{
-        //    try
-        //    {
-        //        var configMain = _configMainRepo.GetAll().First();
-        //        var d = int.Parse($"{configMain.year}{configMain.quarter}");
-        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, d));
-        //        if (!lFinancial.Any())
-        //            return null;
-
-        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year-1}{configMain.quarter}")));
-        //        return await Chart_DoanhThuBase(StaticVal._lVin, configMain, d, lFinancial.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), lFinancialPrev?.Select(x => (x.s, x.rv, x.pf, x.pfg, x.pfn)), null, isTangTruongLoiNhuan: true);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"BllService.Chart_VIN_DoanhThu_LoiNhuan|EXCEPTION| {ex.Message}");
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<Stream> Chart_VIN_TonKho()
-        //{
-        //    try
-        //    {
-        //        var configMain = _configMainRepo.GetAll().First();
-        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-        //        if (!lFinancial.Any())
-        //            return null;
-
-        //        var yearPrev = configMain.year;
-        //        var quarterPrev = configMain.quarter;
-        //        if (configMain.quarter > 1)
-        //        {
-        //            quarterPrev--;
-        //        }
-        //        else
-        //        {
-        //            quarterPrev = 4;
-        //            yearPrev--;
-        //        }
-        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
-
-        //        var lTonKho = new List<double>();
-        //        var lTangTruongTonKho = new List<double>();
-        //        foreach (var item in StaticVal._lVin)
-        //        {
-        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
-        //            if (cur is null)
-        //            {
-        //                lTonKho.Add(0);
-        //                lTangTruongTonKho.Add(0);
-        //                continue;
-        //            }
-
-        //            double tangTruong = 0;
-        //            var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-        //            if (prev is not null && prev.inv > 0)
-        //            {
-        //                tangTruong = Math.Round(100 * (-1 + cur.inv / prev.inv), 1);
-        //            }
-
-        //            //tang truong tin dung, room tin dung
-        //            lTonKho.Add(cur.inv);
-        //            lTangTruongTonKho.Add(tangTruong);
-        //        }
-        //        var lSeries = new List<HighChartSeries_BasicColumn>
-        //        {
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lTonKho,
-        //                name = "Tồn kho",
-        //                type = "column",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-        //                color = "#012060"
-        //            },
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lTangTruongTonKho,
-        //                name = "Tăng trưởng tồn kho",
-        //                type = "spline",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-        //                color = "#C00000",
-        //                yAxis = 1,
-        //            }
-        //        };
-        //        return await Chart_BasicBase($"Tồn kho Quý {configMain.quarter}/{configMain.year} (QoQ)", StaticVal._lVin, lSeries);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"BllService.Chart_VIN_TonKho|EXCEPTION| {ex.Message}");
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<Stream> Chart_VIN_NguoiMua()
-        //{
-        //    try
-        //    {
-        //        var configMain = _configMainRepo.GetAll().First();
-        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-        //        if (!lFinancial.Any())
-        //            return null;
-
-        //        var yearPrev = configMain.year;
-        //        var quarterPrev = configMain.quarter;
-        //        if (configMain.quarter > 1)
-        //        {
-        //            quarterPrev--;
-        //        }
-        //        else
-        //        {
-        //            quarterPrev = 4;
-        //            yearPrev--;
-        //        }
-        //        var lFinancialPrev = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
-
-        //        var lNguoiMua = new List<double>();
-        //        var lTangTruong = new List<double>();
-        //        foreach (var item in StaticVal._lVin)
-        //        {
-        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
-        //            if (cur is null)
-        //            {
-        //                lNguoiMua.Add(0);
-        //                lTangTruong.Add(0);
-        //                continue;
-        //            }
-
-        //            double tangTruong = 0;
-        //            var prev = lFinancialPrev.FirstOrDefault(x => x.s == item);
-        //            if (prev is not null && prev.bp > 0)
-        //            {
-        //                tangTruong = Math.Round(100 * (-1 + cur.bp / prev.bp), 1);
-        //            }
-
-        //            //tang truong tin dung, room tin dung
-        //            lNguoiMua.Add(cur.bp);
-        //            lTangTruong.Add(tangTruong);
-        //        }
-
-        //        var lSeries = new List<HighChartSeries_BasicColumn>
-        //        {
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lNguoiMua,
-        //                name = "Người mua trả tiền trước",
-        //                type = "column",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-        //                color = "#012060"
-        //            },
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lTangTruong,
-        //                name = "Tăng trưởng người mua",
-        //                type = "spline",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-        //                color = "#C00000",
-        //                yAxis = 1,
-        //            }
-        //        };
-
-        //        return await Chart_BasicBase($"Người mua trả tiền trước Quý {configMain.quarter}/{configMain.year} (QoQ)", StaticVal._lVin, lSeries);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"BllService.Chart_VIN_NguoiMua|EXCEPTION| {ex.Message}");
-        //    }
-        //    return null;
-        //}
-
-        //public async Task<Stream> Chart_VIN_NoTrenVonChu()
-        //{
-        //    try
-        //    {
-        //        var configMain = _configMainRepo.GetAll().First();
-        //        var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, int.Parse($"{configMain.year}{configMain.quarter}")));
-        //        if (!lFinancial.Any())
-        //            return null;
-
-        //        var lVonChu = new List<double>();
-        //        var lNo = new List<double>();
-        //        var lNoTrenVonChu = new List<double>();
-        //        foreach (var item in StaticVal._lVin)
-        //        {
-        //            var cur = lFinancial.FirstOrDefault(x => x.s == item);
-        //            if (cur is null)
-        //            {
-        //                lVonChu.Add(0);
-        //                lNo.Add(0);
-        //                lNoTrenVonChu.Add(0);
-        //                continue;
-        //            }
-
-        //            double noTrenVonChu = 0;
-        //            if (cur.eq != 0)
-        //            {
-        //                var sign = cur.eq >= cur.debt;
-
-        //                noTrenVonChu = Math.Abs(Math.Round(100 * (cur.debt / cur.eq), 1));
-        //                if (!sign)
-        //                {
-        //                    noTrenVonChu = -noTrenVonChu;
-        //                }
-        //            }
-
-        //            //tang truong tin dung, room tin dung
-        //            lVonChu.Add(cur.eq);
-        //            lNo.Add(cur.debt);
-        //            lNoTrenVonChu.Add(noTrenVonChu);
-        //        }
-
-        //        var lSeries = new List<HighChartSeries_BasicColumn>
-        //        {
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lVonChu,
-        //                name = "Vốn chủ sở hữu",
-        //                type = "column",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-        //                color = "#012060"
-        //            },
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lNo,
-        //                name = "Nợ",
-        //                type = "column",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-        //                color = "#C00000"
-        //            },
-        //            new HighChartSeries_BasicColumn
-        //            {
-        //                data = lNoTrenVonChu,
-        //                name = "Nợ trên vố chủ sở hữu",
-        //                type = "spline",
-        //                dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-        //                color = "#C00000",
-        //                yAxis = 1,
-        //            }
-        //        };
-
-        //        return await Chart_BasicBase($"Nợ trên vốn chủ sở hữu Quý {configMain.quarter}/{configMain.year}", StaticVal._lVin, lSeries);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"BllService.Chart_VIN_NoTrenVonChu|EXCEPTION| {ex.Message}");
-        //    }
-        //    return null;
-        //}
     }
 }
