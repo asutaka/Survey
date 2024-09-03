@@ -10,7 +10,7 @@
     <PackageReference Include="EPPlus" Version="6.2.19" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
     <PackageReference Include="HttpClientToCurl" Version="2.0.6" />
-    <PackageReference Include="iTextSharp" Version="5.5.13.4" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="3.1.32" />
     <PackageReference Include="MongoDB.Driver" Version="2.27.0" />

@@ -12,8 +12,8 @@ namespace StockLib.Service
         {
             try
             {
-                var mes1 = TongCucHaiQuanPrint(dt,false);
-                return (1, mes1);
+                //var mes1 = TongCucHaiQuanPrint(dt,false);
+                //return (1, mes1);
 
                 var builder = Builders<ConfigData>.Filter;
                 var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");

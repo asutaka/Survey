@@ -52,13 +52,13 @@ namespace StockLib.PublicService
                 //    Thread.Sleep(1000);
                 //}
 
-                var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
-                if (haiquanNK.Item1 > 0)
-                {
-                    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
-                    Thread.Sleep(1000);
-                }
-                return;
+                //var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
+                //if (haiquanNK.Item1 > 0)
+                //{
+                //    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
+                //    Thread.Sleep(1000);
+                //}
+                //return;
 
                 //try
                 //{
@@ -252,12 +252,19 @@ namespace StockLib.PublicService
                     }
                 }
 
-                //var haiquan = await _analyzeService.TongCucHaiQuan(dt);
-                //if (haiquan.Item1 > 0)
-                //{
-                //    await _teleService.SendTextMessageAsync(_idMain, haiquan.Item2);
-                //    Thread.Sleep(1000);
-                //}
+                var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
+                if (haiquanXK.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, haiquanXK.Item2);
+                    Thread.Sleep(1000);
+                }
+
+                var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
+                if (haiquanNK.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
+                    Thread.Sleep(1000);
+                }
             }
             catch(Exception ex)
             {

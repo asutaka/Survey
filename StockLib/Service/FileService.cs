@@ -271,17 +271,25 @@ namespace StockLib.Service
 
         private string pdfText(Stream data)
         {
-            var reader = new iTextSharp.text.pdf.PdfReader(data);
-
-            string text = string.Empty;
-            for (int page = 1; page <= reader.NumberOfPages; page++)
+            try
             {
-                text += iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, page);
-                text += "\n";
-            }
+                var reader = new iTextSharp.text.pdf.PdfReader(data);
 
-            reader.Close();
-            return text;
+                string text = string.Empty;
+                for (int page = 1; page <= reader.NumberOfPages; page++)
+                {
+                    text += iTextSharp.text.pdf.parser.PdfTextExtractor.GetTextFromPage(reader, page);
+                    text += "\n";
+                }
+
+                reader.Close();
+                return text;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            return string.Empty;
         }
 
         private List<ThongKeHaiQuan> MapTongCucHaiQuan_XuatKhau(string content)
