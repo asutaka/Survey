@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.DAL;
+using StockLib.Utils;
 
 namespace StockLib.Service
 {
@@ -13,7 +14,7 @@ namespace StockLib.Service
         Task<(int, string)> ThongKeTuDoanhUp(DateTime dt);
         Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt);
         Task<(int, string)> TongCucThongKeThang(DateTime dt);
-        Task<(int, string)> TongCucHaiQuan(DateTime dt);
+        Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
         //Task<(int, string)> TongCucThongKeThangTest(DateTime dt);
 
         Task<(int, string)> TongCucThongKeQuy(DateTime dt);
@@ -29,6 +30,7 @@ namespace StockLib.Service
         private readonly ITuDoanhRepo _tudoanhRepo;
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkeQuyRepo;
+        private readonly IThongKeHaiQuanRepo _haiquanRepo;
         public AnalyzeService(ILogger<AnalyzeService> logger,
                             IAPIService apiService,
                             IFileService fileService,
@@ -37,6 +39,7 @@ namespace StockLib.Service
                             ICategoryRepo categoryRepo,
                             ITuDoanhRepo tudoanhRepo,
                             IThongKeRepo thongkeRepo,
+                            IThongKeHaiQuanRepo haiquanRepo,
                             IThongKeQuyRepo thongkeQuyRepo) 
         {
             _logger = logger;
@@ -48,6 +51,7 @@ namespace StockLib.Service
             _tudoanhRepo = tudoanhRepo;
             _thongkeRepo = thongkeRepo;
             _thongkeQuyRepo = thongkeQuyRepo;
+            _haiquanRepo = haiquanRepo;
         }
     }
 }

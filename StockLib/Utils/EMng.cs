@@ -136,7 +136,8 @@ namespace StockLib.Utils
         ChiBaoKyThuat = 30,
         TongCucThongKeThang = 41,
         TongCucThongKeQuy = 42,
-        TongCucHaiQuan = 43,
+        TongCucHaiQuan_XK = 43,
+        TongCucHaiQuan_NK = 44,
         CurrentTime = 50
     }
 
@@ -285,5 +286,49 @@ namespace StockLib.Utils
         GiaNK_SatThep = 79,
         [Display(Name = "Giá NK - Ô tô")]
         GiaNK_Oto = 80,
+    }
+
+    public enum EHaiQuan
+    {
+        [Display(Name = "Thủy sản")]
+        ThuySan = 1,
+        [Display(Name = "Gạo")]
+        Gao = 2,
+        [Display(Name = "Xi măng")]
+        Ximang = 3,
+        [Display(Name = "Than")]
+        Than = 4,
+        [Display(Name = "Dầu thô")]
+        DauTho = 5,
+        [Display(Name = "Xăng dầu")]
+        XangDau = 6,
+        [Display(Name = "Hóa chất")]
+        HoaChat = 7,
+        [Display(Name = "Sản phẩm hóa chất")]
+        SPHoaChat = 8,
+        [Display(Name = "Phân bón")]
+        PhanBon = 9,
+        [Display(Name = "Chất dẻo")]
+        ChatDeo = 10,
+        [Display(Name = "Sản phẩm chất dẻo")]
+        SPChatDeo = 11,
+        [Display(Name = "Cao su")]
+        CaoSu = 12,
+        [Display(Name = "Gỗ")]
+        Go = 13,
+        [Display(Name = "Dệt may")]
+        DetMay = 14,
+        [Display(Name = "Sắt thép")]
+        SatThep = 15,
+        [Display(Name = "Sản phẩm sắt thép")]
+        SPSatThep = 16,
+        [Display(Name = "Dây điện")]
+        DayDien = 17,
+        [Display(Name = "Sản phẩm sắt thép")]
+        SPSatThep_NK = 18,
+        [Display(Name = "Ô tô dưới 9 chỗ")]
+        Oto9Cho_NK = 19,
+        [Display(Name = "Ô tô vận tải")]
+        OtoVanTai_NK =20,
     }
 }

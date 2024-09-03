@@ -33,6 +33,8 @@ namespace StockLib.Service
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
         Task<Stream> TongCucThongKe(DateTime dt);
+        Task<GOV_HaiQuanResponse> TongCucHaiQuan();
+        Task<Stream> TongCucHaiQuan(string url);
         Task<Stream> TongCucThongKeTest(DateTime dt);
     }
     public partial class APIService : IAPIService
@@ -364,6 +366,52 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.TongCucThongKe|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<GOV_HaiQuanResponse> TongCucHaiQuan()
+        {
+            try
+            {
+                var url = "https://www.customs.gov.vn/bridge?url=/customs/api/GetTKHQInfo";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                var body = "{\"skip\":0,\"take\":5,\"ky\":\"\",\"textSearch\":\"\",\"the_loai\":\"0\",\"thoigianCongBo\":\"\",\"typeName\":\"GetListSoLieu\",\"language\":\"TIENG_VIET\"}";
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
+
+                var responseMessage = await client.SendAsync(requestMessage);
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseStr =await responseMessage.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<GOV_HaiQuanResponse>(responseStr);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.TongCucHaiQuan|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<Stream> TongCucHaiQuan(string url)
+        {
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var stream = await responseMessage.Content.ReadAsStreamAsync();
+                return stream;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.TongCucHaiQuan|EXCEPTION| {ex.Message}");
             }
             return null;
         }

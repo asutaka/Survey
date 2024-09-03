@@ -23,7 +23,7 @@ namespace StockLib.PublicService
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
-        private const long _idMain = -1002247826353;
+        private const long _idMain = 1066022551;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
                                     ITeleService teleService,
                                     IAnalyzeService analyzeService,
@@ -43,6 +43,22 @@ namespace StockLib.PublicService
                 var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;
                 var isPreTrade = dt.Hour < 9;
+
+
+                //var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
+                //if (haiquanXK.Item1 > 0)
+                //{
+                //    await _teleService.SendTextMessageAsync(_idMain, haiquanXK.Item2);
+                //    Thread.Sleep(1000);
+                //}
+
+                var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
+                if (haiquanNK.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
+                    Thread.Sleep(1000);
+                }
+                return;
 
                 //try
                 //{
@@ -236,12 +252,12 @@ namespace StockLib.PublicService
                     }
                 }
 
-                var haiquan = await _analyzeService.TongCucHaiQuan(dt);
-                if (haiquan.Item1 > 0)
-                {
-                    await _teleService.SendTextMessageAsync(_idMain, haiquan.Item2);
-                    Thread.Sleep(1000);
-                }
+                //var haiquan = await _analyzeService.TongCucHaiQuan(dt);
+                //if (haiquan.Item1 > 0)
+                //{
+                //    await _teleService.SendTextMessageAsync(_idMain, haiquan.Item2);
+                //    Thread.Sleep(1000);
+                //}
             }
             catch(Exception ex)
             {

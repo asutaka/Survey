@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.DAL;
+using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Utils;
 
@@ -9,6 +10,7 @@ namespace StockLib.Service
     {
         List<TudoanhPDF> HSX(Stream data);
         List<TudoanhPDF> HNX(Stream data);
+        List<ThongKeHaiQuan> TongCucHaiQuan(Stream data, bool isXK);
     }
     public class FileService : IFileService
     {
@@ -258,6 +260,15 @@ namespace StockLib.Service
             return MapHNX(content);
         }
 
+        public List<ThongKeHaiQuan> TongCucHaiQuan(Stream data, bool isXK)
+        {
+            var content = pdfText(data);
+            if (isXK)
+                return MapTongCucHaiQuan_XuatKhau(content);
+            else
+                return MapTongCucHaiQuan_NhapKhau(content);
+        }
+
         private string pdfText(Stream data)
         {
             var reader = new iTextSharp.text.pdf.PdfReader(data);
@@ -271,6 +282,256 @@ namespace StockLib.Service
 
             reader.Close();
             return text;
+        }
+
+        private List<ThongKeHaiQuan> MapTongCucHaiQuan_XuatKhau(string content)
+        {
+            var lLine = content.Split(new string[] { "\n" }, StringSplitOptions.None);
+            var lData = new List<ThongKeHaiQuan>();
+            bool isThuySan = false, isGao = false, isXiMang = false, isThan = false, isDauTho = false, isXangDau = false, 
+                isHoaChat = false, isSPHoaChat = false, isPhanBon = false, isChatDeo = false, isSPChatDeo = false, isCaoSu = false, 
+                isGo = false, isDetMay = false, isSatThep = false, isSPSatThep = false, isDayDien = false; 
+            foreach (var item in lLine)
+            {
+                try
+                {
+                    var isTon = false;
+                    var indexDVT = item.IndexOf("USD");
+                    if(indexDVT < 0)
+                    {
+                        indexDVT = item.IndexOf("Tấn", StringComparison.OrdinalIgnoreCase);
+                        isTon = true;
+                    }
+                    if (indexDVT < 0)
+                        continue;
+
+                    
+                    var keyStr = item.Substring(0, indexDVT);
+                    if(!isThuySan && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Thủy sản".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isThuySan = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.ThuySan));
+                        continue;
+                    }
+                    if (!isGao && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Gạo".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isGao = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.Gao));
+                        continue;
+                    }
+                    if (!isXiMang && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Xi măng".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isXiMang = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.Ximang));
+                        continue;
+                    }
+                    if (!isThan && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Than".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isThan = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.Than));
+                        continue;
+                    }
+                    if (!isDauTho && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Dầu thô".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isDauTho = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.DauTho));
+                        continue;
+                    }
+                    if (!isXangDau && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Xăng dầu".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isXangDau = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.XangDau));
+                        continue;
+                    }
+                    if (!isHoaChat && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Hóa chất".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isHoaChat = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.HoaChat));
+                        continue;
+                    }
+                    if (!isSPHoaChat && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Hóa chất".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isSPHoaChat = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.SPHoaChat));
+                        continue;
+                    }
+                    if (!isPhanBon && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Phân bón".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isPhanBon = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.PhanBon));
+                        continue;
+                    }
+                    if (!isChatDeo && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Chất dẻo".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isChatDeo = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.ChatDeo));
+                        continue;
+                    }
+                    if (!isSPChatDeo && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Chất dẻo".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isSPChatDeo = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.SPChatDeo));
+                        continue;
+                    }
+                    if (!isCaoSu && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Cao su".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isCaoSu = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.CaoSu));
+                        continue;
+                    }
+                    if (!isGo && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Gỗ".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isGo = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.Go));
+                        continue;
+                    }
+                    if (!isDetMay && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Dệt may".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isDetMay = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.DetMay));
+                        continue;
+                    }
+                    if (!isSatThep && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Sắt thép".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isSatThep = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.SatThep));
+                        continue;
+                    }
+                    if (!isSPSatThep && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Sắt thép".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isSPSatThep = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.SPSatThep));
+                        continue;
+                    }
+                    if (!isDayDien && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Dây điện".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isDayDien = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.DayDien));
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
+            }
+
+            return lData;
+
+            ThongKeHaiQuan DetectData(string item, int indexDVT, bool isTon, EHaiQuan e)
+            {
+                var model = new ThongKeHaiQuan
+                {
+                    key = (int)e
+                };
+                var arrData = item.Substring(indexDVT + 4).Split(new string[] { " " }, StringSplitOptions.None);
+                if (isTon)
+                {
+                    var isDoubleWeight = double.TryParse(arrData[0].RemoveSpace(), out var valWeight);
+                    var isDoubleVa = double.TryParse(arrData[1].RemoveSpace(), out var valVa);
+                    if (isDoubleVa)
+                    {
+                        model.va = Math.Round(valVa / 1000000, 1);
+                    }
+                    if (isDoubleWeight && valWeight > 0)
+                    {
+                        model.price = Math.Round(valVa / valWeight, 1);
+                    }
+                }
+                else
+                {
+                    var isDouble = double.TryParse(arrData[0].RemoveSpace(), out var val);
+                    if (isDouble)
+                    {
+                        model.va = Math.Round(val / 1000000, 1);
+                    }
+                }
+                return model;
+            }
+        }
+
+        private List<ThongKeHaiQuan> MapTongCucHaiQuan_NhapKhau(string content)
+        {
+            var lLine = content.Split(new string[] { "\n" }, StringSplitOptions.None);
+            var lData = new List<ThongKeHaiQuan>();
+            bool isSPSatThep = false, isOtoDuoi9Cho = false, isOtoVanTai = false;
+            foreach (var item in lLine)
+            {
+                try
+                {
+                    var isTon = false;
+                    var indexDVT = item.IndexOf("USD");
+                    if (indexDVT < 0)
+                    {
+                        indexDVT = item.IndexOf("Tấn", StringComparison.OrdinalIgnoreCase);
+                        if(indexDVT < 0)
+                        {
+                            indexDVT = item.IndexOf("Chiếc", StringComparison.OrdinalIgnoreCase);
+                        }
+                        isTon = true;
+                    }
+                    if (indexDVT < 0)
+                        continue;
+
+
+                    var keyStr = item.Substring(0, indexDVT);
+                    if (!isSPSatThep && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Sản phẩm từ Sắt thép".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isSPSatThep = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.SPSatThep_NK));
+                        continue;
+                    }
+                    if (!isOtoDuoi9Cho && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Ô tô 9 chỗ".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isOtoDuoi9Cho = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.Oto9Cho_NK));
+                        continue;
+                    }
+                    if (!isOtoVanTai && keyStr.RemoveSpace().RemoveSignVietnamese().Contains("Ô tô vận tải".RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        isOtoVanTai = true;
+                        lData.Add(DetectData(item, indexDVT, isTon, EHaiQuan.OtoVanTai_NK));
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
+            }
+
+            return lData;
+
+            ThongKeHaiQuan DetectData(string item, int indexDVT, bool isTon, EHaiQuan e)
+            {
+                var model = new ThongKeHaiQuan
+                {
+                    key = (int)e
+                };
+                var arrData = item.Substring(indexDVT).Split(new string[] { " " }, StringSplitOptions.None);
+                if (isTon)
+                {
+                    var isDoubleWeight = double.TryParse(arrData[1].RemoveSpace(), out var valWeight);
+                    var isDoubleVa = double.TryParse(arrData[2].RemoveSpace(), out var valVa);
+                    if (isDoubleVa)
+                    {
+                        model.va = Math.Round(valVa / 1000000, 1);
+                    }
+                    if (isDoubleWeight && valWeight > 0)
+                    {
+                        model.price = Math.Round(valVa / valWeight, 1);
+                    }
+                }
+                else
+                {
+                    var isDouble = double.TryParse(arrData[1].RemoveSpace(), out var val);
+                    if (isDouble)
+                    {
+                        model.va = Math.Round(val / 1000000, 1);
+                    }
+                }
+                return model;
+            }
         }
 
         private List<TudoanhPDF> MapHNX(string content)

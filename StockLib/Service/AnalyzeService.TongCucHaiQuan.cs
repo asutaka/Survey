@@ -1,23 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using OfficeOpenXml;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
-        public async Task<(int, string)> TongCucHaiQuan(DateTime dt)
+        public async Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode)
         {
             try
             {
-                var mode = EConfigDataType.TongCucHaiQuan;
+                var mes1 = TongCucHaiQuanPrint(dt,false);
+                return (1, mes1);
+
                 var builder = Builders<ConfigData>.Filter;
                 var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
                 FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
@@ -29,68 +26,62 @@ namespace StockLib.Service
 
                     _configRepo.DeleteMany(filter);
                 }
+                var isXuatKhau = mode == EConfigDataType.TongCucHaiQuan_XK;
+                var str = isXuatKhau ? "Xuất khẩu hàng hóa từ ngày" : "Nhập khẩu hàng hóa từ ngày";
 
                 var strOutput = new StringBuilder();
-                var stream = await _apiService.TongCucThongKe(dt);
-                if (stream is null
-                    || stream.Length < 1000)
+                var haiquan = await _apiService.TongCucHaiQuan();
+                if(haiquan is null)
                     return (0, null);
 
-                //var dic = new Dictionary<int, string>();
-                //ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                //var package = new ExcelPackage(stream);
-                //var lSheet = package.Workbook.Worksheets;
-                //foreach (var sheet in lSheet)
-                //{
-                //    if (false) { }
-                //    else if (_lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        IIP(sheet, dt);
-                //    }
-                //    else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        SanPhamCongNghiep(sheet, dt);
-                //    }
-                //    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        VonDauTuNhaNuoc(sheet, dt);
-                //    }
-                //    else if (_lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        FDI(sheet, dt);
-                //    }
-                //    else if (_lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        BanLe(sheet, dt);
-                //    }
-                //    else if (_lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        XuatKhau(sheet, dt);
-                //    }
-                //    else if (_lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        NhapKhau(sheet, dt);
-                //    }
-                //    else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        CPI(sheet, dt);
-                //    }
-                //    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        VanTaiHangHoa(sheet, dt);
-                //    }
-                //    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                //    {
-                //        KhachQuocTe(sheet, dt);
-                //    }
-                //}
+                var last = lConfig.MaxBy(x => x.t);
+                var va = 0;
+                foreach (var item in haiquan.arr)
+                {
+                    if (!item.TIEU_DE.RemoveSpace().RemoveSignVietnamese().Contains(str.RemoveSpace().RemoveSignVietnamese(), StringComparison.OrdinalIgnoreCase))
+                        continue;
 
-                var mes = TongCucThongKeThangPrint(dt);
+                    var strSplit = item.NGAY_SO_BO.Split("/");
+
+                    var time = int.Parse($"{strSplit[2]}{strSplit[1]}{strSplit[0]}");
+                    if (time <= (last?.va ?? 0)) 
+                        return (0, null);
+
+                    va = time;
+                    var stream = await _apiService.TongCucHaiQuan(item.FILE_SO_BO);
+                    if (stream is null) return (0, null);
+
+                    var timeReport = 0;
+                    if (int.Parse(strSplit[0]) <= 15)
+                    {
+                        var month = int.Parse(strSplit[1]);
+                        month--;
+                        timeReport = int.Parse($"{strSplit[2]}{month.To2Digit()}16");
+                    }
+                    else
+                    {
+                        timeReport = int.Parse($"{strSplit[2]}{strSplit[1]}01");
+                    }
+
+                    var lHaiQuan = _fileService.TongCucHaiQuan(stream, isXuatKhau);
+                    if (lHaiQuan?.Any() ?? false)
+                    {
+                        foreach (var itemHaiQuan in lHaiQuan)
+                        {
+                            itemHaiQuan.d = timeReport;
+                            _haiquanRepo.InsertOne(itemHaiQuan);
+                        }
+                    }
+                }
+
+                var mes = TongCucHaiQuanPrint(dt, isXuatKhau);
                 _configRepo.InsertOne(new ConfigData
                 {
                     ty = (int)mode,
-                    t = t
+                    t = t,
+                    va = va
                 });
+
                 return (1, mes);
             }
             catch (Exception ex)

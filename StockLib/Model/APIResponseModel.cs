@@ -173,4 +173,17 @@
         public decimal net_val { get; set; }
         public long t { get; set; }
     }
+
+    public class GOV_HaiQuanResponse
+    {
+        public List<HaiQuanDetail> arr { get; set; }
+    }
+
+    public class HaiQuanDetail
+    {
+        public string NGAY_SO_BO { get; set; }
+        public string TIEU_DE { get; set; }
+        public string NGAY_CONG_BO { get; set; }
+        public string FILE_SO_BO { get; set; }
+    }
 }
