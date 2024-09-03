@@ -22,7 +22,7 @@ namespace StockLib.Service
                 var streamTonkho = await Chart_Thep_TonKho(lInput, lFinancial);
                 lOutput.Add(streamTonkho);
 
-                var streamNo = await Chart_Thep_No(lInput, lFinancial);
+                var streamNo = await Chart_Thep_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
                 return lOutput;
 
@@ -85,7 +85,7 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_Thep_No(IEnumerable<string> lInput, List<Financial_Thep> lFinancial)
+        private async Task<Stream> Chart_Thep_NoTaiChinh(IEnumerable<string> lInput, List<Financial_Thep> lFinancial)
         {
             try
             {
@@ -135,6 +135,7 @@ namespace StockLib.Service
             }
             return null;
         }
+
 
         private async Task<List<Stream>> Chart_Thep(string code)
         {

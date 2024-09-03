@@ -321,17 +321,3 @@ namespace StockLib.Service
         }
     }
 }
-
-/// Kết luận
-/// Doanh thu: càng cao càng tốt
-/// LNST: càng cao càng tốt
-/// Trích lập dự phòng: càng nhỏ càng tốt
-/// CIR: càng nhỏ càng tốt
-/// Nim: càng cao càng tốt
-/// Tăng trưởng tín dụng: càng cao càng tốt,
-/// Giảm chi phí vốn: càng nhỏ càng tốt
-/// Casa: càng cao càng tốt
-/// Tỉ lệ nợ xấu: càng nhỏ càng tốt
-/// Tăng trưởng nợ xấu: càng nhỏ càng tốt
-/// Bao phủ nợ xấu: càng cao càng tốt
-/// <returns></returns>
