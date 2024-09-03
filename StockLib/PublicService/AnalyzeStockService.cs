@@ -235,6 +235,13 @@ namespace StockLib.PublicService
                         _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
                     }
                 }
+
+                var haiquan = await _analyzeService.TongCucHaiQuan(dt);
+                if (haiquan.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, haiquan.Item2);
+                    Thread.Sleep(1000);
+                }
             }
             catch(Exception ex)
             {

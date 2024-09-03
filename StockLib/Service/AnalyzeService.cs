@@ -13,6 +13,7 @@ namespace StockLib.Service
         Task<(int, string)> ThongKeTuDoanhUp(DateTime dt);
         Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt);
         Task<(int, string)> TongCucThongKeThang(DateTime dt);
+        Task<(int, string)> TongCucHaiQuan(DateTime dt);
         //Task<(int, string)> TongCucThongKeThangTest(DateTime dt);
 
         Task<(int, string)> TongCucThongKeQuy(DateTime dt);

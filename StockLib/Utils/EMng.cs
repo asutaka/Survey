@@ -136,6 +136,7 @@ namespace StockLib.Utils
         ChiBaoKyThuat = 30,
         TongCucThongKeThang = 41,
         TongCucThongKeQuy = 42,
+        TongCucHaiQuan = 43,
         CurrentTime = 50
     }
 
