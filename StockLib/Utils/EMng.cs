@@ -152,14 +152,8 @@ namespace StockLib.Utils
     public enum EKeyTongCucThongKe
     {
         None = 0,
-        [Display(Name = "Du lịch")]
-        DuLich = 1,
-        [Display(Name = "Vận tải đường Sắt(nghìn tấn)")]
-        VanTai_DuongSat = 2,
         [Display(Name = "Vận tải đường Biển(nghìn tấn)")]
         VanTai_DuongBien = 3,
-        [Display(Name = "Vận tải đường Thủy nội địa(nghìn tấn)")]
-        VanTai_DuongThuy = 4,
         [Display(Name = "Vận tải đường Bộ(nghìn tấn)")]
         VanTai_DuongBo = 5,
         [Display(Name = "Vận tải Hàng không(nghìn tấn)")]
@@ -182,18 +176,12 @@ namespace StockLib.Utils
         FDI = 34,
         [Display(Name = "Đầu tư công(tỷ)")]
         DauTuCong = 35,
-        [Display(Name = "Sản phẩm công nghiệp")]
-        SP_CongNghiep = 36,
-        [Display(Name = "IIP")]
-        IIP = 37,
-        [Display(Name = "Giá VT - Đường sắt")]
-        GiaVT_DuongSat = 62,
-        [Display(Name = "Giá VT - Đường bộ")]
-        GiaVT_DuongBo = 63,
+        //[Display(Name = "IIP")]
+        //IIP = 37,
+        [Display(Name = "IIP - Điện")]
+        IIP_Dien = 38,
         [Display(Name = "Giá VT - Đường biển")]
         GiaVT_Bien = 64,
-        [Display(Name = "Giá VT - Đường thủy")]
-        GiaVT_DuongThuy = 65,
         [Display(Name = "Giá VT - Hàng không")]
         GiaVT_HangKhong = 66,
         [Display(Name = "Giá VT - Kho bãi")]
@@ -202,6 +190,8 @@ namespace StockLib.Utils
         GiaVT_BuuChinh = 68,
         [Display(Name = "Giá NVL - giá điện")]
         GiaNVL_Dien = 70,
+        [Display(Name = "Hành khách - hàng không")]
+        HanhKhach_HangKhong = 71,
     }
 
     public enum EHaiQuan

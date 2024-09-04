@@ -28,224 +28,187 @@ namespace StockLib.PublicService
             _analyzeService = analyzeService;
             _calculateService = calculateService;
         }
-        public async Task AnalyzeJob()
+
+        //var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
+        //if (haiquanXK.Item1 > 0)
+        //{
+        //    await _teleService.SendTextMessageAsync(_idMain, haiquanXK.Item2);
+        //    Thread.Sleep(1000);
+        //}
+
+        //var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
+        //if (haiquanNK.Item1 > 0)
+        //{
+        //    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
+        //    Thread.Sleep(1000);
+        //}
+        //return;
+
+        //try
+        //{
+        //    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
+        //    if (chibao.Item1 > 0)
+        //    {
+        //        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+        //}
+        //return;
+
+        //try
+        //{
+        //    for (int i = 1; i <= 10; i++)
+        //    {
+        //        //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
+        //        //if (chibao.Item1 > 0)
+        //        //{
+        //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+        //        //}
+        //    }
+
+        //    for (int i = 11; i <= 19; i++)
+        //    {
+        //        //var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
+        //        //if (chibao.Item1 > 0)
+        //        //{
+        //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+        //        //}
+        //    }
+        //}
+        //catch (Exception ex)
+        //{
+        //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+        //}
+        //return;
+
+        private async Task Realtime()
+        {
+            //Chỉ báo cắt lên MA20
+            try
+            {
+                var chibao = await _analyzeService.ChiBaoMA20();
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.Realtime|EXCEPTION(ChiBaoMA20)| {ex.Message}");
+            }
+
+            //Chỉ báo vượt đỉnh 52 Tuần(1 năm)
+            try
+            {
+                var chibao = await _analyzeService.ChiBao52W();
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.Realtime|EXCEPTION(ChiBao52W)| {ex.Message}");
+            }
+        }
+        private async Task ThongKe(DateTime dt)
+        {
+            //Thống kê nhóm ngành
+            try
+            {
+                var chibao = await _analyzeService.ThongkeNhomNganh(dt);
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKe|EXCEPTION(ThongkeNhomNganh)| {ex.Message}");
+            }
+
+            //Thống kê Foreign
+            try
+            {
+                var chibao = await _analyzeService.ThongkeForeign(dt);
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKe|EXCEPTION(ThongkeForeign)| {ex.Message}");
+            }
+
+            //Chỉ báo kỹ thuật
+            try
+            {
+                var chibao = await _calculateService.ChiBaoKyThuat(dt);
+                if (chibao.Item1 > 0)
+                {
+                    foreach (var item in chibao.Item2)
+                    {
+                        await _teleService.SendTextMessageAsync(_idMain, item);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKe|EXCEPTION(ChiBaoKyThuat)| {ex.Message}");
+            }
+        }
+        private async Task ThongKeTuDoanh(DateTime dt)
+        {
+            //Thống kê Tự doanh HNX
+            try
+            {
+                var chibao = await _analyzeService.ThongKeTuDoanhHNX(dt);
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKeTuDoanh|EXCEPTION(ThongKeTuDoanhHNX)| {ex.Message}");
+            }
+
+            //Thống kê Tự doanh Upcom
+            try
+            {
+                var chibao = await _analyzeService.ThongKeTuDoanhUp(dt);
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKeTuDoanh|EXCEPTION(ThongKeTuDoanhUp)| {ex.Message}");
+            }
+
+            //Thống kê Tự doanh HSX
+            try
+            {
+                var chibao = await _analyzeService.ThongKeTuDoanhHSX(dt);
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKeTuDoanh|EXCEPTION(ThongKeTuDoanhHSX)| {ex.Message}");
+            }
+        }
+        private async Task TongCucHaiQuan(DateTime dt)
         {
             try
             {
-                var dt = DateTime.Now;
-                var isDayOfWork = dt.DayOfWeek >= DayOfWeek.Monday && dt.DayOfWeek <= DayOfWeek.Friday;
-                var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;
-                var isRealTime = dt.Hour >= 9 && dt.Hour < 15;
-                var isPreTrade = dt.Hour < 9;
-
-
-                //var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
-                //if (haiquanXK.Item1 > 0)
-                //{
-                //    await _teleService.SendTextMessageAsync(_idMain, haiquanXK.Item2);
-                //    Thread.Sleep(1000);
-                //}
-
-                //var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
-                //if (haiquanNK.Item1 > 0)
-                //{
-                //    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
-                //    Thread.Sleep(1000);
-                //}
-                //return;
-
-                //try
-                //{
-                //    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
-                //    if (chibao.Item1 > 0)
-                //    {
-                //        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                //}
-                //return;
-
-                //try
-                //{
-                //    for (int i = 1; i <= 10; i++)
-                //    {
-                //        //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
-                //        //if (chibao.Item1 > 0)
-                //        //{
-                //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                //        //}
-                //    }
-
-                //    for (int i = 11; i <= 19; i++)
-                //    {
-                //        //var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
-                //        //if (chibao.Item1 > 0)
-                //        //{
-                //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                //        //}
-                //    }
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                //}
-                //return;
-
-
-                if (isDayOfWork && isTimePrint && !isPreTrade)
-                {
-                    #region RealTime
-                    if(isRealTime)
-                    {
-                        //Chỉ báo cắt lên MA20
-                        try
-                        {
-                            var chibao = await _analyzeService.ChiBaoMA20();
-                            if (chibao.Item1 > 0)
-                            {
-                                await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ChiBaoMA20)| {ex.Message}");
-                        }
-
-                        //Chỉ báo vượt đỉnh 52 Tuần(1 năm)
-                        try
-                        {
-                            var chibao = await _analyzeService.ChiBao52W();
-                            if (chibao.Item1 > 0)
-                            {
-                                await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                            _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ChiBao52W)| {ex.Message}");
-                        }
-
-                        return;
-                    }
-                    #endregion
-                    //Thống kê nhóm ngành
-                    try
-                    {
-                        var chibao = await _analyzeService.ThongkeNhomNganh(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongkeNhomNganh)| {ex.Message}");
-                    }
-
-                    //Thống kê Foreign
-                    try
-                    {
-                        var chibao = await _analyzeService.ThongkeForeign(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongkeForeign)| {ex.Message}");
-                    }
-
-                    //Thống kê Tự doanh HNX
-                    try
-                    {
-                        var chibao = await _analyzeService.ThongKeTuDoanhHNX(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongKeTuDoanhHNX)| {ex.Message}");
-                    }
-
-                    //Thống kê Tự doanh Upcom
-                    try
-                    {
-                        var chibao = await _analyzeService.ThongKeTuDoanhUp(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongKeTuDoanhUp)| {ex.Message}");
-                    }
-
-                    //Thống kê Tự doanh HSX
-                    try
-                    {
-                        var chibao = await _analyzeService.ThongKeTuDoanhHSX(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ThongKeTuDoanhHSX)| {ex.Message}");
-                    }
-
-                    //Chỉ báo kỹ thuật
-                    try
-                    {
-                        var chibao = await _calculateService.ChiBaoKyThuat(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            foreach (var item in chibao.Item2)
-                            {
-                                await _teleService.SendTextMessageAsync(_idMain, item);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(ChiBaoKyThuat)| {ex.Message}");
-                    }
-                }
-
-                if ((dt.Day >= 28 || dt.Day <= 5) && dt.Hour >= 12)
-                {
-                    //Tổng cục thống kê
-                    try
-                    {
-                        var chibao = await _analyzeService.TongCucThongKeThang(dt);
-                        if (chibao.Item1 > 0)
-                        {
-                            await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                            Thread.Sleep(1000);
-                        }
-
-                        if (dt.Month % 3 <= 1)
-                        {
-                            var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
-                            if (chibaoQuy.Item1 > 0)
-                            {
-                                await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                    }
-                }
-
                 var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
                 if (haiquanXK.Item1 > 0)
                 {
@@ -259,6 +222,65 @@ namespace StockLib.PublicService
                     await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
                     Thread.Sleep(1000);
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.ThongKeHaiQuan|EXCEPTION(ThongKeTuDoanhUp)| {ex.Message}");
+            }
+        }
+        private async Task TongCucThongKe(DateTime dt)
+        {
+            try
+            {
+                var chibao = await _analyzeService.TongCucThongKeThang(dt);
+                if (chibao.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                    Thread.Sleep(1000);
+                }
+
+                if (dt.Month % 3 <= 1)
+                {
+                    var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
+                    if (chibaoQuy.Item1 > 0)
+                    {
+                        await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+            }
+        }
+
+        public async Task AnalyzeJob()
+        {
+            try
+            {
+                var dt = DateTime.Now;
+                var isDayOfWork = dt.DayOfWeek >= DayOfWeek.Monday && dt.DayOfWeek <= DayOfWeek.Friday;//Từ thứ 2 đến thứ 6
+                var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;//từ phút thứ 15 đến phút thứ 30
+                var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
+                var isPreTrade = dt.Hour < 9;
+
+                if (isDayOfWork && isTimePrint && !isPreTrade)
+                {
+                    if (isRealTime)
+                    {
+                        await Realtime();
+                        return;
+                    }
+                    await ThongKe(dt);
+                    await ThongKeTuDoanh(dt);
+                }
+
+                if ((dt.Day >= 28 || dt.Day <= 5))
+                {
+                    await TongCucThongKe(dt);
+                }
+
+                await TongCucHaiQuan(dt);
             }
             catch(Exception ex)
             {

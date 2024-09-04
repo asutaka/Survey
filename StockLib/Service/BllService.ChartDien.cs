@@ -92,7 +92,7 @@ namespace StockLib.Service
             try
             {
                 var time = GetCurrentTime();
-                var filter = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.IIP);
+                var filter = Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.IIP_Dien);
                 var lThongKe = _thongkeRepo.GetByFilter(filter);
                 lThongKe = lThongKe.Where(x => x.content.RemoveSpace().RemoveSignVietnamese().Contains("Phan Phoi Dien".RemoveSpace(), StringComparison.OrdinalIgnoreCase))
                                     .OrderBy(x => x.d).TakeLast(StaticVal._TAKE).ToList();

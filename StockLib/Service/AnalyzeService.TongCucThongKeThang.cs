@@ -47,10 +47,6 @@ namespace StockLib.Service
                     {
                         IIP(sheet, dt);
                     }
-                    else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        SanPhamCongNghiep(sheet, dt);
-                    }
                     else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
                         VonDauTuNhaNuoc(sheet, dt);
@@ -67,13 +63,13 @@ namespace StockLib.Service
                     {
                         CPI(sheet, dt);
                     }
+                    else if (_lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VanTaiHanhKhach(sheet, dt);
+                    }
                     else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
                         VanTaiHangHoa(sheet, dt);
-                    }
-                    else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        KhachQuocTe(sheet, dt);
                     }
                 }
 
@@ -182,18 +178,7 @@ namespace StockLib.Service
         };
         private void IIP(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKe(EKeyTongCucThongKe.IIP, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 3, colUnit: -1);
-        }
-
-        private List<string> _lSPCongNghiep = new List<string>
-        {
-            "SP CN",
-            "SPCN",
-            "SPCNThang"
-        };
-        private void SanPhamCongNghiep(ExcelWorksheet sheet, DateTime dt)
-        {
-            InsertThongKe(EKeyTongCucThongKe.SP_CongNghiep, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: 7, colUnit: 2);
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Dien, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, textCompare: "Phan Phoi Dien");
         }
 
         private List<string> _lVonDauTu = new List<string>
@@ -244,6 +229,22 @@ namespace StockLib.Service
             InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_LamPhat, dt, sheet, colContent: 1, colVal: -1, colQoQ: 5, colQoQoY: 7, colUnit: -1, "Lam Phat");
         }
 
+        private List<string> _lVanTaiHanhKhach = new List<string>
+        {
+            "VT HK",
+            "Hanh Khach",
+            "VanTai HK",
+            "Van Tai HK"
+        };
+        private void VanTaiHanhKhach(ExcelWorksheet sheet, DateTime dt)
+        {
+            var resHangKhong = InsertThongKeOnlyRecord(EKeyTongCucThongKe.HanhKhach_HangKhong, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Hang Khong");
+            if (!resHangKhong)
+            {
+                InsertThongKeOnlyRecord(EKeyTongCucThongKe.HanhKhach_HangKhong, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Hang Khong");
+            }
+        }
+
         private List<string> _lVanTaiHangHoa = new List<string>
         {
             "VT HH",
@@ -265,22 +266,10 @@ namespace StockLib.Service
                 InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Ngoai Nuoc");
             }
 
-            var resDuongSat = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongSat, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Sat");
-            if (!resDuongSat)
-            {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongSat, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Sat");
-            }
-
             var resDuongBien = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Bien");
             if (!resDuongBien)
             {
                 InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Bien");
-            }
-
-            var resDuongThuy = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongThuy, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Thuy");
-            if (!resDuongThuy)
-            {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongThuy, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Duong Thuy");
             }
 
             var resDuongBo = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, "Duong Bo");
@@ -294,18 +283,6 @@ namespace StockLib.Service
             {
                 InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, "Hang Khong");
             }
-        }
-
-        private List<string> _lKhachQuocTe = new List<string>
-        {
-            "KQT",
-            "Du Lich",
-            "Khach QT",
-            "Khach Quoc Te"
-        };
-        private void KhachQuocTe(ExcelWorksheet sheet, DateTime dt)
-        {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.DuLich, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: 7, colUnit: -1, "Tong So");
         }
 
         private bool InsertThongKeOnlyRecord(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit, string textCompare, string textIgnore = "")
