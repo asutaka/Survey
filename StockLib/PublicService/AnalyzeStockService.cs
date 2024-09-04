@@ -17,7 +17,7 @@ namespace StockLib.PublicService
         //private const long _idChannel = -1002247826353;
         //private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
-        private const long _idMain = -1002247826353;
+        private const long _idMain = 1066022551;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
                                     ITeleService teleService,
                                     IAnalyzeService analyzeService,
@@ -263,6 +263,9 @@ namespace StockLib.PublicService
                 var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;//từ phút thứ 15 đến phút thứ 30
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
+
+                await TongCucThongKe(dt);
+                return;
 
                 if (isDayOfWork && isTimePrint && !isPreTrade)
                 {

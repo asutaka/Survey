@@ -20,8 +20,8 @@ namespace AnalyzeStock
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await _analyzeService.AnalyzeJob();
-                //await Task.Delay(1000, stoppingToken);
-                await Task.Delay(1000 * 60 * 15, stoppingToken);
+                await Task.Delay(1000, stoppingToken);
+                //await Task.Delay(1000 * 60 * 15, stoppingToken);
             }
         }
     }
