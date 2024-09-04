@@ -80,7 +80,7 @@ namespace StockLib.Service
             strBuilder.AppendLine($"2. Vận tải đường Bộ:");
             strBuilder.AppendLine($" + So với tháng trước: {DuongBo.Item2}%");
             strBuilder.AppendLine($" + Cùng kỳ: {DuongBo.Item3}%");
-            strBuilder.AppendLine($"5. Vận tải đường Hàng Không:");
+            strBuilder.AppendLine($"3. Vận tải đường Hàng Không:");
             strBuilder.AppendLine($" + So với tháng trước: {DuongHangKhong.Item2}%");
             strBuilder.AppendLine($" + Cùng kỳ: {DuongHangKhong.Item3}%");
             return strBuilder.ToString();

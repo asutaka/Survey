@@ -29,61 +29,6 @@ namespace StockLib.PublicService
             _calculateService = calculateService;
         }
 
-        //var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
-        //if (haiquanXK.Item1 > 0)
-        //{
-        //    await _teleService.SendTextMessageAsync(_idMain, haiquanXK.Item2);
-        //    Thread.Sleep(1000);
-        //}
-
-        //var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
-        //if (haiquanNK.Item1 > 0)
-        //{
-        //    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
-        //    Thread.Sleep(1000);
-        //}
-        //return;
-
-        //try
-        //{
-        //    var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-1));//for test
-        //    if (chibao.Item1 > 0)
-        //    {
-        //        await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-        //    }
-        //}
-        //catch (Exception ex)
-        //{
-        //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-        //}
-        //return;
-
-        //try
-        //{
-        //    for (int i = 1; i <= 10; i++)
-        //    {
-        //        //var chibao = await _analyzeService.TongCucThongKeThang(dt.AddMonths(-i));//for test
-        //        //if (chibao.Item1 > 0)
-        //        //{
-        //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-        //        //}
-        //    }
-
-        //    for (int i = 11; i <= 19; i++)
-        //    {
-        //        //var chibao = await _analyzeService.TongCucThongKeThangTest(dt.AddMonths(-i));//for test
-        //        //if (chibao.Item1 > 0)
-        //        //{
-        //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-        //        //}
-        //    }
-        //}
-        //catch (Exception ex)
-        //{
-        //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-        //}
-        //return;
-
         private async Task Realtime()
         {
             //Chỉ báo cắt lên MA20
