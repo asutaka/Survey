@@ -392,32 +392,9 @@ namespace StockLib.Service
             var lstResult = new List<TuDoanh>();
             foreach (var item in lInput)
             {
-                //Check Exists
-                FilterDefinition<TuDoanh> filter = null;
-                var builder = Builders<TuDoanh>.Filter;
-                var lFilter = new List<FilterDefinition<TuDoanh>>();
                 if (string.IsNullOrWhiteSpace(item.s))
                     continue;
 
-                lFilter.Add(builder.Eq(x => x.s, item.s));
-                lFilter.Add(builder.Eq(x => x.d, item.d));
-                foreach (var itemFilter in lFilter)
-                {
-                    if (filter is null)
-                    {
-                        filter = itemFilter;
-                        continue;
-                    }
-                    filter &= itemFilter;
-                }
-
-                if (filter is null)
-                    return null;
-
-
-                var lFind = _tudoanhRepo.GetByFilter(filter, 1, 20);
-                if ((lFind ?? new List<TuDoanh>()).Any())
-                    continue;
                 var model = new TuDoanh
                 {
                     no = item.no,
@@ -429,7 +406,6 @@ namespace StockLib.Service
                 };
                 model.net = model.net_deal + model.net_pt;
                 lstResult.Add(model);
-                _tudoanhRepo.InsertOne(model);
             }
             return lstResult;
         }

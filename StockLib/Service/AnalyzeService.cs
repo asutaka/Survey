@@ -27,7 +27,6 @@ namespace StockLib.Service
         private readonly IStockRepo _stockRepo;
         private readonly IConfigDataRepo _configRepo;
         private readonly ICategoryRepo _categoryRepo;
-        private readonly ITuDoanhRepo _tudoanhRepo;
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkeQuyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
@@ -37,7 +36,6 @@ namespace StockLib.Service
                             IStockRepo stockRepo,
                             IConfigDataRepo configRepo,
                             ICategoryRepo categoryRepo,
-                            ITuDoanhRepo tudoanhRepo,
                             IThongKeRepo thongkeRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
                             IThongKeQuyRepo thongkeQuyRepo) 
@@ -48,7 +46,6 @@ namespace StockLib.Service
             _stockRepo = stockRepo;
             _configRepo = configRepo;
             _categoryRepo = categoryRepo;
-            _tudoanhRepo = tudoanhRepo;
             _thongkeRepo = thongkeRepo;
             _thongkeQuyRepo = thongkeQuyRepo;
             _haiquanRepo = haiquanRepo;
