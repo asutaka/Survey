@@ -1,11 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.Service;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.PublicService
 {

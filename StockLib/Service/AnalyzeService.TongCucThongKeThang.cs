@@ -63,14 +63,6 @@ namespace StockLib.Service
                     {
                         BanLe(sheet, dt);
                     }
-                    else if (_lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        XuatKhau(sheet, dt);
-                    }
-                    else if (_lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        NhapKhau(sheet, dt);
-                    }
                     else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
                         CPI(sheet, dt);
@@ -238,50 +230,6 @@ namespace StockLib.Service
             {
                 InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 2, colVal: 4, colQoQ: 7, colQoQoY: -1, colUnit: -1, "Ban Le");
             }
-        }
-
-        private List<string> _lXK = new List<string>
-        {
-            "XK",
-            "Xuat Khau",
-            "XK Thang",
-            "XK HH",
-            "Xuat Khau Thang"
-        };
-        private void XuatKhau(ExcelWorksheet sheet, DateTime dt)
-        {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_TrongNuoc, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Trong Nuoc");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_FDI, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "NN");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_ThuySan, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Thuy San");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Gao, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Gao");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Ximang, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Xi Mang");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_HoaChat, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Hoa Chat");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPHoaChat, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "San Pham Hoa Chat");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPChatDeo, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "San Pham Tu Chat Deo");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_CaoSu, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Cao Su");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Go, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Go");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_DetMay, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Det May");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Sat Thep");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPSatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "San Pham Tu Sat Thep");
-        }
-
-        private List<string> _lNK = new List<string>
-        {
-            "NK",
-            "Nhap Khau",
-            "NK Thang",
-            "NK HH",
-            "Nhap Khau Thang"
-        };
-        private void NhapKhau(ExcelWorksheet sheet, DateTime dt)
-        {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_TrongNuoc, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Trong Nuoc");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_FDI, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "NN");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_PhanBon, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Phan Bon");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_Vai, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Vai");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_SatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "Sat Thep", textIgnore: "Phe Lieu");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_SPSatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "San Pham Tu Sat Thep");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_Oto, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: 13, colUnit: -1, "O to");
         }
 
         private List<string> _lCPI = new List<string>
