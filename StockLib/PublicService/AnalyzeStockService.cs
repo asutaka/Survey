@@ -264,8 +264,35 @@ namespace StockLib.PublicService
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
 
-                await TongCucThongKe(dt);
-                return;
+                //try
+                //{
+                //    for (int i = 1; i <= 10; i++)
+                //    {
+                //        var dtTemp = dt.AddMonths(-i);
+                //        var chibao = await _analyzeService.TongCucThongKeThang(dtTemp);//for test
+                //        await _analyzeService.TongCucThongKeQuy(dtTemp);
+                //        ////if (chibao.Item1 > 0)
+                //        ////{
+                //        ////    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                //        ////}
+                //    }
+
+                //    for (int i = 11; i <= 19; i++)
+                //    {
+                //        var dtTemp = dt.AddMonths(-i);
+                //        var chibao = await _analyzeService.TongCucThongKeThangTest(dtTemp);//for test
+                //        await _analyzeService.TongCucThongKeQuy(dtTemp);
+                //        //if (chibao.Item1 > 0)
+                //        //{
+                //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                //        //}
+                //    }
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                //}
+                //return;
 
                 if (isDayOfWork && isTimePrint && !isPreTrade)
                 {

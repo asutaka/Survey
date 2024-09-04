@@ -89,87 +89,75 @@ namespace StockLib.Service
             return (0, null);
         }
 
-        //public async Task<(int, string)> TongCucThongKeThangTest(DateTime dt)
-        //{
-        //    var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
-        //    try
-        //    {
-        //        var builder = Builders<ConfigData>.Filter;
-        //        FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKeThang);
-        //        var lConfig = _configRepo.GetByFilter(filter);
-        //        if (lConfig.Any())
-        //        {
-        //            if (lConfig.Any(x => x.t == t))
-        //                return (0, null);
+        public async Task<(int, string)> TongCucThongKeThangTest(DateTime dt)
+        {
+            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+            try
+            {
+                var builder = Builders<ConfigData>.Filter;
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKeThang);
+                var lConfig = _configRepo.GetByFilter(filter);
+                if (lConfig.Any())
+                {
+                    if (lConfig.Any(x => x.t == t))
+                        return (0, null);
 
-        //            _configRepo.DeleteMany(filter);
-        //        }
+                    _configRepo.DeleteMany(filter);
+                }
 
-        //        var strOutput = new StringBuilder();
-        //        var stream = await _apiService.TongCucThongKeTest(dt);
-        //        if (stream is null
-        //            || stream.Length < 1000)
-        //            return (0, null);
+                var strOutput = new StringBuilder();
+                var stream = await _apiService.TongCucThongKeTest(dt);
+                if (stream is null
+                    || stream.Length < 1000)
+                    return (0, null);
 
-        //        var dic = new Dictionary<int, string>();
-        //        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-        //        var package = new ExcelPackage(stream);
-        //        var lSheet = package.Workbook.Worksheets;
-        //        foreach (var sheet in lSheet)
-        //        {
-        //            if (false) { }
-        //            else if (_lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                IIP(sheet, dt);
-        //            }
-        //            else if (_lSPCongNghiep.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                SanPhamCongNghiep(sheet, dt);
-        //            }
-        //            else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                VonDauTuNhaNuoc(sheet, dt);
-        //            }
-        //            else if (_lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                FDI(sheet, dt);
-        //            }
-        //            else if (_lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                BanLe(sheet, dt);
-        //            }
-        //            else if (_lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                XuatKhau(sheet, dt);
-        //            }
-        //            else if (_lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                NhapKhau(sheet, dt);
-        //            }
-        //            else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                CPI(sheet, dt);
-        //            }
-        //            else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                VanTaiHangHoa(sheet, dt);
-        //            }
-        //            else if (_lKhachQuocTe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-        //            {
-        //                KhachQuocTe(sheet, dt);
-        //            }
-        //        }
+                var dic = new Dictionary<int, string>();
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var package = new ExcelPackage(stream);
+                var lSheet = package.Workbook.Worksheets;
+                foreach (var sheet in lSheet)
+                {
+                    if (false) { }
+                    else if (_lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        IIP(sheet, dt);
+                    }
+                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VonDauTuNhaNuoc(sheet, dt);
+                    }
+                    else if (_lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        FDI(sheet, dt);
+                    }
+                    else if (_lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        BanLe(sheet, dt);
+                    }
+                    else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        CPI(sheet, dt);
+                    }
+                    else if (_lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VanTaiHanhKhach(sheet, dt);
+                    }
+                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        VanTaiHangHoa(sheet, dt);
+                    }
+                }
 
-        //        //var mes = TongCucThongKeThangPrint(dt);
-        //        //return (1, mes);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"AnalyzeService.TongCucThongKeThang|EXCEPTION| {ex.Message}");
-        //    }
+                //var mes = TongCucThongKeThangPrint(dt);
+                //return (1, mes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.TongCucThongKeThang|EXCEPTION| {ex.Message}");
+            }
 
-        //    return (0, null);
-        //}
+            return (0, null);
+        }
 
         private List<string> _lIIP = new List<string>
         {
@@ -449,74 +437,6 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"AnalyzeService.InsertThongKeSomeRecord|EXCEPTION| {ex.Message}");
-            }
-            return true;
-        }
-
-        private bool InsertThongKe(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit)
-        {
-            try
-            {
-                var unitStr = string.Empty;
-                //loop all rows in the sheet
-                for (int i = sheet.Dimension.Start.Row; i <= sheet.Dimension.End.Row; i++)
-                {
-                    var model = new ThongKe
-                    {
-                        d = int.Parse($"{dt.Year}{dt.Month.To2Digit()}"),
-                        key = (int)eThongKe
-                    };
-
-                    if (colContent > 0)
-                    {
-                        var valStr = sheet.Cells[i, colContent].Value?.ToString().Trim() ?? string.Empty;
-                        if (string.IsNullOrWhiteSpace(valStr))
-                            continue;
-
-                        model.content = valStr;
-                    }
-
-                    if (colVal > 0)
-                    {
-                        var valStr = sheet.Cells[i, colVal].Value?.ToString().Trim() ?? string.Empty;
-                        var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
-                        model.va = isDouble ? Math.Round(val, 1) : 0;
-                    }
-
-                    if (colQoQ > 0)
-                    {
-                        var valStr = sheet.Cells[i, colQoQ].Value?.ToString().Trim() ?? string.Empty;
-                        var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
-                        model.qoq = isDouble ? Math.Round(val, 1) : 0;
-                    }
-
-                    if (colQoQoY > 0)
-                    {
-                        var valStr = sheet.Cells[i, colQoQoY].Value?.ToString().Trim() ?? string.Empty;
-                        var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
-                        model.qoqoy = isDouble ? Math.Round(val, 1) : 0;
-                    }
-
-                    if(colUnit > 0)
-                    {
-                        var valStr = sheet.Cells[i, colUnit].Value?.ToString().Trim() ?? string.Empty;//
-                        if (string.IsNullOrWhiteSpace(valStr.Replace("'", "").Replace("\"", "")))
-                        {
-                            valStr = unitStr;
-                        }
-                        model.unit = valStr;
-                        unitStr = valStr;
-                    }
-
-                    if (model.va <= 0 && model.qoq <= 0 && model.qoqoy <= 0)
-                        continue;
-
-                    _thongkeRepo.InsertOne(model);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"AnalyzeService.InsertThongKe|EXCEPTION| {ex.Message}");
             }
             return true;
         }
