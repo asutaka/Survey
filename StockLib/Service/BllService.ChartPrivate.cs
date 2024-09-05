@@ -278,7 +278,7 @@ namespace StockLib.Service
                 var strY = string.IsNullOrWhiteSpace(titleY) ? "(Tỉ lệ: %)" : titleY;
 
                 basicColumn.yAxis = new List<HighChartYAxis> { new HighChartYAxis { title = new HighChartTitle { text = strX }, labels = new HighChartLabel{ format = "{value}" } },
-                                                                 new HighChartYAxis { title = new HighChartTitle { text = strY }, labels = new HighChartLabel{ format = "{value} %" }, opposite = true }};
+                                                                 new HighChartYAxis { title = new HighChartTitle { text = strY }, labels = new HighChartLabel{ format = "{value}" }, opposite = true }};
 
                 var chart = new HighChartModel(JsonConvert.SerializeObject(basicColumn));
                 var body = JsonConvert.SerializeObject(chart);

@@ -24,6 +24,12 @@ namespace StockLib.Service
 
                 var streamNo = await Chart_Thep_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
+
+                var streamXK = await Chart_XuatKhau();
+                lOutput.Add(streamXK);
+
+                var streamNK = await Chart_NhapKhau();
+                lOutput.Add(streamNK);
                 return lOutput;
 
             }
@@ -252,6 +258,87 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_Thep_TonKho|EXCEPTION| {ex.Message}");
             }
+            return null;
+        }
+
+        private async Task<Stream> Chart_XuatKhau()
+        {
+            try
+            {
+                var lSatThep = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.SatThep)).OrderBy(x => x.d);
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lSatThep.TakeLast(25).Select(x => x.va),
+                        name = "Sắt thép",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    }
+                };
+
+                if(lSatThep.Sum(x => x.price) > 0)
+                {
+                    lSeries.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lSatThep.TakeLast(25).Select(x => x.price),
+                        name = "Giá sắt thép",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#C00000",
+                        yAxis = 1
+                    });
+                }
+
+                return await Chart_BasicBase($"Xuất nhập khẩu", lSatThep.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_XuatKhau|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
+
+        private async Task<Stream> Chart_NhapKhau()
+        {
+            try
+            {
+                var lSPSatThep_NK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.SPSatThep_NK)).OrderBy(x => x.d);
+
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.va),
+                        name = "SP sắt thép NK",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060",
+                    }
+                };
+
+                if (lSPSatThep_NK.Sum(x => x.price) > 0)
+                {
+                    lSeries.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.price),
+                        name = "Giá sp sắt thép NK",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#C00000",
+                        yAxis = 1
+                    });
+                }
+
+                return await Chart_BasicBase($"Xuất nhập khẩu", lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_XuatKhau|EXCEPTION| {ex.Message}");
+            }
+
             return null;
         }
     }

@@ -38,6 +38,7 @@ namespace StockLib.Service
         private readonly IConfigDataRepo _configRepo;
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkequyRepo;
+        private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IAPIService _apiService;
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
@@ -51,6 +52,7 @@ namespace StockLib.Service
                             IConfigDataRepo configRepo,
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
+                            IThongKeHaiQuanRepo haiquanRepo,
                             IAPIService apiService)
         {
             _logger = logger;
@@ -65,6 +67,7 @@ namespace StockLib.Service
             _configRepo = configRepo;
             _thongkequyRepo = thongkequyRepo;
             _thongkeRepo = thongkeRepo;
+            _haiquanRepo = haiquanRepo;
             _apiService = apiService;
             StockInstance();
         }

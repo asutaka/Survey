@@ -96,6 +96,15 @@ namespace StockLib.Utils
             return $"{quarter.To2Digit()}/{year - 2000}";
         }
 
+        public static string GetNameHaiQuan(this int time)
+        {
+            var year = time / 10000;
+            var month = (time - year * 10000) / 100;
+            var day = time - (year * 10000 + month * 100);
+            var mode = day <= 1 ? 1 : 2;
+            return $"{month}{mode}/{year - 2020}";
+        }
+
         public static string GetNameMonth(this int time)
         {
             var year = time / 100;
