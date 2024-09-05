@@ -15,7 +15,7 @@ namespace StockLib.PublicService
         private readonly ICalculateService _calculateService;
 
         //private const long _idChannel = -1002247826353;
-        //private const long _idUser = 1066022551;
+        private const long _idUser = 1066022551;
         //private const long _idGroup = -4237476810;
         private const long _idMain = -1002247826353;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
@@ -157,14 +157,14 @@ namespace StockLib.PublicService
                 var haiquanXK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_XK);
                 if (haiquanXK.Item1 > 0)
                 {
-                    await _teleService.SendTextMessageAsync(_idMain, haiquanXK.Item2);
+                    await _teleService.SendTextMessageAsync(_idUser, haiquanXK.Item2);
                     Thread.Sleep(1000);
                 }
 
                 var haiquanNK = await _analyzeService.TongCucHaiQuan(dt, Utils.EConfigDataType.TongCucHaiQuan_NK);
                 if (haiquanNK.Item1 > 0)
                 {
-                    await _teleService.SendTextMessageAsync(_idMain, haiquanNK.Item2);
+                    await _teleService.SendTextMessageAsync(_idUser, haiquanNK.Item2);
                     Thread.Sleep(1000);
                 }
             }
@@ -180,7 +180,7 @@ namespace StockLib.PublicService
                 var chibao = await _analyzeService.TongCucThongKeThang(dt);
                 if (chibao.Item1 > 0)
                 {
-                    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
+                    await _teleService.SendTextMessageAsync(_idUser, chibao.Item2);
                     Thread.Sleep(1000);
                 }
 
@@ -189,7 +189,7 @@ namespace StockLib.PublicService
                     var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
                     if (chibaoQuy.Item1 > 0)
                     {
-                        await _teleService.SendTextMessageAsync(_idMain, chibaoQuy.Item2);
+                        await _teleService.SendTextMessageAsync(_idUser, chibaoQuy.Item2);
                     }
                 }
             }
