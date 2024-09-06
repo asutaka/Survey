@@ -268,6 +268,14 @@ namespace StockLib.Service
                 {
                     new HighChartSeries_BasicColumn
                     {
+                        data = lBanLe.TakeLast(StaticVal._TAKE).Select(x => Math.Round(x.va/1000, 1)),
+                        name = "Tổng mức bán lẻ",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
                         data = lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
                         name = "So với cùng kỳ",
                         type = "spline",
@@ -277,7 +285,7 @@ namespace StockLib.Service
                     }
                 };
 
-                return await Chart_BasicBase($"Tổng mức bán lẻ so với cùng kỳ năm ngoái(QoQ)", lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameMonth()).ToList(), lSeries, "giá trị: %", "giá trị: %");
+                return await Chart_BasicBase($"Tổng mức bán lẻ so với cùng kỳ năm ngoái(QoQ)", lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameMonth()).ToList(), lSeries, "giá trị: nghìn tỷ", "giá trị: %");
             }
             catch (Exception ex)
             {
