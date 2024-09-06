@@ -246,9 +246,6 @@ namespace StockLib.PublicService
                     await TongCucThongKe(dt);
                 }
 
-                //fortest
-                return;
-
                 if (isDayOfWork && isTimePrint && !isPreTrade)
                 {
                     if (isRealTime)
