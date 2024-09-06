@@ -24,6 +24,9 @@ namespace StockLib.Service
 
                 var streamNo = await Chart_BanLe_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
+
+                var streamThongKe = await Chart_ThongKe_BanLe();
+                lOutput.Add(streamThongKe);
                 return lOutput;
 
             }
@@ -251,6 +254,46 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_BanLe_NoTaiChinh|EXCEPTION| {ex.Message}");
             }
+            return null;
+        }
+
+        private async Task<Stream> Chart_ThongKe_BanLe()
+        {
+            try
+            {
+                var lSatThep = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.SatThep)).OrderBy(x => x.d);
+                //var lSeries = new List<HighChartSeries_BasicColumn>
+                //{
+                //    new HighChartSeries_BasicColumn
+                //    {
+                //        data = lSatThep.TakeLast(25).Select(x => x.va),
+                //        name = "Giá trị xuất khẩu sắt thép",
+                //        type = "column",
+                //        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                //        color = "#012060"
+                //    }
+                //};
+
+                //if (lSatThep.Sum(x => x.price) > 0)
+                //{
+                //    lSeries.Add(new HighChartSeries_BasicColumn
+                //    {
+                //        data = lSatThep.TakeLast(25).Select(x => x.price),
+                //        name = "Giá sắt thép",
+                //        type = "spline",
+                //        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                //        color = "#C00000",
+                //        yAxis = 1
+                //    });
+                //}
+
+                return await Chart_BasicBase($"Xuất khẩu - Thống kê nửa tháng", lSatThep.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_XuatKhau|EXCEPTION| {ex.Message}");
+            }
+
             return null;
         }
     }

@@ -25,10 +25,10 @@ namespace StockLib.Service
                 var streamNo = await Chart_Thep_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
 
-                var streamXK = await Chart_XuatKhau();
+                var streamXK = await Chart_XuatKhau_Thep();
                 lOutput.Add(streamXK);
 
-                var streamNK = await Chart_NhapKhau();
+                var streamNK = await Chart_NhapKhau_Thep();
                 lOutput.Add(streamNK);
                 return lOutput;
 
@@ -155,8 +155,8 @@ namespace StockLib.Service
             var streamTonKho = await Chart_Thep_TonKho(lFinancial, code);
             var streamNoTaiChinh = await Chart_Thep_NoTaiChinh(lFinancial, code);
             var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            var streamXuatKhau = await Chart_XuatKhau();
-            var streamNhapKhau = await Chart_NhapKhau();
+            var streamXuatKhau = await Chart_XuatKhau_Thep();
+            var streamNhapKhau = await Chart_NhapKhau_Thep();
             lOutput.Add(streamTonKho);
             lOutput.Add(streamNoTaiChinh);
             lOutput.Add(streamDoanhThu);
@@ -265,7 +265,7 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_XuatKhau()
+        private async Task<Stream> Chart_XuatKhau_Thep()
         {
             try
             {
@@ -305,7 +305,7 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_NhapKhau()
+        private async Task<Stream> Chart_NhapKhau_Thep()
         {
             try
             {
