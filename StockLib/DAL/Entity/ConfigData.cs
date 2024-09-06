@@ -7,6 +7,5 @@ namespace StockLib.DAL.Entity
     {
         public int ty { get; set; }//type
         public long t { get; set; }//time
-        public int va { get; set; }//Dùng khi cần thêm điều kiện check
     }
 }

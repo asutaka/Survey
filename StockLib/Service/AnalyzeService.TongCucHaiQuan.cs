@@ -43,7 +43,7 @@ namespace StockLib.Service
                     var flagDetect = int.Parse(strSplit[0]) > 15 ? 1 : 2;
 
                     var time = int.Parse($"{strSplit[2]}{strSplit[1]}{flagDetect}");
-                    if (time <= (last?.va ?? 0))
+                    if (time <= (last?.t ?? 0))
                         return (0, null);
 
                     va = time;
@@ -74,8 +74,7 @@ namespace StockLib.Service
                 _configRepo.InsertOne(new ConfigData
                 {
                     ty = (int)mode,
-                    t = t,
-                    va = va
+                    t = t
                 });
 
                 return (1, mes);
