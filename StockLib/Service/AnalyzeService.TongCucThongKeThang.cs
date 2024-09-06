@@ -12,11 +12,11 @@ namespace StockLib.Service
     {
         public async Task<(int, string)> TongCucThongKeThang(DateTime dt)
         {
-            if (dt.Day <= 5)
+            if (dt.Day <= 10)
             {
                 dt = dt.AddMonths(-1);
             }
-            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}28");
             try
             {
                 var mode = EConfigDataType.TongCucThongKeThang;
@@ -27,8 +27,6 @@ namespace StockLib.Service
                 {
                     if (lConfig.Any(x => x.t == t))
                         return (0, null);
-
-                    _configRepo.DeleteMany(filter);
                 }
 
                 var strOutput = new StringBuilder();
@@ -75,11 +73,21 @@ namespace StockLib.Service
                 }
 
                 var mes = TongCucThongKeThangPrint(dt);
-                _configRepo.InsertOne(new ConfigData
+                var last = lConfig.Last();
+                if (last is null)
                 {
-                    ty = (int)mode,
-                    t = t
-                });
+                    _configRepo.InsertOne(new ConfigData
+                    {
+                        ty = (int)mode,
+                        t = t
+                    });
+                }
+                else
+                {
+                    last.t = t;
+                    _configRepo.Update(last);
+                }
+
                 return (1, mes);
             }
             catch (Exception ex)
