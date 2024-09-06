@@ -271,7 +271,7 @@ namespace StockLib.Service
                     new HighChartSeries_BasicColumn
                     {
                         data = lSatThep.TakeLast(25).Select(x => x.va),
-                        name = "Sắt thép",
+                        name = "Giá trị xuất khẩu sắt thép",
                         type = "column",
                         dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
                         color = "#012060"
@@ -291,7 +291,7 @@ namespace StockLib.Service
                     });
                 }
 
-                return await Chart_BasicBase($"Xuất nhập khẩu", lSatThep.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+                return await Chart_BasicBase($"Xuất khẩu - Thống kê nửa tháng", lSatThep.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
             }
             catch(Exception ex)
             {
@@ -312,7 +312,7 @@ namespace StockLib.Service
                     new HighChartSeries_BasicColumn
                     {
                         data = lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.va),
-                        name = "SP sắt thép NK",
+                        name = "Giá trị nhập khẩu SP sắt thép",
                         type = "column",
                         dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
                         color = "#012060",
@@ -324,7 +324,7 @@ namespace StockLib.Service
                     lSeries.Add(new HighChartSeries_BasicColumn
                     {
                         data = lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.price),
-                        name = "Giá sp sắt thép NK",
+                        name = "Giá nhập khẩu sp sắt thép",
                         type = "spline",
                         dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
                         color = "#C00000",
@@ -332,11 +332,11 @@ namespace StockLib.Service
                     });
                 }
 
-                return await Chart_BasicBase($"Xuất nhập khẩu", lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+                return await Chart_BasicBase($"Nhập khẩu - Thống kê nửa tháng", lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.Chart_XuatKhau|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.Chart_NhapKhau|EXCEPTION| {ex.Message}");
             }
 
             return null;

@@ -98,11 +98,11 @@ namespace StockLib.Utils
 
         public static string GetNameHaiQuan(this int time)
         {
-            var year = time / 10000;
-            var month = (time - year * 10000) / 100;
-            var day = time - (year * 10000 + month * 100);
+            var year = time / 1000;
+            var month = (time - year * 1000) / 10;
+            var day = time - (year * 1000 + month * 10);
             var mode = day <= 1 ? 1 : 2;
-            return $"{month}{mode}/{year - 2020}";
+            return $"{month}{mode}-{year - 2000}";
         }
 
         public static string GetNameMonth(this int time)
