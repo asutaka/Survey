@@ -239,6 +239,16 @@ namespace StockLib.PublicService
                 //}
                 //return;
 
+
+                await TongCucHaiQuan(dt);
+                if ((dt.Day >= 28 || dt.Day <= 5))
+                {
+                    await TongCucThongKe(dt);
+                }
+
+                //fortest
+                return;
+
                 if (isDayOfWork && isTimePrint && !isPreTrade)
                 {
                     if (isRealTime)
@@ -249,13 +259,6 @@ namespace StockLib.PublicService
                     await ThongKe(dt);
                     await ThongKeTuDoanh(dt);
                 }
-
-                if ((dt.Day >= 28 || dt.Day <= 5))
-                {
-                    await TongCucThongKe(dt);
-                }
-
-                await TongCucHaiQuan(dt);
             }
             catch(Exception ex)
             {
