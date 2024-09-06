@@ -77,6 +77,73 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        public async Task<(int, string)> TongCucThongKeQuyTest(DateTime dt)
+        {
+            if ((dt.Day <= 5 && dt.Month % 3 == 0)
+                || (dt.Day >= 28 && dt.Month % 3 == 1))
+            {
+                return (0, null);
+            }
+
+            if (dt.Day <= 5 && dt.Month % 3 == 1)
+            {
+                dt = dt.AddMonths(-1);
+            }
+            var t = long.Parse($"{dt.Year}{dt.GetQuarter()}");
+
+            try
+            {
+                var mode = EConfigDataType.TongCucThongKeQuy;
+                var builder = Builders<ConfigData>.Filter;
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
+                var lConfig = _configRepo.GetByFilter(filter);
+                if (lConfig.Any())
+                {
+                    if (lConfig.Any(x => x.t == t))
+                        return (0, null);
+
+                    _configRepo.DeleteMany(filter);
+                }
+
+                var strOutput = new StringBuilder();
+                var stream = await _apiService.TongCucThongKeTest(dt);
+                if (stream is null
+                    || stream.Length < 1000)
+                    return (0, null);
+
+                var dic = new Dictionary<int, string>();
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                var package = new ExcelPackage(stream);
+                var lSheet = package.Workbook.Worksheets;
+                foreach (var sheet in lSheet)
+                {
+                    if (false) { }
+                    else if (_lGiaVT.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        GiaVanTai(sheet, dt);
+                    }
+                    else if (_lGiaNVL.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        GiaNguyenVatLieu(sheet, dt);
+                    }
+                }
+
+                var mes = TongCucThongKeQuyPrint(dt);
+                _configRepo.InsertOne(new ConfigData
+                {
+                    ty = (int)mode,
+                    t = t
+                });
+                return (1, mes);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.TongCucThongKeQuy|EXCEPTION| {ex.Message}");
+            }
+
+            return (0, null);
+        }
+
         private List<string> _lGiaVT = new List<string>
         {
             "Gia Van Tai",

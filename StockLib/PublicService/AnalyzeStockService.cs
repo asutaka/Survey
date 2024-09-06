@@ -214,7 +214,7 @@ namespace StockLib.PublicService
                 //    for (int i = 1; i <= 10; i++)
                 //    {
                 //        var dtTemp = dt.AddMonths(-i);
-                //        var chibao = await _analyzeService.TongCucThongKeThang(dtTemp);//for test
+                //        //var chibao = await _analyzeService.TongCucThongKeThang(dtTemp);//for test
                 //        await _analyzeService.TongCucThongKeQuy(dtTemp);
                 //        ////if (chibao.Item1 > 0)
                 //        ////{
@@ -225,8 +225,8 @@ namespace StockLib.PublicService
                 //    for (int i = 11; i <= 19; i++)
                 //    {
                 //        var dtTemp = dt.AddMonths(-i);
-                //        var chibao = await _analyzeService.TongCucThongKeThangTest(dtTemp);//for test
-                //        await _analyzeService.TongCucThongKeQuy(dtTemp);
+                //        //var chibao = await _analyzeService.TongCucThongKeThangTest(dtTemp);//for test
+                //        await _analyzeService.TongCucThongKeQuyTest(dtTemp);
                 //        //if (chibao.Item1 > 0)
                 //        //{
                 //        //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
