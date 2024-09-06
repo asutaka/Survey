@@ -12,8 +12,9 @@ namespace StockLib.Service
         {
             try
             {
+                var flagFirst = dt.Day > 15 ? 1 : 2;
                 var builder = Builders<ConfigData>.Filter;
-                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{flagFirst}");
                 FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
                 var lConfig = _configRepo.GetByFilter(filter);
                 if (lConfig.Any())
@@ -39,9 +40,10 @@ namespace StockLib.Service
                         continue;
 
                     var strSplit = item.NGAY_SO_BO.Split("/");
+                    var flagDetect = int.Parse(strSplit[0]) > 15 ? 1 : 2;
 
-                    var time = int.Parse($"{strSplit[2]}{strSplit[1]}{strSplit[0]}");
-                    if (time <= (last?.va ?? 0)) 
+                    var time = int.Parse($"{strSplit[2]}{strSplit[1]}{flagDetect}");
+                    if (time <= (last?.va ?? 0))
                         return (0, null);
 
                     va = time;
@@ -49,16 +51,13 @@ namespace StockLib.Service
                     if (stream is null) return (0, null);
 
                     var timeReport = 0;
-                    if (int.Parse(strSplit[0]) <= 15)
+                    var year = int.Parse(strSplit[2]);
+                    var month = int.Parse(strSplit[1]);
+                    if(flagDetect == 2)
                     {
-                        var month = int.Parse(strSplit[1]);
                         month--;
-                        timeReport = int.Parse($"{strSplit[2]}{month.To2Digit()}16");
                     }
-                    else
-                    {
-                        timeReport = int.Parse($"{strSplit[2]}{strSplit[1]}01");
-                    }
+                    timeReport = int.Parse($"{year}{month.To2Digit()}{flagDetect}");
 
                     var lHaiQuan = _fileService.TongCucHaiQuan(stream, isXuatKhau);
                     if (lHaiQuan?.Any() ?? false)

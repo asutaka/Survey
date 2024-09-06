@@ -20,9 +20,9 @@ namespace StockLib.Service
             var maxTime = lTime.First();
             var prevTime = lTime.Skip(1).First();
             var year = maxTime / 10000;
-            var month = (maxTime - year * 10000) / 100;
-            var day = (maxTime - (year * 10000 + month * 100));
-            var str = day <= 15 ? "nửa đầu" : "nửa cuối";
+            var month = (maxTime - year * 1000) / 10;
+            var day = (maxTime - (year * 1000 + month * 10));
+            var str = day == 1 ? "nửa đầu" : "nửa cuối";
 
             var strBuilder = new StringBuilder();
             var strXuatKhau = isXuatKhau ? "xuất khẩu" : "nhập khẩu";
