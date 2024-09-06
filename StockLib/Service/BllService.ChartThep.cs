@@ -311,7 +311,7 @@ namespace StockLib.Service
                 {
                     new HighChartSeries_BasicColumn
                     {
-                        data = lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.va),
+                        data = lSPSatThep_NK.TakeLast(25).Select(x => x.va),
                         name = "Giá trị nhập khẩu SP sắt thép",
                         type = "column",
                         dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
@@ -323,7 +323,7 @@ namespace StockLib.Service
                 {
                     lSeries.Add(new HighChartSeries_BasicColumn
                     {
-                        data = lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.price),
+                        data = lSPSatThep_NK.TakeLast(25).Select(x => x.price),
                         name = "Giá nhập khẩu sp sắt thép",
                         type = "spline",
                         dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
@@ -332,7 +332,7 @@ namespace StockLib.Service
                     });
                 }
 
-                return await Chart_BasicBase($"Nhập khẩu - Thống kê nửa tháng", lSPSatThep_NK.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+                return await Chart_BasicBase($"Nhập khẩu - Thống kê nửa tháng", lSPSatThep_NK.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
             }
             catch (Exception ex)
             {
