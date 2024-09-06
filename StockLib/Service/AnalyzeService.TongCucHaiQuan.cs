@@ -14,7 +14,7 @@ namespace StockLib.Service
             {
                 var flagFirst = dt.Day > 15 ? 1 : 2;
                 var builder = Builders<ConfigData>.Filter;
-                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{flagFirst}");
+                var t = long.Parse($"{dt.Year}{((flagFirst == 2) ? (dt.Month - 1).To2Digit() : dt.Month.To2Digit())}{flagFirst}");
                 FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
                 var lConfig = _configRepo.GetByFilter(filter);
                 if (lConfig.Any())
