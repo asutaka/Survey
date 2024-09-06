@@ -155,9 +155,13 @@ namespace StockLib.Service
             var streamTonKho = await Chart_Thep_TonKho(lFinancial, code);
             var streamNoTaiChinh = await Chart_Thep_NoTaiChinh(lFinancial, code);
             var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
+            var streamXuatKhau = await Chart_XuatKhau();
+            var streamNhapKhau = await Chart_NhapKhau();
             lOutput.Add(streamTonKho);
             lOutput.Add(streamNoTaiChinh);
             lOutput.Add(streamDoanhThu);
+            lOutput.Add(streamXuatKhau);
+            lOutput.Add(streamNhapKhau);
             return lOutput;
         }
 
