@@ -19,7 +19,7 @@ namespace StockLib.Service
             var lTime = lData.Select(x => x.d).Distinct().OrderByDescending(x => x);
             var maxTime = lTime.First();
             var prevTime = lTime.Skip(1).First();
-            var year = maxTime / 10000;
+            var year = maxTime / 1000;
             var month = (maxTime - year * 1000) / 10;
             var day = (maxTime - (year * 1000 + month * 10));
             var str = day == 1 ? "nửa đầu" : "nửa cuối";
