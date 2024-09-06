@@ -21,8 +21,6 @@ namespace StockLib.Service
                 {
                     if (lConfig.Any(x => x.t == t))
                         return (0, null);
-
-                    _configRepo.DeleteMany(filter);
                 }
                 var isXuatKhau = mode == EConfigDataType.TongCucHaiQuan_XK;
                 var str = isXuatKhau ? "Xuất khẩu hàng hóa từ ngày" : "Nhập khẩu hàng hóa từ ngày";
@@ -71,11 +69,19 @@ namespace StockLib.Service
                 }
 
                 var mes = TongCucHaiQuanPrint(dt, isXuatKhau);
-                _configRepo.InsertOne(new ConfigData
+                if(last is null)
                 {
-                    ty = (int)mode,
-                    t = t
-                });
+                    _configRepo.InsertOne(new ConfigData
+                    {
+                        ty = (int)mode,
+                        t = t
+                    });
+                }
+                else
+                {
+                    last.t = t;
+                    _configRepo.Update(last);
+                }
 
                 return (1, mes);
             }
