@@ -106,7 +106,7 @@ namespace StockLib.Service
                     }
                 };
 
-                return await Chart_BasicBase($"Sản xuất và phân phối điện tháng so với cùng kỳ năm ngoái(MoM)", lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameMonth()).ToList(), lSeries, "Đơn vị: %", "Đơn vị: %");
+                return await Chart_BasicBase($"Sản xuất và phân phối điện tháng so với cùng kỳ năm ngoái(QoQ)", lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameMonth()).ToList(), lSeries, "Đơn vị: %", "Đơn vị: %");
             }
             catch (Exception ex)
             {
@@ -158,10 +158,10 @@ namespace StockLib.Service
             var streamThongKe = await Chart_ThongKe_Dien();
             var streamThongKeQuy = await Chart_ThongKeQuy_Dien();
 
-            lOutput.Add(streamThongKe);
-            lOutput.Add(streamThongKeQuy);
             lOutput.Add(streamNoTaiChinh);
             lOutput.Add(streamDoanhThu);
+            lOutput.Add(streamThongKe);
+            lOutput.Add(streamThongKeQuy);
             return lOutput;
         }
 
