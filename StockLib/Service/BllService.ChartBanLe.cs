@@ -151,9 +151,11 @@ namespace StockLib.Service
             var streamTonKho = await Chart_BanLe_TonKho(lFinancial, code);
             var streamNoTaiChinh = await Chart_BanLe_NoTaiChinh(lFinancial, code);
             var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
+            var streamThongKe = await Chart_ThongKe_BanLe();
             lOutput.Add(streamTonKho);
             lOutput.Add(streamNoTaiChinh);
             lOutput.Add(streamDoanhThu);
+            lOutput.Add(streamThongKe);
             return lOutput;
         }
 
@@ -261,37 +263,25 @@ namespace StockLib.Service
         {
             try
             {
-                var lSatThep = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.SatThep)).OrderBy(x => x.d);
-                //var lSeries = new List<HighChartSeries_BasicColumn>
-                //{
-                //    new HighChartSeries_BasicColumn
-                //    {
-                //        data = lSatThep.TakeLast(25).Select(x => x.va),
-                //        name = "Giá trị xuất khẩu sắt thép",
-                //        type = "column",
-                //        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                //        color = "#012060"
-                //    }
-                //};
+                var lBanLe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.BanLe)).OrderBy(x => x.d);
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
+                        name = "So với cùng kỳ",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#C00000",
+                        yAxis = 1
+                    }
+                };
 
-                //if (lSatThep.Sum(x => x.price) > 0)
-                //{
-                //    lSeries.Add(new HighChartSeries_BasicColumn
-                //    {
-                //        data = lSatThep.TakeLast(25).Select(x => x.price),
-                //        name = "Giá sắt thép",
-                //        type = "spline",
-                //        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                //        color = "#C00000",
-                //        yAxis = 1
-                //    });
-                //}
-
-                return await Chart_BasicBase($"Xuất khẩu - Thống kê nửa tháng", lSatThep.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
+                return await Chart_BasicBase($"Tổng mức bán lẻ so với cùng kỳ năm ngoái(QoQ)", lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameMonth()).ToList(), lSeries, "giá trị: %", "giá trị: %");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.Chart_XuatKhau|EXCEPTION| {ex.Message}");
+                _logger.LogError($"BllService.Chart_ThongKe_BanLe|EXCEPTION| {ex.Message}");
             }
 
             return null;
