@@ -1,5 +1,4 @@
-﻿using iTextSharp.text.pdf.qrcode;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using OfficeOpenXml;
 using StockLib.DAL.Entity;
