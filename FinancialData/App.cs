@@ -23,7 +23,7 @@ namespace FinancialData
             //await _service.SyncBCTC_Thep();
             //await _service.SyncBCTC_BanLe();
             //await _service.SyncBCTC_Dien();
-            await _service.SyncBCTC_CangBien();
+            //await _service.SyncBCTC_CangBien();
             //await _service.SyncBCTC_CaoSu();
             //await _service.SyncBCTC_DetMay();
             //await _service.SyncBCTC_Go();
