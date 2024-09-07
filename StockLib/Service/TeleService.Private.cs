@@ -68,6 +68,21 @@ namespace StockLib.Service
                     await NganhDien(userId);
                     return;
                 }
+                if (StaticVal._lCangBien.Any(x => x.ToUpper().Equals(input)))//Cảng biển
+                {
+                    await NganhCangBien(userId);
+                    return;
+                }
+                if (StaticVal._lLogistic.Any(x => x.ToUpper().Equals(input)))//Logistic
+                {
+                    await NganhLogistic(userId);
+                    return;
+                }
+                if (StaticVal._lHangKhong.Any(x => x.ToUpper().Equals(input)))//Hàng không
+                {
+                    await NganhHangKhong(userId);
+                    return;
+                }
             }
             else if(input.Length == 3) //Mã chứng khoán
             {
@@ -317,6 +332,72 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"TeleService.NganhDien|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhHangKhong(long userId)
+        {
+            try
+            {
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5751")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+
+                var lStream = await _bllService.Chart_HangKhong(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhHangKhong|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhLogistic(long userId)
+        {
+            try
+            {
+                var lMaCK = StaticVal._lHangKhong;
+
+                var lStream = await _bllService.Chart_Logistic(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhLogistic|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhCangBien(long userId)
+        {
+            try
+            {
+                var lMaCK = StaticVal._lHangKhong;
+
+                var lStream = await _bllService.Chart_CangBien(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhCangBien|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
         }
     }

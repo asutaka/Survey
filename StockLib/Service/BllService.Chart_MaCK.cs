@@ -52,6 +52,24 @@ namespace StockLib.Service
             {
                 return await Chart_Dien(input);
             }
+
+            //var isCangBien = StaticVal._lCangBien.Any(x => x == stock.s);
+            //if (isCangBien)
+            //{
+            //    return await Chart_CangBien(input);
+            //}
+
+            //var isLogistic = StaticVal._lLogistic.Any(x => x == stock.s);
+            //if (isLogistic)
+            //{
+            //    return await Chart_Logistic(input);
+            //}
+
+            var isHangKhong = stock.h24.Any(y => y.code == "5751");
+            if (isHangKhong)
+            {
+                return await Chart_HangKhong(input);
+            }
             return null;
         }
     }

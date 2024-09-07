@@ -87,7 +87,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_HangKhong(string code)
         {
-            var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.s, code));
+            var lFinancial = _hangkhongRepo.GetByFilter(Builders<Financial_HangKhong>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -103,7 +103,7 @@ namespace StockLib.Service
             return lOutput;
         }
 
-        private async Task<Stream> Chart_HangKhong_NoTaiChinh(List<Financial_BanLe> lFinancial, string code)
+        private async Task<Stream> Chart_HangKhong_NoTaiChinh(List<Financial_HangKhong> lFinancial, string code)
         {
             try
             {

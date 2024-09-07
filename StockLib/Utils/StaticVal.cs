@@ -54,6 +54,26 @@ namespace StockLib.Utils
             "Điện"
         };
 
+        public static List<string> _lHangKhong = new List<string>
+        {
+            "hk",
+            "hang khong"
+        };
+
+        public static List<string> _lCangBien = new List<string>
+        {
+            "cb",
+            "port",
+            "Cang bien"
+        };
+
+        public static List<string> _lLogistic = new List<string>
+        {
+            "Logistic",
+            "vt",
+            "van tai"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "VGC",
