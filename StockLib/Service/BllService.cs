@@ -14,6 +14,18 @@ namespace StockLib.Service
         Task SyncBCTC_Thep();
         Task SyncBCTC_BanLe();
         Task SyncBCTC_Dien();
+        Task SyncBCTC_CangBien();
+        Task SyncBCTC_CaoSu();
+        Task SyncBCTC_DetMay();
+        Task SyncBCTC_Go();
+        Task SyncBCTC_HangKhong();
+        Task SyncBCTC_Logistic();
+        Task SyncBCTC_Nhua();
+        Task SyncBCTC_Oto();
+        Task SyncBCTC_PhanBon();
+        Task SyncBCTC_Than();
+        Task SyncBCTC_ThuySan();
+        Task SyncBCTC_Ximang();
 
         Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_NganHang(IEnumerable<string> lInput);
