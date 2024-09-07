@@ -9,13 +9,11 @@ namespace StockLib.Utils
         public static List<Stock> _lStock = new List<Stock>();
         public static int _MaxRate = 500;
 
-        public static List<string> _lNganHangKey = new List<string>
+        public static List<string> _lBanLeKey = new List<string>
         {
-            "NH",
-            "NganHang",
-            "Ngan Hang",
-            "Ngân hàng",
-            "Bank"
+            "BanLe",
+            "Bán Lẻ",
+            "Ban Le"
         };
 
         public static List<string> _lBatDongSanKey = new List<string>
@@ -26,12 +24,86 @@ namespace StockLib.Utils
             "Bất động sản"
         };
 
+        public static List<string> _lCangBienKey = new List<string>
+        {
+            "cb",
+            "port",
+            "Cang bien"
+        };
+
+        public static List<string> _lCaoSuKey = new List<string>
+        {
+            "cs",
+            "cao su"
+        };
+
         public static List<string> _lChungKhoanKey = new List<string>
         {
             "CK",
             "ChungKhoan",
             "Chung Khoan",
             "Chứng khoán"
+        };
+
+        public static List<string> _lDetMayKey = new List<string>
+        {
+            "dm",
+            "det may"
+        };
+
+        public static List<string> _lDienKey = new List<string>
+        {
+            "Dien",
+            "Điện"
+        };
+
+        public static List<string> _lGoKey = new List<string>
+        {
+            "go"
+        };
+
+        public static List<string> _lHangKhongKey = new List<string>
+        {
+            "hk",
+            "hang khong"
+        };
+
+        public static List<string> _lLogisticKey = new List<string>
+        {
+            "Logistic",
+            "vt",
+            "van tai"
+        };
+
+        public static List<string> _lNganHangKey = new List<string>
+        {
+            "NH",
+            "NganHang",
+            "Ngan Hang",
+            "Ngân hàng",
+            "Bank"
+        };
+
+        public static List<string> _lNhuaKey = new List<string>
+        {
+            "nhua",
+            "plastic"
+        };
+
+        public static List<string> _lOtoKey = new List<string>
+        {
+            "o to"
+        };
+
+        public static List<string> _lPhanBonKey = new List<string>
+        {
+            "pb",
+            "phan bon"
+        };
+
+        public static List<string> _lThanKey = new List<string>
+        {
+            "than"
         };
 
         public static List<string> _lThepKey = new List<string>
@@ -41,37 +113,16 @@ namespace StockLib.Utils
             "Theps"
         };
 
-        public static List<string> _lBanLeKey = new List<string>
+        public static List<string> _lThuySanKey = new List<string>
         {
-            "BanLe",
-            "Bán Lẻ",
-            "Ban Le"
+            "ts",
+            "thuy san"
         };
 
-        public static List<string> _lDienKey = new List<string>
+        public static List<string> _lXimangKey = new List<string>
         {
-            "Dien",
-            "Điện"
-        };
-
-        public static List<string> _lHangKhongKey = new List<string>
-        {
-            "hk",
-            "hang khong"
-        };
-
-        public static List<string> _lCangBienKey = new List<string>
-        {
-            "cb",
-            "port",
-            "Cang bien"
-        };
-
-        public static List<string> _lLogisticKey = new List<string>
-        {
-            "Logistic",
-            "vt",
-            "van tai"
+            "xm",
+            "xi mang"
         };
 
         public static List<string> _lKCN = new List<string>
@@ -189,12 +240,6 @@ namespace StockLib.Utils
             "DAG",
             "PGN",
             "VKP"
-        };
-
-        public static List<string> _lCaoSuKey = new List<string>
-        {
-            "cs",
-            "cao su"
         };
 
         public static List<string> _lCaoSu = new List<string>
