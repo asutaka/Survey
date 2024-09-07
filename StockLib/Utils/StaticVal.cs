@@ -93,5 +93,122 @@ namespace StockLib.Utils
             "FCN",
             "HBC"
         };
+
+        public static List<string> _lThuySan = new List<string>
+        {
+            "AAM",
+            "ACL",
+            "AGF",
+            "ANV",
+            "APT",
+            "ASM",
+            "ATA",
+            "AVF",
+            "BLF",
+            "CAD",
+            "CAT",
+            "CCA",
+            "CMX",
+            "DAT",
+            "DMN",
+            "FMC",
+            "HVG",
+            "ICF",
+            "IDI",
+            "JOS",
+            "KHS",
+            "MPC",
+            "NGC",
+            "SEA",
+            "SNC",
+            "SPD",
+            "SPV",
+            "SSN",
+            "TCJ",
+            "THP",
+            "TS4",
+            "VHC",
+            "VNH"
+        };
+
+        public static List<string> _lXimang = new List<string>
+        {
+            "BCC",
+            "BTS",
+            "CCM",
+            "CLH",
+            "HOM",
+            "HT1",
+            "HVX",
+            "LCC",
+            "PTE",
+            "PX1",
+            "QNC",
+            "SCJ",
+            "SDY",
+            "TBX",
+            "TMX",
+            "TXM",
+            "VCX",
+            "YBC"
+        };
+
+        public static List<string> _lNhua = new List<string>
+        {
+            "BMP",
+            "NTP",
+            "AAA",
+            "DAG",
+            "NHH",
+            "NSG",
+            "PCH",
+            "PGN",
+            "PLP",
+            "TPC",
+            "VKP",
+            "VNP",
+            "VTZ"
+        };
+
+        public static List<string> _lCaoSu = new List<string>
+        {
+            "BRC",
+            "BRR",
+            "DPR",
+            "DRG",
+            "DRI",
+            "GVR",
+            "HRC",
+            "IRC",
+            "PHR",
+            "RBC",
+            "RTB",
+            "SBR",
+            "TNC",
+            "TRC"
+        };
+
+        public static List<string> _lPhanBon = new List<string>
+        {
+            "BFC",
+            "CSV",
+            "DCM",
+            "DDV",
+            "DGC",
+            "DHB",
+            "DPM",
+            "HPH",
+            "HSI",
+            "HVT",
+            "LAS",
+            "NFC",
+            "PAT",
+            "PCE",
+            "PMB",
+            "PSE",
+            "PSW",
+            "SFG",
+            "VAF"
+        };
     }
 }
