@@ -87,7 +87,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_CangBien(string code)
         {
-            var lFinancial = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.s, code));
+            var lFinancial = _cangbienRepo.GetByFilter(Builders<Financial_CangBien>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -103,7 +103,7 @@ namespace StockLib.Service
             return lOutput;
         }
 
-        private async Task<Stream> Chart_CangBien_NoTaiChinh(List<Financial_BanLe> lFinancial, string code)
+        private async Task<Stream> Chart_CangBien_NoTaiChinh(List<Financial_CangBien> lFinancial, string code)
         {
             try
             {

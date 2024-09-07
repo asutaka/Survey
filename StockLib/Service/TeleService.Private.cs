@@ -361,7 +361,8 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lHangKhong;
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2773"
+                                                                                    || y.code == "2779")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Logistic(lMaCK);
                 if (lStream is null)
@@ -383,7 +384,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lHangKhong;
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2777")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_CangBien(lMaCK);
                 if (lStream is null)
