@@ -35,11 +35,28 @@ namespace StockLib.Service
         private readonly IFinancialThepRepo _thepRepo;
         private readonly IFinancialBanLeRepo _banleRepo;
         private readonly IFinancialDienRepo _dienRepo;
+        private readonly IFinancialOtoRepo _otoRepo;
+        private readonly IFinancialCangBienRepo _cangbienRepo;
+        private readonly IFinancialNongNghiepRepo _nongnghiepRepo;
+        private readonly IFinancialPhanBonRepo _phanbonRepo;
+        private readonly IFinancialThanRepo _thanRepo;
+        private readonly IFinancialThuySanRepo _thuysanRepo;
+        private readonly IFinancialXimangRepo _ximangRepo;
+        private readonly IFinancialNhuaRepo _nhuaRepo;
+        private readonly IFinancialCaoSuRepo _caosuRepo;
+        private readonly IFinancialDauTuCongRepo _dtcRepo;
+        private readonly IFinancialDetMayRepo _detmayRepo;
+        private readonly IFinancialGoRepo _goRepo;
+        private readonly IFinancialHangKhongRepo _hangkhongRepo;
+        private readonly IFinancialHoaChatRepo _hoachatRepo;
+        private readonly IFinancialLogisticRepo _logisticRepo;
+
         private readonly IConfigDataRepo _configRepo;
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IAPIService _apiService;
+
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
                             IStockFinancialRepo financialRepo,
@@ -49,6 +66,22 @@ namespace StockLib.Service
                             IFinancialThepRepo financialThepRepo,
                             IFinancialBanLeRepo financialBanLeRepo,
                             IFinancialDienRepo financialDienRepo,
+                            IFinancialOtoRepo otoRepo,
+                            IFinancialCangBienRepo cangbienRepo,
+                            IFinancialNongNghiepRepo nongnghiepRepo,
+                            IFinancialPhanBonRepo phanbonRepo,
+                            IFinancialThanRepo thanRepo,
+                            IFinancialThuySanRepo thuysanRepo,
+                            IFinancialXimangRepo ximangRepo,
+                            IFinancialNhuaRepo nhuaRepo,
+                            IFinancialCaoSuRepo caosuRepo,
+                            IFinancialDauTuCongRepo dtcRepo,
+                            IFinancialDetMayRepo detmayRepo,
+                            IFinancialGoRepo goRepo,
+                            IFinancialHangKhongRepo hangkhongRepo,
+                            IFinancialHoaChatRepo hoachatRepo,
+                            IFinancialLogisticRepo logisticRepo,
+
                             IConfigDataRepo configRepo,
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
@@ -64,6 +97,22 @@ namespace StockLib.Service
             _thepRepo = financialThepRepo;
             _banleRepo = financialBanLeRepo;
             _dienRepo = financialDienRepo;
+            _otoRepo = otoRepo;
+            _cangbienRepo = cangbienRepo;
+            _nongnghiepRepo = nongnghiepRepo;
+            _phanbonRepo = phanbonRepo;
+            _thanRepo = thanRepo;
+            _thuysanRepo = thuysanRepo;
+            _ximangRepo = ximangRepo;
+            _nhuaRepo = nhuaRepo;
+            _caosuRepo = caosuRepo;
+            _dtcRepo = dtcRepo;
+            _detmayRepo = detmayRepo;
+            _goRepo = goRepo;
+            _hangkhongRepo = hangkhongRepo;
+            _hoachatRepo = hoachatRepo;
+            _logisticRepo = logisticRepo;
+
             _configRepo = configRepo;
             _thongkequyRepo = thongkequyRepo;
             _thongkeRepo = thongkeRepo;
