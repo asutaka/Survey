@@ -70,6 +70,12 @@ namespace StockLib.Service
             {
                 return await Chart_HangKhong(input);
             }
+
+            var isCaoSu = StaticVal._lCaoSu.Any(x => x == stock.s);
+            if (isCaoSu)
+            {
+                return await Chart_CaoSu(input);
+            }
             return null;
         }
     }

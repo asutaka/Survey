@@ -38,51 +38,61 @@ namespace StockLib.Service
                 || (input.StartsWith("@") && input.EndsWith("@")))//Nhóm ngành
             {
                 input = input.Replace("[", "").Replace("]", "").Replace("*", "").Replace("@", "");
-                if(StaticVal._lNganHang.Any(x => x.ToUpper().Equals(input)))//Ngành Ngân Hàng
+                if(StaticVal._lNganHangKey.Any(x => x.ToUpper().Equals(input)))//Ngành Ngân Hàng
                 {
                     await NganhNganHang(userId);
                     return;
                 }
-                if (StaticVal._lBatDongSan.Any(x => x.ToUpper().Equals(input)))//Ngành Bất động sản
+                if (StaticVal._lBatDongSanKey.Any(x => x.ToUpper().Equals(input)))//Ngành Bất động sản
                 {
                     await NganhBatDongSan(userId);
                     return;
                 }
-                if (StaticVal._lChungKhoan.Any(x => x.ToUpper().Equals(input)))//Ngành Chứng khoán
+                if (StaticVal._lChungKhoanKey.Any(x => x.ToUpper().Equals(input)))//Ngành Chứng khoán
                 {
                     await NganhChungKhoan(userId);
                     return;
                 }
-                if (StaticVal._lThep.Any(x => x.ToUpper().Equals(input)))//Ngành Thép
+                if (StaticVal._lThepKey.Any(x => x.ToUpper().Equals(input)))//Ngành Thép
                 {
                     await NganhThep(userId);
                     return;
                 }
-                if (StaticVal._lBanLe.Any(x => x.ToUpper().Equals(input)))//Ngành Bán Lẻ
+                if (StaticVal._lBanLeKey.Any(x => x.ToUpper().Equals(input)))//Ngành Bán Lẻ
                 {
                     await NganhBanLe(userId);
                     return;
                 }
-                if (StaticVal._lDien.Any(x => x.ToUpper().Equals(input)))//Ngành Điện
+                if (StaticVal._lDienKey.Any(x => x.ToUpper().Equals(input)))//Ngành Điện
                 {
                     await NganhDien(userId);
                     return;
                 }
-                if (StaticVal._lCangBien.Any(x => x.ToUpper().Equals(input)))//Cảng biển
+                if (StaticVal._lCangBienKey.Any(x => x.ToUpper().Equals(input)))//Cảng biển
                 {
                     await NganhCangBien(userId);
                     return;
                 }
-                if (StaticVal._lLogistic.Any(x => x.ToUpper().Equals(input)))//Logistic
+                if (StaticVal._lLogisticKey.Any(x => x.ToUpper().Equals(input)))//Logistic
                 {
                     await NganhLogistic(userId);
                     return;
                 }
-                if (StaticVal._lHangKhong.Any(x => x.ToUpper().Equals(input)))//Hàng không
+                if (StaticVal._lHangKhongKey.Any(x => x.ToUpper().Equals(input)))//Hàng không
                 {
                     await NganhHangKhong(userId);
                     return;
                 }
+                if (StaticVal._lCaoSuKey.Any(x => x.ToUpper().Equals(input)))//Cao Su
+                {
+                    await NganhCaoSu(userId);
+                    return;
+                }
+                //if (StaticVal._lHangKhong.Any(x => x.ToUpper().Equals(input)))//Hàng không
+                //{
+                //    await NganhHangKhong(userId);
+                //    return;
+                //}
             }
             else if(input.Length == 3) //Mã chứng khoán
             {
@@ -399,6 +409,28 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"TeleService.NganhCangBien|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhCaoSu(long userId)
+        {
+            try
+            {
+                var lMaCK = StaticVal._lCaoSu;
+
+                var lStream = await _bllService.Chart_CaoSu(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhCaoSu|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
         }
     }

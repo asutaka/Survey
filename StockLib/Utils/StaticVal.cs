@@ -9,7 +9,7 @@ namespace StockLib.Utils
         public static List<Stock> _lStock = new List<Stock>();
         public static int _MaxRate = 500;
 
-        public static List<string> _lNganHang = new List<string>
+        public static List<string> _lNganHangKey = new List<string>
         {
             "NH",
             "NganHang",
@@ -18,7 +18,7 @@ namespace StockLib.Utils
             "Bank"
         };
 
-        public static List<string> _lBatDongSan = new List<string>
+        public static List<string> _lBatDongSanKey = new List<string>
         {
             "BDS",
             "Batdongsan",
@@ -26,7 +26,7 @@ namespace StockLib.Utils
             "Bất động sản"
         };
 
-        public static List<string> _lChungKhoan = new List<string>
+        public static List<string> _lChungKhoanKey = new List<string>
         {
             "CK",
             "ChungKhoan",
@@ -34,40 +34,40 @@ namespace StockLib.Utils
             "Chứng khoán"
         };
 
-        public static List<string> _lThep = new List<string>
+        public static List<string> _lThepKey = new List<string>
         {
             "Thep",
             "Thép",
             "Theps"
         };
 
-        public static List<string> _lBanLe = new List<string>
+        public static List<string> _lBanLeKey = new List<string>
         {
             "BanLe",
             "Bán Lẻ",
             "Ban Le"
         };
 
-        public static List<string> _lDien = new List<string>
+        public static List<string> _lDienKey = new List<string>
         {
             "Dien",
             "Điện"
         };
 
-        public static List<string> _lHangKhong = new List<string>
+        public static List<string> _lHangKhongKey = new List<string>
         {
             "hk",
             "hang khong"
         };
 
-        public static List<string> _lCangBien = new List<string>
+        public static List<string> _lCangBienKey = new List<string>
         {
             "cb",
             "port",
             "Cang bien"
         };
 
-        public static List<string> _lLogistic = new List<string>
+        public static List<string> _lLogisticKey = new List<string>
         {
             "Logistic",
             "vt",
@@ -76,28 +76,28 @@ namespace StockLib.Utils
 
         public static List<string> _lKCN = new List<string>
         {
-            "VGC",
-            "KBC",
-            "ITA",
-            "TIX",
-            "LHG",
             "BCM",
-            "SZL",
-            "D2D",
-            "SZC",
-            "CCL",
-            "DRH",
-            "HAR",
-            "KOS",
-            "VC3",
-            "IDV",
+            "KBC",
+            "VGC",
             "IDC",
-            "BII",
-            "HPI",
-            "NTC",
             "SIP",
             "SNZ",
-            "TID"
+            "KOS",
+            "SZC",
+            "TID",
+            "NTC",
+            "VC3",
+            "ITA",
+            "LHG",
+            "IDV",
+            "D2D",
+            "SZL",
+            "TIX",
+            "HPI",
+            "CCL",
+            "HAR",
+            "DRH",
+            "BII",
         };
 
         public static List<string> _lVin = new List<string>
@@ -116,119 +116,127 @@ namespace StockLib.Utils
 
         public static List<string> _lThuySan = new List<string>
         {
-            "AAM",
-            "ACL",
-            "AGF",
-            "ANV",
-            "APT",
-            "ASM",
-            "ATA",
-            "AVF",
-            "BLF",
-            "CAD",
-            "CAT",
-            "CCA",
-            "CMX",
-            "DAT",
-            "DMN",
-            "FMC",
-            "HVG",
-            "ICF",
-            "IDI",
-            "JOS",
-            "KHS",
+            "VHC",
             "MPC",
-            "NGC",
             "SEA",
+            "ANV",
+            "ASM",
+            "FMC",
+            "IDI",
+            "CMX",
+            "ACL",
+            "DAT",
+            "HVG",
+            "CCA",
+            "SPV",
+            "THP",
+            "CAT",
+            "KHS",
             "SNC",
             "SPD",
-            "SPV",
+            "AGF",
+            "AAM",
+            "DMN",
             "SSN",
+            "BLF",
+            "ICF",
             "TCJ",
-            "THP",
+            "APT",
             "TS4",
-            "VHC",
-            "VNH"
+            "AVF",
+            "VNH",
+            "CAD",
+            "JOS",
+            "ATA",
+            "NGC"
         };
 
         public static List<string> _lXimang = new List<string>
         {
+            "HT1",
             "BCC",
             "BTS",
-            "CCM",
-            "CLH",
-            "HOM",
-            "HT1",
-            "HVX",
-            "LCC",
-            "PTE",
-            "PX1",
             "QNC",
+            "CCM",
+            "HOM",
+            "CLH",
             "SCJ",
-            "SDY",
-            "TBX",
-            "TMX",
-            "TXM",
+            "PX1",
             "VCX",
-            "YBC"
+            "HVX",
+            "YBC",
+            "TMX",
+            "TBX",
+            "PTE",
+            "TXM",
+            "SDY",
+            "LCC"
         };
 
         public static List<string> _lNhua = new List<string>
         {
-            "BMP",
             "NTP",
+            "BMP",
             "AAA",
-            "DAG",
+            "APH",
             "NHH",
-            "NSG",
-            "PCH",
-            "PGN",
+            "VTZ",
             "PLP",
-            "TPC",
-            "VKP",
+            "PCH",
             "VNP",
-            "VTZ"
+            "TPC",
+            "NSG",
+            "DAG",
+            "PGN",
+            "VKP"
+        };
+
+        public static List<string> _lCaoSuKey = new List<string>
+        {
+            "cs",
+            "cao su"
         };
 
         public static List<string> _lCaoSu = new List<string>
         {
-            "BRC",
-            "BRR",
-            "DPR",
-            "DRG",
-            "DRI",
             "GVR",
-            "HRC",
-            "IRC",
             "PHR",
-            "RBC",
+            "DRC",
+            "DPR",
             "RTB",
-            "SBR",
+            "BRR",
+            "DRG",
+            "HRC",
+            "TRC",
+            "DRI",
             "TNC",
-            "TRC"
+            "SBR",
+            "BRC",
+            "IRC",
+            "RBC"
         };
 
         public static List<string> _lPhanBon = new List<string>
         {
-            "BFC",
-            "CSV",
-            "DCM",
-            "DDV",
             "DGC",
-            "DHB",
+            "DCM",
             "DPM",
-            "HPH",
-            "HSI",
-            "HVT",
+            "CSV",
+            "DDV",
             "LAS",
-            "NFC",
+            "BFC",
+            "DHB",
             "PAT",
-            "PCE",
-            "PMB",
-            "PSE",
-            "PSW",
+            "HVT",
             "SFG",
-            "VAF"
+            "VAF",
+            "NFC",
+            "PCE",
+            "HPH",
+            "PSW",
+            "PSE",
+            "PMB",
+            "HSI"
         };
     }
 }
