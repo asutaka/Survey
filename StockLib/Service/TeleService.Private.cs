@@ -390,24 +390,24 @@ namespace StockLib.Service
 
         private async Task NganhGo(long userId)
         {
-            //try
-            //{
-            //    var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1733")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+            try
+            {
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1733")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
-            //    var lStream = await _bllService.Chart_BanLe(lMaCK);
-            //    if (lStream is null)
-            //        return;
-            //    foreach (var stream in lStream)
-            //    {
-            //        await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
-            //    }
+                var lStream = await _bllService.Chart_Go(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
 
-            //    await BotInstance().SendTextMessageAsync(userId, "done!");
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError($"TeleService.NganhBanLe|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
-            //}
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhGo|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
         }
 
         private async Task NganhHangKhong(long userId)
