@@ -20,11 +20,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9B784990-76E1-417C-A921-D73B0F63F023}"
 	ProjectSection(SolutionItems) = preProject
 		Readme.md = Readme.md
+		Readme2.md = Readme2.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AnalyzeStock", "AnalyzeStock\AnalyzeStock.csproj", "{B03CC15E-C010-4984-9049-9026760E0298}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockTestCase", "StockTestCase\StockTestCase.csproj", "{F154768E-93A1-446E-8CA6-CBC5E9BBEBEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockTestCase", "StockTestCase\StockTestCase.csproj", "{F154768E-93A1-446E-8CA6-CBC5E9BBEBEF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
