@@ -128,6 +128,11 @@ namespace StockLib.Service
                     await NganhXimang(userId);
                     return;
                 }
+                if (StaticVal._lXayDungKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Xây dựng
+                {
+                    await NganhXayDung(userId);
+                    return;
+                }
             }
             else if(input.Length == 3) //Mã chứng khoán
             {
@@ -642,6 +647,28 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"TeleService.NganhXimang|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
+        }
+
+        private async Task NganhXayDung(long userId)
+        {
+            try
+            {
+                var lMaCK = StaticVal._lXayDung;
+
+                var lStream = await _bllService.Chart_XayDung(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
+
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhXayDung|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
         }
     }

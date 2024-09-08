@@ -125,6 +125,12 @@ namespace StockLib.Utils
             "xi mang"
         };
 
+        public static List<string> _lXayDungKey = new List<string>
+        {
+            "xd",
+            "xay dung"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "BCM",

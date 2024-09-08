@@ -11,7 +11,10 @@ namespace StockLib.Service
                 return null;
 
             var isXayDung = StaticVal._lXayDung.Any(x => x == stock.s);
-            if (isXayDung) { }
+            if (isXayDung) 
+            {
+                return await Chart_XayDung(input);
+            }
             var isKCN = StaticVal._lKCN.Any(x => x == stock.s);
             if(isKCN) { }
             var isVin = StaticVal._lVin.Any(x => x == stock.s);
