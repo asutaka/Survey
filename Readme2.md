@@ -38,5 +38,5 @@ XIX. Trọng số Ngành Xây Dựng
 XX. Trọng số Ngành Xi măng
 XXI. Trọng số Ngành Dầu Khí 
 XXII. Trọng số Ngành Bảo hiểm 
-XXIII. Trọng số Ngành y tế
+XXIII. Trọng số Ngành y tế - dịch vụ y tế
 XXIV. Trọng số Ngành CNTT - Viễn Thông
