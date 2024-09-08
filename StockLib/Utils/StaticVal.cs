@@ -136,6 +136,13 @@ namespace StockLib.Utils
             "kcn"
         };
 
+        public static List<string> _lDauKhiKey = new List<string>
+        {
+            "dk",
+            "dau khi"
+        };
+
+
         public static List<string> _lKCN = new List<string>
         {
             "BCM",

@@ -22,6 +22,7 @@ namespace StockLib.PublicService
         Task SyncBCTC_Than();
         Task SyncBCTC_ThuySan();
         Task SyncBCTC_Ximang();
+        Task SyncBCTC_DauKhi();
     }
     public class FinancialDataService : IFinancialDataService
     {
@@ -119,6 +120,11 @@ namespace StockLib.PublicService
         public async Task SyncBCTC_Ximang()
         {
             await _bllService.SyncBCTC_Ximang();
+        }
+
+        public async Task SyncBCTC_DauKhi()
+        {
+            await _bllService.SyncBCTC_DauKhi();
         }
     }
 }

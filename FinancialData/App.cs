@@ -35,6 +35,7 @@ namespace FinancialData
             //await _service.SyncBCTC_Than();
             //await _service.SyncBCTC_ThuySan();
             //await _service.SyncBCTC_Ximang();
+            //await _service.SyncBCTC_DauKhi();
         }
     }
 }

@@ -139,6 +139,12 @@ namespace StockLib.Service
                     await NganhKCN(userId);
                     return;
                 }
+
+                if (StaticVal._lDauKhiKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Dầu Khí
+                {
+                    await NganhDauKhi(userId);
+                    return;
+                }
             }
             else if(input.Length == 3) //Mã chứng khoán
             {
@@ -698,6 +704,29 @@ namespace StockLib.Service
             {
                 _logger.LogError($"TeleService.NganhKCN|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
             }
+        }
+
+        private async Task NganhDauKhi(long userId)
+        {
+            //try
+            //{
+            //    var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7573"
+            //                                                                        || y.code == "0500")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+
+            //    var lStream = await _bllService.Chart_DauKhi(lMaCK);
+            //    if (lStream is null)
+            //        return;
+            //    foreach (var stream in lStream)
+            //    {
+            //        await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+            //    }
+
+            //    await BotInstance().SendTextMessageAsync(userId, "done!");
+            //}
+            //catch (Exception ex)
+            //{
+            //    _logger.LogError($"TeleService.NganhDauKhi|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            //}
         }
     }
 }

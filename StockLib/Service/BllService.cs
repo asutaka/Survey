@@ -26,6 +26,7 @@ namespace StockLib.Service
         Task SyncBCTC_Than();
         Task SyncBCTC_ThuySan();
         Task SyncBCTC_Ximang();
+        Task SyncBCTC_DauKhi();
 
         Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_NganHang(IEnumerable<string> lInput);
@@ -71,6 +72,7 @@ namespace StockLib.Service
         private readonly IFinancialDauTuCongRepo _dtcRepo;
         private readonly IFinancialDetMayRepo _detmayRepo;
         private readonly IFinancialGoRepo _goRepo;
+        private readonly IFinancialDauKhiRepo _daukhiRepo;
         private readonly IFinancialHangKhongRepo _hangkhongRepo;
         private readonly IFinancialLogisticRepo _logisticRepo;
 
@@ -98,6 +100,7 @@ namespace StockLib.Service
                             IFinancialDauTuCongRepo dtcRepo,
                             IFinancialDetMayRepo detmayRepo,
                             IFinancialGoRepo goRepo,
+                            IFinancialDauKhiRepo daukhiRepo,
                             IFinancialHangKhongRepo hangkhongRepo,
                             IFinancialNhuaRepo nhuaRepo,
                             IFinancialXimangRepo ximangRepo,
@@ -131,6 +134,7 @@ namespace StockLib.Service
             _nhuaRepo = nhuaRepo;
             _ximangRepo = ximangRepo;
             _logisticRepo = logisticRepo;
+            _daukhiRepo = daukhiRepo;
 
             _configRepo = configRepo;
             _thongkequyRepo = thongkequyRepo;
