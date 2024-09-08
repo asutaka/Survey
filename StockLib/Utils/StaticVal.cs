@@ -131,6 +131,11 @@ namespace StockLib.Utils
             "xay dung"
         };
 
+        public static List<string> _lKCNKey = new List<string>
+        {
+            "kcn"
+        };
+
         public static List<string> _lKCN = new List<string>
         {
             "BCM",

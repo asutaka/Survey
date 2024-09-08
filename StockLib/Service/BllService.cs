@@ -45,7 +45,7 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_ThuySan(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_Oto(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_Go(IEnumerable<string> lInput);
-
+        Task<List<Stream>> Chart_KCN(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_XayDung(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_MaCK(string input);
     }
