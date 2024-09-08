@@ -38,6 +38,12 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_CangBien(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_CaoSu(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_DetMay(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_Ximang(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_Than(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_PhanBon(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_Nhua(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_ThuySan(IEnumerable<string> lInput);
+        Task<List<Stream>> Chart_Oto(IEnumerable<string> lInput);
 
 
         Task<List<Stream>> Chart_MaCK(string input);

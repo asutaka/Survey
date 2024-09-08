@@ -76,6 +76,42 @@ namespace StockLib.Service
             {
                 return await Chart_CaoSu(input);
             }
+
+            var isNhua = StaticVal._lNhua.Any(x => x == stock.s);
+            if (isNhua)
+            {
+                return await Chart_Nhua(input);
+            }
+
+            var isOto = stock.h24.Any(y => y.code == "3353");
+            if (isOto)
+            {
+                return await Chart_Oto(input);
+            }
+
+            var isPhanBon = StaticVal._lPhanBon.Any(x => x == stock.s);
+            if (isPhanBon)
+            {
+                return await Chart_PhanBon(input);
+            }
+
+            var isThan = stock.h24.Any(y => y.code == "1771");
+            if (isThan)
+            {
+                return await Chart_Than(input);
+            }
+
+            var isThuySan = StaticVal._lThuySan.Any(x => x == stock.s);
+            if (isThuySan)
+            {
+                return await Chart_ThuySan(input);
+            }
+
+            var isXimang = StaticVal._lXimang.Any(x => x == stock.s);
+            if (isXimang)
+            {
+                return await Chart_Ximang(input);
+            }
             return null;
         }
     }
