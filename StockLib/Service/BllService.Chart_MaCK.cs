@@ -130,6 +130,12 @@ namespace StockLib.Service
             {
                 return await Chart_Go(input);
             }
+
+            var isDauKhi = stock.h24.Any(y => y.code == "7573" || y.code == "0500");
+            if (isDauKhi)
+            {
+                return await Chart_DauKhi(input);
+            }
             return null;
         }
     }

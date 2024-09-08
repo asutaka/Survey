@@ -708,25 +708,25 @@ namespace StockLib.Service
 
         private async Task NganhDauKhi(long userId)
         {
-            //try
-            //{
-            //    var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7573"
-            //                                                                        || y.code == "0500")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+            try
+            {
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7573"
+                                                                                    || y.code == "0500")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
-            //    var lStream = await _bllService.Chart_DauKhi(lMaCK);
-            //    if (lStream is null)
-            //        return;
-            //    foreach (var stream in lStream)
-            //    {
-            //        await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
-            //    }
+                var lStream = await _bllService.Chart_DauKhi(lMaCK);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
 
-            //    await BotInstance().SendTextMessageAsync(userId, "done!");
-            //}
-            //catch (Exception ex)
-            //{
-            //    _logger.LogError($"TeleService.NganhDauKhi|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
-            //}
+                await BotInstance().SendTextMessageAsync(userId, "done!");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.NganhDauKhi|EXCEPTION| INPUT: UserID: {userId}|{ex.Message}");
+            }
         }
     }
 }
