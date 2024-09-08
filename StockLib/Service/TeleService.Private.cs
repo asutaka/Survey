@@ -721,6 +721,8 @@ namespace StockLib.Service
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 }
 
+                await BotInstance().SendTextMessageAsync(userId, $"Giá dầu thô: https://tradingeconomics.com/commodity/crude-oil");
+                await BotInstance().SendTextMessageAsync(userId, $"Chu kỳ kinh tế: https://thetechnicaltraders.com/how-to-tell-if-the-stock-market-is-bullish-or-bearish");
                 await BotInstance().SendTextMessageAsync(userId, "done!");
             }
             catch (Exception ex)

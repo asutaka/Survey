@@ -37,6 +37,18 @@ XVIII. Trọng Số Ngành Thủy Sản
 XIX. Trọng số Ngành Xây Dựng
 XX. Trọng số Ngành Xi măng
 XXI. Trọng số Ngành Dầu Khí 
+	1. Giá dầu thô thế giới
+	2. Chu kỳ kinh tế 
+	3. Phân tách từng mã cổ phiếu 
+		+ Thượng nguồn(Sản xuất dầu khí): 
+			+ PVD: Cho thuê giàn khoan
+			+ PVS: Thăm dò và khai thác dầu khí
+		+ Vận tải: PVT, PVP
+		+ Trung nguồn: GAS, BSR
+		+ Hạ Nguồn: 
+			+ Điện khí: POW, NT2(Bất lợi khi giá dầu tăng)
+			+ Phân bón: DPM, DCM(Bất lợi khi giá dầu tăng)
+			+ Phân phối: PLX, OIL
 XXII. Trọng số Ngành Bảo hiểm 
 XXIII. Trọng số Ngành y tế - dịch vụ y tế
 XXIV. Trọng số Ngành CNTT - Viễn Thông
