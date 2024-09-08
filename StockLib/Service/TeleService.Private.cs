@@ -32,98 +32,98 @@ namespace StockLib.Service
             {
                 return;
             }
-            input = input.Trim().ToUpper();
+            input = input.RemoveSpace().ToUpper();
             if((input.StartsWith("[") && input.EndsWith("]"))
                 || (input.StartsWith("*") && input.EndsWith("*"))
                 || (input.StartsWith("@") && input.EndsWith("@")))//Nhóm ngành
             {
                 input = input.Replace("[", "").Replace("]", "").Replace("*", "").Replace("@", "");
-                if (StaticVal._lBanLeKey.Any(x => x.ToUpper().Equals(input)))//Ngành Bán Lẻ
+                if (StaticVal._lBanLeKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Bán Lẻ
                 {
                     await NganhBanLe(userId);
                     return;
                 }
-                if (StaticVal._lBatDongSanKey.Any(x => x.ToUpper().Equals(input)))//Ngành Bất động sản
+                if (StaticVal._lBatDongSanKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Bất động sản
                 {
                     await NganhBatDongSan(userId);
                     return;
                 }
-                if (StaticVal._lCangBienKey.Any(x => x.ToUpper().Equals(input)))//Cảng biển
+                if (StaticVal._lCangBienKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Cảng biển
                 {
                     await NganhCangBien(userId);
                     return;
                 }
-                if (StaticVal._lCaoSuKey.Any(x => x.ToUpper().Equals(input)))//Cao Su
+                if (StaticVal._lCaoSuKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Cao Su
                 {
                     await NganhCaoSu(userId);
                     return;
                 }
-                if (StaticVal._lChungKhoanKey.Any(x => x.ToUpper().Equals(input)))//Ngành Chứng khoán
+                if (StaticVal._lChungKhoanKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Chứng khoán
                 {
                     await NganhChungKhoan(userId);
                     return;
                 }
-                if (StaticVal._lDetMayKey.Any(x => x.ToUpper().Equals(input)))//Dệt may
+                if (StaticVal._lDetMayKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Dệt may
                 {
                     await NganhDetMay(userId);
                     return;
                 }
-                if (StaticVal._lDienKey.Any(x => x.ToUpper().Equals(input)))//Ngành Điện
+                if (StaticVal._lDienKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Điện
                 {
                     await NganhDien(userId);
                     return;
                 }
-                if (StaticVal._lGoKey.Any(x => x.ToUpper().Equals(input)))//Gỗ
+                if (StaticVal._lGoKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Gỗ
                 {
                     await NganhGo(userId);
                     return;
                 }
-                if (StaticVal._lHangKhongKey.Any(x => x.ToUpper().Equals(input)))//Hàng không
+                if (StaticVal._lHangKhongKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Hàng không
                 {
                     await NganhHangKhong(userId);
                     return;
                 }
-                if (StaticVal._lLogisticKey.Any(x => x.ToUpper().Equals(input)))//Logistic
+                if (StaticVal._lLogisticKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Logistic
                 {
                     await NganhLogistic(userId);
                     return;
                 }
-                if (StaticVal._lNganHangKey.Any(x => x.ToUpper().Equals(input)))//Ngành Ngân Hàng
+                if (StaticVal._lNganHangKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Ngân Hàng
                 {
                     await NganhNganHang(userId);
                     return;
                 }
-                if (StaticVal._lNhuaKey.Any(x => x.ToUpper().Equals(input)))//Nhựa
+                if (StaticVal._lNhuaKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Nhựa
                 {
                     await NganhNhua(userId);
                     return;
                 }
-                if (StaticVal._lOtoKey.Any(x => x.ToUpper().Equals(input)))//Ô tô
+                if (StaticVal._lOtoKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ô tô
                 {
                     await NganhOto(userId);
                     return;
                 }
-                if (StaticVal._lPhanBonKey.Any(x => x.ToUpper().Equals(input)))//Phân bón, hóa chất
+                if (StaticVal._lPhanBonKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Phân bón, hóa chất
                 {
                     await NganhPhanBon(userId);
                     return;
                 }
-                if (StaticVal._lThanKey.Any(x => x.ToUpper().Equals(input)))//Ngành Than
+                if (StaticVal._lThanKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Than
                 {
                     await NganhThan(userId);
                     return;
                 }
-                if (StaticVal._lThepKey.Any(x => x.ToUpper().Equals(input)))//Ngành Thép
+                if (StaticVal._lThepKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Thép
                 {
                     await NganhThep(userId);
                     return;
                 }
-                if (StaticVal._lThuySanKey.Any(x => x.ToUpper().Equals(input)))//Ngành Thủy sản
+                if (StaticVal._lThuySanKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Thủy sản
                 {
                     await NganhThuySan(userId);
                     return;
                 }
-                if (StaticVal._lXimangKey.Any(x => x.ToUpper().Equals(input)))//Ngành Xi măng
+                if (StaticVal._lXimangKey.Any(x => x.RemoveSpace().ToUpper().Equals(input)))//Ngành Xi măng
                 {
                     await NganhXimang(userId);
                     return;

@@ -112,6 +112,18 @@ namespace StockLib.Service
             {
                 return await Chart_Ximang(input);
             }
+
+            var isDetmay = stock.h24.Any(y => y.code == "3763");
+            if (isDetmay)
+            {
+                return await Chart_DetMay(input);
+            }
+
+            var isGo = stock.h24.Any(y => y.code == "1733");
+            if (isGo)
+            {
+                return await Chart_Go(input);
+            }
             return null;
         }
     }
