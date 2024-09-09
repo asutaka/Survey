@@ -200,6 +200,16 @@
         public double dilutedPe { get; set; }
     }
 
+    public class SSI_ShareResponse
+    {
+        public SSI_Share data { get; set; }
+    }
+
+    public class SSI_Share
+    {
+        public double sharesOutstanding { get; set; }
+    }
+
     public class Money24h_KeHoach
     {
         public int status { get; set; }

@@ -31,6 +31,7 @@ namespace StockLib.Service
 
         Task<List<Quote>> SSI_GetDataStock(string code);
         Task<List<SSI_PEDetail>> SSI_GetFinance(string code);
+        Task<SSI_Share> SSI_GetShare(string code);
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
@@ -287,6 +288,25 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.SSI_GetFinance|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<SSI_Share> SSI_GetShare(string code)
+        {
+            var url = $"https://iboard-api.ssi.com.vn/statistics/company/company-statistics?symbol={code}";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<SSI_ShareResponse>(responseMessageStr);
+                return responseModel.data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.SSI_GetShare|EXCEPTION| {ex.Message}");
             }
             return null;
         }

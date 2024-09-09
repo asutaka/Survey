@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -141,6 +142,37 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"BllService.SyncKeHoach|EXCEPTION| {ex.Message}");
+            }
+        }
+
+        public async Task SyncShare()
+        {
+            try
+            {
+                foreach (var item in StaticVal._lStock)
+                {
+                    var res = await _apiService.SSI_GetShare(item.s);
+                    var lCheck = _shareRepo.GetByFilter(Builders<Share>.Filter.Eq(x => x.s, item.s));
+                    if (lCheck?.Any() ?? false)
+                    {
+                        var entity = lCheck.First();
+                        entity.share = Math.Round(res.sharesOutstanding, 1);
+
+                        _shareRepo.Update(entity);
+                        continue;
+                    }
+
+
+                    _shareRepo.InsertOne(new Share
+                    {
+                        s = item.s,
+                        share = Math.Round(res.sharesOutstanding,1)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.SyncShare|EXCEPTION| {ex.Message}");
             }
         }
     }

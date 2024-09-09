@@ -30,6 +30,7 @@ namespace StockLib.Service
 
         Task SyncPE();
         Task SyncKeHoach();
+        Task SyncShare();
 
 
         Task<List<Stream>> Chart_BatDongSan(IEnumerable<string> lInput);
@@ -83,6 +84,7 @@ namespace StockLib.Service
         private readonly IFinancialLogisticRepo _logisticRepo;
         private readonly IChiSoPERepo _peRepo;
         private readonly IKeHoachRepo _kehoachRepo;
+        private readonly IShareRepo _shareRepo;
 
         private readonly IConfigDataRepo _configRepo;
         private readonly IThongKeRepo _thongkeRepo;
@@ -115,6 +117,7 @@ namespace StockLib.Service
                             IFinancialLogisticRepo logisticRepo,
                             IChiSoPERepo peRepo,
                             IKeHoachRepo kehoachRepo,
+                            IShareRepo shareRepo,
 
                             IConfigDataRepo configRepo,
                             IThongKeRepo thongkeRepo,
@@ -147,6 +150,7 @@ namespace StockLib.Service
             _daukhiRepo = daukhiRepo;
             _peRepo = peRepo;
             _kehoachRepo = kehoachRepo;
+            _shareRepo = shareRepo;
 
             _configRepo = configRepo;
             _thongkequyRepo = thongkequyRepo;

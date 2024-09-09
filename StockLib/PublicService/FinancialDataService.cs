@@ -26,6 +26,7 @@ namespace StockLib.PublicService
 
         Task SyncPE();
         Task SyncKeHoach();
+        Task SyncShare();
     }
     public class FinancialDataService : IFinancialDataService
     {
@@ -138,6 +139,11 @@ namespace StockLib.PublicService
         public async Task SyncKeHoach()
         {
             await _bllService.SyncKeHoach();
+        }
+
+        public async Task SyncShare()
+        {
+            await _bllService.SyncShare();
         }
     }
 }

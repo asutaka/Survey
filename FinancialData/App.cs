@@ -39,6 +39,7 @@ namespace FinancialData
 
             //await _service.SyncPE();
             //await _service.SyncKeHoach();
+            //await _service.SyncShare();
         }
     }
 }
