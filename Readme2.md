@@ -49,6 +49,8 @@ XXI. Trọng số Ngành Dầu Khí
 			+ Điện khí: POW, NT2(Bất lợi khi giá dầu tăng)
 			+ Phân bón: DPM, DCM(Bất lợi khi giá dầu tăng)
 			+ Phân phối: PLX, OIL
+
+	--> Định Giá: Dựa vào P/E, P/E dự phóng và giá dầu mỏ, riêng vận tải Thủy thì thêm giá cước vận chuyển
 XXII. Trọng số Ngành Bảo hiểm 
 XXIII. Trọng số Ngành y tế - dịch vụ y tế
 XXIV. Trọng số Ngành CNTT - Viễn Thông
