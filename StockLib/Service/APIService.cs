@@ -26,6 +26,7 @@ namespace StockLib.Service
         Task<List<Money24h_PTKTResponse>> Money24h_GetMaTheoChiBao_52W();
         Task<Money24h_NhomNganhResponse> Money24h_GetNhomNganh(EMoney24hTimeType type);
         Task<List<Money24h_ForeignResponse>> Money24h_GetForeign(EMoney24hExchangeMode mode, EMoney24hTimeType type);
+        Task<List<Money24h_KeHoach_Data>> Money24h_GetKeHoach(string code);
 
 
         Task<List<Quote>> SSI_GetDataStock(string code);
@@ -209,6 +210,28 @@ namespace StockLib.Service
                 _logger.LogError($"APIService.Money24h_GetForeign|EXCEPTION| {ex.Message}");
             }
             return lOutput;
+        }
+
+        public async Task<List<Money24h_KeHoach_Data>> Money24h_GetKeHoach(string code)
+        {
+            try
+            {
+                var url = $"https://api-finance-t19.24hmoney.vn/v1/ios/company/plan-all?symbol={code}";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var result = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<Money24h_KeHoach>(result);
+                if (responseModel.status == 200)
+                {
+                    return responseModel.data;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Money24h_GetKeHoach|EXCEPTION| {ex.Message}");
+            }
+            return null;
         }
         #endregion
 

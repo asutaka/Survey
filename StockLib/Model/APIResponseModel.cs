@@ -199,4 +199,30 @@
         public double dilutedEPS { get; set; }
         public double dilutedPe { get; set; }
     }
+
+    public class Money24h_KeHoach
+    {
+        public int status { get; set; }
+        public List<Money24h_KeHoach_Data> data { get; set; }
+    }
+
+    public class Money24h_KeHoach_Data
+    {
+        public int year { get; set; }
+        public double isa3 { get; set; }
+        public double isa16 { get; set; }
+        public double isa22 { get; set; }
+        public List<Money24h_KeHoach_Quarter> quarter { get; set; }
+    }
+
+    public class Money24h_KeHoach_Quarter
+    {
+        public int quarter { get; set; }
+        public double isa3_report { get; set; }
+        public double isa3_percent { get; set; }
+        public double isa16_report { get; set; }
+        public double isa16_percent { get; set; }
+        public double isa22_report { get; set; }
+        public double isa22_percent { get; set; }
+    }
 }

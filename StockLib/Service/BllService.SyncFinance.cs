@@ -71,7 +71,72 @@ namespace StockLib.Service
         {
             try
             {
+                foreach (var item in StaticVal._lStock)
+                {
+                    var lKeHoach = await _apiService.Money24h_GetKeHoach(item.s);
+                    if (lKeHoach is null || !lKeHoach.Any())
+                        continue;
 
+                    foreach (var itemKeHoach in lKeHoach)
+                    {
+                        if (itemKeHoach.year < 2020)
+                            continue;
+
+                        var model = new KeHoach
+                        {
+                            s = item.s,
+                            d = itemKeHoach.year,
+                            pf_plan = Math.Round(itemKeHoach.isa22, 1)
+                        };
+
+                        var real = itemKeHoach.quarter.FirstOrDefault(x => x.quarter == 0);
+                        if (real != null)
+                        {
+                            model.pf_real = real.isa22_report;
+                            model.pf_real_r = real.isa22_percent;
+                        }
+
+                        var cum = itemKeHoach.quarter.FirstOrDefault(x => x.quarter == 5);
+                        if (cum != null)
+                        {
+                            model.pf_cum = cum.isa22_report;
+                            model.pf_cum_r = cum.isa22_percent;
+                        }
+
+                        FilterDefinition<KeHoach> filter = null;
+                        var builder = Builders<KeHoach>.Filter;
+                        var lFilter = new List<FilterDefinition<KeHoach>>()
+                        {
+                            builder.Eq(x => x.d, itemKeHoach.year),
+                            builder.Eq(x => x.s, item.s),
+                        };
+                        foreach (var itemFilter in lFilter)
+                        {
+                            if (filter is null)
+                            {
+                                filter = itemFilter;
+                                continue;
+                            }
+                            filter &= itemFilter;
+                        }
+
+                        var lCheck = _kehoachRepo.GetByFilter(filter);
+                        if (lCheck?.Any() ?? false)
+                        {
+                            //update
+                            var entity = lCheck.First();
+                            entity.pf_real = model.pf_real;
+                            entity.pf_real_r = model.pf_real_r;
+                            entity.pf_cum = model.pf_cum;
+                            entity.pf_cum_r = model.pf_cum_r;
+                            _kehoachRepo.Update(entity);
+
+                            continue;
+                        }
+
+                        _kehoachRepo.InsertOne(model);
+                    }
+                }
             }
             catch (Exception ex)
             {
