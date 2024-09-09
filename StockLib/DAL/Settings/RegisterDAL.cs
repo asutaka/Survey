@@ -34,6 +34,7 @@ namespace StockLib.DAL.Settings
             services.AddSingleton<IThongKeRepo, ThongKeRepo>();
             services.AddSingleton<IThongKeQuyRepo, ThongKeQuyRepo>();
             services.AddSingleton<IThongKeHaiQuanRepo, ThongKeHaiQuanRepo>();
+            services.AddSingleton<IChiSoPERepo, ChiSoPERepo>();
         }
     }
 }

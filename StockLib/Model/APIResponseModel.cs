@@ -186,4 +186,17 @@
         public string NGAY_CONG_BO { get; set; }
         public string FILE_SO_BO { get; set; }
     }
+
+    public class SSI_PEResponse
+    {
+        public List<SSI_PEDetail> data { get; set; }
+    }
+
+    public class SSI_PEDetail
+    {
+        public int yearReport { get; set; }
+        public int lengthReport { get; set; }
+        public double dilutedEPS { get; set; }
+        public double dilutedPe { get; set; }
+    }
 }
