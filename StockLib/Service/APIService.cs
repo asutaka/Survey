@@ -7,7 +7,6 @@ using StockLib.Model;
 using StockLib.Service.Settings;
 using StockLib.Utils;
 using System.Text;
-using System.Xml;
 
 namespace StockLib.Service
 {
@@ -20,6 +19,8 @@ namespace StockLib.Service
         Task<ReportDataDetailValue_BCTTResponse> VietStock_GetReportDataDetailValue_CDKT_ByReportDataIds(string body);
         Task<TempDetailValue_CSTCResponse> VietStock_GetFinanceIndexDataValue_CSTC_ByListTerms(string body);
         Task<IEnumerable<BCTCAPIResponse>> VietStock_GetDanhSachBCTC(string code, int page);
+        Task<VietStock_Forex> VietStock_GetForex(string code);
+
         Task<Stream> GetChartImage(string body);
 
         Task<List<Money24h_PTKTResponse>> Money24h_GetMaTheoChiBao_MA20();
@@ -114,6 +115,35 @@ namespace StockLib.Service
             }
             return null;
         } 
+
+        public async Task<VietStock_Forex> VietStock_GetForex(string code)
+        {
+            try
+            {
+                var dt = DateTimeOffset.Now;
+                var url = $"https://api.vietstock.vn/tvnew/history?symbol={code}&resolution=1D&from={dt.AddYears(-1).AddMonths(-3).ToUnixTimeSeconds()}&to={dt.ToUnixTimeSeconds()}&countback=500";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("Referer", "https://stockchart.vietstock.vn/");
+                requestMessage.Method = HttpMethod.Get;
+                requestMessage.Content = new StringContent(string.Empty, Encoding.UTF8, "application/json");
+
+                var responseMessage = await client.SendAsync(requestMessage);
+                if(responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                {
+                    return null;
+                }
+                var resultStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<VietStock_Forex>(resultStr);
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.VietStock_GetDanhSachBCTC|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
         #endregion
 
         public async Task<Stream> GetChartImage(string body)

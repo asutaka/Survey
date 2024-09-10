@@ -235,4 +235,10 @@
         public double isa22_report { get; set; }
         public double isa22_percent { get; set; }
     }
+
+    public class VietStock_Forex
+    {
+        public List<double> c { get; set; }
+        public List<double> t { get; set; }
+    }
 }

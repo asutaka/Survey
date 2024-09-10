@@ -63,8 +63,7 @@ Template:
 - Mã Cổ phiếu: Mô tả
 - beta: chỉ số beta của mã cp
 - Định giá: 
-+ P/E hiện tại so với P/E quý cùng kỳ
-+ P/E dự phóng(dựa vào kế hoạch kinh doanh)
++ P/E hiện tại so với P/E quý cùng kỳ và so với P/E dự phóng(dựa vào kế hoạch kinh doanh)
 + Phân tích cơ bản: (đối với dầu khí là giá dầu thô + chu kỳ kinh tế)
 + Phân tích kỹ thuật: 
 -> kết luận: Rất tích cực/ tích cực/ trung tính/ tiêu cực/ rất tiêu cực

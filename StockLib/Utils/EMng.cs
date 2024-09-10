@@ -256,4 +256,10 @@ namespace StockLib.Utils
         [Display(Name = "Rất tích cực")]
         VeryPositive = 9
     }
+
+    public enum EForex
+    {
+        [Display(Name = "Dầu thô")]
+        CL = 1
+    }
 }
