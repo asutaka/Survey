@@ -56,6 +56,7 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_DauKhi(IEnumerable<string> lInput);
 
         Task<List<Stream>> Chart_MaCK(string input);
+        Task<string> Mes_DinhGia(string input);
     }
     public partial class BllService : IBllService
     {

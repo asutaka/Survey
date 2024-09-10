@@ -236,4 +236,24 @@ namespace StockLib.Utils
         [Display(Name = "Ô tô vận tải")]
         OtoVanTai_NK =20,
     }
+
+    public enum EValuation
+    {
+        [Display(Name = "Định giá P/E")]
+        PE = 1,
+    }
+
+    public enum EPoint
+    {
+        [Display(Name = "Rất tiêu cực")]
+        VeryNegative = 1,
+        [Display(Name = "Tiêu cực")]
+        Negative = 3,
+        [Display(Name = "Trung tính")]
+        Normal = 5,
+        [Display(Name = "Tích cực")]
+        Positive = 7,
+        [Display(Name = "Rất tích cực")]
+        VeryPositive = 9
+    }
 }
