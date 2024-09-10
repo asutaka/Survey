@@ -15,7 +15,12 @@ namespace StockLib.Service
                 return null;
 
             var lQuote = await _apiService.SSI_GetDataStock(stock.s);
-            var pe = DinhGiaPE(input, lQuote);
+            var pe = await DinhGiaPE(input, lQuote);
+            var usd = EPoint.Normal;
+            if (StaticVal._lDNVayVonNuocNgoai.Contains(stock.s))
+            {
+                usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
+            }
 
             var isXayDung = StaticVal._lXayDung.Any(x => x == stock.s);
             if (isXayDung)
@@ -142,7 +147,7 @@ namespace StockLib.Service
             if (isDauKhi)
             {
                 var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
-                var usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
+                
                 //return await Chart_DauKhi(input);
             }
             return null;

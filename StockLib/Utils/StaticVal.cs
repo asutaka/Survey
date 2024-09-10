@@ -301,5 +301,18 @@ namespace StockLib.Utils
             "PMB",
             "HSI"
         };
+
+        public static List<string> _lDNVayVonNuocNgoai = new List<string>
+        {
+            "VIC",
+            "NVL",
+            "PGV",
+            "QTP",
+            "BWE",
+            "HSG",
+            "MSN",
+            "PVT",
+            "PC1"
+        };
     }
 }
