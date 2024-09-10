@@ -141,7 +141,8 @@ namespace StockLib.Service
             var isDauKhi = stock.h24.Any(y => y.code == "7573" || y.code == "0500");
             if (isDauKhi)
             {
-                var daumo = await DinhGia_GiaDauTho();
+                var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
+                var usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
                 //return await Chart_DauKhi(input);
             }
             return null;
@@ -243,11 +244,11 @@ namespace StockLib.Service
             }
             return EPoint.VeryNegative;
         }
-        private async Task<EPoint> DinhGia_GiaDauTho()
+        private async Task<EPoint> DinhGia_Forex(EForex forex, double step1, double step2)
         {
             try
             {
-                var lVal = await _apiService.VietStock_GetForex(EForex.CL.ToString());
+                var lVal = await _apiService.VietStock_GetForex(forex.ToString());
                 if(lVal is null || !lVal.t.Any())
                     return EPoint.VeryNegative;
 
@@ -264,19 +265,19 @@ namespace StockLib.Service
                 var qoqoy = Math.Round(100 * (-1 + c_last / c_near), 1);
 
                 var total_qoq = 0;
-                if(qoq > 15)
+                if(qoq > step2)
                 {
                     total_qoq = (int)EPoint.VeryPositive;
                 }
-                else if(qoq <= 15 && qoq > 5)
+                else if(qoq <= step2 && qoq > step1)
                 {
                     total_qoq = (int)EPoint.Positive;
                 }
-                else if(qoq <= 5 && qoq >= -5)
+                else if(qoq <= step1 && qoq >= -step1)
                 {
                     total_qoq = (int)EPoint.Normal;
                 }
-                else if(qoq < -5 && qoq >= -15)
+                else if(qoq < -step1 && qoq >= -step2)
                 {
                     total_qoq = (int)EPoint.Negative;
                 }
@@ -286,19 +287,19 @@ namespace StockLib.Service
                 }
 
                 var total_qoqoy = 0;
-                if (qoqoy > 15)
+                if (qoqoy > step2)
                 {
                     total_qoqoy = (int)EPoint.VeryPositive;
                 }
-                else if (qoqoy <= 15 && qoqoy > 5)
+                else if (qoqoy <= step2 && qoqoy > step1)
                 {
                     total_qoqoy = (int)EPoint.Positive;
                 }
-                else if (qoqoy <= 5 && qoqoy >= -5)
+                else if (qoqoy <= step1 && qoqoy >= -step1)
                 {
                     total_qoqoy = (int)EPoint.Normal;
                 }
-                else if (qoqoy < -5 && qoqoy >= -15)
+                else if (qoqoy < -step1 && qoqoy >= -step2)
                 {
                     total_qoqoy = (int)EPoint.Negative;
                 }
