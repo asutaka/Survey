@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
+using System.Text;
 
 namespace StockLib.Service
 {
@@ -14,12 +15,17 @@ namespace StockLib.Service
             if (stock == null)
                 return null;
 
+            var strRes = new StringBuilder();
+            strRes.AppendLine($"Định giá cổ phiếu {stock.s}");
+
             var lQuote = await _apiService.SSI_GetDataStock(stock.s);
             var pe = await DinhGiaPE(input, lQuote);
+            var isVayVonNuocNgoai = false;
             var usd = EPoint.Normal;
             if (StaticVal._lDNVayVonNuocNgoai.Contains(stock.s))
             {
                 usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
+                isVayVonNuocNgoai = true;
             }
 
             var isXayDung = StaticVal._lXayDung.Any(x => x == stock.s);
@@ -147,11 +153,53 @@ namespace StockLib.Service
             if (isDauKhi)
             {
                 var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
-                
-                //return await Chart_DauKhi(input);
+                strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
+                strRes.AppendLine($"  + Giá Dầu Thô: {daumo.GetDisplayName()}");
+
+                var lInput = new List<(EPoint, int)>();
+                if(isVayVonNuocNgoai)
+                {
+                    lInput.Add((pe, 40));
+                    lInput.Add((daumo, 30));
+                    lInput.Add((Swap(usd), 30));
+                    strRes.AppendLine(Swap(usd).GetDisplayName());
+                }
+                else
+                {
+                    lInput.Add((pe, 50));
+                    lInput.Add((daumo, 50));
+                }
+                var tong = TongDinhGia(lInput);
+                strRes.AppendLine($"=> Kết Luận: {tong.GetDisplayName()}");
+                return strRes.ToString();
             }
             return null;
         }
+        private EPoint TongDinhGia(List<(EPoint, int)> lInput)
+        {
+            var result = lInput.Sum(x => (double)x.Item1 * x.Item2 / 100);
+            if (result < (int)EPoint.Negative)
+                return EPoint.VeryNegative;
+            if (result < (int)EPoint.Normal)
+                return EPoint.Negative;
+            if (result < (int)EPoint.Positive)
+                return EPoint.Normal;
+            return EPoint.VeryPositive;
+        }
+
+        private EPoint Swap(EPoint point)
+        {
+            if (point == EPoint.VeryPositive)
+                return EPoint.VeryNegative;
+            if(point == EPoint.VeryNegative)
+                return EPoint.VeryPositive;
+            if (point == EPoint.Positive)
+                return EPoint.Negative;
+            if( point == EPoint.Negative)
+                return EPoint.Positive;
+            return point;
+        }
+
         private async Task<EPoint> DinhGiaPE(string code, List<Quote> lQuote)
         {
             try
