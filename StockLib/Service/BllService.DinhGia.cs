@@ -200,6 +200,22 @@ namespace StockLib.Service
             return point;
         }
 
+        private async Task<EPoint> DinhGiaThongKe(EKeyTongCucThongKe thongke)
+        {
+
+        }
+        private async Task<EPoint> DinhGiaThongKeQuy(EKeyTongCucThongKe thongke)
+        {
+
+        }
+        private async Task<EPoint> DinhGiaXuatKhau(EHaiQuan haiquan)
+        {
+
+        }
+        private async Task<EPoint> DinhGiaNhapKhau(EHaiQuan haiquan)
+        {
+
+        }
         private async Task<EPoint> DinhGiaPE(string code, List<Quote> lQuote)
         {
             try
