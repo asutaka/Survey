@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using HttpClientToCurl;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
 using Skender.Stock.Indicators;
 using StockLib.Model;
@@ -41,6 +42,7 @@ namespace StockLib.Service
         Task<Stream> TongCucHaiQuan(string url);
         Task<Stream> TongCucThongKeTest(DateTime dt);
         Task<List<string>> DSTongCucThongKe();
+        Task<Stream> StreamTongCucThongKe(string url);
     }
     public partial class APIService : IAPIService
     {
@@ -468,24 +470,64 @@ namespace StockLib.Service
         {
             try
             {
-                //LV1
-                //var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged=2";
-                var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/";
-                var client = _client.CreateClient();
-                client.BaseAddress = new Uri(url);
-                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                var html = await responseMessage.Content.ReadAsStringAsync();
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-                var linkedPages = doc.DocumentNode.Descendants("a")
-                                                  .Select(a => a.GetAttributeValue("href", null))
-                                                  .Where(u => !string.IsNullOrWhiteSpace(u));
+                var lLink = new List<string>();
+                for (int i = 1; i <= 3; i++)
+                {
+                    var url = $"https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged={i}";
+                    var client = _client.CreateClient();
+                    client.BaseAddress = new Uri(url);
+                    var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                    var html = await responseMessage.Content.ReadAsStringAsync();
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
+                    var linkedPages = doc.DocumentNode.Descendants("a")
+                                                      .Select(a => a.GetAttributeValue("href", null))
+                                                      .Where(u => !string.IsNullOrWhiteSpace(u))
+                                                      .Where(x => (x.Contains("2024") || x.Contains("2023")) 
+                                                                && (x.Contains("01") || x.Contains("02") || x.Contains("03") || x.Contains("04") || x.Contains("05") || x.Contains("06")
+                                                                    || x.Contains("07") || x.Contains("08") || x.Contains("09") || x.Contains("10") || x.Contains("11") || x.Contains("12")));
 
-                var tmp = 1;
+                    lLink.AddRange(linkedPages);
+                }
+                //each link
+                var lExcel = new List<string>();
+                foreach (var item in lLink)
+                {
+                    var clientDetail = new HttpClient { BaseAddress = new Uri(item) };
+                    var responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                    var html = await responseMessage.Content.ReadAsStringAsync();
+                    var doc = new HtmlDocument();
+                    doc.LoadHtml(html);
+                    var linkedPages = doc.DocumentNode.Descendants("a")
+                                                      .Select(a => a.GetAttributeValue("href", null))
+                                                      .Where(u => !string.IsNullOrWhiteSpace(u))
+                                                      .Where(x => x.Contains(".xlsx"));
+                    lExcel.AddRange(linkedPages);
+                }
+
+                return lExcel;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"APIService.TongCucThongKe|EXCEPTION| {ex.Message}");
+                _logger.LogError($"APIService.DSTongCucThongKe|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<Stream> StreamTongCucThongKe(string url)
+        {
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+                return await responseMessage.Content.ReadAsStreamAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.StreamTongCucThongKe|EXCEPTION| {ex.Message}");
             }
             return null;
         }
