@@ -190,6 +190,40 @@ namespace StockLib.Utils
         GiaVT_BuuChinh = 18,
         [Display(Name = "Giá NVL - giá điện")]
         GiaNVL_Dien = 19,
+        [Display(Name = "IIP - Than")]
+        IIP_Than = 20,
+        [Display(Name = "IIP - Dầu thô")]
+        IIP_DauTho = 21,
+        [Display(Name = "IIP - Trang phục")]
+        IIP_TrangPhuc = 22,
+        [Display(Name = "IIP - Chế biến gỗ")]
+        IIP_CheBienGo = 23,
+        [Display(Name = "IIP - Giường, tủ, bàn ghế")]
+        IIP_GiuongTuBanGhe = 24,
+        [Display(Name = "IIP - Hóa chất")]
+        IIP_HoaChat = 25,
+        [Display(Name = "IIP - Thuốc")]
+        IIP_Thuoc = 26,
+        [Display(Name = "IIP - Nhựa, cao su")]
+        IIP_CaoSuNhua = 27,
+        [Display(Name = "IIP - Thiết bị điện")]
+        IIP_ThietBiDien = 28,
+        [Display(Name = "SPCN - Thủy sản")]
+        SPCN_ThuySan = 29,
+        [Display(Name = "SPCN - Đường")]
+        SPCN_Duong = 30,
+        [Display(Name = "SPCN - Điện")]
+        SPCN_Bia = 31,
+        [Display(Name = "SPCN - Ure")]
+        SPCN_Ure = 32,
+        [Display(Name = "SPCN - NPK")]
+        SPCN_NPK = 33,
+        [Display(Name = "SPCN - Xi măng")]
+        SPCN_Ximang = 34,
+        [Display(Name = "SPCN - Thép cán")]
+        SPCN_ThepCan = 35,
+        [Display(Name = "SPCN - Thép thanh")]
+        SPCN_ThepThanh = 36
     }
 
     public enum EHaiQuan
@@ -245,6 +279,7 @@ namespace StockLib.Utils
 
     public enum EPoint
     {
+        Unknown = -1,
         [Display(Name = "Rất tiêu cực")]
         VeryNegative = 1,
         [Display(Name = "Tiêu cực")]

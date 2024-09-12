@@ -1,8 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
+using Org.BouncyCastle.Asn1.Utilities;
 using Skender.Stock.Indicators;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace StockLib.Service
@@ -146,17 +148,28 @@ namespace StockLib.Service
             var isGo = stock.h24.Any(y => y.code == "1733");
             if (isGo)
             {
+                var xk = await DinhGiaXNK(EHaiQuan.Go, 5, 15);
+                strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
+                strRes.AppendLine($"  + Giá trị xuất khẩu: {xk.GetDisplayName()}");
+
+                var xk_gia = await DinhGiaXNK_Gia(EHaiQuan.Go, 5, 15);
+                if(xk_gia != EPoint.Unknown)
+                {
+                    strRes.AppendLine($"  + Giá xuất khẩu: {xk.GetDisplayName()}");
+                }
+
                 //return await Chart_Go(input);
             }
 
             var isDauKhi = stock.h24.Any(y => y.code == "7573" || y.code == "0500");
             if (isDauKhi)
             {
+                var lInput = new List<(EPoint, int)>();
+
                 var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
                 strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
                 strRes.AppendLine($"  + Giá Dầu Thô: {daumo.GetDisplayName()}");
-
-                var lInput = new List<(EPoint, int)>();
+                
                 if(isVayVonNuocNgoai)
                 {
                     lInput.Add((pe, 40));
@@ -200,21 +213,206 @@ namespace StockLib.Service
             return point;
         }
 
-        private async Task<EPoint> DinhGiaThongKe(EKeyTongCucThongKe thongke)
-        {
+        //private async Task<EPoint> DinhGiaThongKe(EKeyTongCucThongKe thongke)
+        //{
+        //    try
+        //    {
 
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.DinhGiaThongKe|EXCEPTION| {ex.Message}");
+        //    }
+        //}
+        //private async Task<EPoint> DinhGiaThongKeQuy(EKeyTongCucThongKe thongke)
+        //{
+        //    try
+        //    {
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"BllService.DinhGiaThongKeQuy|EXCEPTION| {ex.Message}");
+        //    }
+        //}
+        private async Task<EPoint> DinhGiaXNK(EHaiQuan haiquan, double step1, double step2)
+        {
+            try
+            {
+                var lXK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)haiquan)).OrderByDescending(x => x.d);
+                if (lXK is null || !lXK.Any())
+                    return EPoint.VeryNegative;
+
+                var cur = lXK.First();
+                var near = lXK.Skip(1).FirstOrDefault();
+                var prev = lXK.FirstOrDefault(x => x.d == cur.d - 1000);
+                double va = 0;
+                if (prev != null && prev.va > 0)
+                {
+                    var qoq_va = Math.Round(100 * (-1 + cur.va / prev.va), 1);
+                    var total_va = 0;
+                    if (qoq_va > step2)
+                    {
+                        total_va = (int)EPoint.VeryPositive;
+                    }
+                    else if (qoq_va <= step2 && qoq_va > step1)
+                    {
+                        total_va = (int)EPoint.Positive;
+                    }
+                    else if (qoq_va <= step1 && qoq_va >= -step1)
+                    {
+                        total_va = (int)EPoint.Normal;
+                    }
+                    else if (qoq_va < -step1 && qoq_va >= -step2)
+                    {
+                        total_va = (int)EPoint.Negative;
+                    }
+                    else
+                    {
+                        total_va = (int)EPoint.VeryNegative;
+                    }
+                    va = total_va;
+                }
+                if (near != null && near.va > 0)
+                {
+                    var qoqoy_va = Math.Round(100 * (-1 + cur.va / near.va), 1);
+                    var total_va = 0;
+                    if (qoqoy_va > step2)
+                    {
+                        total_va = (int)EPoint.VeryPositive;
+                    }
+                    else if (qoqoy_va <= step2 && qoqoy_va > step1)
+                    {
+                        total_va = (int)EPoint.Positive;
+                    }
+                    else if (qoqoy_va <= step1 && qoqoy_va >= -step1)
+                    {
+                        total_va = (int)EPoint.Normal;
+                    }
+                    else if (qoqoy_va < -step1 && qoqoy_va >= -step2)
+                    {
+                        total_va = (int)EPoint.Negative;
+                    }
+                    else
+                    {
+                        total_va = (int)EPoint.VeryNegative;
+                    }
+                    va = va * 0.6 + total_va * 0.4;
+                }
+
+                if (va < (int)EPoint.Negative)
+                {
+                    return EPoint.VeryNegative;
+                }
+                if (va < (int)EPoint.Normal)
+                {
+                    return EPoint.Negative;
+                }
+                if (va < (int)EPoint.Positive)
+                {
+                    return EPoint.Normal;
+                }
+                if (va < (int)EPoint.VeryPositive)
+                {
+                    return EPoint.Positive;
+                }
+                return EPoint.VeryPositive;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.DinhGiaXNK|EXCEPTION| {ex.Message}");
+            }
+            return EPoint.VeryNegative;
         }
-        private async Task<EPoint> DinhGiaThongKeQuy(EKeyTongCucThongKe thongke)
+        private async Task<EPoint> DinhGiaXNK_Gia(EHaiQuan haiquan, double step1, double step2)
         {
+            try
+            {
+                var lXK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)haiquan)).OrderByDescending(x => x.d);
+                if (lXK is null || !lXK.Any())
+                    return EPoint.VeryNegative;
 
-        }
-        private async Task<EPoint> DinhGiaXuatKhau(EHaiQuan haiquan)
-        {
-
-        }
-        private async Task<EPoint> DinhGiaNhapKhau(EHaiQuan haiquan)
-        {
-
+                var cur = lXK.First();
+                var near = lXK.Skip(1).FirstOrDefault();
+                var prev = lXK.FirstOrDefault(x => x.d == cur.d - 1000);
+                double va = 0, price = 0;
+                if(prev != null && prev.price > 0)
+                {
+                    var qoq_price = Math.Round(100 * (-1 + cur.price / prev.price), 1);
+                    var total_price = 0;
+                    if (qoq_price > step2)
+                    {
+                        total_price = (int)EPoint.VeryPositive;
+                    }
+                    else if (qoq_price <= step2 && qoq_price > step1)
+                    {
+                        total_price = (int)EPoint.Positive;
+                    }
+                    else if (qoq_price <= step1 && qoq_price >= -step1)
+                    {
+                        total_price = (int)EPoint.Normal;
+                    }
+                    else if (qoq_price < -step1 && qoq_price >= -step2)
+                    {
+                        total_price = (int)EPoint.Negative;
+                    }
+                    else
+                    {
+                        total_price = (int)EPoint.VeryNegative;
+                    }
+                    price = total_price;
+                }
+                if(near != null && near.price > 0)
+                {
+                    var qoqoy_price = Math.Round(100 * (-1 + cur.price / near.price), 1);
+                    var total_price = 0;
+                    if (qoqoy_price > step2)
+                    {
+                        total_price = (int)EPoint.VeryPositive;
+                    }
+                    else if (qoqoy_price <= step2 && qoqoy_price > step1)
+                    {
+                        total_price = (int)EPoint.Positive;
+                    }
+                    else if (qoqoy_price <= step1 && qoqoy_price >= -step1)
+                    {
+                        total_price = (int)EPoint.Normal;
+                    }
+                    else if (qoqoy_price < -step1 && qoqoy_price >= -step2)
+                    {
+                        total_price = (int)EPoint.Negative;
+                    }
+                    else
+                    {
+                        total_price = (int)EPoint.VeryNegative;
+                    }
+                    price = price * 0.6 + total_price * 0.4;
+                }
+                if (price <= 0)
+                    return EPoint.Unknown;
+                if (price < (int)EPoint.Negative)
+                {
+                    return EPoint.VeryNegative;
+                }
+                if (price < (int)EPoint.Normal)
+                {
+                    return EPoint.Negative;
+                }
+                if (price < (int)EPoint.Positive)
+                {
+                    return EPoint.Normal;
+                }
+                if (price < (int)EPoint.VeryPositive)
+                {
+                    return EPoint.Positive;
+                }
+                return EPoint.VeryPositive;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.DinhGiaXNK_Gia|EXCEPTION| {ex.Message}");
+            }
+            return EPoint.Unknown;
         }
         private async Task<EPoint> DinhGiaPE(string code, List<Quote> lQuote)
         {
