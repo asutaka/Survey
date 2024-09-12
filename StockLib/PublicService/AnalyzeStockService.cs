@@ -241,7 +241,7 @@ namespace StockLib.PublicService
 
 
                 await TongCucHaiQuan(dt);
-                if ((dt.Day >= 28 || dt.Day <= 10))
+                if (dt.Day == 6)
                 {
                     await TongCucThongKe(dt);
                 }
