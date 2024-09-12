@@ -40,6 +40,7 @@ namespace StockLib.Service
         Task<GOV_HaiQuanResponse> TongCucHaiQuan();
         Task<Stream> TongCucHaiQuan(string url);
         Task<Stream> TongCucThongKeTest(DateTime dt);
+        Task<List<string>> DSTongCucThongKe();
     }
     public partial class APIService : IAPIService
     {
@@ -455,6 +456,32 @@ namespace StockLib.Service
                 var clientDownload = new HttpClient { BaseAddress = new Uri(link) };
                 responseMessage = await clientDownload.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 return await responseMessage.Content.ReadAsStreamAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.TongCucThongKe|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<string>> DSTongCucThongKe()
+        {
+            try
+            {
+                //LV1
+                //var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged=2";
+                var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+                var linkedPages = doc.DocumentNode.Descendants("a")
+                                                  .Select(a => a.GetAttributeValue("href", null))
+                                                  .Where(u => !string.IsNullOrWhiteSpace(u));
+
+                var tmp = 1;
             }
             catch (Exception ex)
             {
