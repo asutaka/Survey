@@ -3,184 +3,91 @@ using MongoDB.Driver;
 using OfficeOpenXml;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System.Text;
 
 namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
-        public async Task<(int, string)> TongCucThongKeThangHis()
+        private async Task TongCucThongKeHandle(string url)
         {
             try
             {
-
-                var lUrl = await _apiService.DSTongCucThongKe();
                 var mode = EConfigDataType.TongCucThongKeThang;
-                lUrl.Reverse();
-                foreach (var item in lUrl)
+                var dtNow = DateTime.Now;
+                var year = dtNow.Year;
+                var index = url.IndexOf($".{year}");
+                if (index == -1)
                 {
-                    var year = 2024;
-                    var index = item.IndexOf($".{year}");
-                    if(index == -1)
-                    {
-                        year = 2023;
-                        index = item.IndexOf($".{year}");
-                    }
-                    if (index == -1)
-                        continue;
-                    var monthStr = item.Substring(index - 2, 2).Replace("T", "");
-                    var month = Math.Abs(int.Parse(monthStr));
-                    var dt = new DateTime(year, month, 28);
-
-                    var stream = await _apiService.StreamTongCucThongKe(item);
-                    if (stream is null
-                       || stream.Length < 1000)
-                    {
-                        return (0, null);
-                    }
-
-                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                    var package = new ExcelPackage(stream);
-                    var lSheet = package.Workbook.Worksheets;
-                    bool isIIP = false, isVonDauTu = false, isFDI = false, isBanLe = false, isCPI = false, isVantaiHK = false, isVanTaiHH = false, isSPCN = false;
-                    foreach (var sheet in lSheet)
-                    {
-                        if (false) { }
-                        else if (!isIIP && _lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isIIP = true;
-                            IIP(sheet, dt);
-                        }
-                        else if (!isSPCN && _lSPCN.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isSPCN = true;
-                            SPCN(sheet, dt);
-                        }
-                        else if (!isVonDauTu && _lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isVonDauTu = true;
-                            VonDauTuNhaNuoc(sheet, dt);
-                        }
-                        else if (!isFDI && _lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isFDI = true;
-                            FDI(sheet, dt);
-                        }
-                        else if (!isBanLe && _lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isBanLe = true;
-                            BanLe(sheet, dt);
-                        }
-                        else if (!isCPI && _lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isCPI = true;
-                            CPI(sheet, dt);
-                        }
-                        else if (!isVantaiHK && _lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isVantaiHK = true;
-                            VanTaiHanhKhach(sheet, dt);
-                        }
-                        else if (!isVanTaiHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                        {
-                            isVanTaiHH = true;
-                            VanTaiHangHoa(sheet, dt);
-                        }
-                    }
-
-                    var builder = Builders<ConfigData>.Filter;
-                    FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
-                    var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day}");
-                    var lConfig = _configRepo.GetByFilter(filter);
-                    var last = lConfig.LastOrDefault();
-                    if (last is null)
-                    {
-                        _configRepo.InsertOne(new ConfigData
-                        {
-                            ty = (int)mode,
-                            t = t
-                        });
-                    }
-                    else
-                    {
-                        last.t = t;
-                        _configRepo.Update(last);
-                    }
+                    year = dtNow.Year - 1;
+                    index = url.IndexOf($".{year}");
                 }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"AnalyzeService.TongCucThongKeThangHis|EXCEPTION| {ex.Message}");
-            }
-            return (0, null);
-        }
+                if (index == -1)
+                    return;
+                var monthStr = url.Substring(index - 2, 2).Replace("T", "");
+                var month = Math.Abs(int.Parse(monthStr));
+                var dt = new DateTime(year, month, 28);
 
-        public async Task<(int, string)> TongCucThongKeThang(DateTime dt)
-        {
-            var tmp = await _apiService.DSTongCucThongKe();
-            var dtLocal = new DateTime(dt.Year, dt.Month, dt.Day);
-            if (dt.Day <= 10)
-            {
-                dtLocal = dtLocal.AddMonths(-1);
-            }
-            var t = long.Parse($"{dtLocal.Year}{dtLocal.Month.To2Digit()}28");
-            try
-            {
-                var mode = EConfigDataType.TongCucThongKeThang;
-                var builder = Builders<ConfigData>.Filter;
-                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
-                var lConfig = _configRepo.GetByFilter(filter);
-                if (lConfig.Any())
-                {
-                    if (lConfig.Any(x => x.t == t))
-                        return (0, null);
-                }
-
-                var strOutput = new StringBuilder();
-                var stream = await _apiService.TongCucThongKe(dt);
+                var stream = await _apiService.StreamTongCucThongKe(url);
                 if (stream is null
-                    || stream.Length < 1000)
-                    return (0, null);
+                   || stream.Length < 1000)
+                {
+                    return;
+                }
 
-                var dic = new Dictionary<int, string>();
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 var package = new ExcelPackage(stream);
                 var lSheet = package.Workbook.Worksheets;
+                bool isIIP = false, isVonDauTu = false, isFDI = false, isBanLe = false, isCPI = false, isVantaiHK = false, isVanTaiHH = false, isSPCN = false;
                 foreach (var sheet in lSheet)
                 {
                     if (false) { }
-                    else if (_lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isIIP && _lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        IIP(sheet, dtLocal);
+                        isIIP = true;
+                        IIP(sheet, dt);
                     }
-                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isSPCN && _lSPCN.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        VonDauTuNhaNuoc(sheet, dtLocal);
+                        isSPCN = true;
+                        SPCN(sheet, dt);
                     }
-                    else if (_lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isVonDauTu && _lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        FDI(sheet, dtLocal);
+                        isVonDauTu = true;
+                        VonDauTuNhaNuoc(sheet, dt);
                     }
-                    else if (_lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isFDI && _lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        BanLe(sheet, dtLocal);
+                        isFDI = true;
+                        FDI(sheet, dt);
                     }
-                    else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isBanLe && _lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        CPI(sheet, dtLocal);
+                        isBanLe = true;
+                        BanLe(sheet, dt);
                     }
-                    else if (_lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isCPI && _lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        VanTaiHanhKhach(sheet, dtLocal);
+                        isCPI = true;
+                        CPI(sheet, dt);
                     }
-                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    else if (!isVantaiHK && _lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
                     {
-                        VanTaiHangHoa(sheet, dtLocal);
+                        isVantaiHK = true;
+                        VanTaiHanhKhach(sheet, dt);
+                    }
+                    else if (!isVanTaiHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isVanTaiHH = true;
+                        VanTaiHangHoa(sheet, dt);
                     }
                 }
 
-                var mes = TongCucThongKeThangPrint(dtLocal);
-                var last = lConfig.Last();
+                var builder = Builders<ConfigData>.Filter;
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
+                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}");
+                var lConfig = _configRepo.GetByFilter(filter);
+                var last = lConfig.LastOrDefault();
                 if (last is null)
                 {
                     _configRepo.InsertOne(new ConfigData
@@ -194,78 +101,64 @@ namespace StockLib.Service
                     last.t = t;
                     _configRepo.Update(last);
                 }
-
-                return (1, mes);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AnalyzeService.TongCucThongKeThang|EXCEPTION| {ex.Message}");
+                _logger.LogError($"AnalyzeService.TongCucThongKeHandle|EXCEPTION| {ex.Message}");
             }
-
-            return (0, null);
         }
-
-        public async Task<(int, string)> TongCucThongKeThangTest(DateTime dt)
+        public async Task TongCucThongKeThangHis()
         {
-            var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             try
             {
+
+                var lUrl = await _apiService.DSTongCucThongKe();
+                var mode = EConfigDataType.TongCucThongKeThang;
+                lUrl.Reverse();
+                
+                foreach (var item in lUrl)
+                {
+                    await TongCucThongKeHandle(item);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.TongCucThongKeThangHis|EXCEPTION| {ex.Message}");
+            }
+        }
+        public async Task<(int, string)> TongCucThongKeThang(DateTime dtNow)
+        {
+            try
+            {
+                var url = await _apiService.TongCucThongKe();
+                var year = dtNow.Year;
+                var index = url.IndexOf($".{year}");
+                if (index == -1)
+                {
+                    year = dtNow.Year - 1;
+                    index = url.IndexOf($".{year}");
+                }
+                if (index == -1)
+                    return (0, null);
+                var monthStr = url.Substring(index - 2, 2).Replace("T", "");
+                var month = Math.Abs(int.Parse(monthStr));
+                var t = long.Parse($"{dtNow.Year}{dtNow.Month.To2Digit()}");
+                var dtLocal = new DateTime(year, month, 28);
+
+                var mode = EConfigDataType.TongCucThongKeThang;
                 var builder = Builders<ConfigData>.Filter;
-                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)EConfigDataType.TongCucThongKeThang);
+                FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
                 var lConfig = _configRepo.GetByFilter(filter);
                 if (lConfig.Any())
                 {
                     if (lConfig.Any(x => x.t == t))
                         return (0, null);
-
-                    _configRepo.DeleteMany(filter);
                 }
 
-                var strOutput = new StringBuilder();
-                var stream = await _apiService.TongCucThongKeTest(dt);
-                if (stream is null
-                    || stream.Length < 1000)
-                    return (0, null);
+                await TongCucThongKeHandle(url);
+                var mes = TongCucThongKeThangPrint(dtLocal);
 
-                var dic = new Dictionary<int, string>();
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                var package = new ExcelPackage(stream);
-                var lSheet = package.Workbook.Worksheets;
-                foreach (var sheet in lSheet)
-                {
-                    if (false) { }
-                    else if (_lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        IIP(sheet, dt);
-                    }
-                    else if (_lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        VonDauTuNhaNuoc(sheet, dt);
-                    }
-                    else if (_lFDI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        FDI(sheet, dt);
-                    }
-                    else if (_lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        BanLe(sheet, dt);
-                    }
-                    else if (_lCPI.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        CPI(sheet, dt);
-                    }
-                    else if (_lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        VanTaiHanhKhach(sheet, dt);
-                    }
-                    else if (_lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
-                    {
-                        VanTaiHangHoa(sheet, dt);
-                    }
-                }
-
-                //var mes = TongCucThongKeThangPrint(dt);
-                //return (1, mes);
+                return (1, mes);
             }
             catch (Exception ex)
             {

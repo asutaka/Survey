@@ -15,8 +15,7 @@ namespace StockLib.Service
         Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt);
         Task<(int, string)> TongCucThongKeThang(DateTime dt);
         Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
-        Task<(int, string)> TongCucThongKeThangTest(DateTime dt);
-        Task<(int, string)> TongCucThongKeThangHis();
+        Task TongCucThongKeThangHis();
 
         Task<(int, string)> TongCucThongKeQuy(DateTime dt);
         Task<(int, string)> TongCucThongKeQuyTest(DateTime dt);

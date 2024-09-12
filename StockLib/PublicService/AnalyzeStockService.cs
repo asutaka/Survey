@@ -184,7 +184,7 @@ namespace StockLib.PublicService
                     Thread.Sleep(1000);
                 }
 
-                if (dt.Month % 3 <= 1)
+                if (dt.Month % 3 == 1)
                 {
                     var chibaoQuy = await _analyzeService.TongCucThongKeQuy(dt);
                     if (chibaoQuy.Item1 > 0)
@@ -212,27 +212,6 @@ namespace StockLib.PublicService
                 try
                 {
                     await _analyzeService.TongCucThongKeThangHis();
-                    //for (int i = 1; i <= 10; i++)
-                    //{
-                    //    var dtTemp = dt.AddMonths(-i);
-                    //    var chibao = await _analyzeService.TongCucThongKeThang(dtTemp);//for test
-                    //    //await _analyzeService.TongCucThongKeQuy(dtTemp);
-                    //    ////if (chibao.Item1 > 0)
-                    //    ////{
-                    //    ////    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                    //    ////}
-                    //}
-
-                    //for (int i = 11; i <= 19; i++)
-                    //{
-                    //    var dtTemp = dt.AddMonths(-i);
-                    //    var chibao = await _analyzeService.TongCucThongKeThangTest(dtTemp);//for test
-                    //    //await _analyzeService.TongCucThongKeQuyTest(dtTemp);
-                    //    //if (chibao.Item1 > 0)
-                    //    //{
-                    //    //    await _teleService.SendTextMessageAsync(_idMain, chibao.Item2);
-                    //    //}
-                    //}
                 }
                 catch (Exception ex)
                 {
