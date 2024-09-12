@@ -223,7 +223,26 @@ namespace StockLib.Utils
         [Display(Name = "SPCN - Thép cán")]
         SPCN_ThepCan = 35,
         [Display(Name = "SPCN - Thép thanh")]
-        SPCN_ThepThanh = 36
+        SPCN_ThepThanh = 36,
+        XK_ThuySan = 37,
+        XK_CaPhe = 38,
+        XK_Gao = 39,
+        XK_Ximang = 40,
+        XK_HoaChat = 41,
+        XK_SPHoaChat = 42,
+        XK_ChatDeo = 43,
+        XK_SPChatDeo = 44,
+        XK_CaoSu = 45,
+        XK_Go = 46,
+        XK_DetMay = 47,
+        XK_SatThep = 48,
+        XK_SPSatThep = 49,
+        XK_DayDien = 50,
+
+        NK_PhanBon = 51,
+        NK_SatThep = 52,
+        NK_SPSatThep = 53,
+        NK_Oto = 54
     }
 
     public enum EHaiQuan
