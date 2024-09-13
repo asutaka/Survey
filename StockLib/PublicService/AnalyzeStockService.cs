@@ -211,7 +211,7 @@ namespace StockLib.PublicService
 
                 try
                 {
-                    await _analyzeService.TongCucThongKeThangHis();
+                    //await _analyzeService.TongCucThongKeThangHis();
                     await _analyzeService.TongCucThongKeQuyHis();
                 }
                 catch (Exception ex)

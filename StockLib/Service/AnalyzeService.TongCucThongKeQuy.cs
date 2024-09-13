@@ -21,12 +21,34 @@ namespace StockLib.Service
                     year = dtNow.Year - 1;
                     index = url.IndexOf($".{year}");
                 }
-                if (index == -1)
-                    return false;
-                var monthStr = url.Substring(index - 2, 2).Replace("T", "");
-                var month = Math.Abs(int.Parse(monthStr));
-                var dt = new DateTime(year, month, 28);
-                if (month % 3 != 0)
+                var flag = false;
+                if(index == -1)
+                {
+                    var checkMonth = url.IndexOf("9");
+                    if(checkMonth >= 0)
+                    {
+                        flag = true;
+                        var indexYear = url.IndexOf($"{year}");
+                        if(indexYear < 0)
+                        {
+                            year--;
+                        }
+                    }
+                }
+                DateTime dt;
+                if(flag)
+                {
+                    dt = new DateTime(year, 9, 28);
+                }
+                else
+                {
+                    if (index == -1)
+                        return false;
+                    var month = Math.Abs(int.Parse(url.Substring(index - 2, 2).Replace("T", "")));
+                    dt = new DateTime(year, month, 28);
+                }
+               
+                if (dt.Month % 3 != 0)
                     return false;
 
                 var stream = await _apiService.StreamTongCucThongKe(url);
@@ -409,8 +431,13 @@ namespace StockLib.Service
         };
         private void GDP(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.QUY_GDP_YTE, dt, sheet, colContent: 2, colVal: 4, colQoQ: -1, colQoQoY: -1, colUnit: -1, colPrice: -1, "Y Te");
-            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.QUY_GDP_NganHangBaoHiem, dt, sheet, colContent: 2, colVal: 4, colQoQ: -1, colQoQoY: -1, colUnit: -1, colPrice: -1, "Bao Hiem");
+            var col = 4;
+            if(dt.Month == 3)
+            {
+                col = 3;
+            }
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.QUY_GDP_YTE, dt, sheet, colContent: 2, colVal: col, colQoQ: -1, colQoQoY: -1, colUnit: -1, colPrice: -1, "Y Te");
+            InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe.QUY_GDP_NganHangBaoHiem, dt, sheet, colContent: 2, colVal: col, colQoQ: -1, colQoQoY: -1, colUnit: -1, colPrice: -1, "Bao Hiem");
         }
 
         private bool InsertThongKeOnlyRecord_Quy(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit, int colPrice, string textCompare, string textIgnore = "", int colQoQTry = -1)

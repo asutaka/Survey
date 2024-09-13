@@ -21,11 +21,32 @@ namespace StockLib.Service
                     year = dtNow.Year - 1;
                     index = url.IndexOf($".{year}");
                 }
+                var flag = false;
                 if (index == -1)
-                    return false;
-                var monthStr = url.Substring(index - 2, 2).Replace("T", "");
-                var month = Math.Abs(int.Parse(monthStr));
-                var dt = new DateTime(year, month, 28);
+                {
+                    var checkMonth = url.IndexOf("9");
+                    if (checkMonth >= 0)
+                    {
+                        flag = true;
+                        var indexYear = url.IndexOf($"{year}");
+                        if (indexYear < 0)
+                        {
+                            year--;
+                        }
+                    }
+                }
+                DateTime dt;
+                if (flag)
+                {
+                    dt = new DateTime(year, 9, 28);
+                }
+                else
+                {
+                    if (index == -1)
+                        return false;
+                    var month = Math.Abs(int.Parse(url.Substring(index - 2, 2).Replace("T", "")));
+                    dt = new DateTime(year, month, 28);
+                }
 
                 var stream = await _apiService.StreamTongCucThongKe(url);
                 if (stream is null
