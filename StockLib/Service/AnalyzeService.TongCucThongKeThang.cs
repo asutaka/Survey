@@ -198,16 +198,26 @@ namespace StockLib.Service
         };
         private void IIP(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Dien, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Phan Phoi Dien");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Than, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Khai Thac Than");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_DauTho, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Dau Tho");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_TrangPhuc, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Trang Phuc");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_CheBienGo, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Che Bien Go");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_GiuongTuBanGhe, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Giuong");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_HoaChat, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Hoa Chat");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Thuoc, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "San Xuat Thuoc");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_CaoSuNhua, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Cao Su");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_ThietBiDien, dt, sheet, colContent: 1, colVal: -1, colQoQ: 4, colQoQoY: 5, colUnit: -1, colPrice: -1, textCompare: "Thiet Bi Dien");
+            var cQoQPrev = 2;
+            var cQoQoY = 3;
+            var cQoQ = 4;
+            
+            if(dt.Month == 1)
+            {
+                cQoQPrev = -1;
+                cQoQoY = 2;
+                cQoQ = 3;
+            }
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Dien, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Phan Phoi Dien");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Than, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Khai Thac Than");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_DauTho, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Dau Tho");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_TrangPhuc, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Trang Phuc");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_CheBienGo, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Che Bien Go");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_GiuongTuBanGhe, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Giuong");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_HoaChat, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Hoa Chat");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_Thuoc, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "San Xuat Thuoc");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_CaoSuNhua, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Cao Su");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.IIP_ThietBiDien, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: cQoQPrev, textCompare: "Thiet Bi Dien");
         }
 
         private List<string> _lSPCN = new List<string>
@@ -218,14 +228,18 @@ namespace StockLib.Service
 
         private void SPCN(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_ThuySan, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Thuy San");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Duong, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Duong");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Bia, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Bia");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Ure, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Ure");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_NPK, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "NPK");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Ximang, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Xi mang");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_ThepCan, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Thep Can");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_ThepThanh, dt, sheet, colContent: 1, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, textCompare: "Thep Thanh");
+            var cValPrev = 3;
+            var cVal = 4;
+            var cQoQ = 6;
+
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_ThuySan, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Thuy San");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Duong, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Duong");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Bia, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Bia");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Ure, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Ure");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_NPK, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "NPK");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_Ximang, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Xi mang");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_ThepCan, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Thep Can");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.SPCN_ThepThanh, dt, sheet, colContent: 1, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, textCompare: "Thep Thanh");
         }
 
         private List<string> _lVonDauTu = new List<string>
@@ -238,7 +252,9 @@ namespace StockLib.Service
         };
         private void VonDauTuNhaNuoc(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.DauTuCong, dt, sheet, colContent: 1, colVal: 4, colQoQ: 7, colQoQoY: 6, colUnit: -1, colPrice: -1, "Tong So");
+            var cValPrev = 3;
+            var cVal = 4;
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.DauTuCong, dt, sheet, colContent: 1, colVal: cVal, colQoQ: -1, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, "Tong So");
         }
 
         private List<string> _lFDI = new List<string>
@@ -257,18 +273,19 @@ namespace StockLib.Service
 
         private void BanLe(ExcelWorksheet sheet, DateTime dt)
         {
-            var res = InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 1, colVal: 3, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, "Ban Le");
-            if(!res)
+            var cContent = 1;
+            var cValPrev = 2;
+            var cVal = 3;
+            var cQoQ = 6;
+            if (dt.Month == 1)
             {
-                if(dt.Month == 1)
-                {
-                    InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 2, colVal: 4, colQoQ: 6, colQoQoY: -1, colUnit: -1, colPrice: -1, "Ban Le");
-                }
-                else
-                {
-                    InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: 2, colVal: 4, colQoQ: 7, colQoQoY: -1, colUnit: -1, colPrice: -1, "Ban Le");
-                }
+                cContent = 2;
+                cValPrev = 3;
+                cVal = 4;
+                cQoQ = 6;
             }
+
+            var res = InsertThongKeOnlyRecord(EKeyTongCucThongKe.BanLe, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: -1, colValPrev: cValPrev, colQoQPrev: -1, "Ban Le");
         }
 
         private List<string> _lCPI = new List<string>
@@ -277,10 +294,18 @@ namespace StockLib.Service
         };
         private void CPI(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_GiaTieuDung, dt, sheet, colContent: 1, colVal: -1, colQoQ: 5, colQoQoY: 7, colUnit: -1, colPrice: -1, "Chi So Gia Tieu Dung");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_GiaVang, dt, sheet, colContent: 1, colVal: -1, colQoQ: 5, colQoQoY: 7, colUnit: -1, colPrice: -1, "Chi So Gia Vang");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_DoLa, dt, sheet, colContent: 1, colVal: -1, colQoQ: 5, colQoQoY: 7, colUnit: -1, colPrice: -1, "Do La");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_LamPhat, dt, sheet, colContent: 1, colVal: -1, colQoQ: 5, colQoQoY: 7, colUnit: -1, colPrice: -1, "Lam Phat");
+            var cQoQ = 5;
+            var cQoQoY = 7;
+            if (dt.Month == 1)
+            {
+                cQoQ = 5;
+                cQoQoY = 6;
+            }
+
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_GiaTieuDung, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Chi So Gia Tieu Dung");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_GiaVang, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Chi So Gia Vang");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_DoLa, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Do La");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.CPI_LamPhat, dt, sheet, colContent: 1, colVal: -1, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Lam Phat");
         }
 
         private List<string> _lXK = new List<string>
@@ -291,20 +316,30 @@ namespace StockLib.Service
 
         private void XuatKhau(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_ThuySan, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Thuy San");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_CaPhe, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Ca Phe");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Gao, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Gao");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Ximang, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Xi mang");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_HoaChat, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Hoa chat", textIgnore: "san pham");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPHoaChat, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "San pham hoa chat");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_ChatDeo, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Chat deo", textIgnore: "san pham");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPChatDeo, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "San pham chat deo");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_CaoSu, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Cao su");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Go, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Go");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_DetMay, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Det may");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Sat thep", textIgnore: "san pham");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPSatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "San pham tu sat thep");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_DayDien, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Day dien");
+            var cVal = 4;
+            var cPrice = 3;
+            var cQoQ = 10;
+            if(dt.Month == 1)
+            {
+                cVal = 7;
+                cPrice = 6;
+                cQoQ = 10;
+            }
+
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_ThuySan, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Thuy San");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_CaPhe, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Ca Phe");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Gao, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Gao");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Ximang, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Xi mang");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_HoaChat, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Hoa chat", textIgnore: "san pham");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPHoaChat, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "San pham hoa chat");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_ChatDeo, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Chat deo", textIgnore: "san pham");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPChatDeo, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "San pham chat deo");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_CaoSu, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Cao su");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_Go, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Go");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_DetMay, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Det may");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SatThep, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Sat thep", textIgnore: "san pham");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_SPSatThep, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "San pham tu sat thep");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.XK_DayDien, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Day dien");
         }
 
         private List<string> _lNK = new List<string>
@@ -315,10 +350,20 @@ namespace StockLib.Service
 
         private void NhapKhau(ExcelWorksheet sheet, DateTime dt)
         {
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_PhanBon, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Phan bon");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_SatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "Sat thep", textIgnore: "san pham");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_SPSatThep, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "San pham tu sat thep");
-            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_Oto, dt, sheet, colContent: 2, colVal: 4, colQoQ: 10, colQoQoY: -1, colUnit: -1, colPrice: 3, "nguyen chiec");
+            var cVal = 4;
+            var cPrice = 3;
+            var cQoQ = 10;
+            if (dt.Month == 1)
+            {
+                cVal = 7;
+                cPrice = 6;
+                cQoQ = 10;
+            }
+
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_PhanBon, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Phan bon");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_SatThep, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "Sat thep", textIgnore: "san pham");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_SPSatThep, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "San pham tu sat thep");
+            InsertThongKeOnlyRecord(EKeyTongCucThongKe.NK_Oto, dt, sheet, colContent: 2, colVal: cVal, colQoQ: cQoQ, colQoQoY: -1, colUnit: -1, colPrice: cPrice, colValPrev: -1, colQoQPrev: -1, "nguyen chiec");
         }
 
         private List<string> _lVanTaiHanhKhach = new List<string>
@@ -330,11 +375,19 @@ namespace StockLib.Service
         };
         private void VanTaiHanhKhach(ExcelWorksheet sheet, DateTime dt)
         {
-            var resHangKhong = InsertThongKeOnlyRecord(EKeyTongCucThongKe.HanhKhach_HangKhong, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, colPrice: -1, "Hang Khong");
-            if (!resHangKhong)
+            var cContent = 1;
+            var cVal = 2;
+            var cQoQoY = 4;
+            var cQoQ = 5;
+            if (dt.Month == 1)
             {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.HanhKhach_HangKhong, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, colPrice: -1, "Hang Khong");
+                cContent = 2;
+                cVal = 3;
+                cQoQoY = 4;
+                cQoQ = 5;
             }
+
+            var resHangKhong = InsertThongKeOnlyRecord(EKeyTongCucThongKe.HanhKhach_HangKhong, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Hang Khong");
         }
 
         private List<string> _lVanTaiHangHoa = new List<string>
@@ -346,38 +399,25 @@ namespace StockLib.Service
         };
         private void VanTaiHangHoa(ExcelWorksheet sheet, DateTime dt)
         {
-            var resTrongNuoc = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_TrongNuoc, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, colPrice: -1, "Trong Nuoc");
-            if (!resTrongNuoc)
+            var cContent = 1;
+            var cVal = 2;
+            var cQoQoY = 4;
+            var cQoQ = 5;
+            if (dt.Month == 1)
             {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_TrongNuoc, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, colPrice: -1, "Trong Nuoc");
+                cContent = 2;
+                cVal = 3;
+                cQoQoY = 4;
+                cQoQ = 5;
             }
-
-            var resNgoaiNuoc = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, colPrice: -1, "Ngoai Nuoc");
-            if (!resNgoaiNuoc)
-            {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, colPrice: -1, "Ngoai Nuoc");
-            }
-
-            var resDuongBien = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, colPrice: -1, "Duong Bien");
-            if (!resDuongBien)
-            {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, colPrice: -1, "Duong Bien");
-            }
-
-            var resDuongBo = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, colPrice: -1, "Duong Bo");
-            if (!resDuongBo)
-            {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, colPrice: -1, "Duong Bo");
-            }
-
-            var resHangKhong = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: 1, colVal: 2, colQoQ: 5, colQoQoY: 4, colUnit: -1, colPrice: -1, "Hang Khong");
-            if (!resHangKhong)
-            {
-                InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: 2, colVal: 3, colQoQ: 6, colQoQoY: 5, colUnit: -1, colPrice: -1, "Hang Khong");
-            }
+            var resTrongNuoc = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_TrongNuoc, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Trong Nuoc");
+            var resNgoaiNuoc = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_NuocNgoai, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Ngoai Nuoc");
+            var resDuongBien = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBien, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Duong Bien");
+            var resDuongBo = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_DuongBo, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Duong Bo");
+            var resHangKhong = InsertThongKeOnlyRecord(EKeyTongCucThongKe.VanTai_HangKhong, dt, sheet, colContent: cContent, colVal: cVal, colQoQ: cQoQ, colQoQoY: cQoQoY, colUnit: -1, colPrice: -1, colValPrev: -1, colQoQPrev: -1, "Hang Khong");
         }
 
-        private bool InsertThongKeOnlyRecord(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit, int colPrice, string textCompare, string textIgnore = "")
+        private bool InsertThongKeOnlyRecord(EKeyTongCucThongKe eThongKe, DateTime dt, ExcelWorksheet sheet, int colContent, int colVal, int colQoQ, int colQoQoY, int colUnit, int colPrice, int colValPrev, int colQoQPrev, string textCompare, string textIgnore = "")
         {
             try
             {
@@ -444,6 +484,74 @@ namespace StockLib.Service
                         if(val > 0)
                         {
                             model.price = Math.Round(model.va * 1000 / val, 1);
+                        }
+                    }
+
+                    if (colValPrev > 0)
+                    {
+                        var valStr = sheet.Cells[i, colValPrev].Value?.ToString().Trim() ?? string.Empty;
+                        var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
+                        var va = isDouble ? Math.Round(val, 1) : 0;
+                        if(va > 0)
+                        {
+                            var dtPrev = dt.AddMonths(-1);
+                            FilterDefinition<ThongKe> filter = null;
+                            var builder = Builders<ThongKe>.Filter;
+                            var lFilter = new List<FilterDefinition<ThongKe>>()
+                            {
+                                builder.Eq(x => x.d, int.Parse($"{dtPrev.Year}{dtPrev.Month.To2Digit()}")),
+                                builder.Eq(x => x.key, (int)eThongKe)
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+
+                            var entityPrev = _thongkeRepo.GetEntityByFilter(filter);
+                            if(entityPrev != null)
+                            {
+                                entityPrev.va = va;
+                                _thongkeRepo.Update(entityPrev);
+                            }
+                        }
+                    }
+
+                    if (colQoQPrev > 0)
+                    {
+                        var valStr = sheet.Cells[i, colQoQPrev].Value?.ToString().Trim() ?? string.Empty;
+                        var isDouble = double.TryParse(valStr.Replace(",", ""), out var val);
+                        var va = isDouble ? Math.Round(val, 1) : 0;
+                        if (va > 0)
+                        {
+                            var dtPrev = dt.AddMonths(-1);
+                            FilterDefinition<ThongKe> filter = null;
+                            var builder = Builders<ThongKe>.Filter;
+                            var lFilter = new List<FilterDefinition<ThongKe>>()
+                            {
+                                builder.Eq(x => x.d, int.Parse($"{dtPrev.Year}{dtPrev.Month.To2Digit()}")),
+                                builder.Eq(x => x.key, (int)eThongKe)
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+
+                            var entityPrev = _thongkeRepo.GetEntityByFilter(filter);
+                            if (entityPrev != null)
+                            {
+                                entityPrev.qoq = va;
+                                _thongkeRepo.Update(entityPrev);
+                            }
                         }
                     }
 
