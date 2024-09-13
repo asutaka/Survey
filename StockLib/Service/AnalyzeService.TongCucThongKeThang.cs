@@ -29,7 +29,7 @@ namespace StockLib.Service
                 {
                     for (int i = 1; i <= 12; i++)
                     {
-                        if (urlCheck.IndexOf($"{i.To2Digit()}") > -1)
+                        if (urlCheck.IndexOf($"{i.To2Digit()}/") > -1)
                         {
                             month = i;
                             break;

@@ -30,7 +30,7 @@ namespace StockLib.Service
                 {
                     for (int i = 1; i <= 12; i++)
                     {
-                        if (urlCheck.IndexOf($"{i.To2Digit()}") > -1)
+                        if (urlCheck.IndexOf($"{i.To2Digit()}/") > -1)
                         {
                             month = i;
                             break;
@@ -117,10 +117,74 @@ namespace StockLib.Service
                         GDP(sheet, dt);
                     }
                 }
+                foreach (var sheet in lSheet)
+                {
+                    if (false) { }
+                    else if (!isIIP && _lIIP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isIIP = true;
+                        IIP_Quy(sheet, dt);
+                    }
+                    else if (!isSPCN && _lSPCN.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isSPCN = true;
+                        SPCN_Quy(sheet, dt);
+                    }
+                    else if (!isVonDauTu && _lVonDauTu.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isVonDauTu = true;
+                        VonDauTuNhaNuoc_Quy(sheet, dt);
+                    }
+                    else if (!isBanLe && _lBanLe.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isBanLe = true;
+                        BanLe_Quy(sheet, dt);
+                    }
+                    else if (!isXK && _lXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isXK = true;
+                        XuatKhau_Quy(sheet, dt);
+                    }
+                    else if (!isNK && _lNK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isNK = true;
+                        NhapKhau_Quy(sheet, dt);
+                    }
+                    else if (!isVantaiHK && _lVanTaiHanhKhach.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isVantaiHK = true;
+                        VanTaiHanhKhach_Quy(sheet, dt);
+                    }
+                    else if (!isVanTaiHH && _lVanTaiHangHoa.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isVanTaiHH = true;
+                        VanTaiHangHoa_Quy(sheet, dt);
+                    }
+                    else if (!isGiaVT && _lGiaVT.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isGiaVT = true;
+                        GiaVanTai(sheet, dt);
+                    }
+                    else if (!isGiaNVL && _lGiaNVL.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isGiaNVL = true;
+                        GiaNguyenVatLieu(sheet, dt);
+                    }
+                    else if (!isGiaXK && _lGiaXK.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isGiaXK = true;
+                        GiaXuatKhau(sheet, dt);
+                    }
+                    else if (!isGDP && _lGDP.Any(x => sheet.Name.RemoveSpace().RemoveSignVietnamese().ToUpper().EndsWith(x.RemoveSpace().ToUpper())))
+                    {
+                        isGDP = true;
+                        GDP(sheet, dt);
+                    }
+                }
 
                 var builder = Builders<ConfigData>.Filter;
                 FilterDefinition<ConfigData> filter = builder.Eq(x => x.ty, (int)mode);
-                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}");
+                var t = long.Parse($"{dt.Year}{dt.GetQuarter()}");
                 var lConfig = _configRepo.GetByFilter(filter);
                 var last = lConfig.LastOrDefault();
                 if (last is null)
@@ -168,19 +232,33 @@ namespace StockLib.Service
             try
             {
                 var url = await _apiService.TongCucThongKe();
+                var urlCheck = url.Replace("-", ".");
                 var year = dtNow.Year;
-                var index = url.IndexOf($".{year}");
+                var index = urlCheck.IndexOf($".{year}");
                 if (index == -1)
                 {
                     year = dtNow.Year - 1;
-                    index = url.IndexOf($".{year}");
+                    index = urlCheck.IndexOf($".{year}");
                 }
                 if (index == -1)
                     return (0, null);
-                var monthStr = url.Substring(index - 2, 2).Replace("T", "");
-                var month = Math.Abs(int.Parse(monthStr));
-                var t = long.Parse($"{dtNow.Year}{dtNow.Month.To2Digit()}");
+
+                var isInt = int.TryParse(urlCheck.Substring(index - 2, 2).Replace("T", ""), out var month);
+                if (!isInt)
+                {
+                    for (int i = 1; i <= 12; i++)
+                    {
+                        if (urlCheck.IndexOf($"{i.To2Digit()}/") > -1)
+                        {
+                            month = i;
+                            break;
+                        }
+                    }
+                }
+                var t = long.Parse($"{dtNow.Year}{dtNow.GetQuarter()}");
                 var dtLocal = new DateTime(year, month, 28);
+                if (dtLocal.Month % 3 != 0)
+                    return (0, null);
 
                 var mode = EConfigDataType.TongCucThongKeQuy;
                 var builder = Builders<ConfigData>.Filter;
