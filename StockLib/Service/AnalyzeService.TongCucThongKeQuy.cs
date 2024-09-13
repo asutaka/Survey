@@ -20,7 +20,7 @@ namespace StockLib.Service
                 if (index == -1)
                 {
                     year = dtNow.Year - 1;
-                    index = url.IndexOf($".{year}");
+                    index = urlCheck.IndexOf($".{year}");
                 }
 
                 if (index == -1)

@@ -311,7 +311,9 @@ namespace StockLib.Service
         private List<string> _lXK = new List<string>
         {
             "XK",
-            "Xuat Khau"
+            "Xuat Khau",
+            "XK hh",
+            "XK hang hoa"
         };
 
         private void XuatKhau(ExcelWorksheet sheet, DateTime dt)
@@ -345,7 +347,9 @@ namespace StockLib.Service
         private List<string> _lNK = new List<string>
         {
             "NK",
-            "Nhap Khau"
+            "Nhap Khau",
+            "NK hh",
+            "NK hang hoa"
         };
 
         private void NhapKhau(ExcelWorksheet sheet, DateTime dt)
