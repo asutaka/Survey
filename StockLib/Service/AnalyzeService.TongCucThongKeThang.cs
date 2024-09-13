@@ -223,7 +223,8 @@ namespace StockLib.Service
 
         private List<string> _lSPCN = new List<string>
         {
-            "SP CN"
+            "SP CN",
+            "SPCN Thang"
         };
 
         private void SPCN(ExcelWorksheet sheet, DateTime dt)
