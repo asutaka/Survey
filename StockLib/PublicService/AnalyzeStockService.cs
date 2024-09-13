@@ -209,16 +209,16 @@ namespace StockLib.PublicService
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
 
-                try
-                {
-                    await _analyzeService.TongCucThongKeThangHis();
-                    //await _analyzeService.TongCucThongKeQuyHis();
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                }
-                return;
+                //try
+                //{
+                //    //await _analyzeService.TongCucThongKeThangHis();
+                //    //await _analyzeService.TongCucThongKeQuyHis();
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                //}
+                //return;
 
 
                 await TongCucHaiQuan(dt);
