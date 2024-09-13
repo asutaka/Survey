@@ -10,6 +10,7 @@ namespace StockLib.DAL.Entity
         public string content { get; set; }
         public double va { get; set; }
         public string unit { get; set; }
+        public double price { get; set; }
         public double qoq { get; set; }
         public double qoqoy { get; set; }
     }

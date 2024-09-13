@@ -157,8 +157,8 @@ namespace StockLib.Service
         {
             try
             {
-                var lThongKe_GiaVTBien = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.GiaVT_Bien)).OrderBy(x => x.d);
-                var lThongKe_GiaVTBuuChinh = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.GiaVT_BuuChinh)).OrderBy(x => x.d);
+                var lThongKe_GiaVTBien = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaVT_Bien)).OrderBy(x => x.d);
+                var lThongKe_GiaVTBuuChinh = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaVT_BuuChinh)).OrderBy(x => x.d);
                 var lSeries = new List<HighChartSeries_BasicColumn>
                 {
                     new HighChartSeries_BasicColumn

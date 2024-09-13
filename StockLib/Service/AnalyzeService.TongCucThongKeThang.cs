@@ -8,7 +8,7 @@ namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
-        private async Task TongCucThongKeHandle(string url)
+        private async Task<bool> TongCucThongKeHandle(string url)
         {
             try
             {
@@ -22,7 +22,7 @@ namespace StockLib.Service
                     index = url.IndexOf($".{year}");
                 }
                 if (index == -1)
-                    return;
+                    return false;
                 var monthStr = url.Substring(index - 2, 2).Replace("T", "");
                 var month = Math.Abs(int.Parse(monthStr));
                 var dt = new DateTime(year, month, 28);
@@ -31,7 +31,7 @@ namespace StockLib.Service
                 if (stream is null
                    || stream.Length < 1000)
                 {
-                    return;
+                    return false;
                 }
 
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -111,11 +111,13 @@ namespace StockLib.Service
                     last.t = t;
                     _configRepo.Update(last);
                 }
+                return true;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"AnalyzeService.TongCucThongKeHandle|EXCEPTION| {ex.Message}");
             }
+            return false;
         }
         public async Task TongCucThongKeThangHis()
         {
@@ -123,7 +125,6 @@ namespace StockLib.Service
             {
 
                 var lUrl = await _apiService.DSTongCucThongKe();
-                var mode = EConfigDataType.TongCucThongKeThang;
                 lUrl.Reverse();
                 
                 foreach (var item in lUrl)
@@ -165,10 +166,12 @@ namespace StockLib.Service
                         return (0, null);
                 }
 
-                await TongCucThongKeHandle(url);
-                var mes = TongCucThongKeThangPrint(dtLocal);
-
-                return (1, mes);
+                var res = await TongCucThongKeHandle(url);
+                if(res)
+                {
+                    var mes = TongCucThongKeThangPrint(dtLocal);
+                    return (1, mes);
+                }
             }
             catch (Exception ex)
             {

@@ -14,11 +14,10 @@ namespace StockLib.Service
         Task<(int, string)> ThongKeTuDoanhUp(DateTime dt);
         Task<(int, string)> ThongKeTuDoanhHSX(DateTime dt);
         Task<(int, string)> TongCucThongKeThang(DateTime dt);
-        Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
         Task TongCucThongKeThangHis();
-
         Task<(int, string)> TongCucThongKeQuy(DateTime dt);
-        Task<(int, string)> TongCucThongKeQuyTest(DateTime dt);
+        Task TongCucThongKeQuyHis();
+        Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
     }
     public partial class AnalyzeService : IAnalyzeService
     {

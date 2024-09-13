@@ -120,7 +120,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lBanLe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.GiaNVL_Dien)).OrderBy(x => x.d);
+                var lBanLe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaNVL_Dien)).OrderBy(x => x.d);
                 var lSeries = new List<HighChartSeries_BasicColumn>
                 {
                     new HighChartSeries_BasicColumn
