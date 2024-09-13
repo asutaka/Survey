@@ -15,39 +15,30 @@ namespace StockLib.Service
                 var mode = EConfigDataType.TongCucThongKeQuy;
                 var dtNow = DateTime.Now;
                 var year = dtNow.Year;
-                var index = url.IndexOf($".{year}");
+                var urlCheck = url.Replace("-", ".");
+                var index = urlCheck.IndexOf($".{year}");
                 if (index == -1)
                 {
                     year = dtNow.Year - 1;
                     index = url.IndexOf($".{year}");
                 }
-                var flag = false;
-                if(index == -1)
+
+                if (index == -1)
+                    return false;
+                var isInt = int.TryParse(urlCheck.Substring(index - 2, 2).Replace("T", ""), out var month);
+                if (!isInt)
                 {
-                    var checkMonth = url.IndexOf("9");
-                    if(checkMonth >= 0)
+                    for (int i = 1; i <= 12; i++)
                     {
-                        flag = true;
-                        var indexYear = url.IndexOf($"{year}");
-                        if(indexYear < 0)
+                        if (urlCheck.IndexOf($"{i.To2Digit()}") > -1)
                         {
-                            year--;
+                            month = i;
+                            break;
                         }
                     }
                 }
-                DateTime dt;
-                if(flag)
-                {
-                    dt = new DateTime(year, 9, 28);
-                }
-                else
-                {
-                    if (index == -1)
-                        return false;
-                    var month = Math.Abs(int.Parse(url.Substring(index - 2, 2).Replace("T", "")));
-                    dt = new DateTime(year, month, 28);
-                }
-               
+                var dt = new DateTime(year, month, 28);
+
                 if (dt.Month % 3 != 0)
                     return false;
 
