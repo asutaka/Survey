@@ -13,6 +13,7 @@ namespace StockLib.Service.Settings
             services.AddSingleton<IAnalyzeService, AnalyzeService>();
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IPartternService, PartternService>();
+            services.AddSingleton<IDinhGiaService, DinhGiaService>();
         }
     }
 }

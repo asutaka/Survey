@@ -346,4 +346,47 @@ namespace StockLib.Utils
         [Display(Name = "DXY - chỉ số USD")]
         DXU1 = 2
     }
+
+    public enum EStockType
+    {
+        BanLe = 1,
+        BDS = 2,
+        CangBien = 3,
+        CaoSu = 4,
+        ChungKhoan = 5,
+        DauKhi = 6,
+        DetMay = 7,
+        DienGio = 8,
+        DienKhi = 9,
+        DienMatTroi = 10,
+        DienThan = 11,
+        ThuyDien = 12,
+        Forex = 13,
+        Go = 14,
+        HangKhong = 15,
+        KCN = 16,
+        Logistic = 17,
+        NganHang = 18,
+        Nhua = 19,
+        Oto = 20,
+        PhanBon = 21,
+        Than = 22,
+        Thep = 23,
+        ThuySan = 24,
+        Vin = 25,
+        XayDung = 26,
+        XiMang = 27,
+        VanTaiBien = 28,
+        ChanNuoi = 29,
+        NongNghiep = 30,
+        HoaChat = 31,
+        CaPhe = 32,
+        Gao = 33,
+        Thuoc = 34,
+        DichVuYTe = 35,
+        BaoHiem = 36,
+        CNTT = 37,
+        DauTuCong = 38,
+        ThietBiDien = 39
+    }
 }

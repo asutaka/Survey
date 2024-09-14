@@ -1,16 +1,55 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
-using Org.BouncyCastle.Asn1.Utilities;
 using Skender.Stock.Indicators;
+using StockLib.DAL;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System.Runtime.Intrinsics.X86;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
-    public partial class BllService
+    public interface IDinhGiaService
     {
+        Task<string> Mes_DinhGia(string input);
+    }
+    public partial class DinhGiaService : IDinhGiaService
+    {
+        private readonly ILogger<BllService> _logger;
+
+        private readonly IChiSoPERepo _peRepo;
+        private readonly IShareRepo _shareRepo;
+        private readonly IKeHoachRepo _kehoachRepo;
+        private readonly IThongKeRepo _thongkeRepo;
+        private readonly IThongKeQuyRepo _thongkequyRepo;
+        private readonly IThongKeHaiQuanRepo _haiquanRepo;
+        private readonly IStockTypeRepo _stockTypeRepo;
+
+
+        private readonly IAPIService _apiService;
+        public DinhGiaService(ILogger<BllService> logger,
+                            IChiSoPERepo peRepo,
+                            IShareRepo shareRepo,
+                            IKeHoachRepo kehoachRepo,
+                            IThongKeRepo thongkeRepo,
+                            IThongKeQuyRepo thongkequyRepo,
+                            IThongKeHaiQuanRepo haiquanRepo,
+                            IStockTypeRepo stockTypeRepo,
+                            IAPIService apiService)
+        {
+            _logger = logger;
+            _peRepo = peRepo;
+            _shareRepo = shareRepo;
+            _kehoachRepo = kehoachRepo;
+            _haiquanRepo = haiquanRepo;
+            _thongkeRepo = thongkeRepo;
+            _thongkequyRepo = thongkequyRepo;
+            _stockTypeRepo = stockTypeRepo;
+            _apiService = apiService;
+        }
         public async Task<string> Mes_DinhGia(string input)
         {
             var stock = StaticVal._lStock.FirstOrDefault(x => x.s == input);
@@ -26,7 +65,7 @@ namespace StockLib.Service
             var usd = EPoint.Normal;
             if (StaticVal._lDNVayVonNuocNgoai.Contains(stock.s))
             {
-                usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
+                usd = await Forex(EForex.DXU1, 2, 5);
                 isVayVonNuocNgoai = true;
             }
 
@@ -118,7 +157,7 @@ namespace StockLib.Service
             var isPhanBon = StaticVal._lPhanBon.Any(x => x == stock.s);
             if (isPhanBon)
             {
-               // return await Chart_PhanBon(input);
+                // return await Chart_PhanBon(input);
             }
 
             var isThan = stock.h24.Any(y => y.code == "1771");
@@ -153,7 +192,7 @@ namespace StockLib.Service
                 strRes.AppendLine($"  + Giá trị xuất khẩu: {xk.GetDisplayName()}");
 
                 var xk_gia = await DinhGiaXNK_Gia(EHaiQuan.Go, 5, 15);
-                if(xk_gia != EPoint.Unknown)
+                if (xk_gia != EPoint.Unknown)
                 {
                     strRes.AppendLine($"  + Giá xuất khẩu: {xk.GetDisplayName()}");
                 }
@@ -166,11 +205,11 @@ namespace StockLib.Service
             {
                 var lInput = new List<(EPoint, int)>();
 
-                var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
+                var daumo = await Forex(EForex.CL, 5, 15);
                 strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
                 strRes.AppendLine($"  + Giá Dầu Thô: {daumo.GetDisplayName()}");
-                
-                if(isVayVonNuocNgoai)
+
+                if (isVayVonNuocNgoai)
                 {
                     lInput.Add((pe, 40));
                     lInput.Add((daumo, 30));
@@ -204,11 +243,11 @@ namespace StockLib.Service
         {
             if (point == EPoint.VeryPositive)
                 return EPoint.VeryNegative;
-            if(point == EPoint.VeryNegative)
+            if (point == EPoint.VeryNegative)
                 return EPoint.VeryPositive;
             if (point == EPoint.Positive)
                 return EPoint.Negative;
-            if( point == EPoint.Negative)
+            if (point == EPoint.Negative)
                 return EPoint.Positive;
             return point;
         }
@@ -336,7 +375,7 @@ namespace StockLib.Service
                 var near = lXK.Skip(1).FirstOrDefault();
                 var prev = lXK.FirstOrDefault(x => x.d == cur.d - 1000);
                 double va = 0, price = 0;
-                if(prev != null && prev.price > 0)
+                if (prev != null && prev.price > 0)
                 {
                     var qoq_price = Math.Round(100 * (-1 + cur.price / prev.price), 1);
                     var total_price = 0;
@@ -362,7 +401,7 @@ namespace StockLib.Service
                     }
                     price = total_price;
                 }
-                if(near != null && near.price > 0)
+                if (near != null && near.price > 0)
                 {
                     var qoqoy_price = Math.Round(100 * (-1 + cur.price / near.price), 1);
                     var total_price = 0;
@@ -505,105 +544,14 @@ namespace StockLib.Service
 
                 return EPoint.Positive;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"BllService.DinhGiaPE|EXCEPTION| {ex.Message}");
             }
             return EPoint.VeryNegative;
         }
-        private async Task<EPoint> DinhGia_Forex(EForex forex, double step1, double step2)
-        {
-            try
-            {
-                var lVal = await _apiService.VietStock_GetForex(forex.ToString());
-                if(lVal is null || !lVal.t.Any())
-                    return EPoint.VeryNegative;
-
-                var c_last = lVal.c.Last();
-                var c_near = lVal.c.SkipLast(1).Last();
-                var t_prev = ((long)lVal.t.Last()).UnixTimeStampToDateTime().AddYears(-1).AddMonths(1);
-                var dtPrev = new DateTime(t_prev.Year, t_prev.Month, 1, 0, 0, 0);
-                var timestamp = new DateTimeOffset(dtPrev).ToUnixTimeSeconds();
-                var t_index = lVal.t.Where(x => x < timestamp).Max(x => x);
-                var index = lVal.t.IndexOf(t_index);
-                var c_prev = lVal.c.ElementAt(index);
-
-                var qoq = Math.Round(100 * (-1 + c_last / c_prev), 1);
-                var qoqoy = Math.Round(100 * (-1 + c_last / c_near), 1);
-
-                var total_qoq = 0;
-                if(qoq > step2)
-                {
-                    total_qoq = (int)EPoint.VeryPositive;
-                }
-                else if(qoq <= step2 && qoq > step1)
-                {
-                    total_qoq = (int)EPoint.Positive;
-                }
-                else if(qoq <= step1 && qoq >= -step1)
-                {
-                    total_qoq = (int)EPoint.Normal;
-                }
-                else if(qoq < -step1 && qoq >= -step2)
-                {
-                    total_qoq = (int)EPoint.Negative;
-                }
-                else
-                {
-                    total_qoq = (int)EPoint.VeryNegative;
-                }
-
-                var total_qoqoy = 0;
-                if (qoqoy > step2)
-                {
-                    total_qoqoy = (int)EPoint.VeryPositive;
-                }
-                else if (qoqoy <= step2 && qoqoy > step1)
-                {
-                    total_qoqoy = (int)EPoint.Positive;
-                }
-                else if (qoqoy <= step1 && qoqoy >= -step1)
-                {
-                    total_qoqoy = (int)EPoint.Normal;
-                }
-                else if (qoqoy < -step1 && qoqoy >= -step2)
-                {
-                    total_qoqoy = (int)EPoint.Negative;
-                }
-                else
-                {
-                    total_qoqoy = (int)EPoint.VeryNegative;
-                }
-
-                var total = total_qoq * 0.6 + total_qoqoy * 0.4;
-                if(total < (int)EPoint.Negative)
-                {
-                    return EPoint.VeryNegative;
-                }
-                if(total < (int)EPoint.Normal)
-                {
-                    return EPoint.Negative;
-                }
-                if(total < (int)EPoint.Positive)
-                {
-                    return EPoint.Normal;
-                }
-                if(total < (int)EPoint.VeryPositive)
-                {
-                    return EPoint.Positive;
-                }
-                return EPoint.VeryPositive;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.DinhGia_GiaDauTho|EXCEPTION| {ex.Message}");
-            }
-            return EPoint.VeryNegative;
-        }
     }
 }
-
-
 //private async Task MaChungKhoanDescription(long userId, string input)
 //{
 //    if (input.Equals("PVD"))

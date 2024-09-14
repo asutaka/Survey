@@ -54,9 +54,8 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_KCN(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_XayDung(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_DauKhi(IEnumerable<string> lInput);
-
-        Task<List<Stream>> Chart_MaCK(string input);
         Task<string> Mes_DinhGia(string input);
+        Task<List<Stream>> Chart_MaCK(string input);
     }
     public partial class BllService : IBllService
     {
@@ -83,19 +82,21 @@ namespace StockLib.Service
         private readonly IFinancialDauKhiRepo _daukhiRepo;
         private readonly IFinancialHangKhongRepo _hangkhongRepo;
         private readonly IFinancialLogisticRepo _logisticRepo;
-        private readonly IChiSoPERepo _peRepo;
-        private readonly IKeHoachRepo _kehoachRepo;
         private readonly IShareRepo _shareRepo;
-
+        private readonly IKeHoachRepo _kehoachRepo;
+        private readonly IChiSoPERepo _peRepo;
         private readonly IConfigDataRepo _configRepo;
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
+        private readonly IStockTypeRepo _stockTypeRepo;
         private readonly IAPIService _apiService;
+        private readonly IDinhGiaService _dinhgiaService;
 
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
                             IStockFinancialRepo financialRepo,
+                            IStockTypeRepo stockTypeRepo,
                             IFinancialBDSRepo financialBDSRepo,
                             IFinancialNHRepo financialNHRepo,
                             IFinancialCKRepo financialCKRepo,
@@ -116,18 +117,19 @@ namespace StockLib.Service
                             IFinancialNhuaRepo nhuaRepo,
                             IFinancialXimangRepo ximangRepo,
                             IFinancialLogisticRepo logisticRepo,
-                            IChiSoPERepo peRepo,
-                            IKeHoachRepo kehoachRepo,
                             IShareRepo shareRepo,
-
+                            IKeHoachRepo kehoachRepo,
+                            IChiSoPERepo peRepo,
                             IConfigDataRepo configRepo,
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
-                            IAPIService apiService)
+                            IAPIService apiService,
+                            IDinhGiaService dinhgiaService)
         {
             _logger = logger;
             _stockRepo = stockRepo;
+            _stockTypeRepo = stockTypeRepo;
             _financialRepo = financialRepo;
             _bdsRepo = financialBDSRepo;
             _nhRepo = financialNHRepo;
@@ -143,22 +145,27 @@ namespace StockLib.Service
             _caosuRepo = caosuRepo;
             _dtcRepo = dtcRepo;
             _detmayRepo = detmayRepo;
+            _peRepo = peRepo;
             _goRepo = goRepo;
             _hangkhongRepo = hangkhongRepo;
             _nhuaRepo = nhuaRepo;
             _ximangRepo = ximangRepo;
             _logisticRepo = logisticRepo;
             _daukhiRepo = daukhiRepo;
-            _peRepo = peRepo;
-            _kehoachRepo = kehoachRepo;
-            _shareRepo = shareRepo;
-
             _configRepo = configRepo;
             _thongkequyRepo = thongkequyRepo;
             _thongkeRepo = thongkeRepo;
             _haiquanRepo = haiquanRepo;
             _apiService = apiService;
+            _dinhgiaService = dinhgiaService;
+            _shareRepo = shareRepo;
+            _kehoachRepo = kehoachRepo;
             StockInstance();
+        }
+
+        public async Task<string> Mes_DinhGia(string input)
+        {
+            return await _dinhgiaService.Mes_DinhGia(input);
         }
 
         private (long, long, long) GetCurrentTime()
