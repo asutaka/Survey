@@ -387,6 +387,10 @@ namespace StockLib.Utils
         BaoHiem = 36,
         CNTT = 37,
         DauTuCong = 38,
-        ThietBiDien = 39
+        ThietBiDien = 39,
+        Duong = 40,
+        Bia = 41,
+        SPNongNghiepKhac = 42,
+        NuocNgot = 43,
     }
 }
