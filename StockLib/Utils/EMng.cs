@@ -392,5 +392,8 @@ namespace StockLib.Utils
         Bia = 41,
         SPNongNghiepKhac = 42,
         NuocNgot = 43,
+        Sua = 44,
+        XuatKhau = 45,
+        Khac = 99
     }
 }
