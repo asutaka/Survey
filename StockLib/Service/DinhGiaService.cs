@@ -330,8 +330,11 @@ namespace StockLib.Service
             }
 
             if (!lDinhGia.Any())
-                return null;
-
+            {
+                strRes.AppendLine($"=> Kết Luận: {pe.GetDisplayName()}");
+                return strRes.ToString();
+            }    
+                
             var avgPoint = Math.Round(lDinhGia.Sum() / lDinhGia.Count(), 1);
             var total = Math.Round(((double)pe + avgPoint) / 2, 1);
             if(total > (double)EPoint.Positive)
