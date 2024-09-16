@@ -382,7 +382,7 @@ namespace StockLib.Utils
         HoaChat = 31,
         CaPhe = 32,
         Gao = 33,
-        Thuoc = 34,
+        Duoc = 34,
         DichVuYTe = 35,
         BaoHiem = 36,
         CNTT = 37,
@@ -394,6 +394,7 @@ namespace StockLib.Utils
         NuocNgot = 43,
         Sua = 44,
         XuatKhau = 45,
+        NangLuong = 46,
         Khac = 99
     }
 }
