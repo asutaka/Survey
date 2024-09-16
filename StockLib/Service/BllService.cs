@@ -202,6 +202,12 @@ namespace StockLib.Service
             {
                 try
                 {
+                    var lCheck = _stockTypeRepo.GetByFilter(Builders<StockType>.Filter.Eq(x => x.s, stock.s));
+                    if(lCheck != null && lCheck.Any())
+                    {
+                        continue;
+                    }
+
                     var model = new StockType
                     {
                         s = stock.s
