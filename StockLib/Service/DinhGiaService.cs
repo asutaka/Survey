@@ -297,7 +297,7 @@ namespace StockLib.Service
             strRes.AppendLine($"Định giá cổ phiếu {stock.s}");
 
             var lQuote = await _apiService.SSI_GetDataStock(stock.s);
-            var pe = await DinhGiaPE(input, lQuote);
+            var pe = DinhGiaPE(input, lQuote);
             strRes.AppendLine($"+ P/E: {pe.Item1.GetDisplayName()}");
             if(!string.IsNullOrWhiteSpace(pe.Item2))
             {
@@ -363,14 +363,6 @@ namespace StockLib.Service
             }
             return strRes.ToString();
 
-            //var isVayVonNuocNgoai = false;
-            //var usd = EPoint.Normal;
-            //if (StaticVal._lDNVayVonNuocNgoai.Contains(stock.s))
-            //{
-            //    usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
-            //    isVayVonNuocNgoai = true;
-            //}
-
             //var isGo = stock.h24.Any(y => y.code == "1733");
             //if (isGo)
             //{
@@ -386,43 +378,6 @@ namespace StockLib.Service
 
             //    //return await Chart_Go(input);
             //}
-
-            //var isDauKhi = stock.h24.Any(y => y.code == "7573" || y.code == "0500");
-            //if (isDauKhi)
-            //{
-            //    var lInput = new List<(EPoint, int)>();
-
-            //    var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
-            //    strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
-            //    strRes.AppendLine($"  + Giá Dầu Thô: {daumo.GetDisplayName()}");
-
-            //    if (isVayVonNuocNgoai)
-            //    {
-            //        lInput.Add((pe, 40));
-            //        lInput.Add((daumo, 30));
-            //        lInput.Add((Swap(usd), 30));
-            //        strRes.AppendLine(Swap(usd).GetDisplayName());
-            //    }
-            //    else
-            //    {
-            //        lInput.Add((pe, 50));
-            //        lInput.Add((daumo, 50));
-            //    }
-            //    var tong = TongDinhGia(lInput);
-            //    strRes.AppendLine($"=> Kết Luận: {tong.GetDisplayName()}");
-            //    return strRes.ToString();
-            //}
-        }
-        private EPoint TongDinhGia(List<(EPoint, int)> lInput)
-        {
-            var result = lInput.Sum(x => (double)x.Item1 * x.Item2 / 100);
-            if (result < (int)EPoint.Negative)
-                return EPoint.VeryNegative;
-            if (result < (int)EPoint.Normal)
-                return EPoint.Negative;
-            if (result < (int)EPoint.Positive)
-                return EPoint.Normal;
-            return EPoint.VeryPositive;
         }
 
         private EPoint Swap(EPoint point)
@@ -545,7 +500,7 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.DinhGiaXNK|EXCEPTION| {ex.Message}");
+                _logger.LogError($"DinhGiaService.DinhGiaXNK|EXCEPTION| {ex.Message}");
             }
             return EPoint.VeryNegative;
         }
@@ -635,43 +590,53 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.DinhGiaXNK_Gia|EXCEPTION| {ex.Message}");
+                _logger.LogError($"DinhGiaService.DinhGiaXNK_Gia|EXCEPTION| {ex.Message}");
             }
             return EPoint.Unknown;
         }
 
-        private async Task<(EPoint, string)> DinhGiaPEkoKeHoach(List<ChiSoPE> lpe, Quote quote, DateTime dt)
+
+
+        private async Task<EPoint> HaiQuanXNK(EHaiQuan haiquan, double step1, double step2)
         {
-            var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
-            if(pe_avg <= 0)
+            try
             {
-                return (EPoint.VeryNegative, string.Empty);
-            }
-            var sBuilder = new StringBuilder();
-            sBuilder.AppendLine($"   - PE trung bình: {Math.Round(pe_avg, 1)}");
-            
 
-            var lastPE = lpe.MaxBy(x => x.d);
-            if (lastPE.eps <= 0)
+            }
+            catch (Exception ex)
             {
-                return (EPoint.VeryNegative, sBuilder.ToString());
+                _logger.LogError($"DinhGiaService.HaiQuanXNK|EXCEPTION| {ex.Message}");
             }
-
-            var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
-            sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
-            if (pe_cur >= pe_avg)
-            {
-                return (EPoint.Normal, sBuilder.ToString());
-            }
-
-            if (pe_cur * 1.05 < pe_avg)
-            {
-                return (EPoint.VeryPositive, sBuilder.ToString());
-            }
-
-            return (EPoint.Positive, sBuilder.ToString());
+            return EPoint.Unknown;
         }
-        private async Task<(EPoint, string)> DinhGiaPE(string code, List<Quote> lQuote)
+
+        private async Task<EPoint> ThongKeXNK(EHaiQuan haiquan, double step1, double step2)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.ThongKeXNK|EXCEPTION| {ex.Message}");
+            }
+            return EPoint.Unknown;
+        }
+
+        private async Task<EPoint> ThongKeQuyXNK(EHaiQuan haiquan, double step1, double step2)
+        {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.ThongKeQuyXNK|EXCEPTION| {ex.Message}");
+            }
+            return EPoint.Unknown;
+        }
+
+        private (EPoint, string) DinhGiaPE(string code, List<Quote> lQuote)
         {
             try
             {
@@ -692,7 +657,7 @@ namespace StockLib.Service
                 var curPlan = lKehoach?.FirstOrDefault(x => x.d == dt.Year);
                 if (lKehoach is null || !lKehoach.Any() || curPlan is null)
                 {
-                    return await DinhGiaPEkoKeHoach(lpe, quote, dt);
+                    return DinhGiaPEkoKeHoach(lpe, quote, dt);
                 }
 
                 double pf_truth = 0;
@@ -769,9 +734,41 @@ namespace StockLib.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError($"BllService.DinhGiaPE|EXCEPTION| {ex.Message}");
+                _logger.LogError($"DinhGiaService.DinhGiaPE|EXCEPTION| {ex.Message}");
             }
             return (EPoint.VeryNegative, string.Empty);
+        }
+
+        private (EPoint, string) DinhGiaPEkoKeHoach(List<ChiSoPE> lpe, Quote quote, DateTime dt)
+        {
+            var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
+            if (pe_avg <= 0)
+            {
+                return (EPoint.VeryNegative, string.Empty);
+            }
+            var sBuilder = new StringBuilder();
+            sBuilder.AppendLine($"   - PE trung bình: {Math.Round(pe_avg, 1)}");
+
+
+            var lastPE = lpe.MaxBy(x => x.d);
+            if (lastPE.eps <= 0)
+            {
+                return (EPoint.VeryNegative, sBuilder.ToString());
+            }
+
+            var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
+            sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
+            if (pe_cur >= pe_avg)
+            {
+                return (EPoint.Normal, sBuilder.ToString());
+            }
+
+            if (pe_cur * 1.05 < pe_avg)
+            {
+                return (EPoint.VeryPositive, sBuilder.ToString());
+            }
+
+            return (EPoint.Positive, sBuilder.ToString());
         }
     }
 }
