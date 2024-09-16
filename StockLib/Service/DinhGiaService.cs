@@ -4,11 +4,7 @@ using Skender.Stock.Indicators;
 using StockLib.DAL;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -50,9 +46,250 @@ namespace StockLib.Service
             _stockTypeRepo = stockTypeRepo;
             _apiService = apiService;
         }
+        private async Task<(EPoint, EStockType)> DinhGiaNganh(string code, int nganh)
+        {
+            var eNganh = (EStockType)nganh;
+            if(eNganh == EStockType.BanLe)
+            {
+                return (await DG_BanLe(code), eNganh);
+            }
+
+            if (eNganh == EStockType.BDS)
+            {
+                return (await DG_BDS(code), eNganh);
+            }
+
+            if (eNganh == EStockType.CangBien)
+            {
+                return (await DG_CangBien(code), eNganh);
+            }
+
+            if (eNganh == EStockType.CaoSu)
+            {
+                return (await DG_CaoSu(code), eNganh);
+            }
+
+            if (eNganh == EStockType.ChungKhoan)
+            {
+                return (await DG_ChungKhoan(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DauKhi)
+            {
+                return (await DG_DauKhi(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DetMay)
+            {
+                return (await DG_DetMay(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DienGio)
+            {
+                return (await DG_DienGio(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DienKhi)
+            {
+                return (await DG_DienKhi(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DienMatTroi)
+            {
+                return (await DG_DienMatTroi(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DienThan)
+            {
+                return (await DG_DienThan(code), eNganh);
+            }
+
+            if (eNganh == EStockType.ThuyDien)
+            {
+                return (await DG_ThuyDien(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Forex)
+            {
+                return (Swap(await DinhGia_Forex(EForex.DXU1, 2, 5)), eNganh);
+            }
+
+            if (eNganh == EStockType.Go)
+            {
+                return (await DG_Go(code), eNganh);
+            }
+
+            if (eNganh == EStockType.HangKhong)
+            {
+                return (await DG_HangKhong(code), eNganh);
+            }
+
+            if (eNganh == EStockType.KCN)
+            {
+                return (await DG_KCN(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Logistic)
+            {
+                return (await DG_Logistic(code), eNganh);
+            }
+
+            if (eNganh == EStockType.NganHang)
+            {
+                return (await DG_NganHang(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Nhua)
+            {
+                return (await DG_Nhua(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Oto)
+            {
+                return (await DG_Oto(code), eNganh);
+            }
+
+            if (eNganh == EStockType.PhanBon)
+            {
+                return (await DG_PhanBon(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Than)
+            {
+                return (await DG_Than(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Thep)
+            {
+                return (await DG_Thep(code), eNganh);
+            }
+
+            if (eNganh == EStockType.ThuySan)
+            {
+                return (await DG_ThuySan(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Vin)
+            {
+                return (await DG_Vin(code), eNganh);
+            }
+
+            if (eNganh == EStockType.XayDung)
+            {
+                return (await DG_XayDung(code), eNganh);
+            }
+
+            if (eNganh == EStockType.XiMang)
+            {
+                return (await DG_XiMang(code), eNganh);
+            }
+
+            if (eNganh == EStockType.VanTaiBien)
+            {
+                return (await DG_VanTaiBien(code), eNganh);
+            }
+
+            if (eNganh == EStockType.ChanNuoi)
+            {
+                return (await DG_ChanNuoi(code), eNganh);
+            }
+
+            if (eNganh == EStockType.NongNghiep)
+            {
+                return (await DG_NongNghiep(code), eNganh);
+            }
+
+            if (eNganh == EStockType.HoaChat)
+            {
+                return (await DG_HoaChat(code), eNganh);
+            }
+
+            if (eNganh == EStockType.CaPhe)
+            {
+                return (await DG_CaPhe(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Gao)
+            {
+                return (await DG_Gao(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Duoc)
+            {
+                return (await DG_Duoc(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DichVuYTe)
+            {
+                return (await DG_DichVuYTe(code), eNganh);
+            }
+
+            if (eNganh == EStockType.BaoHiem)
+            {
+                return (await DG_BaoHiem(code), eNganh);
+            }
+
+            if (eNganh == EStockType.CNTT)
+            {
+                return (await DG_CNTT(code), eNganh);
+            }
+
+            if (eNganh == EStockType.DauTuCong)
+            {
+                return (await DG_DauTuCong(code), eNganh);
+            }
+
+            if (eNganh == EStockType.ThietBiDien)
+            {
+                return (await DG_ThietBiDien(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Duong)
+            {
+                return (await DG_Duong(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Bia)
+            {
+                return (await DG_Bia(code), eNganh);
+            }
+
+            if (eNganh == EStockType.SPNongNghiepKhac)
+            {
+                return (await DG_SPNongNghiepKhac(code), eNganh);
+            }
+
+            if (eNganh == EStockType.NuocNgot)
+            {
+                return (await DG_NuocNgot(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Sua)
+            {
+                return (await DG_Sua(code), eNganh);
+            }
+
+            if (eNganh == EStockType.XuatKhau)
+            {
+                return (await DG_XuatKhau(code), eNganh);
+            }
+
+            if (eNganh == EStockType.NangLuong)
+            {
+                return (await DG_NangLuong(code), eNganh);
+            }
+
+            if (eNganh == EStockType.Khac)
+            {
+                return (await DG_Khac(code), eNganh);
+            }
+
+            return (EPoint.Unknown, eNganh);
+        }
+
         public async Task<string> Mes_DinhGia(string input)
         {
-            var stock = StaticVal._lStock.FirstOrDefault(x => x.s == input);
+            var stock = _stockTypeRepo.GetEntityByFilter(Builders<StockType>.Filter.Eq(x => x.s, input));
             if (stock == null)
                 return null;
 
@@ -61,170 +298,113 @@ namespace StockLib.Service
 
             var lQuote = await _apiService.SSI_GetDataStock(stock.s);
             var pe = await DinhGiaPE(input, lQuote);
-            var isVayVonNuocNgoai = false;
-            var usd = EPoint.Normal;
-            if (StaticVal._lDNVayVonNuocNgoai.Contains(stock.s))
-            {
-                usd = await Forex(EForex.DXU1, 2, 5);
-                isVayVonNuocNgoai = true;
-            }
+            strRes.AppendLine($"+ P/E: {pe.GetDisplayName()}");
 
-            var isXayDung = StaticVal._lXayDung.Any(x => x == stock.s);
-            if (isXayDung)
+            var lDinhGia = new List<double>();
+            if(stock.ty1 > -1)
             {
-                //return await Chart_XayDung(input);
-            }
-            var isKCN = StaticVal._lKCN.Any(x => x == stock.s);
-            if (isKCN)
-            {
-                //return await Chart_KCN(input);
-            }
-            var isVin = StaticVal._lVin.Any(x => x == stock.s);
-            if (isVin)
-            {
-                //return await Chart_BatDongSan(input);
-            }
-            var isBDS = !isXayDung && !isKCN && !isVin && stock.h24.Any(y => y.code == "2357" || y.code == "8600");
-            if (isBDS)
-            {
-                //return await Chart_BatDongSan(input);
-            }
-            var isNganHang = stock.h24.Any(y => y.code == "8300");
-            if (isNganHang)
-            {
-                //return await Chart_NganHang(input);
-            }
-            var isChungKhoan = stock.h24.Any(y => y.code == "8777");
-            if (isChungKhoan)
-            {
-                //return await Chart_ChungKhoan(input);
-            }
-            var isThep = stock.h24.Any(y => y.code == "1757");
-            if (isThep)
-            {
-                //return await Chart_Thep(input);
-            }
-            var isBanLe = stock.h24.Any(y => y.code == "5379"
-                                        || y.code == "3530"
-                                        || y.code == "3577");
-            if (isBanLe)
-            {
-                //return await Chart_BanLe(input);
-            }
-
-            var isDien = stock.h24.Any(y => y.code == "7535");
-            if (isDien)
-            {
-                //return await Chart_Dien(input);
-            }
-
-            var isCangBien = stock.h24.Any(y => y.code == "2777");
-            if (isCangBien)
-            {
-                //return await Chart_CangBien(input);
-            }
-
-            var isLogistic = stock.h24.Any(y => y.code == "2773" || y.code == "2779");
-            if (isLogistic)
-            {
-                //return await Chart_Logistic(input);
-            }
-
-            var isHangKhong = stock.h24.Any(y => y.code == "5751");
-            if (isHangKhong)
-            {
-                //return await Chart_HangKhong(input);
-            }
-
-            var isCaoSu = StaticVal._lCaoSu.Any(x => x == stock.s);
-            if (isCaoSu)
-            {
-                //return await Chart_CaoSu(input);
-            }
-
-            var isNhua = StaticVal._lNhua.Any(x => x == stock.s);
-            if (isNhua)
-            {
-                //return await Chart_Nhua(input);
-            }
-
-            var isOto = stock.h24.Any(y => y.code == "3353");
-            if (isOto)
-            {
-                //return await Chart_Oto(input);
-            }
-
-            var isPhanBon = StaticVal._lPhanBon.Any(x => x == stock.s);
-            if (isPhanBon)
-            {
-                // return await Chart_PhanBon(input);
-            }
-
-            var isThan = stock.h24.Any(y => y.code == "1771");
-            if (isThan)
-            {
-                //return await Chart_Than(input);
-            }
-
-            var isThuySan = StaticVal._lThuySan.Any(x => x == stock.s);
-            if (isThuySan)
-            {
-                //return await Chart_ThuySan(input);
-            }
-
-            var isXimang = StaticVal._lXimang.Any(x => x == stock.s);
-            if (isXimang)
-            {
-                //return await Chart_Ximang(input);
-            }
-
-            var isDetmay = stock.h24.Any(y => y.code == "3763");
-            if (isDetmay)
-            {
-                //return await Chart_DetMay(input);
-            }
-
-            var isGo = stock.h24.Any(y => y.code == "1733");
-            if (isGo)
-            {
-                var xk = await DinhGiaXNK(EHaiQuan.Go, 5, 15);
-                strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
-                strRes.AppendLine($"  + Giá trị xuất khẩu: {xk.GetDisplayName()}");
-
-                var xk_gia = await DinhGiaXNK_Gia(EHaiQuan.Go, 5, 15);
-                if (xk_gia != EPoint.Unknown)
+                var dg = await DinhGiaNganh(stock.s, stock.ty1);
+                if(dg.Item1 != EPoint.Unknown)
                 {
-                    strRes.AppendLine($"  + Giá xuất khẩu: {xk.GetDisplayName()}");
+                    strRes.AppendLine($"+ {dg.Item2.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
+                    lDinhGia.Add((double)dg.Item1 * stock.ty1_r);
                 }
-
-                //return await Chart_Go(input);
             }
-
-            var isDauKhi = stock.h24.Any(y => y.code == "7573" || y.code == "0500");
-            if (isDauKhi)
+            if (stock.ty2 > -1)
             {
-                var lInput = new List<(EPoint, int)>();
-
-                var daumo = await Forex(EForex.CL, 5, 15);
-                strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
-                strRes.AppendLine($"  + Giá Dầu Thô: {daumo.GetDisplayName()}");
-
-                if (isVayVonNuocNgoai)
+                var dg = await DinhGiaNganh(stock.s, stock.ty2);
+                if (dg.Item1 != EPoint.Unknown)
                 {
-                    lInput.Add((pe, 40));
-                    lInput.Add((daumo, 30));
-                    lInput.Add((Swap(usd), 30));
-                    strRes.AppendLine(Swap(usd).GetDisplayName());
+                    strRes.AppendLine($"+ {dg.Item2.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
+                    lDinhGia.Add((double)dg.Item1 * stock.ty2_r);
                 }
-                else
-                {
-                    lInput.Add((pe, 50));
-                    lInput.Add((daumo, 50));
-                }
-                var tong = TongDinhGia(lInput);
-                strRes.AppendLine($"=> Kết Luận: {tong.GetDisplayName()}");
-                return strRes.ToString();
             }
+            if (stock.ty3 > -1)
+            {
+                var dg = await DinhGiaNganh(stock.s, stock.ty3);
+                if (dg.Item1 != EPoint.Unknown)
+                {
+                    strRes.AppendLine($"+  {dg.Item2.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
+                    lDinhGia.Add((double)dg.Item1 * stock.ty3_r);
+                }
+            }
+
+            if (!lDinhGia.Any())
+                return null;
+
+            var avgPoint = Math.Round(lDinhGia.Sum() / lDinhGia.Count(), 1);
+            var total = Math.Round(((double)pe + avgPoint) / 2, 1);
+            if(total > (double)EPoint.Positive)
+            {
+                strRes.AppendLine($"=> Kết Luận: {EPoint.VeryPositive.GetDisplayName()}");
+            }
+            else if (total > (double)EPoint.Normal)
+            {
+                strRes.AppendLine($"=> Kết Luận: {EPoint.Positive.GetDisplayName()}");
+            }
+            else if (total > (double)EPoint.Negative)
+            {
+                strRes.AppendLine($"=> Kết Luận: {EPoint.Normal.GetDisplayName()}");
+            }
+            else if (total > (double)EPoint.VeryNegative)
+            {
+                strRes.AppendLine($"=> Kết Luận: {EPoint.Negative.GetDisplayName()}");
+            }
+            else
+            {
+                strRes.AppendLine($"=> Kết Luận: {EPoint.VeryNegative.GetDisplayName()}");
+            }
+            return strRes.ToString();
+
+            //var isVayVonNuocNgoai = false;
+            //var usd = EPoint.Normal;
+            //if (StaticVal._lDNVayVonNuocNgoai.Contains(stock.s))
+            //{
+            //    usd = await DinhGia_Forex(EForex.DXU1, 2, 5);
+            //    isVayVonNuocNgoai = true;
+            //}
+
+            //var isGo = stock.h24.Any(y => y.code == "1733");
+            //if (isGo)
+            //{
+            //    var xk = await DinhGiaXNK(EHaiQuan.Go, 5, 15);
+            //    strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
+            //    strRes.AppendLine($"  + Giá trị xuất khẩu: {xk.GetDisplayName()}");
+
+            //    var xk_gia = await DinhGiaXNK_Gia(EHaiQuan.Go, 5, 15);
+            //    if (xk_gia != EPoint.Unknown)
+            //    {
+            //        strRes.AppendLine($"  + Giá xuất khẩu: {xk.GetDisplayName()}");
+            //    }
+
+            //    //return await Chart_Go(input);
+            //}
+
+            //var isDauKhi = stock.h24.Any(y => y.code == "7573" || y.code == "0500");
+            //if (isDauKhi)
+            //{
+            //    var lInput = new List<(EPoint, int)>();
+
+            //    var daumo = await DinhGia_Forex(EForex.CL, 5, 15);
+            //    strRes.AppendLine($"  + P/E: {pe.GetDisplayName()}");
+            //    strRes.AppendLine($"  + Giá Dầu Thô: {daumo.GetDisplayName()}");
+
+            //    if (isVayVonNuocNgoai)
+            //    {
+            //        lInput.Add((pe, 40));
+            //        lInput.Add((daumo, 30));
+            //        lInput.Add((Swap(usd), 30));
+            //        strRes.AppendLine(Swap(usd).GetDisplayName());
+            //    }
+            //    else
+            //    {
+            //        lInput.Add((pe, 50));
+            //        lInput.Add((daumo, 50));
+            //    }
+            //    var tong = TongDinhGia(lInput);
+            //    strRes.AppendLine($"=> Kết Luận: {tong.GetDisplayName()}");
+            //    return strRes.ToString();
+            //}
             return null;
         }
         private EPoint TongDinhGia(List<(EPoint, int)> lInput)

@@ -9,7 +9,7 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> DG_Thep(string code)
+        private async Task<EPoint> DG_Khac(string code)
         {
             return EPoint.Unknown;
         }

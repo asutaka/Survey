@@ -5,7 +5,7 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> Forex(EForex forex, double step1, double step2)
+        private async Task<EPoint> DinhGia_Forex(EForex forex, double step1, double step2)
         {
             try
             {
