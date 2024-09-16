@@ -233,11 +233,17 @@ namespace StockLib.Service
                 //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 //}
 
-                var mes = await _bllService.Mes_DinhGia(input);
-                if (string.IsNullOrWhiteSpace(mes))
-                    return;
+                var mesInfo = _bllService.Mes_ThongTin(input);
+                if (!string.IsNullOrWhiteSpace(mesInfo))
+                {
+                    await BotInstance().SendTextMessageAsync(userId, mesInfo);
+                }
 
-                await BotInstance().SendTextMessageAsync(userId, mes);
+                var mesDinhGia = await _bllService.Mes_DinhGia(input);
+                if (!string.IsNullOrWhiteSpace(mesDinhGia))
+                {
+                    await BotInstance().SendTextMessageAsync(userId, mesDinhGia);
+                }
             }
             catch (Exception ex)
             {

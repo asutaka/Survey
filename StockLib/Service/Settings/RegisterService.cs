@@ -14,6 +14,7 @@ namespace StockLib.Service.Settings
             services.AddSingleton<IFileService, FileService>();
             services.AddSingleton<IPartternService, PartternService>();
             services.AddSingleton<IDinhGiaService, DinhGiaService>();
+            services.AddSingleton<IThongTinService, ThongTinService>();
         }
     }
 }

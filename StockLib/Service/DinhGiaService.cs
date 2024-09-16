@@ -405,7 +405,6 @@ namespace StockLib.Service
             //    strRes.AppendLine($"=> Kết Luận: {tong.GetDisplayName()}");
             //    return strRes.ToString();
             //}
-            return null;
         }
         private EPoint TongDinhGia(List<(EPoint, int)> lInput)
         {
@@ -732,42 +731,3 @@ namespace StockLib.Service
         }
     }
 }
-//private async Task MaChungKhoanDescription(long userId, string input)
-//{
-//    if (input.Equals("PVD"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Cho thuê giàn khoan");
-//    }
-//    else if (input.Equals("PVS"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Thăm dò và khai thác dầu khí");
-//    }
-//    else if (input.Equals("PVT") || input.Equals("PVP"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Vận tải dầu khí");
-//    }
-//    else if (input.Equals("GAS"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Chế biến và phân phối khí(mua trong nước + nhập khẩu)");
-//    }
-//    else if (input.Equals("BSR"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Chế biến dầu mỏ(100% nhập khẩu)");
-//    }
-//    else if (input.Equals("POW"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Điện khí(khí là nguyên liệu đầu vào)");
-//    }
-//    else if (input.Equals("DPM") || input.Equals("DCM"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Dùng khí để tổng hợp NH3");
-//    }
-//    else if (input.Equals("PLX"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Phân phối dầu khí(chiếm 50% thị phần)");
-//    }
-//    else if (input.Equals("OIL"))
-//    {
-//        await BotInstance().SendTextMessageAsync(userId, $"{input}: Phân phối dầu khí(chiếm 20% thị phần)");
-//    }
-//}
