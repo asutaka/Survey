@@ -311,7 +311,7 @@ namespace StockLib.Service
                 if(dg.Item1 != EPoint.Unknown)
                 {
                     strRes.AppendLine($"+ {dg.Item2.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
-                    lDinhGia.Add((double)dg.Item1 * stock.ty1_r);
+                    lDinhGia.Add((double)dg.Item1 * stock.ty1_r / 100);
                 }
             }
             if (stock.ty2 > -1)
@@ -320,7 +320,7 @@ namespace StockLib.Service
                 if (dg.Item1 != EPoint.Unknown)
                 {
                     strRes.AppendLine($"+ {dg.Item2.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
-                    lDinhGia.Add((double)dg.Item1 * stock.ty2_r);
+                    lDinhGia.Add((double)dg.Item1 * stock.ty2_r / 100);
                 }
             }
             if (stock.ty3 > -1)
@@ -329,7 +329,7 @@ namespace StockLib.Service
                 if (dg.Item1 != EPoint.Unknown)
                 {
                     strRes.AppendLine($"+  {dg.Item2.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
-                    lDinhGia.Add((double)dg.Item1 * stock.ty3_r);
+                    lDinhGia.Add((double)dg.Item1 * stock.ty3_r / 100);
                 }
             }
 
@@ -648,7 +648,7 @@ namespace StockLib.Service
                 return (EPoint.VeryNegative, string.Empty);
             }
             var sBuilder = new StringBuilder();
-            sBuilder.AppendLine($"   - PE trung bình: {pe_avg}");
+            sBuilder.AppendLine($"   - PE trung bình: {Math.Round(pe_avg, 1)}");
             
 
             var lastPE = lpe.MaxBy(x => x.d);
@@ -658,7 +658,7 @@ namespace StockLib.Service
             }
 
             var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
-            sBuilder.AppendLine($"   - PE hiện tại: {pe_cur}");
+            sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
             if (pe_cur >= pe_avg)
             {
                 return (EPoint.Normal, sBuilder.ToString());
@@ -742,7 +742,7 @@ namespace StockLib.Service
                     return (EPoint.VeryNegative, string.Empty);
                 }
                 var sBuilder = new StringBuilder();
-                sBuilder.AppendLine($"   - PE khả thi: {pe_truth}");
+                sBuilder.AppendLine($"   - PE dự phóng: {Math.Round(pe_truth, 1)}");
 
                 var lastPE = lpe.MaxBy(x => x.d);
                 if (lastPE.eps <= 0)
@@ -752,8 +752,8 @@ namespace StockLib.Service
 
                 var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
                 var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
-                sBuilder.AppendLine($"   - PE trung bình: {pe_avg}");
-                sBuilder.AppendLine($"   - PE hiện tại: {pe_cur}");
+                sBuilder.AppendLine($"   - PE trung bình: {Math.Round(pe_avg, 1)}");
+                sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
                 if (pe_cur >= pe_avg
                     || pe_cur >= pe_truth)
                 {

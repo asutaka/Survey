@@ -1,4 +1,5 @@
-﻿using StockLib.Utils;
+﻿using Microsoft.Extensions.Logging;
+using StockLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,14 @@ namespace StockLib.Service
     {
         private async Task<EPoint> DG_DienKhi(string code)
         {
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.DG_DienKhi|EXCEPTION| {ex.Message}");
+            }
             return EPoint.Unknown;
         }
     }
