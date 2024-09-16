@@ -298,7 +298,11 @@ namespace StockLib.Service
 
             var lQuote = await _apiService.SSI_GetDataStock(stock.s);
             var pe = await DinhGiaPE(input, lQuote);
-            strRes.AppendLine($"+ P/E: {pe.GetDisplayName()}");
+            strRes.AppendLine($"+ P/E: {pe.Item1.GetDisplayName()}");
+            if(!string.IsNullOrWhiteSpace(pe.Item2))
+            {
+                strRes.AppendLine(pe.Item2);
+            }
 
             var lDinhGia = new List<double>();
             if(stock.ty1 > -1)
@@ -331,12 +335,12 @@ namespace StockLib.Service
 
             if (!lDinhGia.Any())
             {
-                strRes.AppendLine($"=> Kết Luận: {pe.GetDisplayName()}");
+                strRes.AppendLine($"=> Kết Luận: {pe.Item1.GetDisplayName()}");
                 return strRes.ToString();
             }    
                 
             var avgPoint = Math.Round(lDinhGia.Sum() / lDinhGia.Count(), 1);
-            var total = Math.Round(((double)pe + avgPoint) / 2, 1);
+            var total = Math.Round(((double)pe.Item1 + avgPoint) / 2, 1);
             if(total > (double)EPoint.Positive)
             {
                 strRes.AppendLine($"=> Kết Luận: {EPoint.VeryPositive.GetDisplayName()}");
@@ -635,35 +639,69 @@ namespace StockLib.Service
             }
             return EPoint.Unknown;
         }
-        private async Task<EPoint> DinhGiaPE(string code, List<Quote> lQuote)
+
+        private async Task<(EPoint, string)> DinhGiaPEkoKeHoach(List<ChiSoPE> lpe, Quote quote, DateTime dt)
+        {
+            var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
+            if(pe_avg <= 0)
+            {
+                return (EPoint.VeryNegative, string.Empty);
+            }
+            var sBuilder = new StringBuilder();
+            sBuilder.AppendLine($"   - PE trung bình: {pe_avg}");
+            
+
+            var lastPE = lpe.MaxBy(x => x.d);
+            if (lastPE.eps <= 0)
+            {
+                return (EPoint.VeryNegative, sBuilder.ToString());
+            }
+
+            var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
+            sBuilder.AppendLine($"   - PE hiện tại: {pe_cur}");
+            if (pe_cur >= pe_avg)
+            {
+                return (EPoint.Normal, sBuilder.ToString());
+            }
+
+            if (pe_cur * 1.05 < pe_avg)
+            {
+                return (EPoint.VeryPositive, sBuilder.ToString());
+            }
+
+            return (EPoint.Positive, sBuilder.ToString());
+        }
+        private async Task<(EPoint, string)> DinhGiaPE(string code, List<Quote> lQuote)
         {
             try
             {
                 var dt = DateTime.Now;
                 if (lQuote is null || !lQuote.Any())
                 {
-                    return EPoint.VeryNegative;
+                    return (EPoint.VeryNegative, string.Empty);
                 }
                 //pe
-                var lKehoach = _kehoachRepo.GetByFilter(Builders<KeHoach>.Filter.Eq(x => x.s, code));
-                if (lKehoach is null || !lKehoach.Any())
+                var lpe = _peRepo.GetByFilter(Builders<ChiSoPE>.Filter.Eq(x => x.s, code));
+                if (lpe is null || !lpe.Any())
                 {
-                    return EPoint.Negative;
+                    return (EPoint.Negative, string.Empty);
                 }
 
-                var curPlan = lKehoach.FirstOrDefault(x => x.d == dt.Year);
-                if (curPlan is null)
+                var quote = lQuote.MaxBy(x => x.Date);//Giá mới nhất
+                var lKehoach = _kehoachRepo.GetByFilter(Builders<KeHoach>.Filter.Eq(x => x.s, code));
+                var curPlan = lKehoach?.FirstOrDefault(x => x.d == dt.Year);
+                if (lKehoach is null || !lKehoach.Any() || curPlan is null)
                 {
-                    return EPoint.Negative;
+                    return await DinhGiaPEkoKeHoach(lpe, quote, dt);
                 }
 
                 double pf_truth = 0;
-                var avgRate = lKehoach.Where(x => x.pf_real > 0).Average(x => x.pf_real_r);
-                var cum = lKehoach.FirstOrDefault(x => x.pf_cum > 0);
-                if (cum != null)
+                var avgRate = lKehoach.Where(x => x.pf_real > 0).Average(x => x.pf_real_r);//Tỉ lệ hoàn thành lợi nhuận trung bình
+                var cum = curPlan.pf_cum;
+                if (cum > 0)
                 {
                     var quarter = dt.GetQuarter() - 1;
-                    var flag = cum.pf_cum_r >= quarter * 25;
+                    var flag = curPlan.pf_cum_r >= quarter * 25;
                     if (flag)
                     {
                         pf_truth = curPlan.pf_plan;
@@ -677,60 +715,63 @@ namespace StockLib.Service
 
                 if (pf_truth < 0)
                 {
-                    return EPoint.VeryNegative;
+                    return (EPoint.VeryNegative, string.Empty);
                 }
 
                 if (pf_truth == 0)
                 {
-                    return EPoint.Negative;
+                    return (EPoint.Negative, string.Empty);
                 }
 
                 //True Path 
                 var share = _shareRepo.GetEntityByFilter(Builders<Share>.Filter.Eq(x => x.s, code));
                 if (share is null || share.share <= 0)
                 {
-                    return EPoint.VeryNegative;
+                    return (EPoint.VeryNegative, string.Empty);
                 }
 
                 var eps_truth = Math.Round(pf_truth * 1000000000 / share.share, 1);
                 if (eps_truth == 0)
                 {
-                    return EPoint.VeryNegative;
+                    return (EPoint.VeryNegative, string.Empty);
                 }
-                var quote = lQuote.MaxBy(x => x.Date);//Giá mới nhất
+                
                 var pe_truth = Math.Round((double)quote.Close * 1000 / eps_truth, 1);
                 if (pe_truth <= 0)
                 {
-                    return EPoint.VeryNegative;
+                    return (EPoint.VeryNegative, string.Empty);
                 }
+                var sBuilder = new StringBuilder();
+                sBuilder.AppendLine($"   - PE khả thi: {pe_truth}");
 
-                var lpe = _peRepo.GetByFilter(Builders<ChiSoPE>.Filter.Eq(x => x.s, code));
                 var lastPE = lpe.MaxBy(x => x.d);
                 if (lastPE.eps <= 0)
                 {
-                    return EPoint.VeryNegative;
+                    return (EPoint.VeryNegative, sBuilder.ToString());
                 }
 
                 var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
                 var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
+                sBuilder.AppendLine($"   - PE trung bình: {pe_avg}");
+                sBuilder.AppendLine($"   - PE hiện tại: {pe_cur}");
                 if (pe_cur >= pe_avg
                     || pe_cur >= pe_truth)
                 {
-                    return EPoint.Normal;
+                    return (EPoint.Normal, sBuilder.ToString());
                 }
 
                 if (pe_cur * 1.05 < pe_truth)
                 {
-                    return EPoint.VeryPositive;
+                    return (EPoint.VeryPositive, sBuilder.ToString());
                 }
 
-                return EPoint.Positive;
+                return (EPoint.Positive, sBuilder.ToString());
             }
             catch (Exception ex)
             {
                 _logger.LogError($"BllService.DinhGiaPE|EXCEPTION| {ex.Message}");
             }
-            return EPoint.VeryNegative;
+            return (EPoint.VeryNegative, string.Empty);
         }
     }
 }
