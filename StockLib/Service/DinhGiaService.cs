@@ -645,7 +645,7 @@ namespace StockLib.Service
                         timeQuy = 12;
                     }
                     var timeMonth = thongke.d - (thongke.d / 100) * 100;
-
+                    var timeHaiQuan = 
                 }
                 else if (eType == EStockType.Nhua)
                 {
