@@ -271,7 +271,7 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.XuatKhau)
             {
-                return (await DG_XuatKhau(code), eNganh);
+                return (await DG_XuatKhau(code, eNganh), eNganh);
             }
 
             if (eNganh == EStockType.NangLuong)
@@ -596,11 +596,13 @@ namespace StockLib.Service
         }
 
 
-
-        private async Task<EPoint> HaiQuanXNK(EHaiQuan haiquan, double step1, double step2)
+        private async Task<EPoint> XNK(EStockType eType, double step1, double step2)
         {
             try
             {
+                EHaiQuan eHaiQuan;
+                EKeyTongCucThongKe eThongKe;
+
 
             }
             catch (Exception ex)
@@ -610,30 +612,120 @@ namespace StockLib.Service
             return EPoint.Unknown;
         }
 
-        private async Task<EPoint> ThongKeXNK(EHaiQuan haiquan, double step1, double step2)
+        private (EPoint, string) HaiQuanXNK(EHaiQuan eHaiQuan, double step1, double step2)
         {
             try
             {
+                var lXK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)eHaiQuan)).OrderByDescending(x => x.d);
+                if (lXK is null || !lXK.Any())
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
+                var cur = lXK.FirstOrDefault();
+                var prev = lXK.FirstOrDefault(x => x.d == cur.d - 1000);
+                if (prev is null)
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
 
+                var rate = Math.Round(cur.va * 100 / prev.va, 1) - 100;
+                if (rate >= 20)
+                {
+                    return (EPoint.VeryPositive, $"QoQ: {rate}%");
+                }
+                else if (rate >= 10)
+                {
+                    return (EPoint.Positive, $"QoQ: {rate}%");
+                }
+                else if (rate <= -5)
+                {
+                    return (EPoint.Negative, $"QoQ: {rate}%");
+                }
+                else if (rate <= -20)
+                {
+                    return (EPoint.VeryNegative, $"QoQ: {rate}%");
+                }
+                return (EPoint.Normal, $"QoQ: {rate}%");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.HaiQuanXNK|EXCEPTION| {ex.Message}");
+            }
+            return (EPoint.Unknown, string.Empty); 
+        }
+
+        private (EPoint, string) ThongKeXNK(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        {
+            try
+            {
+                var lThongKe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
+                if(lThongKe is null || !lThongKe.Any())
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }    
+
+                var cur = lThongKe.FirstOrDefault();
+                var rate = 100 - cur.qoq;
+                if(rate >= 20)
+                {
+                    return (EPoint.VeryPositive, $"QoQ: {rate}%");
+                }
+                else if(rate >= 10)
+                {
+                    return (EPoint.Positive, $"QoQ: {rate}%");
+                }
+                else if (rate <= -5)
+                {
+                    return (EPoint.Negative, $"QoQ: {rate}%");
+                }
+                else if (rate <= -20)
+                {
+                    return (EPoint.VeryNegative, $"QoQ: {rate}%");
+                }
+                return (EPoint.Normal, $"QoQ: {rate}%");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ThongKeXNK|EXCEPTION| {ex.Message}");
             }
-            return EPoint.Unknown;
+            return (EPoint.Unknown, string.Empty);
         }
 
-        private async Task<EPoint> ThongKeQuyXNK(EHaiQuan haiquan, double step1, double step2)
+        private (EPoint, string) ThongKeQuyXNK(EKeyTongCucThongKe eThongKe, double step1, double step2)
         {
             try
             {
+                var lThongKe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
+                if (!lThongKe.Any())
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
 
+                var cur = lThongKe.FirstOrDefault();
+                var rate = 100 - cur.qoq;
+                if (rate >= 20)
+                {
+                    return (EPoint.VeryPositive, $"QoQ: {rate}%");
+                }
+                else if (rate >= 10)
+                {
+                    return (EPoint.Positive, $"QoQ: {rate}%");
+                }
+                else if (rate <= -5)
+                {
+                    return (EPoint.Negative, $"QoQ: {rate}%");
+                }
+                else if (rate <= -20)
+                {
+                    return (EPoint.VeryNegative, $"QoQ: {rate}%");
+                }
+                return (EPoint.Normal, $"QoQ: {rate}%");
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ThongKeQuyXNK|EXCEPTION| {ex.Message}");
             }
-            return EPoint.Unknown;
+            return (EPoint.Unknown, string.Empty);
         }
 
         private (EPoint, string) DinhGiaPE(string code, List<Quote> lQuote)

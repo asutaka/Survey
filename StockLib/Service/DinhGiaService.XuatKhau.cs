@@ -10,7 +10,7 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> DG_XuatKhau(string code)
+        private async Task<EPoint> DG_XuatKhau(string code, EStockType eNganh)
         {
             try
             {
