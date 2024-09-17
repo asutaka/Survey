@@ -275,6 +275,7 @@ namespace StockLib.Utils
 
     public enum EHaiQuan
     {
+        None = 0,
         [Display(Name = "Thủy sản")]
         ThuySan = 1,
         [Display(Name = "Sắt thép")]
