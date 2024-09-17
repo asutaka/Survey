@@ -5,6 +5,7 @@ using StockLib.DAL;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
 using System.Text;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -600,10 +601,123 @@ namespace StockLib.Service
         {
             try
             {
-                EHaiQuan eHaiQuan;
-                EKeyTongCucThongKe eThongKe;
+                if(eType == EStockType.CaoSu)
+                {
+                    var eHaiQuan = EHaiQuan.CaoSu;
 
+                    var eThongKe = EKeyTongCucThongKe.XK_CaoSu;
+                }
+                else if (eType == EStockType.DetMay)
+                {
+                    var eHaiQuan = EHaiQuan.DetMay;
 
+                    var eThongKe = EKeyTongCucThongKe.XK_DetMay;
+                }
+                else if (eType == EStockType.Go)
+                {
+                    var eHaiQuan = EHaiQuan.Go;
+                    var eThongKe = EKeyTongCucThongKe.XK_Go;
+
+                    var lHaiQuan = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)eHaiQuan));
+                    var lThongKe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)eThongKe));
+                    var lThongKeQuy = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)eThongKe));
+
+                    var mode = 0;
+                    var haiquan = lHaiQuan.MaxBy(x => x.d);
+                    var thongke = lThongKe.MaxBy(x => x.d);
+                    var thongkequy = lThongKeQuy.MaxBy(x => x.d);
+                    var quarter = int.Parse(thongkequy.d.ToString().Last().ToString());
+                    var timeQuy = 0;
+                    if(quarter == 1)
+                    {
+                        timeQuy = 3;
+                    }
+                    else if(quarter == 2)
+                    {
+                        timeQuy = 6;
+                    }
+                    else if(quarter == 3)
+                    {
+                        timeQuy = 9;
+                    }
+                    else
+                    {
+                        timeQuy = 12;
+                    }
+                    var timeMonth = thongke.d - (thongke.d / 100) * 100;
+
+                }
+                else if (eType == EStockType.Nhua)
+                {
+                    var eHaiQuan = EHaiQuan.ChatDeo;
+                    var eHaiQuanSP = EHaiQuan.SPChatDeo;
+
+                    var eThongKe1 = EKeyTongCucThongKe.XK_ChatDeo;
+                    var eThongKe2 = EKeyTongCucThongKe.XK_SPChatDeo;
+                }
+                else if (eType == EStockType.Oto)
+                {
+                    var eHaiQuan = EHaiQuan.Oto9Cho_NK;
+                    var eHaiQuanVT = EHaiQuan.OtoVanTai_NK;
+
+                    var eThongKe = EKeyTongCucThongKe.NK_Oto;
+                }
+                else if (eType == EStockType.PhanBon)
+                {
+                    var eHaiQuan = EHaiQuan.PhanBon;
+
+                    var eThongKe = EKeyTongCucThongKe.QUY_GiaXK_PhanBon;
+                    var eThongKe1 = EKeyTongCucThongKe.NK_PhanBon;
+                }
+                else if (eType == EStockType.Than)
+                {
+                    var eHaiQuan = EHaiQuan.Than;
+
+                    var eThongKe1 = EKeyTongCucThongKe.QUY_GiaXK_Than;
+                }
+                else if (eType == EStockType.Thep)
+                {
+                    var eHaiQuan = EHaiQuan.SatThep;
+                    var eHaiQuanSP = EHaiQuan.SPSatThep;
+                    var eHaiQuanNK = EHaiQuan.SPSatThep_NK;
+
+                    var eThongKe = EKeyTongCucThongKe.NK_SatThep;
+                    var eThongKe1 = EKeyTongCucThongKe.NK_SPSatThep;
+                    var eThongKe5 = EKeyTongCucThongKe.XK_SatThep;
+                    var eThongKe6 = EKeyTongCucThongKe.XK_SPSatThep;
+                }
+                else if (eType == EStockType.ThuySan)
+                {
+                    var eHaiQuan = EHaiQuan.ThuySan;
+
+                    var eThongKe = EKeyTongCucThongKe.QUY_GiaXK_ThuySan;
+                    var eThongKe2 = EKeyTongCucThongKe.XK_ThuySan;
+                }
+                else if (eType == EStockType.XiMang)
+                {
+                    var eHaiQuan = EHaiQuan.Ximang;
+
+                    var eThongKe1 = EKeyTongCucThongKe.XK_Ximang;
+                }
+                else if (eType == EStockType.HoaChat)
+                {
+                    var eHaiQuan = EHaiQuan.HoaChat;
+                    var eHaiQuanSP = EHaiQuan.SPHoaChat;
+
+                    var eThongKe2 = EKeyTongCucThongKe.XK_HoaChat;
+                    var eThongKe3 = EKeyTongCucThongKe.XK_SPHoaChat;
+                }
+                else if (eType == EStockType.CaPhe)
+                {
+                    var eThongKe1 = EKeyTongCucThongKe.XK_CaPhe;
+
+                }
+                else if (eType == EStockType.Gao)
+                {
+                    var eHaiQuan = EHaiQuan.Gao;
+
+                    var eThongKe1 = EKeyTongCucThongKe.XK_Gao;
+                }
             }
             catch (Exception ex)
             {
