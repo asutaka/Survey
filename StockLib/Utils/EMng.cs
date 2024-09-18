@@ -158,11 +158,11 @@ namespace StockLib.Utils
         CPI_DoLa = 3,
         [Display(Name = "Lạm phát(%)")]
         CPI_LamPhat = 4,
-        [Display(Name = "Bán lẻ(tỷ đồng)")]
+        [Display(Name = "Bán lẻ")]
         BanLe = 5,
-        [Display(Name = "FDI(triệu USD)")]
+        [Display(Name = "FDI")]
         FDI = 6,
-        [Display(Name = "Đầu tư công(tỷ)")]
+        [Display(Name = "Đầu tư công")]
         DauTuCong = 7,
         [Display(Name = "IIP - Điện")]
         IIP_Dien = 8,

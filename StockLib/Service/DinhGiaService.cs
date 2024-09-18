@@ -650,7 +650,7 @@ namespace StockLib.Service
                 {
                     return (EPoint.Unknown, string.Empty);
                 }
-                var cur = lXK.FirstOrDefault();
+                var cur = lXK.First();
                 var prev = lXK.FirstOrDefault(x => x.d == cur.d - 1000);
                 if (prev is null)
                 {
@@ -658,23 +658,23 @@ namespace StockLib.Service
                 }
 
                 var rate = Math.Round(Math.Round(cur.va * 100 / prev.va, 1) - 100, 1);
-                if (rate >= 20)
+                if (rate >= step2)
                 {
                     return (EPoint.VeryPositive, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
                 }
-                else if (rate >= 10)
+                else if (rate >= step1)
                 {
                     return (EPoint.Positive, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
                 }
-                else if (rate <= -5)
+                else if (rate >= -step1)
+                {
+                    return (EPoint.Normal, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step2)
                 {
                     return (EPoint.Negative, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
                 }
-                else if (rate <= -20)
-                {
-                    return (EPoint.VeryNegative, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
-                }
-                return (EPoint.Normal, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
+                return (EPoint.VeryNegative, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
             }
             catch (Exception ex)
             {
@@ -695,23 +695,23 @@ namespace StockLib.Service
 
                 var cur = lThongKe.FirstOrDefault();
                 var rate = Math.Round(cur.qoq - 100, 1);
-                if(rate >= 20)
+                if(rate >= step2)
                 {
                     return (EPoint.VeryPositive, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
                 }
-                else if(rate >= 10)
+                else if(rate >= step1)
                 {
                     return (EPoint.Positive, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
                 }
-                else if (rate <= -5)
+                else if (rate >= -step1)
+                {
+                    return (EPoint.Normal, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step2)
                 {
                     return (EPoint.Negative, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
                 }
-                else if (rate <= -20)
-                {
-                    return (EPoint.VeryNegative, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
-                }
-                return (EPoint.Normal, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
+                return (EPoint.VeryNegative, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
             }
             catch (Exception ex)
             {
@@ -732,23 +732,185 @@ namespace StockLib.Service
 
                 var cur = lThongKe.FirstOrDefault();
                 var rate = Math.Round(cur.qoq - 100, 1);
-                if (rate >= 20)
+                if (rate >= step2)
                 {
                     return (EPoint.VeryPositive, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
                 }
-                else if (rate >= 10)
+                else if (rate >= step1)
                 {
                     return (EPoint.Positive, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
                 }
-                else if (rate <= -5)
+                else if (rate >= -step1)
+                {
+                    return (EPoint.Normal, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step2)
                 {
                     return (EPoint.Negative, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
                 }
-                else if (rate <= -20)
+                return (EPoint.VeryNegative, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.ThongKeQuyXNK|EXCEPTION| {ex.Message}");
+            }
+            return (EPoint.Unknown, string.Empty);
+        }
+
+        private (EPoint, string) ModeThongKe(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        {
+            try
+            {
+                ThongKe thongke = null;
+                ThongKeQuy thongkequy = null;
+                var lThongKe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)eThongKe));
+                if (lThongKe != null && lThongKe.Any())
                 {
-                    return (EPoint.VeryNegative, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
+                    thongke = lThongKe.MaxBy(x => x.d);
                 }
-                return (EPoint.Normal, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
+                var lThongKeQuy = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)eThongKe));
+                if (lThongKeQuy != null && lThongKeQuy.Any())
+                {
+                    thongkequy = lThongKeQuy.MaxBy(x => x.d);
+                }
+                var dThongKe = 0;
+                var dThongKeQuy = 0;
+                if (thongke != null)
+                {
+                    var year = thongke.d / 100;
+                    var month = thongke.d - 100 * year;
+                    var day = 15;
+                    dThongKe = int.Parse($"{year}{month.To2Digit()}{day.To2Digit()}");
+                }
+                if (thongkequy != null)
+                {
+                    var year = thongkequy.d / 10;
+                    var quarter = thongkequy.d - 10 * year;
+                    var day = 30;
+                    var month = 0;
+                    if (quarter == 1)
+                    {
+                        month = 3;
+                    }
+                    else if (quarter == 2)
+                    {
+                        month = 6;
+                    }
+                    else if (quarter == 3)
+                    {
+                        month = 9;
+                    }
+                    else
+                    {
+                        month = 12;
+                    }
+                    dThongKeQuy = int.Parse($"{year}{month.To2Digit()}{day.To2Digit()}");
+                }
+
+                var mode = 1;
+                var max = dThongKeQuy;
+                if (dThongKe > max)
+                {
+                    max = dThongKe;
+                    mode = 2;
+                }
+
+                if (mode == 2)
+                {
+                    return ThongKeOther(eThongKe, step1, step2);
+                }
+                else
+                {
+                    return ThongKeQuyOther(eThongKe, step1, step2);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.ModeThongKe|EXCEPTION| {ex.Message}");
+            }
+            return (EPoint.Unknown, string.Empty);
+        }
+
+        private (EPoint, string) ThongKeOther(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        {
+            try
+            {
+                var lThongKe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
+                if (lThongKe is null || !lThongKe.Any())
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
+
+                var strTitle = eThongKe.GetDisplayName();
+                var cur = lThongKe.First();
+                var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
+                if(prev is null || prev.va <= 0)
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
+
+                var rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
+                if (rate >= step2)
+                {
+                    return (EPoint.VeryPositive, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
+                }
+                else if (rate >= step1)
+                {
+                    return (EPoint.Positive, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step1)
+                {
+                    return (EPoint.Normal, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step2)
+                {
+                    return (EPoint.Negative, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
+                }
+                return (EPoint.VeryNegative, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"DinhGiaService.ThongKeOther|EXCEPTION| {ex.Message}");
+            }
+            return (EPoint.Unknown, string.Empty);
+        }
+
+        private (EPoint, string) ThongKeQuyOther(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        {
+            try
+            {
+                var lThongKe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
+                if (!lThongKe.Any())
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
+
+                var strTitle = eThongKe.GetDisplayName();
+                var cur = lThongKe.First();
+                var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
+                if (prev is null || prev.va <= 0)
+                {
+                    return (EPoint.Unknown, string.Empty);
+                }
+
+                var rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
+                if (rate >= step2)
+                {
+                    return (EPoint.VeryPositive, $"   - {strTitle} Quý cùng kỳ: {rate}%");
+                }
+                else if (rate >= step1)
+                {
+                    return (EPoint.Positive, $"   - {strTitle} Quý cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step1)
+                {
+                    return (EPoint.Normal, $"   - {strTitle} Quý cùng kỳ: {rate}%");
+                }
+                else if (rate >= -step2)
+                {
+                    return (EPoint.Negative, $"   - {strTitle} Quý cùng kỳ: {rate}%");
+                }
+                return (EPoint.VeryNegative, $"   - {strTitle} Quý cùng kỳ: {rate}%");
             }
             catch (Exception ex)
             {
