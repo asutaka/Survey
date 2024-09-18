@@ -70,7 +70,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.CangBien)
             {
-                //return (await DG_CangBien(code), string.Empty, eNganh);
+                var vt = DG_CangBien(code);
+                return (vt.Item1, vt.Item2, eNganh);
             }
 
             if (eNganh == EStockType.CaoSu)
@@ -206,7 +207,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.VanTaiBien)
             {
-                //return (await DG_VanTaiBien(code), string.Empty, eNganh);
+                //var vt = DG_VanTaiBien(code);
+                //return (vt.Item1, vt.Item2, eNganh);
             }
 
             if (eNganh == EStockType.ChanNuoi)
@@ -879,7 +881,7 @@ namespace StockLib.Service
                 }
                 else
                 {
-                    rate = cur.qoq - 100;
+                    rate = Math.Round(cur.qoq - 100, 1);
                 }
                
                 if (rate >= step2)
@@ -931,7 +933,7 @@ namespace StockLib.Service
                 }
                 else
                 {
-                    rate = cur.qoq - 100;
+                    rate = Math.Round(cur.qoq - 100, 1);
                 }
 
                 if (rate >= step2)

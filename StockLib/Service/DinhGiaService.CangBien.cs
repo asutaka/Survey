@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -14,7 +9,7 @@ namespace StockLib.Service
         {
             try
             {
-
+                return ModeThongKe(EKeyTongCucThongKe.VanTai_DuongBien, 5, 15);
             }
             catch (Exception ex)
             {
