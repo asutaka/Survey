@@ -24,7 +24,9 @@ namespace StockLib.Service
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IStockTypeRepo _stockTypeRepo;
+        
         private readonly IFinancialBanLeRepo _banleRepo;
+        private readonly IFinancialBDSRepo _bdsRepo;
 
         private readonly IAPIService _apiService;
         public DinhGiaService(ILogger<BllService> logger,
@@ -36,6 +38,7 @@ namespace StockLib.Service
                             IThongKeHaiQuanRepo haiquanRepo,
                             IStockTypeRepo stockTypeRepo,
                             IFinancialBanLeRepo banleRepo,
+                            IFinancialBDSRepo bdsRepo,
                             IAPIService apiService)
         {
             _logger = logger;
@@ -47,6 +50,7 @@ namespace StockLib.Service
             _thongkequyRepo = thongkequyRepo;
             _stockTypeRepo = stockTypeRepo;
             _banleRepo = banleRepo;
+            _bdsRepo = bdsRepo;
             _apiService = apiService;
         }
         private async Task<(EPoint, string, EStockType)> DinhGiaNganh(string code, int nganh)
@@ -60,7 +64,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.BDS)
             {
-                //return (await DG_BDS(code), string.Empty, eNganh);
+                var bds = DG_BDS(code);
+                return (bds.Item1, bds.Item2, eNganh);
             }
 
             if (eNganh == EStockType.CangBien)
