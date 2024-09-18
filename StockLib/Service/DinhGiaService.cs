@@ -66,7 +66,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.CaoSu)
             {
-                return (await DG_CaoSu(code), string.Empty, eNganh);
+                var caosu = DG_CaoSu(code);
+                return (caosu.Item1, caosu.Item2, eNganh);
             }
 
             if (eNganh == EStockType.ChungKhoan)
@@ -867,21 +868,21 @@ namespace StockLib.Service
                 var rate = Math.Round(Math.Round(cur.va * 100 / prev.va, 1) - 100, 1);
                 if (rate >= 20)
                 {
-                    return (EPoint.VeryPositive, $"   - qoq( Hải Quan ): {rate}%");
+                    return (EPoint.VeryPositive, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
                 }
                 else if (rate >= 10)
                 {
-                    return (EPoint.Positive, $"   - qoq( Hải Quan ): {rate}%");
+                    return (EPoint.Positive, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
                 }
                 else if (rate <= -5)
                 {
-                    return (EPoint.Negative, $"   - qoq( Hải Quan ): {rate}%");
+                    return (EPoint.Negative, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
                 }
                 else if (rate <= -20)
                 {
-                    return (EPoint.VeryNegative, $"   - qoq( Hải Quan ): {rate}%");
+                    return (EPoint.VeryNegative, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
                 }
-                return (EPoint.Normal, $"   - qoq( Hải Quan ): {rate}%");
+                return (EPoint.Normal, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
             }
             catch (Exception ex)
             {
@@ -904,21 +905,21 @@ namespace StockLib.Service
                 var rate = Math.Round(cur.qoq - 100, 1);
                 if(rate >= 20)
                 {
-                    return (EPoint.VeryPositive, $"   - qoq( Tháng ): {rate}%");
+                    return (EPoint.VeryPositive, $"   - QoQ Xuất khẩu Tháng: {rate}%");
                 }
                 else if(rate >= 10)
                 {
-                    return (EPoint.Positive, $"   - qoq( Tháng ): {rate}%");
+                    return (EPoint.Positive, $"   - QoQ Xuất khẩu Tháng: {rate}%");
                 }
                 else if (rate <= -5)
                 {
-                    return (EPoint.Negative, $"   - qoq( Tháng ): {rate}%");
+                    return (EPoint.Negative, $"   - QoQ Xuất khẩu Tháng: {rate}%");
                 }
                 else if (rate <= -20)
                 {
-                    return (EPoint.VeryNegative, $"   - qoq( Tháng ): {rate}%");
+                    return (EPoint.VeryNegative, $"   - QoQ Xuất khẩu Tháng: {rate}%");
                 }
-                return (EPoint.Normal, $"   - qoq( Tháng ): {rate}%");
+                return (EPoint.Normal, $"   - QoQ Xuất khẩu Tháng: {rate}%");
             }
             catch (Exception ex)
             {
@@ -941,21 +942,21 @@ namespace StockLib.Service
                 var rate = Math.Round(cur.qoq - 100, 1);
                 if (rate >= 20)
                 {
-                    return (EPoint.VeryPositive, $"   - qoq( Quý ): {rate}%");
+                    return (EPoint.VeryPositive, $"   - QoQ Xuất khẩu Quý: {rate}%");
                 }
                 else if (rate >= 10)
                 {
-                    return (EPoint.Positive, $"   - qoq( Quý ): {rate}%");
+                    return (EPoint.Positive, $"   - QoQ Xuất khẩu Quý: {rate}%");
                 }
                 else if (rate <= -5)
                 {
-                    return (EPoint.Negative, $"   - qoq( Quý ): {rate}%");
+                    return (EPoint.Negative, $"   - QoQ Xuất khẩu Quý: {rate}%");
                 }
                 else if (rate <= -20)
                 {
-                    return (EPoint.VeryNegative, $"   - qoq( Quý ): {rate}%");
+                    return (EPoint.VeryNegative, $"   - QoQ Xuất khẩu Quý: {rate}%");
                 }
-                return (EPoint.Normal, $"   - qoq( Quý ): {rate}%");
+                return (EPoint.Normal, $"   - QoQ Xuất khẩu Quý: {rate}%");
             }
             catch (Exception ex)
             {
@@ -1045,7 +1046,7 @@ namespace StockLib.Service
 
                 var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
                 var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
-                sBuilder.AppendLine($"   - PE trung bình: {Math.Round(pe_avg, 1)}");
+                sBuilder.AppendLine($"   - PE trung bình quý {dt.GetQuarterStr()}: {Math.Round(pe_avg, 1)}");
                 sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
                 if (pe_cur >= pe_avg
                     || pe_cur >= pe_truth)
