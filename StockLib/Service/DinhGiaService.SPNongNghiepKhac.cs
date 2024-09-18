@@ -10,7 +10,7 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> DG_SPNongNghiepKhac(string code)
+        private (EPoint, string) DG_SPNongNghiepKhac(string code)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace StockLib.Service
             {
                 _logger.LogError($"DinhGiaService.DG_SPNongNghiepKhac|EXCEPTION| {ex.Message}");
             }
-            return EPoint.Unknown;
+            return (EPoint.Unknown, string.Empty);
         }
     }
 }

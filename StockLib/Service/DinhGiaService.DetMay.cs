@@ -1,26 +1,21 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> DG_DetMay(string code)
+        private (EPoint, string) DG_DetMay(string code)
         {
             try
             {
-
+                return XNK(EStockType.DetMay, 5, 15);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.DG_DetMay|EXCEPTION| {ex.Message}");
             }
-            return EPoint.Unknown;
+            return (EPoint.Unknown, string.Empty);
         }
     }
 }

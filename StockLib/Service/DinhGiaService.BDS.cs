@@ -10,7 +10,7 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> DG_BDS(string code)
+        private (EPoint, string) DG_BDS(string code)
         {
             try
             {
@@ -20,7 +20,7 @@ namespace StockLib.Service
             {
                 _logger.LogError($"DinhGiaService.DG_BDS|EXCEPTION| {ex.Message}");
             }
-            return EPoint.Unknown;
+            return (EPoint.Unknown, string.Empty);
         }
     }
 }

@@ -342,7 +342,7 @@ namespace StockLib.Utils
 
     public enum EForex
     {
-        [Display(Name = "Dầu thô")]
+        [Display(Name = "Giá dầu thô")]
         CL = 1,
         [Display(Name = "DXY - chỉ số USD")]
         DXU1 = 2

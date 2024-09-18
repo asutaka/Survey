@@ -51,17 +51,17 @@ namespace StockLib.Service
             var eNganh = (EStockType)nganh;
             if(eNganh == EStockType.BanLe)
             {
-                return (await DG_BanLe(code), string.Empty, eNganh);
+                //return (await DG_BanLe(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.BDS)
             {
-                return (await DG_BDS(code), string.Empty, eNganh);
+                //return (await DG_BDS(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.CangBien)
             {
-                return (await DG_CangBien(code), string.Empty, eNganh);
+                //return (await DG_CangBien(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.CaoSu)
@@ -72,47 +72,50 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.ChungKhoan)
             {
-                return (await DG_ChungKhoan(code), string.Empty, eNganh);
+                //return (await DG_ChungKhoan(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.DauKhi)
             {
-                return (await DG_DauKhi(code), string.Empty, eNganh);
+                var daukhi = await DG_DauKhi(code);
+                return (daukhi.Item1, daukhi.Item2, eNganh);
             }
 
             if (eNganh == EStockType.DetMay)
             {
-                return (await DG_DetMay(code), string.Empty, eNganh);
+                var detmay = DG_DetMay(code);
+                return (detmay.Item1, detmay.Item2, eNganh);
             }
 
             if (eNganh == EStockType.DienGio)
             {
-                return (await DG_DienGio(code), string.Empty, eNganh);
+                //return (await DG_DienGio(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.DienKhi)
             {
-                return (await DG_DienKhi(code), string.Empty, eNganh);
+                //return (await DG_DienKhi(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.DienMatTroi)
             {
-                return (await DG_DienMatTroi(code), string.Empty, eNganh);
+                //return (await DG_DienMatTroi(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.DienThan)
             {
-                return (await DG_DienThan(code), string.Empty, eNganh);
+                //return (await DG_DienThan(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.ThuyDien)
             {
-                return (await DG_ThuyDien(code), string.Empty, eNganh);
+                //return (await DG_ThuyDien(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Forex)
             {
-                return (Swap(await DinhGia_Forex(EForex.DXU1, 2, 5)), string.Empty, eNganh);
+                var forex = await DinhGia_Forex(EForex.DXU1, 2, 5);
+                return (Swap(forex.Item1), forex.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Go)
@@ -123,152 +126,152 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.HangKhong)
             {
-                return (await DG_HangKhong(code), string.Empty, eNganh);
+                //return (await DG_HangKhong(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.KCN)
             {
-                return (await DG_KCN(code), string.Empty, eNganh);
+                //return (await DG_KCN(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Logistic)
             {
-                return (await DG_Logistic(code), string.Empty, eNganh);
+                //return (await DG_Logistic(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.NganHang)
             {
-                return (await DG_NganHang(code), string.Empty, eNganh);
+                //return (await DG_NganHang(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Nhua)
             {
-                return (await DG_Nhua(code), string.Empty, eNganh);
+                //return (await DG_Nhua(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Oto)
             {
-                return (await DG_Oto(code), string.Empty, eNganh);
+                //return (await DG_Oto(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.PhanBon)
             {
-                return (await DG_PhanBon(code), string.Empty, eNganh);
+                //return (await DG_PhanBon(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Than)
             {
-                return (await DG_Than(code), string.Empty, eNganh);
+                //return (await DG_Than(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Thep)
             {
-                return (await DG_Thep(code), string.Empty, eNganh);
+                //return (await DG_Thep(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.ThuySan)
             {
-                return (await DG_ThuySan(code), string.Empty, eNganh);
+                //return (await DG_ThuySan(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Vin)
             {
-                return (await DG_Vin(code), string.Empty, eNganh);
+                //return (await DG_Vin(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.XayDung)
             {
-                return (await DG_XayDung(code), string.Empty, eNganh);
+                //return (await DG_XayDung(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.XiMang)
             {
-                return (await DG_XiMang(code), string.Empty, eNganh);
+                //return (await DG_XiMang(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.VanTaiBien)
             {
-                return (await DG_VanTaiBien(code), string.Empty, eNganh);
+                //return (await DG_VanTaiBien(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.ChanNuoi)
             {
-                return (await DG_ChanNuoi(code), string.Empty, eNganh);
+                //return (await DG_ChanNuoi(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.NongNghiep)
             {
-                return (await DG_NongNghiep(code), string.Empty, eNganh);
+                //return (await DG_NongNghiep(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.HoaChat)
             {
-                return (await DG_HoaChat(code), string.Empty, eNganh);
+                //return (await DG_HoaChat(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.CaPhe)
             {
-                return (await DG_CaPhe(code), string.Empty, eNganh);
+                //return (await DG_CaPhe(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Gao)
             {
-                return (await DG_Gao(code), string.Empty, eNganh);
+                //return (await DG_Gao(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Duoc)
             {
-                return (await DG_Duoc(code), string.Empty, eNganh);
+                //return (await DG_Duoc(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.DichVuYTe)
             {
-                return (await DG_DichVuYTe(code), string.Empty, eNganh);
+                //return (await DG_DichVuYTe(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.BaoHiem)
             {
-                return (await DG_BaoHiem(code), string.Empty, eNganh);
+                //return (await DG_BaoHiem(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.CNTT)
             {
-                return (await DG_CNTT(code), string.Empty, eNganh);
+                //return (await DG_CNTT(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.DauTuCong)
             {
-                return (await DG_DauTuCong(code), string.Empty, eNganh);
+                //return (await DG_DauTuCong(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.ThietBiDien)
             {
-                return (await DG_ThietBiDien(code), string.Empty, eNganh);
+                //return (await DG_ThietBiDien(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Duong)
             {
-                return (await DG_Duong(code), string.Empty, eNganh);
+                //return (await DG_Duong(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Bia)
             {
-                return (await DG_Bia(code), string.Empty, eNganh);
+                //return (await DG_Bia(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.SPNongNghiepKhac)
             {
-                return (await DG_SPNongNghiepKhac(code), string.Empty, eNganh);
+                //return (await DG_SPNongNghiepKhac(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.NuocNgot)
             {
-                return (await DG_NuocNgot(code), string.Empty, eNganh);
+                //return (await DG_NuocNgot(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Sua)
             {
-                return (await DG_Sua(code), string.Empty, eNganh);
+                //return (await DG_Sua(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.XuatKhau)
@@ -278,12 +281,12 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.NangLuong)
             {
-                return (await DG_NangLuong(code), string.Empty, eNganh);
+                //return (await DG_NangLuong(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.Khac)
             {
-                return (await DG_Khac(code), string.Empty, eNganh);
+                //return (await DG_Khac(code), string.Empty, eNganh);
             }
 
             return (EPoint.Unknown, string.Empty, eNganh);
@@ -868,21 +871,21 @@ namespace StockLib.Service
                 var rate = Math.Round(Math.Round(cur.va * 100 / prev.va, 1) - 100, 1);
                 if (rate >= 20)
                 {
-                    return (EPoint.VeryPositive, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
+                    return (EPoint.VeryPositive, $"   - Xuất khẩu Hải Quan nửa Tháng QoQ: {rate}%");
                 }
                 else if (rate >= 10)
                 {
-                    return (EPoint.Positive, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
+                    return (EPoint.Positive, $"   - Xuất khẩu Hải Quan nửa Tháng QoQ: {rate}%");
                 }
                 else if (rate <= -5)
                 {
-                    return (EPoint.Negative, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
+                    return (EPoint.Negative, $"   - Xuất khẩu Hải Quan nửa Tháng QoQ: {rate}%");
                 }
                 else if (rate <= -20)
                 {
-                    return (EPoint.VeryNegative, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
+                    return (EPoint.VeryNegative, $"   - Xuất khẩu Hải Quan nửa Tháng QoQ: {rate}%");
                 }
-                return (EPoint.Normal, $"   - QoQ Xuất khẩu Hải Quan nửa Tháng: {rate}%");
+                return (EPoint.Normal, $"   - Xuất khẩu Hải Quan nửa Tháng QoQ: {rate}%");
             }
             catch (Exception ex)
             {
@@ -905,21 +908,21 @@ namespace StockLib.Service
                 var rate = Math.Round(cur.qoq - 100, 1);
                 if(rate >= 20)
                 {
-                    return (EPoint.VeryPositive, $"   - QoQ Xuất khẩu Tháng: {rate}%");
+                    return (EPoint.VeryPositive, $"   - Xuất khẩu Tháng QoQ: {rate}%");
                 }
                 else if(rate >= 10)
                 {
-                    return (EPoint.Positive, $"   - QoQ Xuất khẩu Tháng: {rate}%");
+                    return (EPoint.Positive, $"   - Xuất khẩu Tháng QoQ: {rate}%");
                 }
                 else if (rate <= -5)
                 {
-                    return (EPoint.Negative, $"   - QoQ Xuất khẩu Tháng: {rate}%");
+                    return (EPoint.Negative, $"   - Xuất khẩu Tháng QoQ: {rate}%");
                 }
                 else if (rate <= -20)
                 {
-                    return (EPoint.VeryNegative, $"   - QoQ Xuất khẩu Tháng: {rate}%");
+                    return (EPoint.VeryNegative, $"   - Xuất khẩu Tháng QoQ: {rate}%");
                 }
-                return (EPoint.Normal, $"   - QoQ Xuất khẩu Tháng: {rate}%");
+                return (EPoint.Normal, $"   - Xuất khẩu Tháng QoQ: {rate}%");
             }
             catch (Exception ex)
             {
@@ -942,21 +945,21 @@ namespace StockLib.Service
                 var rate = Math.Round(cur.qoq - 100, 1);
                 if (rate >= 20)
                 {
-                    return (EPoint.VeryPositive, $"   - QoQ Xuất khẩu Quý: {rate}%");
+                    return (EPoint.VeryPositive, $"   - Xuất khẩu Quý QoQ: {rate}%");
                 }
                 else if (rate >= 10)
                 {
-                    return (EPoint.Positive, $"   - QoQ Xuất khẩu Quý: {rate}%");
+                    return (EPoint.Positive, $"   - Xuất khẩu Quý QoQ: {rate}%");
                 }
                 else if (rate <= -5)
                 {
-                    return (EPoint.Negative, $"   - QoQ Xuất khẩu Quý: {rate}%");
+                    return (EPoint.Negative, $"   - Xuất khẩu Quý QoQ: {rate}%");
                 }
                 else if (rate <= -20)
                 {
-                    return (EPoint.VeryNegative, $"   - QoQ Xuất khẩu Quý: {rate}%");
+                    return (EPoint.VeryNegative, $"   - Xuất khẩu Quý QoQ: {rate}%");
                 }
-                return (EPoint.Normal, $"   - QoQ Xuất khẩu Quý: {rate}%");
+                return (EPoint.Normal, $"   - Xuất khẩu Quý QoQ: {rate}%");
             }
             catch (Exception ex)
             {

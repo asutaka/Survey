@@ -5,7 +5,7 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private async Task<EPoint> DG_DauKhi(string code)
+        private async Task<(EPoint, string)> DG_DauKhi(string code)
         {
             try
             {
@@ -15,7 +15,7 @@ namespace StockLib.Service
             {
                 _logger.LogError($"DinhGiaService.DG_DauKhi|EXCEPTION| {ex.Message}");
             }
-            return EPoint.Unknown;
+            return (EPoint.Unknown, string.Empty);
         }
     }
 }
