@@ -211,12 +211,14 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.CaPhe)
             {
-                //return (await DG_CaPhe(code), string.Empty, eNganh);
+                var cafe = DG_CaPhe(code);
+                return (cafe.Item1, cafe.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Gao)
             {
-                //return (await DG_Gao(code), string.Empty, eNganh);
+                var gao = DG_Gao(code);
+                return (gao.Item1, gao.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Duoc)
