@@ -4,6 +4,7 @@ using Skender.Stock.Indicators;
 using StockLib.DAL;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace StockLib.Service
@@ -23,7 +24,7 @@ namespace StockLib.Service
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IStockTypeRepo _stockTypeRepo;
-
+        private readonly IFinancialBanLeRepo _banleRepo;
 
         private readonly IAPIService _apiService;
         public DinhGiaService(ILogger<BllService> logger,
@@ -34,6 +35,7 @@ namespace StockLib.Service
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
                             IStockTypeRepo stockTypeRepo,
+                            IFinancialBanLeRepo banleRepo,
                             IAPIService apiService)
         {
             _logger = logger;
@@ -44,6 +46,7 @@ namespace StockLib.Service
             _thongkeRepo = thongkeRepo;
             _thongkequyRepo = thongkequyRepo;
             _stockTypeRepo = stockTypeRepo;
+            _banleRepo = banleRepo;
             _apiService = apiService;
         }
         private async Task<(EPoint, string, EStockType)> DinhGiaNganh(string code, int nganh)
@@ -51,7 +54,8 @@ namespace StockLib.Service
             var eNganh = (EStockType)nganh;
             if(eNganh == EStockType.BanLe)
             {
-                //return (await DG_BanLe(code), string.Empty, eNganh);
+                var banle = DG_BanLe(code);
+                return (banle.Item1, banle.Item2, eNganh);
             }
 
             if (eNganh == EStockType.BDS)
@@ -426,7 +430,7 @@ namespace StockLib.Service
                     var sBuilder = new StringBuilder();
                     sBuilder.AppendLine(mode.Item2);
                     sBuilder.AppendLine($"   - SP {modeSP.Item2}");
-                    return (MergeEpoint(mode.Item1, modeSP.Item1), sBuilder.ToString());
+                    return (MergeEnpoint(mode.Item1, modeSP.Item1), sBuilder.ToString());
                 }
                 else if (eType == EStockType.Oto)
                 {
@@ -465,8 +469,8 @@ namespace StockLib.Service
                     sBuilder.AppendLine($"   - SP {modeSP.Item2}");
                     sBuilder.AppendLine($"   - NK {modeNK.Item2}");
 
-                    var mergeXK = MergeEpoint(mode.Item1, modeSP.Item1);
-                    return (MergeEpoint(mergeXK, Swap(modeNK.Item1)), sBuilder.ToString());
+                    var merge = MergeEnpoint(mode.Item1, modeSP.Item1, Swap(modeNK.Item1));
+                    return (merge, sBuilder.ToString());
 
                 }
                 else if (eType == EStockType.ThuySan)
@@ -494,7 +498,7 @@ namespace StockLib.Service
                     var sBuilder = new StringBuilder();
                     sBuilder.AppendLine(mode.Item2);
                     sBuilder.AppendLine($"   - SP {modeSP.Item2}");
-                    return (MergeEpoint(mode.Item1, modeSP.Item1), sBuilder.ToString());
+                    return (MergeEnpoint(mode.Item1, modeSP.Item1), sBuilder.ToString());
 
                 }
                 else if (eType == EStockType.CaPhe)
@@ -530,9 +534,23 @@ namespace StockLib.Service
             return point;
         }
 
-        private EPoint MergeEpoint(EPoint e1, EPoint e2)
+        private EPoint MergeEnpoint(EPoint e1, EPoint e2)
         {
             var res = 0.5 * ((double)e1 + (double)e2);
+            if (res > (double)EPoint.Positive)
+                return EPoint.VeryPositive;
+            if (res > (double)EPoint.Normal)
+                return EPoint.Positive;
+            if (res > (double)EPoint.Negative)
+                return EPoint.Normal;
+            if (res > (double)EPoint.VeryNegative)
+                return EPoint.Negative;
+            return EPoint.VeryNegative;
+        }
+
+        private EPoint MergeEnpoint(EPoint e1, EPoint e2, EPoint e3)
+        {
+            var res = ((double)e1 + (double)e2 + (double)e3) / 3;
             if (res > (double)EPoint.Positive)
                 return EPoint.VeryPositive;
             if (res > (double)EPoint.Normal)
@@ -844,13 +862,21 @@ namespace StockLib.Service
 
                 var strTitle = eThongKe.GetDisplayName();
                 var cur = lThongKe.First();
-                var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
-                if(prev is null || prev.va <= 0)
+                double rate = 0;
+                if(cur.qoq == 0)
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
+                    if (prev is null || prev.va <= 0)
+                    {
+                        return (EPoint.Unknown, string.Empty);
+                    }
+                    rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
                 }
-
-                var rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
+                else
+                {
+                    rate = cur.qoq - 100;
+                }
+               
                 if (rate >= step2)
                 {
                     return (EPoint.VeryPositive, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
@@ -888,13 +914,21 @@ namespace StockLib.Service
 
                 var strTitle = eThongKe.GetDisplayName();
                 var cur = lThongKe.First();
-                var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
-                if (prev is null || prev.va <= 0)
+                double rate = 0;
+                if (cur.qoq == 0)
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
+                    if (prev is null || prev.va <= 0)
+                    {
+                        return (EPoint.Unknown, string.Empty);
+                    }
+                    rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
+                }
+                else
+                {
+                    rate = cur.qoq - 100;
                 }
 
-                var rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
                 if (rate >= step2)
                 {
                     return (EPoint.VeryPositive, $"   - {strTitle} Quý cùng kỳ: {rate}%");
@@ -1053,6 +1087,33 @@ namespace StockLib.Service
             }
 
             return (EPoint.Positive, sBuilder.ToString());
+        }
+
+        private (EPoint, string) EPointResponse(double val, double step1, double step2, string mes)
+        {
+            (EPoint, string) output;
+            output.Item2 = $"   - {mes}: {val}%";
+            if (val >= step2)
+            {
+                output.Item1 = EPoint.VeryPositive;
+            }
+            else if (val >= step1)
+            {
+                output.Item1 = EPoint.Positive;
+            }
+            else if (val >= -step1)
+            {
+                output.Item1 = EPoint.Normal;
+            }
+            else if (val >= -step2)
+            {
+                output.Item1 = EPoint.Negative;
+            }
+            else
+            {
+                output.Item1 = EPoint.VeryNegative;
+            }
+            return output;
         }
     }
 }
