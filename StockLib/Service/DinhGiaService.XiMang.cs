@@ -10,10 +10,13 @@ namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
+        //Đầu tư công + xuất khẩu
         private (EPoint, string) DG_XiMang(string code)
         {
             try
             {
+                var xnk = XNK(EStockType.XiMang, 5, 15);
+                //ĐTC 
 
             }
             catch (Exception ex)
