@@ -142,11 +142,14 @@ namespace StockLib.Service
             if (eNganh == EStockType.NganHang)
             {
                 //return (await DG_NganHang(code), string.Empty, eNganh);
+
+                
             }
 
             if (eNganh == EStockType.Nhua)
             {
-                //return (await DG_Nhua(code), string.Empty, eNganh);
+                var than = DG_Nhua(code);
+                return (than.Item1, than.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Oto)
@@ -161,7 +164,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.Than)
             {
-                //return (await DG_Than(code), string.Empty, eNganh);
+                var than = DG_Than(code);
+                return (than.Item1, than.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Thep)
@@ -171,7 +175,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.ThuySan)
             {
-                //return (await DG_ThuySan(code), string.Empty, eNganh);
+                var thuysan = DG_ThuySan(code);
+                return (thuysan.Item1, thuysan.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Vin)
