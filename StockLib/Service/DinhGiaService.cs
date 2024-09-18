@@ -249,7 +249,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.DauTuCong)
             {
-                //return (await DG_DauTuCong(code), string.Empty, eNganh);
+                var dtc = DG_DauTuCong(code);
+                return (dtc.Item1, dtc.Item2, eNganh);
             }
 
             if (eNganh == EStockType.ThietBiDien)
