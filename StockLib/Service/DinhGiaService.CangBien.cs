@@ -1,15 +1,25 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.Utils;
+using System.Text;
 
 namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private (EPoint, string) DG_CangBien(string code)
+        private async Task<(EPoint, string)> DG_CangBien(string code)
         {
             try
             {
-                return ModeThongKe(EKeyTongCucThongKe.VanTai_DuongBien, 5, 15);
+                var step1 = 5;
+                var step2 = 15;
+                var vt = ModeThongKe(EKeyTongCucThongKe.VanTai_DuongBien, step1, step2);
+                var gia = ModeThongKe(EKeyTongCucThongKe.QUY_GiaVT_KhoBai, step1, step2);
+
+                var sBuilder = new StringBuilder();
+                sBuilder.AppendLine(vt.Item2);
+                sBuilder.AppendLine(gia.Item2);
+
+                return (MergeEnpoint(vt.Item1, gia.Item1), sBuilder.ToString());
             }
             catch (Exception ex)
             {

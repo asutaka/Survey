@@ -70,7 +70,7 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.CangBien)
             {
-                var vt = DG_CangBien(code);
+                var vt = await DG_CangBien(code);
                 return (vt.Item1, vt.Item2, eNganh);
             }
 
@@ -97,30 +97,23 @@ namespace StockLib.Service
                 return (detmay.Item1, detmay.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.DienGio)
-            {
-                //return (await DG_DienGio(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.DienGio) { }//Không định giá được
 
             if (eNganh == EStockType.DienKhi)
             {
-                //return (await DG_DienKhi(code), string.Empty, eNganh);
+                var dien = await DG_DienKhi(code);
+                return (dien.Item1, dien.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.DienMatTroi)
-            {
-                //return (await DG_DienMatTroi(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.DienMatTroi) { }//Không định giá được
 
             if (eNganh == EStockType.DienThan)
             {
-                //return (await DG_DienThan(code), string.Empty, eNganh);
+                var dien = await DG_DienThan(code);
+                return (dien.Item1, dien.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.ThuyDien)
-            {
-                //return (await DG_ThuyDien(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.ThuyDien) { }//Không định giá được
 
             if (eNganh == EStockType.Forex)
             {
@@ -182,13 +175,14 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.Than)
             {
-                var than = DG_Than(code);
+                var than = await DG_Than(code);
                 return (than.Item1, than.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Thep)
             {
-                //return (await DG_Thep(code), string.Empty, eNganh);
+                var thep = await DG_Thep(code);
+                return (thep.Item1, thep.Item2, eNganh);
             }
 
             if (eNganh == EStockType.ThuySan)
@@ -216,7 +210,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.ChanNuoi)
             {
-                //return (await DG_ChanNuoi(code), string.Empty, eNganh);
+                var channuoi = await DG_ChanNuoi(code);
+                return (channuoi.Item1, channuoi.Item2, eNganh);
             }
 
             if (eNganh == EStockType.NongNghiep)
@@ -231,25 +226,19 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.CaPhe)
             {
-                var cafe = DG_CaPhe(code);
+                var cafe = await DG_CaPhe(code);
                 return (cafe.Item1, cafe.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Gao)
             {
-                var gao = DG_Gao(code);
+                var gao = await DG_Gao(code);
                 return (gao.Item1, gao.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.Duoc)
-            {
-                //return (await DG_Duoc(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.Duoc){ }//Không định giá được
 
-            if (eNganh == EStockType.DichVuYTe)
-            {
-                //return (await DG_DichVuYTe(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.DichVuYTe){}//Không định giá được
 
             if (eNganh == EStockType.BaoHiem)
             {
@@ -274,7 +263,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.Duong)
             {
-                //return (await DG_Duong(code), string.Empty, eNganh);
+                var duong = await DG_Duong(code);
+                return (duong.Item1, duong.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Bia)
@@ -294,7 +284,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.Sua)
             {
-                //return (await DG_Sua(code), string.Empty, eNganh);
+                var sua = await DG_Sua(code);
+                return (sua.Item1, sua.Item2, eNganh);
             }
 
             if (eNganh == EStockType.XuatKhau)

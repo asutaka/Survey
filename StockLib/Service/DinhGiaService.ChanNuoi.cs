@@ -1,20 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private (EPoint, string) DG_ChanNuoi(string code)
+        private async Task<(EPoint, string)> DG_ChanNuoi(string code)
         {
             try
             {
-
+                var bdi_qoq = await _apiService.Tradingeconimic_GetForex("lean-hogs");
+                return EPointResponse(bdi_qoq, 5, 15, "Giá Thịt Lợn");
             }
             catch (Exception ex)
             {

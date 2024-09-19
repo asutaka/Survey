@@ -174,13 +174,33 @@ namespace StockLib.Service
 
                 var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"aspnetForm\"]/div[5]/div/div[1]/div[4]/div/div/table/tr") as IEnumerable<HtmlNode>;
                 var lVal = new List<string>();
-                foreach (HtmlNode node in nodes.ElementAt(0).ChildNodes)
+                var istrue = false;
+                var iscomplete = false;
+                foreach (var item in nodes)
                 {
-                    if (string.IsNullOrWhiteSpace(node.InnerText) 
-                        || !node.InnerText.Contains("%"))
-                        continue;
-                    lVal.Add(node.InnerText.Replace("%", ""));
+                    foreach (HtmlNode node in item.ChildNodes)
+                    {
+                        if (string.IsNullOrWhiteSpace(node.InnerText))
+                            continue;
+
+                        if (!istrue && node.InnerText.RemoveSpace().Replace("-","").Contains(code.RemoveSpace().Replace("-", ""), StringComparison.OrdinalIgnoreCase))
+                        {
+                            istrue = true;
+                            continue;
+                        }
+
+                        if (!istrue)
+                            continue;
+
+                        if (!node.InnerText.Contains("%"))
+                            continue;
+                        lVal.Add(node.InnerText.Replace("%", ""));
+                        iscomplete = true;
+                    }
+                    if (iscomplete)
+                        break;
                 }
+                
                 if(lVal.Any())
                 {
                     var isDouble = double.TryParse(lVal.Last(), out var val);

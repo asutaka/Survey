@@ -188,7 +188,7 @@ namespace StockLib.Utils
         SPCN_ThuySan = 18,
         [Display(Name = "SPCN - Đường")]
         SPCN_Duong = 19,
-        [Display(Name = "SPCN - Điện")]
+        [Display(Name = "SPCN - Bia")]
         SPCN_Bia = 20,
         [Display(Name = "SPCN - Ure")]
         SPCN_Ure = 21,
