@@ -139,7 +139,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.Logistic)
             {
-                //return (await DG_Logistic(code), string.Empty, eNganh);
+                var vt = DG_Logistic(code);
+                return (vt.Item1, vt.Item2, eNganh);
             }
 
             if (eNganh == EStockType.NganHang)
