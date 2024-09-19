@@ -388,7 +388,7 @@ namespace StockLib.Utils
         NganHang = 18,
         [Display(Name = "Nhựa")]
         Nhua = 19,
-        [Display(Name = "Ô tô")]
+        [Display(Name = "Ô tô dưới 9 chỗ")]
         Oto = 20,
         [Display(Name = "Phân bón")]
         PhanBon = 21,
@@ -398,8 +398,8 @@ namespace StockLib.Utils
         Thep = 23,
         [Display(Name = "Thủy sản")]
         ThuySan = 24,
-        [Display(Name = "VIN")]
-        Vin = 25,
+        [Display(Name = "Ô tô tải")]
+        OtoTai = 25,
         [Display(Name = "Xây dựng")]
         XayDung = 26,
         [Display(Name = "Xi măng")]

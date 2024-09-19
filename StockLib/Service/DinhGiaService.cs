@@ -165,7 +165,14 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.Oto)
             {
-                //return (await DG_Oto(code), string.Empty, eNganh);
+                var oto = DG_Oto(code);
+                return (Swap(oto.Item1), oto.Item2, eNganh);
+            }
+
+            if (eNganh == EStockType.OtoTai)
+            {
+                var oto = DG_OtoTai(code);
+                return (Swap(oto.Item1), oto.Item2, eNganh);
             }
 
             if (eNganh == EStockType.PhanBon)
@@ -188,11 +195,6 @@ namespace StockLib.Service
             {
                 var thuysan = DG_ThuySan(code);
                 return (thuysan.Item1, thuysan.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Vin)
-            {
-                //return (await DG_Vin(code), string.Empty, eNganh);
             }
 
             if (eNganh == EStockType.XayDung)
@@ -443,6 +445,12 @@ namespace StockLib.Service
                 else if (eType == EStockType.Oto)
                 {
                     var eHaiQuan = EHaiQuan.Oto9Cho_NK;
+                    var eThongKe = EKeyTongCucThongKe.None;
+                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
+                }
+                else if (eType == EStockType.OtoTai)
+                {
+                    var eHaiQuan = EHaiQuan.OtoVanTai_NK;
                     var eThongKe = EKeyTongCucThongKe.None;
                     var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
                 }
