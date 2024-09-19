@@ -166,7 +166,7 @@ namespace StockLib.Service
                 return (Swap(oto.Item1), oto.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.PhanBon)
+            if (eNganh == EStockType.PhanBon)//GIÁ URE
             {
                 //return (await DG_PhanBon(code), string.Empty, eNganh);
             }
