@@ -44,6 +44,8 @@ namespace StockLib.Service
         Task<string> TongCucThongKe();
         Task<List<string>> DSTongCucThongKe();
         Task<Stream> StreamTongCucThongKe(string url);
+
+        Task<double> Tradingeconimic_GetForex(string code);
     }
     public partial class APIService : IAPIService
     {
@@ -149,6 +151,49 @@ namespace StockLib.Service
             return null;
         }
         #endregion
+
+        public async Task<double> Tradingeconimic_GetForex(string code)
+        {
+            try
+            {
+                //LV1
+                var link = string.Empty;
+                var url = $"https://tradingeconomics.com/commodity/{code}";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"aspnetForm\"]/div[5]/div/div[1]/div[4]/div/div/table/tr") as IEnumerable<HtmlNode>;
+                var lVal = new List<string>();
+                foreach (HtmlNode node in nodes.ElementAt(0).ChildNodes)
+                {
+                    if (string.IsNullOrWhiteSpace(node.InnerText) 
+                        || !node.InnerText.Contains("%"))
+                        continue;
+                    lVal.Add(node.InnerText.Replace("%", ""));
+                }
+                if(lVal.Any())
+                {
+                    var isDouble = double.TryParse(lVal.Last(), out var val);
+                    if (isDouble)
+                        return val;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Tradingeconimic_GetForex|EXCEPTION| {ex.Message}");
+            }
+            return 0;
+        }
 
         public async Task<Stream> GetChartImage(string body)
         {

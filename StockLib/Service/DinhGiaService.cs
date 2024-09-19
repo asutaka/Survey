@@ -207,8 +207,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.VanTaiBien)
             {
-                //var vt = DG_VanTaiBien(code);
-                //return (vt.Item1, vt.Item2, eNganh);
+                var vt = await DG_VanTaiBien(code);
+                return (vt.Item1, vt.Item2, eNganh);
             }
 
             if (eNganh == EStockType.ChanNuoi)
