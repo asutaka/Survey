@@ -136,7 +136,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.HangKhong)
             {
-                //return (await DG_HangKhong(code), string.Empty, eNganh);
+                var hk = DG_HangKhong(code);
+                return (hk.Item1, hk.Item2, eNganh);
             }
 
             if (eNganh == EStockType.KCN)
@@ -986,7 +987,13 @@ namespace StockLib.Service
                 }
 
                 double pf_truth = 0;
-                var avgRate = lKehoach.Where(x => x.pf_real > 0).Average(x => x.pf_real_r);//Tỉ lệ hoàn thành lợi nhuận trung bình
+                var lpf_real = lKehoach.Where(x => x.pf_real > 0);
+                double avgRate = 0;
+                if (lpf_real.Any())
+                {
+                    avgRate = lpf_real.Average(x => x.pf_real_r);
+                }
+
                 var cum = curPlan.pf_cum;
                 if (cum > 0)
                 {
