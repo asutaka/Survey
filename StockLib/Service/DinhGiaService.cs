@@ -198,10 +198,7 @@ namespace StockLib.Service
                 return (thuysan.Item1, thuysan.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.XayDung)
-            {
-                //return (await DG_XayDung(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.XayDung) { }//Không định giá được
 
             if (eNganh == EStockType.XiMang)
             {
@@ -221,10 +218,7 @@ namespace StockLib.Service
                 return (channuoi.Item1, channuoi.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.HoaChat)
-            {
-                //return (await DG_HoaChat(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.HoaChat) { }//Không định giá được
 
             if (eNganh == EStockType.CaPhe)
             {
