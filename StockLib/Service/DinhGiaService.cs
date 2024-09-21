@@ -174,9 +174,10 @@ namespace StockLib.Service
                 return (Swap(oto.Item1), oto.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.PhanBon)//GIÁ URE
+            if (eNganh == EStockType.PhanBon)
             {
-                //return (await DG_PhanBon(code), string.Empty, eNganh);
+                var ure = await DG_PhanBon(code);
+                return (ure.Item1, ure.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Than)
