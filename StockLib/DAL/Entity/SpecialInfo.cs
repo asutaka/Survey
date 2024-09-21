@@ -6,9 +6,15 @@ namespace StockLib.DAL.Entity
     public class SpecialInfo : BaseDTO
     {
         public string s { get; set; }
-        public string locate { get; set; }//dùng cho các cp KCN
-        public List<string> stocks { get; set; }//dùng cho các cp chứng khoán
+        public List<string> locate { get; set; }//dùng cho các cp KCN
+        public List<SpecialStock> stocks { get; set; }//dùng cho các cp chứng khoán
         public List<string> materials { get; set; }//nguyên liệu chính: dùng cho phân bón
         public List<string> products { get; set; }//sản phẩm chính: dùng cho hóa chất
+    }
+
+    public class SpecialStock
+    {
+        public string s { get; set; }
+        public double rate { get; set; }
     }
 }
