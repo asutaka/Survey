@@ -141,7 +141,8 @@ namespace StockLib.Service
 
             if (eNganh == EStockType.KCN)
             {
-                //return (await DG_KCN(code), string.Empty, eNganh);
+                var kcn = DG_KCN(code);
+                return (kcn.Item1, kcn.Item2, eNganh);
             }
 
             if (eNganh == EStockType.Logistic)
