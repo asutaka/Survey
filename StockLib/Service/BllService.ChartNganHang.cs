@@ -365,18 +365,18 @@ namespace StockLib.Service
                     {
                         baophu = Math.Round(100 * (item.risk ?? 0) / noxau, 1);
                     }
-                    if (item.debt > 0)
-                    {
-                        tileNoxau = Math.Round((float)(100 * noxau) / item.debt, 1);
-                    }
+                    //if (item.debt > 0)
+                    //{
+                    //    tileNoxau = Math.Round((float)(100 * noxau) / item.debt, 1);
+                    //}
 
                     var prev = lFinancial.FirstOrDefault(x => x.d == item.d.GetPrevQuarter());
                     if (prev != null)
                     {
-                        if (prev.risk > 0)
-                        {
-                            tangTruongTrichLap = Math.Round(100 * (-1 + (item.risk ?? 0) / (prev.risk ?? 1)), 1);
-                        }
+                        //if (prev.risk > 0)
+                        //{
+                        //    tangTruongTrichLap = Math.Round(100 * (-1 + (item.risk ?? 0) / (prev.risk ?? 1)), 1);
+                        //}
                         if (prev.debt2 > 0)
                         {
                             tangTruongNoNhom2 = Math.Round(100 * (-1 + (float)item.debt2 / prev.debt2), 1);
@@ -385,9 +385,9 @@ namespace StockLib.Service
 
                     //tang truong tin dung, room tin dung
                     lBaoPhu.Add(baophu);
-                    lTiLeNo.Add(tileNoxau);
+                    //lTiLeNo.Add(tileNoxau);
                     lTangTruongNoNhom2.Add(tangTruongNoNhom2);
-                    lTangTruongTrichLap.Add(tangTruongTrichLap);
+                    //lTangTruongTrichLap.Add(tangTruongTrichLap);
                 }
                 var lSeries = new List<HighChartSeries_BasicColumn>
                 {
@@ -398,15 +398,15 @@ namespace StockLib.Service
                         dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
                         color = "#012060"
                     },
-                    new()
-                    {
-                        data = lTiLeNo.TakeLast(StaticVal._TAKE),
-                        name = "Tỉ lệ nợ xấu",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    },
+                    //new()
+                    //{
+                    //    data = lTiLeNo.TakeLast(StaticVal._TAKE),
+                    //    name = "Tỉ lệ nợ xấu",
+                    //    type = "spline",
+                    //    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                    //    color = "#C00000",
+                    //    yAxis = 1,
+                    //},
                     new()
                     {
                         data = lTangTruongNoNhom2.TakeLast(StaticVal._TAKE),
@@ -416,15 +416,15 @@ namespace StockLib.Service
                         color = "#ffbf00",
                         yAxis = 1
                     },
-                    new()
-                    {
-                        data = lTangTruongTrichLap.TakeLast(StaticVal._TAKE),
-                        name = "Tăng trưởng trích lập",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "rgba(158, 159, 163, 0.5)",
-                        yAxis = 1
-                    }
+                    //new()
+                    //{
+                    //    data = lTangTruongTrichLap.TakeLast(StaticVal._TAKE),
+                    //    name = "Tăng trưởng trích lập",
+                    //    type = "spline",
+                    //    dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                    //    color = "rgba(158, 159, 163, 0.5)",
+                    //    yAxis = 1
+                    //}
                 };
                 return await Chart_BasicBase($"{code} - Nợ xấu Quý {time.Item3}/{time.Item2} (QoQoY)", lFinancial.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameQuarter()).ToList(), lSeries, "(Bao phủ nợ xấu: %)", "(Tăng trưởng: %)");
             }
