@@ -7,6 +7,7 @@ namespace StockLib.Service
         Task SurveyIchimoku(string code);
         Task SurveySuperTrend(string code);
         Task GoldFish(string code);
+        Task GoldFishInvert(string code);
     }
     public partial class PartternService : IPartternService
     {

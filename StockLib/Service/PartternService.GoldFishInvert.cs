@@ -5,19 +5,19 @@ namespace StockLib.Service
 {
     public partial class PartternService
     {
-        public async Task GoldFish(string code)
+        public async Task GoldFishInvert(string code)
         {
             try
             {
                 var lData = await _apiService.SSI_GetDataStock_Alltime(code);
-                GoldFish(lData);
+                GoldFishInvert(lData);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"PartternService.GoldFish|EXCEPTION| {ex.Message}");
             }
         }
-        private void GoldFish(List<Quote> lData)
+        private void GoldFishInvert(List<Quote> lData)
         {
             try
             {
@@ -61,19 +61,19 @@ namespace StockLib.Service
                     var XXX = item.Close - lData[i - 10].Close;
                     var buy = XXX > 0 && (double)item.Close > ab;
                     var sell = XXX < 0 && (double)item.Close < ba;
-                    if (!_flagBuy && buy)
+                    if (!_flagSell && sell)
                     {
-                        _flagBuy = true;
-                        PrintBuy(item, i, true);
+                        _flagSell = true;
+                        PrintSell(item, i, true);
                     }
-                    if (sell)
+                    if (buy)
                     {
-                        PrintBuy(item, i, false);
-                        _flagBuy = false;
+                        PrintSell(item, i, false);
+                        _flagSell = false;
                     }
                 }
 
-                PrintBuyLast();
+                PrintSellLast();
             }
             catch (Exception ex)
             {
@@ -81,36 +81,36 @@ namespace StockLib.Service
             }
         }
 
-        int _countBuy = 0;
-        bool _flagBuy = false;
-        Quote _buy = null;
-        int _indexBuy = -1;
-        List<decimal> _lrateBuy = new List<decimal>();
-        private void PrintBuy(Quote item, int index, bool isBuy)
+        int _countSell = 0;
+        bool _flagSell = false;
+        Quote _sell = null;
+        int _indexSell = -1;
+        List<decimal> _lrateSell = new List<decimal>();
+        private void PrintSell(Quote item, int index, bool isSell)
         {
-            if(isBuy)
+            if(isSell)
             {
-                _buy = item;
-                _indexBuy = index;
+                _sell = item;
+                _indexSell = index;
             }
             else
             {
-                if (!_flagBuy)
+                if (!_flagSell)
                     return;
 
-                var totalDays = index - _indexBuy;
-                var rate = Math.Round(100 * (-1 + item.Close / _buy.Close), 1);
-                _lrateBuy.Add(rate);
-                _countBuy++;
+                var totalDays = index - _indexSell;
+                var rate = Math.Round(100 * (-1 + item.Close / _sell.Close), 1);
+                _lrateSell.Add(rate);
+                _countSell++;
 
-                //Console.WriteLine($"|MUA {_buy.Date.ToString("dd/MM/yyyy")}: {_buy.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
+                //Console.WriteLine($"|MUA {_sell.Date.ToString("dd/MM/yyyy")}: {_sell.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
             }
         }
 
-        private void PrintBuyLast()
+        private void PrintSellLast()
         {
             Console.WriteLine();
-            Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {Math.Round(_lrateBuy.Average(), 1)}%| Tong TakeProfit: {Math.Round(_lrateBuy.Sum(), 1)}%");
+            Console.WriteLine($"=> So Lan Ban-Mua: {_countSell}| TakeProfit trung binh: {Math.Round(_lrateSell.Average(), 1)}%| Tong TakeProfit: {Math.Round(_lrateSell.Sum(), 1)}%");
         }
     }
 }
