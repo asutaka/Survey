@@ -6,6 +6,7 @@ namespace StockLib.PublicService
     {
         Task SurveyIndicator(string code);
         Task SurveySuperTrend(string code);
+        Task GoldFish(string code);
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -23,6 +24,11 @@ namespace StockLib.PublicService
         public async Task SurveySuperTrend(string code)
         {
             await _partternService.SurveySuperTrend(code);
+        }
+
+        public async Task GoldFish(string code)
+        {
+            await _partternService.GoldFish(code);
         }
     }
 }
