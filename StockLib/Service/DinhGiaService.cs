@@ -151,10 +151,7 @@ namespace StockLib.Service
                 return (vt.Item1, vt.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.NganHang)
-            {
-                //return (await DG_NganHang(code), string.Empty, eNganh);
-            }
+            if (eNganh == EStockType.NganHang){}
 
             if (eNganh == EStockType.Nhua)
             {

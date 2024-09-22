@@ -225,13 +225,13 @@ namespace StockLib.Service
         {
             try
             {
-                //var lStream = await _bllService.Chart_MaCK(input);
-                //if (lStream is null)
-                //    return;
-                //foreach (var stream in lStream)
-                //{
-                //    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
-                //}
+                var lStream = await _bllService.Chart_MaCK(input);
+                if (lStream is null)
+                    return;
+                foreach (var stream in lStream)
+                {
+                    await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
+                }
 
                 var mesInfo = _bllService.Mes_ThongTin(input);
                 if (!string.IsNullOrWhiteSpace(mesInfo))
