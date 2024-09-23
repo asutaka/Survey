@@ -1,10 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -15,6 +10,7 @@ namespace StockLib.Service
             try
             {
                 var lData = await _apiService.SSI_GetDataStock(code);
+                lData = lData.Take(lData.Count() - 1).TakeLast(200).ToList();
                 await SurveySuperTrend(lData);
             }
             catch (Exception ex)
@@ -37,24 +33,39 @@ namespace StockLib.Service
                 var changeOfTrend = 0;
                 var flag = 0;
                 var flagh = 0;
+                var lUp = new List<decimal?>
+                {
+                    null
+                };
 
-                for (int i = 10; i < count; i++)
+                var lDown = new List<decimal?>
+                {
+                    null
+                };
+
+                for (int i = 1; i < count; i++)
                 {
                     trend[i] = 1;
                     TrendUp[i] = 0;
                     TrendDown[i] = 0;
-                    if (i < 10)
-                    {
-                        continue;
-                    }
                     var item = lData[i];
+
+
+                    //if(i == 108)
+                    //{
+                    //    var tmp = 1;
+                    //}    
+                    //if(item.Date.Year == 2024 && item.Date.Month == 5 && item.Date.Day == 15)
+                    //{
+                    //    var tmp = 1;
+                    //}
 
                     var iATR = (decimal)(lAtr.ElementAt(i).Atr ?? 0);
                     var Up = Up_Indicator(i);
                     var Dn = Dn_Indicator(i);
 
 
-                    if (item.Close > Up_Indicator(i - 1))
+                    if (item.Close > (lUp[i-1] ?? 0)) 
                     {
                         trend[i] = 1;
                         if (trend[i - 1] == -1)
@@ -62,7 +73,7 @@ namespace StockLib.Service
                             changeOfTrend = 1;
                         }
                     }
-                    else if (item.Close < Dn_Indicator(i - 1)) 
+                    else if (item.Close < (lDown[i - 1] ?? 0)) 
                     {
                         trend[i] = -1;
                         if(trend[i-1] == 1)
@@ -84,14 +95,14 @@ namespace StockLib.Service
                     flag = (trend[i] < 0 && trend[i - 1] > 0) ? 1 : 0;
                     flagh = (trend[i] > 0 && trend[i - 1] < 0) ? 1 : 0;
 
-                    if(trend[i]>0 && Dn < Dn_Indicator(i - 1))
+                    if(trend[i]>0 && Dn < (lDown[i - 1] ?? 0))
                     {
-                        Dn = Dn_Indicator(i - 1);
+                        Dn = (lDown[i - 1] ?? 0);
                     }
 
-                    if(trend[i]<0 && Up > Up_Indicator(i - 1))
+                    if(trend[i]<0 && Up > (lUp[i - 1] ?? 0))
                     {
-                        Up = Up_Indicator(i - 1);
+                        Up = (lUp[i - 1] ?? 0);
                     }
 
                     if(flag == 1)
@@ -123,16 +134,22 @@ namespace StockLib.Service
                         }
                     }
 
-                    //Add
-                    if (trend[i] == 1)
+                    lUp.Add(Up);
+                    lDown.Add(Dn);
+
+                    if (!_flagBuy && trend[i] == 1)
                     {
-                        Console.WriteLine($"Buy {item.Date.ToString("dd/MM/yyyy")}");
+                        _flagBuy = true;
+                        PrintBuy(item, i, true);
                     }
-                    else if (trend[i] == -1) 
+                    else if (_flagBuy && trend[i] == -1)
                     {
-                        Console.WriteLine($"Sell {item.Date.ToString("dd/MM/yyyy")}");
+                        PrintBuy(item, i, false);
+                        _flagBuy = false;
                     }
                 }
+
+                PrintBuyLast();
 
                 decimal Up_Indicator(int index)
                 {

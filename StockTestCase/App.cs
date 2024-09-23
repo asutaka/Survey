@@ -17,8 +17,9 @@ namespace StockTestCase
 
         public async Task Run(string[] args)
         {
-            await _service.GoldFish("VNINDEX");
-            await _service.GoldFishInvert("VNINDEX");
+            //await _service.GoldFish("VNINDEX");
+            //await _service.GoldFishInvert("VNINDEX");
+            await _service.SurveySuperTrend("DPG");
         }
     }
 }
