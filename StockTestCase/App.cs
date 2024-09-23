@@ -19,7 +19,7 @@ namespace StockTestCase
         {
             //await _service.GoldFish("VNINDEX");
             //await _service.GoldFishInvert("VNINDEX");
-            await _service.SurveySuperTrend("DPG");
+            await _service.SurveySuperTrend("VNINDEX");
         }
     }
 }
