@@ -412,6 +412,7 @@ namespace StockLib.Service
                             });
                         }
                     }
+                    Thread.Sleep(1000);
                 }
             }
             catch (Exception ex)
