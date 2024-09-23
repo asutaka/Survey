@@ -9,7 +9,8 @@ namespace StockLib.Service
         {
             try
             {
-                var lData = await _apiService.SSI_GetDataStock_Alltime(code);
+                //var lData = await _apiService.SSI_GetDataStock_Alltime(code);
+                var lData = await _apiService.SSI_GetDataStock(code);
                 GoldFish(lData);
             }
             catch (Exception ex)

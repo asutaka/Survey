@@ -9,8 +9,8 @@ namespace StockLib.Service
         {
             try
             {
-                var lData = await _apiService.SSI_GetDataStock_Alltime(code);
-                //lData = lData.Take(lData.Count() - 1).TakeLast(200).ToList();
+                //var lData = await _apiService.SSI_GetDataStock_Alltime(code);
+                var lData = await _apiService.SSI_GetDataStock(code);
                 await SurveySuperTrend(lData);
             }
             catch (Exception ex)

@@ -9,7 +9,6 @@ namespace StockLib.Service
         Task SurveyIchimoku(string code);
         Task SurveySuperTrend(string code);
         Task GoldFish(string code);
-        Task GoldFishInvert(string code);
     }
     public partial class PartternService : IPartternService
     {
@@ -68,8 +67,10 @@ namespace StockLib.Service
                 var itemFirst = _lPivot[i];
                 var itemLast = _lPivot[j];
 
-                var rate = Math.Round(100 * (-1 + itemFirst.Close / itemLast.Close), 1);
+                var rate = Math.Round(100 * (-1 + itemLast.Close / itemFirst.Close), 1);
                 lSB.Add(rate);
+
+                //Console.WriteLine($"|MUA {itemFirst.Date.ToString("dd/MM/yyyy")}: {itemFirst.Close}|BAN {itemLast.Date.ToString("dd/MM/yyyy")}: {itemLast.Close}|TP: {rate}%");
             }
             Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {Math.Round(lSB.Average(), 1)}%| Tong TakeProfit: {Math.Round(lSB.Sum(), 1)}%");
         }
