@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
+using System.Text;
 using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
@@ -8,7 +9,8 @@ namespace StockLib.Service
     {
         Task SurveyIchimoku(string code);
         Task SurveySuperTrend(string code);
-        Task GoldFish(string code);
+        Task SurveyGoldFish(string code);
+        void RankChungKhoan();
     }
     public partial class PartternService : IPartternService
     {
@@ -21,6 +23,7 @@ namespace StockLib.Service
             _apiService = apiService;
         }
 
+        string _code = string.Empty;
         int _countBuy = 0;
         bool _flagBuy = false;
         Quote _buy = null;
@@ -49,10 +52,14 @@ namespace StockLib.Service
             }
         }
 
+        List<(string, int, decimal, decimal)> _lCode = new List<(string, int, decimal, decimal)>();
         private void PrintBuyLast()
         {
             Console.WriteLine();
-            Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {Math.Round(_lrateBuy.Average(), 1)}%| Tong TakeProfit: {Math.Round(_lrateBuy.Sum(), 1)}%");
+            var avg = Math.Round(_lrateBuy.Average(), 1);
+            var sum = Math.Round(_lrateBuy.Sum(), 1);
+            _lCode.Add((_code, 1, avg, sum));
+            Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {avg}%| Tong TakeProfit: {sum}%");
 
             _lPivot.RemoveAt(0);
             var count = _lPivot.Count;
@@ -72,7 +79,24 @@ namespace StockLib.Service
 
                 //Console.WriteLine($"|MUA {itemFirst.Date.ToString("dd/MM/yyyy")}: {itemFirst.Close}|BAN {itemLast.Date.ToString("dd/MM/yyyy")}: {itemLast.Close}|TP: {rate}%");
             }
-            Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {Math.Round(lSB.Average(), 1)}%| Tong TakeProfit: {Math.Round(lSB.Sum(), 1)}%");
+
+            var avgSB = Math.Round(lSB.Average(), 1);
+            var sumSB = Math.Round(lSB.Sum(), 1);
+            _lCode.Add((_code, 0, avgSB, sumSB));
+            Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {avgSB}%| Tong TakeProfit: {sumSB}%");
+        }
+
+        public void RankChungKhoan()
+        {
+            var lTop20 = _lCode.Where(x => x.Item2 == 1).OrderByDescending(x => x.Item3).Take(20);
+            var sBuilder = new StringBuilder();
+            var i = 1;
+            foreach (var item in lTop20)
+            {
+                var SB = _lCode.Where(x => x.Item2 == 0).FirstOrDefault(x => x.Item1 == item.Item1);
+                sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
+            }
+            Console.WriteLine(sBuilder.ToString());
         }
     }
 }

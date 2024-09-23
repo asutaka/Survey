@@ -5,10 +5,12 @@ namespace StockLib.Service
 {
     public partial class PartternService
     {
-        public async Task GoldFish(string code)
+        public async Task SurveyGoldFish(string code)
         {
             try
             {
+                _code = code;
+
                 //var lData = await _apiService.SSI_GetDataStock_Alltime(code);
                 var lData = await _apiService.SSI_GetDataStock(code);
                 GoldFish(lData);

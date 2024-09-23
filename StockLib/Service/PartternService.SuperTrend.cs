@@ -9,6 +9,8 @@ namespace StockLib.Service
         {
             try
             {
+                _code = code;
+
                 //var lData = await _apiService.SSI_GetDataStock_Alltime(code);
                 var lData = await _apiService.SSI_GetDataStock(code);
                 await SurveySuperTrend(lData);
