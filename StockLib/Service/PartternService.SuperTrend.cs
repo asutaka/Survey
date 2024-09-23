@@ -50,16 +50,6 @@ namespace StockLib.Service
                     TrendDown[i] = 0;
                     var item = lData[i];
 
-
-                    //if(i == 108)
-                    //{
-                    //    var tmp = 1;
-                    //}    
-                    //if(item.Date.Year == 2024 && item.Date.Month == 5 && item.Date.Day == 15)
-                    //{
-                    //    var tmp = 1;
-                    //}
-
                     var iATR = (decimal)(lAtr.ElementAt(i).Atr ?? 0);
                     var Up = Up_Indicator(i);
                     var Dn = Dn_Indicator(i);
