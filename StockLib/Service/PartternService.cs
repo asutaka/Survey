@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -26,8 +27,10 @@ namespace StockLib.Service
         Quote _buy = null;
         int _indexBuy = -1;
         List<decimal> _lrateBuy = new List<decimal>();
+        List<Quote> _lPivot = new List<Quote>();
         private void PrintBuy(Quote item, int index, bool isBuy)
         {
+            _lPivot.Add(item);
             if (isBuy)
             {
                 _buy = item;
@@ -43,7 +46,7 @@ namespace StockLib.Service
                 _lrateBuy.Add(rate);
                 _countBuy++;
 
-                Console.WriteLine($"|MUA {_buy.Date.ToString("dd/MM/yyyy")}: {_buy.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
+                //Console.WriteLine($"|MUA {_buy.Date.ToString("dd/MM/yyyy")}: {_buy.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
             }
         }
 
@@ -51,6 +54,24 @@ namespace StockLib.Service
         {
             Console.WriteLine();
             Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {Math.Round(_lrateBuy.Average(), 1)}%| Tong TakeProfit: {Math.Round(_lrateBuy.Sum(), 1)}%");
+
+            _lPivot.RemoveAt(0);
+            var count = _lPivot.Count;
+            var lSB = new List<decimal>();
+            for (int i = 0; i < count; i = i + 2) 
+            {
+                var j = i + 1;
+                if(j >= count)
+                {
+                    break;
+                }
+                var itemFirst = _lPivot[i];
+                var itemLast = _lPivot[j];
+
+                var rate = Math.Round(100 * (-1 + itemFirst.Close / itemLast.Close), 1);
+                lSB.Add(rate);
+            }
+            Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {Math.Round(lSB.Average(), 1)}%| Tong TakeProfit: {Math.Round(lSB.Sum(), 1)}%");
         }
     }
 }
