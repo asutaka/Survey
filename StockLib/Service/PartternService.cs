@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 using System.Text;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -10,6 +9,7 @@ namespace StockLib.Service
         Task SurveyIchimoku(string code);
         Task SurveySuperTrend(string code);
         Task SurveyGoldFish(string code);
+        Task SurveyVCP(string code);
         void RankChungKhoan();
     }
     public partial class PartternService : IPartternService
@@ -56,10 +56,14 @@ namespace StockLib.Service
         private void PrintBuyLast()
         {
             Console.WriteLine();
-            var avg = Math.Round(_lrateBuy.Average(), 1);
-            var sum = Math.Round(_lrateBuy.Sum(), 1);
+            var avg = _lrateBuy.Count() == 0 ? 0 : Math.Round(_lrateBuy.Average(), 1);
+            var sum = _lrateBuy.Count() == 0 ? 0 : Math.Round(_lrateBuy.Sum(), 1);
             _lCode.Add((_code, 1, avg, sum));
             Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {avg}%| Tong TakeProfit: {sum}%");
+
+
+            if (_lPivot.Count() == 0)
+                return;
 
             _lPivot.RemoveAt(0);
             var count = _lPivot.Count;

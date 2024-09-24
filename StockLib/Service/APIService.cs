@@ -385,6 +385,9 @@ namespace StockLib.Service
                 {
                     var dtFirst = dt.AddYears(-div);
                     var dtLast = dt.AddYears(-(div + 2));
+                    if (dtLast.Year < 2000)
+                        break;
+
                     div += 2;
 
                     var url = string.Format(urlBase, code, "1D", dtLast.ToUnixTimeSeconds(), dtFirst.ToUnixTimeSeconds());

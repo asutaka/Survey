@@ -24,6 +24,7 @@ namespace StockTestCase
         {
             //await _service.SurveyGoldFish("DC4");
             //await _service.SurveySuperTrend("VNINDEX");
+            await _service.SurveyVCP("DPG");
 
 
 
