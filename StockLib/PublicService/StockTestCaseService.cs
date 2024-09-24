@@ -4,10 +4,10 @@ namespace StockLib.PublicService
 {
     public interface IStockTestCaseService
     {
-        Task SurveyIndicator(string code);
         Task SurveySuperTrend(string code);
         Task SurveyGoldFish(string code);
         Task SurveyVCP(string code);
+        Task SurveyW(string code);
         void RankChungKhoan();
     }
     public class StockTestCaseService : IStockTestCaseService
@@ -16,11 +16,6 @@ namespace StockLib.PublicService
         public StockTestCaseService(IPartternService partternService) 
         {
             _partternService = partternService;
-        }
-
-        public async Task SurveyIndicator(string code)
-        {
-            await _partternService.SurveyIchimoku(code);
         }
 
         public async Task SurveySuperTrend(string code)
@@ -36,6 +31,11 @@ namespace StockLib.PublicService
         public async Task SurveyVCP(string code)
         {
             await _partternService.SurveyVCP(code);
+        }
+
+        public async Task SurveyW(string code)
+        {
+            await _partternService.SurveyW(code);
         }
 
         public void RankChungKhoan()

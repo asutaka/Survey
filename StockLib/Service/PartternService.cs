@@ -6,10 +6,10 @@ namespace StockLib.Service
 {
     public interface IPartternService
     {
-        Task SurveyIchimoku(string code);
         Task SurveySuperTrend(string code);
         Task SurveyGoldFish(string code);
         Task SurveyVCP(string code);
+        Task SurveyW(string code);
         void RankChungKhoan();
     }
     public partial class PartternService : IPartternService
@@ -56,8 +56,14 @@ namespace StockLib.Service
         private void PrintBuyLast()
         {
             Console.WriteLine();
-            var avg = _lrateBuy.Count() == 0 ? 0 : Math.Round(_lrateBuy.Average(), 1);
-            var sum = _lrateBuy.Count() == 0 ? 0 : Math.Round(_lrateBuy.Sum(), 1);
+            if (_lrateBuy.Count() == 0)
+            {
+                Console.WriteLine("Khong co diem mua!");
+                return;
+            }
+                
+            var avg = Math.Round(_lrateBuy.Average(), 1);
+            var sum = Math.Round(_lrateBuy.Sum(), 1);
             _lCode.Add((_code, 1, avg, sum));
             Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {avg}%| Tong TakeProfit: {sum}%");
 
@@ -88,11 +94,25 @@ namespace StockLib.Service
             var sumSB = Math.Round(lSB.Sum(), 1);
             _lCode.Add((_code, 0, avgSB, sumSB));
             Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {avgSB}%| Tong TakeProfit: {sumSB}%");
+
+            //reset 
+            Reset();
+        }
+
+        private void Reset()
+        {
+            _code = string.Empty;
+            _countBuy = 0;
+            _flagBuy = false;
+            _buy = null;
+            _indexBuy = -1;
+            _lrateBuy.Clear();
+            _lPivot.Clear();
         }
 
         public void RankChungKhoan()
         {
-            var lTop20 = _lCode.Where(x => x.Item2 == 1).OrderByDescending(x => x.Item3).Take(20);
+            var lTop20 = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(20);
             var sBuilder = new StringBuilder();
             var i = 1;
             foreach (var item in lTop20)
