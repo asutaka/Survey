@@ -25,7 +25,7 @@ namespace StockTestCase
             //await _service.SurveyGoldFish("DC4");
             //await _service.SurveySuperTrend("VNINDEX");
             //await _service.SurveyVCP("NTL");
-            await _service.SurveyW("NTL");
+            await _service.SurveyW("DPG");
 
             #region Test All Ma Chung Khoan
             //foreach (var stock in StaticVal._lStock.Where(x => x.rank == 1 || x.rank == 2))

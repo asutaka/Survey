@@ -25,91 +25,93 @@ namespace StockLib.Service
         {
             try
             {
-                var percdiff = 5;
-                var fwdcheck = 5;
-                var mindistance = 10;
-                var validdiff = percdiff / 400;
+                decimal percdiff = 5;
+                decimal fwdcheck = 5;
+                decimal mindistance = 10;
+                decimal validdiff = percdiff / 400;
 
-                var tmp = lData.GetZigZag();
-                var tmp1 = 1;
+                var lZigZag = lData.GetZigZag();
+                var lPK = new List<int>();
+                var lTR = new List<int>();
 
-                //var Timeframe = 252;
-                //var VolTf = 50;
-                //decimal BaseLowerLimit = 0.6M;
-                //var PivotLength = 5;
-                //decimal PVLimit = 0.1M;
+                var index = 0;
+                foreach (var item in lZigZag)
+                {
+                    if(item.PointType == "H")
+                        lPK.Add(index);
+                    else if(item.PointType == "L")
+                        lTR.Add(index);
+                    index++;
+                }
+                lPK.Reverse();
+                lTR.Reverse();
+                var countPK = lPK.Count;
+                var countTR = lTR.Count;
 
-                //lData = lData.OrderBy(x => x.Date).ToList();
-                //var lma20 = lData.GetSma(20);
-                //var lVol = new List<Quote>();
-                //foreach (var item in lData)
-                //{
-                //    lVol.Add(new Quote { Date = item.Date, Close = item.Volume });
-                //}
-                //var lma50vol = lVol.GetSma(VolTf);
-                //var lma50Input = new List<Quote>();
-                //foreach (var item in lma50vol)
-                //{
-                //    lma50Input.Add(new Quote { Date = item.Date, Close = (decimal)(item.Sma ?? 0) });
-                //}
-                //var lSlope = lma50Input.GetSlope(VolTf);
+                if (countPK <= 1 || countTR <= 1)
+                    return;
 
-                //var count = lData.Count();
-                //if (count < Timeframe)
-                //    return;
+                var lPeakDiff = new List<decimal>();
+                for (int i = 0; i < countPK - 1; i++) 
+                {
+                    var xpk1_val = lData.ElementAt(lPK[i]).High;
+                    var xpk2_val = lData.ElementAt(lPK[i + 1]).High;
+                    lPeakDiff.Add(xpk1_val / xpk2_val);
+                }
 
-                //for (int i = 200; i < count; i++)
-                //{
-                //    var cur = lData[i];
-                //    if (_flagBuy)
-                //    {
-                //        var ma20 = lma20.ElementAt(i);
-                //        var rate = Math.Round(100 * (-1 + cur.Close / _buy.Close), 1);
+                var lTroughdiff = new List<decimal>();
+                for (int i = 0; i < countPK - 1; i++)
+                {
+                    var xtr1 = lData.ElementAt(lTR[i]).Low;
+                    var xtr2 = lData.ElementAt(lTR[i + 1]).Low;
+                    lTroughdiff.Add(xtr1 / xtr2);
+                }
 
-                //        if(cur.Close < (decimal)ma20.Sma && (rate <= -5 || rate >= 5))
-                //        {
-                //            PrintBuy(cur, i, false);
-                //            _flagBuy = false;
-                //        }
-                //        if(i == count - 1)//Het danh sach
-                //        {
-                //            PrintBuy(cur, i, false);
-                //            _flagBuy = false;
-                //        }
-                //        continue;
-                //    }
+                var lDoubleTop = new List<bool>();
+                for (int i = 0; i < countPK - 2; i++)
+                {
+                    var peakDiff = lPeakDiff[i];
+                    var xpk1 = lPK[i];
+                    var xpk2 = lPK[i + 1];
+                    var hhv = lData.Skip(xpk1 + 1).Take((int)fwdcheck).Max(x => x.High);
+                    var doubleTop = (Math.Abs(peakDiff - 1) < validdiff)
+                            && ((xpk1 - xpk2) > mindistance)
+                            && lData.ElementAt(xpk1).High >= hhv;
+                    lDoubleTop.Add(doubleTop);
+                }
 
+                var lDoubleBot = new List<bool>();
+                for (int i = 0; i < countTR - 2; i++)
+                {
+                    var troughdiff = lTroughdiff[i];
+                    var xtr1 = lTR[i];
+                    var xtr2 = lTR[i + 1];
+                    var llv = lData.Skip(xtr1 + 1).Take((int)fwdcheck).Min(x => x.Low);
 
-                //    var lYear = lData.Where(x => x.Date <= cur.Date).TakeLast(Timeframe);
-                //    if (lYear.Count() < Timeframe)
-                //        continue;
+                    var doubleBot = (Math.Abs(troughdiff - 1) < validdiff)
+                            && ((xtr1 - xtr2) > mindistance)
+                            && lData.ElementAt(xtr1).Low <= llv;
+                    if(doubleBot)
+                    {
+                        var tmp = 1;
+                    }
+                    lDoubleBot.Add(doubleBot);
+                }
 
-                //    var HighPrice = lYear.MaxBy(x => x.Close);
-                //    var NearHigh = cur.Close < HighPrice.Close && cur.Close > BaseLowerLimit * HighPrice.Close;
-                //    var Vma = lma50vol.ElementAt(i).Sma;
-                //    var VolSlope = lSlope.ElementAt(i).Slope;
-                //    var VolDecreasing = VolSlope < 0;
-
-                //    var PivotHighPrice = lYear.TakeLast(PivotLength).Max(x => x.High);
-                //    var PivotLowPrice = lYear.TakeLast(PivotLength).Min(x => x.Low);
-                //    var PivotWidth = Math.Round((PivotHighPrice - PivotLowPrice) / cur.Close, 2);
-                //    var PivotStartHP = lData.ElementAt(i + 1 - PivotLength).High;
-                //    var IsPivot = PivotWidth < PVLimit && PivotHighPrice == PivotStartHP;
-
-                //    var VolDryUp = true;
-                //    for (var j = 0; j < PivotLength; j++)
-                //    {
-                //        VolDryUp = VolDryUp && lData.ElementAt(i - j).Volume < (decimal)(lma50vol.ElementAt(i - j).Sma ?? 0);
-                //    }
-
-                //    var Results = NearHigh && VolDecreasing && IsPivot && VolDryUp;
-                //    if(Results)
-                //    {
-                //        _flagBuy = true;
-                //        PrintBuy(cur, i, true);
-                //    }
-
-                //}
+                var lResult = new List<Quote>();
+                for (int i = 0; i < countPK - 3; i++)
+                {
+                    var doubleTop = lDoubleTop[i];
+                    if (doubleTop)
+                        lResult.Add(lData.ElementAt(lPK[i]));
+                }
+                for (int i = 0; i < countTR - 3; i++)
+                {
+                    var doubleBot = lDoubleBot[i];
+                    if (doubleBot)
+                        lResult.Add(lData.ElementAt(lTR[i]));
+                }
+                lResult = lResult.OrderBy(x => x.Date).ToList();//Quá ít tín hiệu
 
                 PrintBuyLast();
             }
