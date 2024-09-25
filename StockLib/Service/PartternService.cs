@@ -10,6 +10,7 @@ namespace StockLib.Service
         Task SurveyGoldFish(string code);
         Task SurveyVCP(string code);
         Task SurveyW(string code);
+        Task SurveyDanZagerCustom(string code);
         void RankChungKhoan();
     }
     public partial class PartternService : IPartternService

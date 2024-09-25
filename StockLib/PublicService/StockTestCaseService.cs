@@ -8,6 +8,7 @@ namespace StockLib.PublicService
         Task SurveyGoldFish(string code);
         Task SurveyVCP(string code);
         Task SurveyW(string code);
+        Task SurveyDanZagerCustom(string code);
         void RankChungKhoan();
     }
     public class StockTestCaseService : IStockTestCaseService
@@ -36,6 +37,11 @@ namespace StockLib.PublicService
         public async Task SurveyW(string code)
         {
             await _partternService.SurveyW(code);
+        }
+
+        public async Task SurveyDanZagerCustom(string code)
+        {
+            await _partternService.SurveyDanZagerCustom(code);
         }
 
         public void RankChungKhoan()

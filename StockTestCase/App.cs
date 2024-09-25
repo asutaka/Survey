@@ -25,17 +25,18 @@ namespace StockTestCase
             //await _service.SurveyGoldFish("DC4");
             //await _service.SurveySuperTrend("VNINDEX");
             //await _service.SurveyVCP("NTL");
-            await _service.SurveyW("DPG");
+            //await _service.SurveyW("DPG");
+            //await _service.SurveyDanZagerCustom("VNINDEX");
 
-            #region Test All Ma Chung Khoan
+            //#region Test All Ma Chung Khoan
             //foreach (var stock in StaticVal._lStock.Where(x => x.rank == 1 || x.rank == 2))
             //{
-            //    await _service.SurveyVCP(stock.s);
+            //    await _service.SurveyDanZagerCustom(stock.s);
             //    Thread.Sleep(1000);
             //}
 
-            //_service.RankChungKhoan(); 
-            #endregion
+            //_service.RankChungKhoan();
+            //#endregion
         }
     }
 }
