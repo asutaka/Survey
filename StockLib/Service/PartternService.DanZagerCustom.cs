@@ -47,8 +47,9 @@ namespace StockLib.Service
                         if(_flagRate10)
                         {
                             var rateItem = Math.Round(100 * (-1 + item.Close / item.Open));
-                            if(rateItem <= -3
+                            if (rateItem <= -3
                                 || item.Close < (decimal)bb.Sma)
+                                //if (item.Close < (decimal)bb.Sma)
                             {
                                 PrintBuy(item, i, false);
                                 _flagRate10 = false;
@@ -75,7 +76,7 @@ namespace StockLib.Service
 
                     if (item.Close < item.Open * (decimal)1.02)
                         continue;
-                    var vol_check = lData.Skip(i - 10).Take(10).Count(x => item.Volume >= x.Volume * (decimal)1.01) >= 9;
+                    var vol_check = lData.Skip(i - 10).Take(10).Count(x => item.Volume >= x.Volume * (decimal)1.02) >= 9;
                     if (!vol_check)
                         continue;
                     

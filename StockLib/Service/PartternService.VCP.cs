@@ -59,7 +59,7 @@ namespace StockLib.Service
                         var ma20 = lma20.ElementAt(i);
                         var rate = Math.Round(100 * (-1 + cur.Close / _buy.Close), 1);
 
-                        if(cur.Close < (decimal)ma20.Sma && (rate <= -5 || rate >= 5))
+                        if(cur.Close < (decimal)ma20.Sma && (rate <= -7 || rate >= 7))
                         {
                             PrintBuy(cur, i, false);
                             _flagBuy = false;

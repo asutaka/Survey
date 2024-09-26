@@ -30,6 +30,7 @@ namespace StockLib.Service
         Quote _buy = null;
         int _indexBuy = -1;
         List<decimal> _lrateBuy = new List<decimal>();
+        List<decimal> _lHold = new List<decimal>();
         List<Quote> _lPivot = new List<Quote>();
         private void PrintBuy(Quote item, int index, bool isBuy)
         {
@@ -47,13 +48,14 @@ namespace StockLib.Service
                 var totalDays = index - _indexBuy;
                 var rate = Math.Round(100 * (-1 + item.Close / _buy.Close), 1);
                 _lrateBuy.Add(rate);
+                _lHold.Add(totalDays);
                 _countBuy++;
 
                 //Console.WriteLine($"|MUA {_buy.Date.ToString("dd/MM/yyyy")}: {_buy.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
             }
         }
 
-        List<(string, int, decimal, decimal)> _lCode = new List<(string, int, decimal, decimal)>();
+        List<(string, int, decimal, decimal, decimal)> _lCode = new List<(string, int, decimal, decimal, decimal)>();
         private void PrintBuyLast()
         {
             Console.WriteLine();
@@ -65,7 +67,7 @@ namespace StockLib.Service
                 
             var avg = Math.Round(_lrateBuy.Average(), 1);
             var sum = Math.Round(_lrateBuy.Sum(), 1);
-            _lCode.Add((_code, 1, avg, sum));
+            _lCode.Add((_code, 1, avg, sum, (decimal)_lHold.Average()));
             Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {avg}%| Tong TakeProfit: {sum}%");
 
 
@@ -90,10 +92,12 @@ namespace StockLib.Service
 
                 //Console.WriteLine($"|MUA {itemFirst.Date.ToString("dd/MM/yyyy")}: {itemFirst.Close}|BAN {itemLast.Date.ToString("dd/MM/yyyy")}: {itemLast.Close}|TP: {rate}%");
             }
+            if (lSB.Count() == 0)
+                return;
 
             var avgSB = Math.Round(lSB.Average(), 1);
             var sumSB = Math.Round(lSB.Sum(), 1);
-            _lCode.Add((_code, 0, avgSB, sumSB));
+            _lCode.Add((_code, 0, avgSB, sumSB, 0));
             Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {avgSB}%| Tong TakeProfit: {sumSB}%");
 
             //reset 
@@ -108,6 +112,7 @@ namespace StockLib.Service
             _buy = null;
             _indexBuy = -1;
             _lrateBuy.Clear();
+            _lHold.Clear();
             _lPivot.Clear();
         }
 
@@ -119,7 +124,7 @@ namespace StockLib.Service
             foreach (var item in lTop20)
             {
                 var SB = _lCode.Where(x => x.Item2 == 0).FirstOrDefault(x => x.Item1 == item.Item1);
-                sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
+                sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
             }
             Console.WriteLine(sBuilder.ToString());
         }
