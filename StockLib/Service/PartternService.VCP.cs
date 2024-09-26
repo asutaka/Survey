@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
-using System.Runtime.Intrinsics.X86;
 
 namespace StockLib.Service
 {

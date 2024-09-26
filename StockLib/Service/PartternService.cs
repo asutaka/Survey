@@ -11,6 +11,7 @@ namespace StockLib.Service
         Task SurveyVCP(string code);
         Task SurveyW(string code);
         Task SurveyDanZagerCustom(string code);
+        Task Survey3C(string code);
         void RankChungKhoan();
     }
     public partial class PartternService : IPartternService
@@ -32,6 +33,7 @@ namespace StockLib.Service
         List<decimal> _lrateBuy = new List<decimal>();
         List<decimal> _lHold = new List<decimal>();
         List<Quote> _lPivot = new List<Quote>();
+        bool _flagRate10 = false;
         private void PrintBuy(Quote item, int index, bool isBuy)
         {
             _lPivot.Add(item);
@@ -51,7 +53,7 @@ namespace StockLib.Service
                 _lHold.Add(totalDays);
                 _countBuy++;
 
-                //Console.WriteLine($"|MUA {_buy.Date.ToString("dd/MM/yyyy")}: {_buy.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
+                Console.WriteLine($"|MUA {_buy.Date.ToString("dd/MM/yyyy")}: {_buy.Close}|BAN {item.Date.ToString("dd/MM/yyyy")}: {item.Close}|Nam giu: {totalDays}|TP: {rate}%");
             }
         }
 

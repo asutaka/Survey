@@ -29,7 +29,6 @@ namespace StockLib.Service
             1. Cut khi giá giảm 5% tính từ điểm pivot
             2. tăng >= 10% từ điểm pivot -> Bán khi xuất hiện nến đỏ >= 3% hoặc giá cắt xuống MA20
          */
-        private bool _flagRate10 = false;
         private void DanZagerCustom(List<Quote> lData)
         {
             try
