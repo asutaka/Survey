@@ -43,12 +43,12 @@ namespace StockLib.Service
                     var bb = lbb.ElementAt(i);
                     if (_flagBuy)
                     {
-                        if(_flagRate10)
+                        if (_flagRate10)
                         {
                             var rateItem = Math.Round(100 * (-1 + item.Close / item.Open));
-                            if (rateItem <= -3
-                                || item.Close < (decimal)bb.Sma)
-                                //if (item.Close < (decimal)bb.Sma)
+                            //if (rateItem <= -3
+                                //|| item.Close < (decimal)bb.Sma)
+                            if (item.Close < (decimal)bb.Sma)
                             {
                                 PrintBuy(item, i, false);
                                 _flagRate10 = false;
@@ -73,14 +73,21 @@ namespace StockLib.Service
                         continue;
                     }
 
-                    if (item.Close < item.Open * (decimal)1.02)
+                    if (item.Close < item.Open * (decimal)1.02
+                        || item.Low >= (decimal)bb.Sma)
                         continue;
-                    var vol_check = lData.Skip(i - 10).Take(10).Count(x => item.Volume >= x.Volume * (decimal)1.02) >= 9;
+                    var vol_check = lData.Skip(i - 10).Take(10).Count(x => item.Volume >= x.Volume * (decimal)1.07) >= 9;
                     if (!vol_check)
                         continue;
-                    
-                    var bb_check = ((decimal)(bb.UpperBand ?? 0) - item.Close) >= (item.Open - (decimal)(bb.LowerBand ?? 0));
+
+                    var bb_check = (item.Low < (decimal)bb.Sma && item.High > (decimal)bb.Sma && item.High < (decimal)bb.UpperBand)
+                                || (item.Low < (decimal)bb.LowerBand && item.High > (decimal)bb.LowerBand && item.High < (decimal)bb.Sma);
+                    //var bb_check = ((decimal)(bb.UpperBand ?? 0) - item.High) >= (item.Low - (decimal)(bb.LowerBand ?? 0));
                     if (!bb_check)
+                        continue;
+
+                    var last_check = lData[i - 1].Close < (decimal)lbb.ElementAt(i - 1).Sma;
+                    if (!last_check)
                         continue;
 
                     _flagBuy = true;
