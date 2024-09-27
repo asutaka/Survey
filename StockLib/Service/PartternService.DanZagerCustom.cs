@@ -46,9 +46,9 @@ namespace StockLib.Service
                         if (_flagRate10)
                         {
                             var rateItem = Math.Round(100 * (-1 + item.Close / item.Open));
-                            //if (rateItem <= -3
-                                //|| item.Close < (decimal)bb.Sma)
-                            if (item.Close < (decimal)bb.Sma)
+                            if (rateItem <= -3
+                                || item.Close < (decimal)bb.Sma)
+                            //if (item.Close < (decimal)bb.Sma)
                             {
                                 PrintBuy(item, i, false);
                                 _flagRate10 = false;

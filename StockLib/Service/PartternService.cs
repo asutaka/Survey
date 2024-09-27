@@ -64,6 +64,7 @@ namespace StockLib.Service
             if (_lrateBuy.Count() == 0)
             {
                 Console.WriteLine("Khong co diem mua!");
+                Reset();
                 return;
             }
                 
@@ -74,7 +75,10 @@ namespace StockLib.Service
 
 
             if (_lPivot.Count() == 0)
+            {
+                Reset();
                 return;
+            }    
 
             _lPivot.RemoveAt(0);
             var count = _lPivot.Count;
@@ -95,7 +99,10 @@ namespace StockLib.Service
                 //Console.WriteLine($"|MUA {itemFirst.Date.ToString("dd/MM/yyyy")}: {itemFirst.Close}|BAN {itemLast.Date.ToString("dd/MM/yyyy")}: {itemLast.Close}|TP: {rate}%");
             }
             if (lSB.Count() == 0)
+            {
+                Reset();
                 return;
+            }
 
             var avgSB = Math.Round(lSB.Average(), 1);
             var sumSB = Math.Round(lSB.Sum(), 1);
