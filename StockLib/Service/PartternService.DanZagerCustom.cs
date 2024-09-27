@@ -24,7 +24,7 @@ namespace StockLib.Service
          Dan Zager custom:
             - Nến xanh ít nhất 2%
             - Vol tại điểm lớn hơn 1% 10 nến liền trước(ít nhất 9 nến)
-            - BB trên - Close >= Open - BB dưới
+            - Nến cắt lên MA20 hoặc cắt lên BB dưới
 
             1. Cut khi giá giảm 5% tính từ điểm pivot
             2. tăng >= 10% từ điểm pivot -> Bán khi xuất hiện nến đỏ >= 3% hoặc giá cắt xuống MA20
@@ -48,7 +48,6 @@ namespace StockLib.Service
                             var rateItem = Math.Round(100 * (-1 + item.Close / item.Open));
                             if (rateItem <= -3
                                 || item.Close < (decimal)bb.Sma)
-                            //if (item.Close < (decimal)bb.Sma)
                             {
                                 PrintBuy(item, i, false);
                                 _flagRate10 = false;
