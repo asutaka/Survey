@@ -81,7 +81,6 @@ namespace StockLib.Service
 
                     var bb_check = (item.Low < (decimal)bb.Sma && item.High > (decimal)bb.Sma && item.High < (decimal)bb.UpperBand)
                                 || (item.Low < (decimal)bb.LowerBand && item.High > (decimal)bb.LowerBand && item.High < (decimal)bb.Sma);
-                    //var bb_check = ((decimal)(bb.UpperBand ?? 0) - item.High) >= (item.Low - (decimal)(bb.LowerBand ?? 0));
                     if (!bb_check)
                         continue;
 

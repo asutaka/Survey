@@ -11,6 +11,7 @@ namespace StockLib.PublicService
         Task SurveyDanZagerCustom(string code);
         Task Survey3C(string code);
         void RankChungKhoan();
+        void TotalDays();
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -53,6 +54,11 @@ namespace StockLib.PublicService
         public void RankChungKhoan()
         {
             _partternService.RankChungKhoan();
+        }
+
+        public void TotalDays()
+        {
+            _partternService.TotalDays();
         }
     }
 }

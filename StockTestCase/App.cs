@@ -29,13 +29,14 @@ namespace StockTestCase
             //await _service.Survey3C("DPG");
 
             //////#region Test All Ma Chung Khoan
-            //foreach (var stock in StaticVal._lStock.Where(x => x.rank == 1 || x.rank == 2))
-            //{
-            //    await _service.Survey3C(stock.s);
-            //    Thread.Sleep(1000);
-            //}
+            foreach (var stock in StaticVal._lStock.Where(x => x.rank == 1 || x.rank == 2))
+            {
+                await _service.Survey3C(stock.s);
+                Thread.Sleep(1000);
+            }
 
             //_service.RankChungKhoan();
+            _service.TotalDays();
             //////#endregion
         }
     }
