@@ -11,6 +11,7 @@ namespace StockLib.DAL.Entity
         public List<H24DataModel> h24 { get; set; }//nhóm ngành lấy từ 24h smart money
         public List<BCTCReleaseModel> bc { get; set; }//Thời gian release BCTC --> sẽ bỏ khi làm xong
         public int rank { get; set; }
+        public List<IndicatorModel> indicator { get; set; }
         public int status { get; set; }
     }
 
@@ -42,5 +43,13 @@ namespace StockLib.DAL.Entity
     {
         public long t { get; set; }
         public string title { get; set; }
+    }
+
+    public class IndicatorModel
+    {
+        public int type { get; set; }//Loại chỉ báo
+        public double avg_rate { get; set; }//Trung bình mỗi lần vào lệnh
+        public double win_rate { get; set; }//Tỉ lệ winrate
+        public double loss_rate { get; set; }//Tỉ lệ lossrate
     }
 }

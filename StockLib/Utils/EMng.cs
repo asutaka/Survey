@@ -445,4 +445,13 @@ namespace StockLib.Utils
         [Display(Name = "Khác")]
         Khac = 99
     }
+
+    public enum EIndicator
+    {
+        DanZangerVolumne = 1,
+        _3C = 2,
+        VCP = 3,
+        GoldFish = 4,
+        SuperTrend = 5
+    }
 }

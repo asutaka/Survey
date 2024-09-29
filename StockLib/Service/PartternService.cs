@@ -59,11 +59,12 @@ namespace StockLib.Service
             }
         }
 
-        List<(string, int, decimal, decimal, decimal)> _lCode = new List<(string, int, decimal, decimal, decimal)>();
+        List<(string, int, decimal, decimal, decimal, decimal, decimal)> _lCode = new List<(string, int, decimal, decimal, decimal, decimal, decimal)>();
         private void PrintBuyLast()
         {
             Console.WriteLine();
-            if (_lrateBuy.Count() == 0)
+            var countRate = _lrateBuy.Count();
+            if (countRate == 0)
             {
                 Console.WriteLine("Khong co diem mua!");
                 Reset();
@@ -72,7 +73,10 @@ namespace StockLib.Service
                 
             var avg = Math.Round(_lrateBuy.Average(), 1);
             var sum = Math.Round(_lrateBuy.Sum(), 1);
-            _lCode.Add((_code, 1, avg, sum, (decimal)_lHold.Average()));
+            decimal wincount = _lrateBuy.Count(x => x >= 7);
+            decimal lossCount = _lrateBuy.Count(x => x <= -5);
+
+            _lCode.Add((_code, 1, avg, sum, (decimal)_lHold.Average(), Math.Round(wincount * 100 / countRate), Math.Round(lossCount * 100 / countRate)));
             Console.WriteLine($"=> So Lan Mua-Ban: {_countBuy}| TakeProfit trung binh: {avg}%| Tong TakeProfit: {sum}%");
 
 
@@ -108,7 +112,7 @@ namespace StockLib.Service
 
             var avgSB = Math.Round(lSB.Average(), 1);
             var sumSB = Math.Round(lSB.Sum(), 1);
-            _lCode.Add((_code, 0, avgSB, sumSB, 0));
+            _lCode.Add((_code, 0, avgSB, sumSB, 0, 0, 0));
             Console.WriteLine($"=> Ban-Mua:TakeProfit trung binh: {avgSB}%| Tong TakeProfit: {sumSB}%");
 
             //reset 
@@ -132,13 +136,14 @@ namespace StockLib.Service
 
         public void RankChungKhoan()
         {
-            var lTop20 = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(20);
+            var lTop20 = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(60);
             var sBuilder = new StringBuilder();
             var i = 1;
             foreach (var item in lTop20)
             {
                 var SB = _lCode.Where(x => x.Item2 == 0).FirstOrDefault(x => x.Item1 == item.Item1);
-                sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
+                sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| Win: {item.Item6}| Loss: {item.Item7}");
+                //sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
             }
             Console.WriteLine(sBuilder.ToString());
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
+using StockLib.Utils;
 
 namespace StockLib.Service
 {
@@ -10,10 +11,20 @@ namespace StockLib.Service
             try
             {
                 _code = code;
+                var stock = StaticVal._lStock.FirstOrDefault(x => x.s == code);
+                decimal a = 10;
+                if (stock.e.Equals("Hose", StringComparison.OrdinalIgnoreCase))
+                {
+                    a = 7;
+                }
+                else if (stock.e.Equals("Upcom", StringComparison.OrdinalIgnoreCase))
+                {
+                    a = 15;
+                }
 
                 //var lData = await _apiService.SSI_GetDataStock_Alltime(code);
                 var lData = await _apiService.SSI_GetDataStock(code);
-                DanZagerCustom(lData);
+                DanZagerCustom(lData, a);
             }
             catch (Exception ex)
             {
@@ -29,7 +40,7 @@ namespace StockLib.Service
             1. Cut khi giá giảm 5% tính từ điểm pivot
             2. tăng >= 10% từ điểm pivot -> Bán khi xuất hiện nến đỏ >= 3% hoặc giá cắt xuống MA20
          */
-        private void DanZagerCustom(List<Quote> lData)
+        private void DanZagerCustom(List<Quote> lData, decimal a)
         {
             try
             {
@@ -72,14 +83,14 @@ namespace StockLib.Service
                         continue;
                     }
 
-                    if (item.Close < item.Open * (decimal)1.02
+                    if (item.Close < item.Open * (decimal)1.01
                         || item.Low >= (decimal)bb.Sma)
                         continue;
                     var vol_check = lData.Skip(i - 10).Take(10).Count(x => item.Volume >= x.Volume * (decimal)1.07) >= 9;
                     if (!vol_check)
                         continue;
 
-                    var bb_check = (item.Low < (decimal)bb.Sma && item.High > (decimal)bb.Sma && item.High < (decimal)bb.UpperBand)
+                    var bb_check = (item.Low < (decimal)bb.Sma && item.High > (decimal)bb.Sma && item.High < (decimal)bb.UpperBand && item.Close < item.Open * ((decimal)1 + Math.Round(a / 200, 2)))
                                 || (item.Low < (decimal)bb.LowerBand && item.High > (decimal)bb.LowerBand && item.High < (decimal)bb.Sma);
                     if (!bb_check)
                         continue;
