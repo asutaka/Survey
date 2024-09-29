@@ -37,7 +37,7 @@ namespace StockLib.Service
             - Vol tại điểm lớn hơn 1% 10 nến liền trước(ít nhất 9 nến)
             - Nến cắt lên MA20 hoặc cắt lên BB dưới
 
-            1. Cut khi giá giảm 5% tính từ điểm pivot
+            1. Cut khi giá giảm 7% tính từ điểm pivot
             2. tăng >= 10% từ điểm pivot -> Bán khi xuất hiện nến đỏ >= 3% hoặc giá cắt xuống MA20
          */
         private void DanZagerCustom(List<Quote> lData, decimal a)
@@ -56,7 +56,7 @@ namespace StockLib.Service
                     {
                         if (_flagRate10)
                         {
-                            var rateItem = Math.Round(100 * (-1 + item.Close / item.Open));
+                            var rateItem = Math.Round(100 * (-1 + item.Close / item.Open), 2);
                             if (rateItem <= -3
                                 || item.Close < (decimal)bb.Sma)
                             {
@@ -90,8 +90,8 @@ namespace StockLib.Service
                     if (!vol_check)
                         continue;
 
-                    var bb_check = (item.Low < (decimal)bb.Sma && item.High > (decimal)bb.Sma && item.High < (decimal)bb.UpperBand && item.Close < item.Open * ((decimal)1 + Math.Round(a / 200, 2)))
-                                || (item.Low < (decimal)bb.LowerBand && item.High > (decimal)bb.LowerBand && item.High < (decimal)bb.Sma);
+                    var bb_check = (item.Low < (decimal)bb.Sma && item.Close > (decimal)bb.Sma && item.High < (decimal)bb.UpperBand && item.Close < item.Open * ((decimal)1 + Math.Round(a / 200, 2)))
+                                || (item.Low < (decimal)bb.LowerBand && item.Close > (decimal)bb.LowerBand && item.High < (decimal)bb.Sma);
                     if (!bb_check)
                         continue;
 

@@ -25,7 +25,7 @@ namespace StockTestCase
             //await _service.SurveyGoldFish("DC4");
             //await _service.SurveySuperTrend("VNINDEX");
             //await _service.SurveyVCP("NTL");
-            //await _service.SurveyDanZagerCustom("MCH");
+            //await _service.SurveyDanZagerCustom("TCH");
             //await _service.Survey3C("DPG");
 
             //////#region Test All Ma Chung Khoan
