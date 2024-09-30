@@ -2,10 +2,7 @@
 using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using StockLib.DAL;
-using StockLib.DAL.Entity;
-using StockLib.Utils;
 using System.Text;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -17,6 +14,7 @@ namespace StockLib.Service
         Task SurveyW(string code);
         Task SurveyDanZagerCustom(string code);
         Task Survey3C(string code);
+        Task SurveyMa20(string code);
         void RankChungKhoan();
         void TotalDays();
     }

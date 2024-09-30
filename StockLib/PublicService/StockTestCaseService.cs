@@ -9,6 +9,7 @@ namespace StockLib.PublicService
         Task SurveyVCP(string code);
         Task SurveyW(string code);
         Task SurveyDanZagerCustom(string code);
+        Task SurveyMa20(string code);
         Task Survey3C(string code);
         void RankChungKhoan();
         void TotalDays();
@@ -39,6 +40,11 @@ namespace StockLib.PublicService
         public async Task SurveyW(string code)
         {
             await _partternService.SurveyW(code);
+        }
+
+        public async Task SurveyMa20(string code)
+        {
+            await _partternService.SurveyMa20(code);
         }
 
         public async Task SurveyDanZagerCustom(string code)
