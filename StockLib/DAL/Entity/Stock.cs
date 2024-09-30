@@ -50,6 +50,7 @@ namespace StockLib.DAL.Entity
         public int type { get; set; }//Loại chỉ báo
         public int rank { get; set; }//Thứ tự xếp hạng của chỉ báo
         public double avg_rate { get; set; }//Trung bình mỗi lần vào lệnh
+        public int avg_num { get; set; }//Số nến nắm giữ trung bình
         public double win_rate { get; set; }//Tỉ lệ winrate
         public double loss_rate { get; set; }//Tỉ lệ lossrate
     }

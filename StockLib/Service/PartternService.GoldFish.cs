@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
+using System.Xml.Linq;
 
 namespace StockLib.Service
 {
@@ -82,6 +83,52 @@ namespace StockLib.Service
             {
                 _logger.LogError($"PartternService.GoldFish|EXCEPTION| {ex.Message}");
             }
+        }
+    }
+
+    public static class clsGoldFish
+    {
+        public static bool CheckGoldFishBuy(this List<Quote> lVal)
+        {
+            try
+            {
+                if (!lVal.Any())
+                    return false;
+                var count = lVal.Count();
+                var lHigh = new List<Quote>();
+                var lLow = new List<Quote>();
+                foreach (var itemVal in lVal)
+                {
+                    lHigh.Add(new Quote
+                    {
+                        Date = itemVal.Date,
+                        Close = itemVal.High
+                    });
+                    lLow.Add(new Quote
+                    {
+                        Date = itemVal.Date,
+                        Close = itemVal.Low
+                    });
+                }
+
+                var lSma_6 = lVal.GetSma(6);
+                var lSma_39_H = lHigh.GetSma(39);
+                var item = lVal.Last();
+                var ma6 = lSma_6.Last();
+                var ma39H = lSma_39_H.Last();
+
+                var k = ma6.Sma * 0.04 / 100;
+                var ab = ma39H.Sma + k;
+                var XXX = item.Close - lVal.ElementAt(count - 11).Close;
+                var buy = XXX > 0 && (double)item.Close > ab;
+                
+                return buy;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"PartternService.CheckGoldFish|EXCEPTION| {ex.Message}");
+            }
+            return false;
         }
     }
 }

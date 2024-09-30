@@ -2,6 +2,8 @@
 using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using StockLib.DAL;
+using StockLib.DAL.Entity;
+using StockLib.Utils;
 using System.Text;
 
 namespace StockLib.Service
@@ -142,32 +144,33 @@ namespace StockLib.Service
 
         public void RankChungKhoan()
         {
-            var lTop20 = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(50).ToList();
-            lTop20 = lTop20.Where(x => x.Item6 >= x.Item7).ToList();
+            var lTop = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(50).ToList();
+            lTop = lTop.Where(x => x.Item6 >= x.Item7).ToList();
             var sBuilder = new StringBuilder();
             var i = 1;
-            foreach (var item in lTop20)
+            foreach (var item in lTop)
             {
                 var SB = _lCode.Where(x => x.Item2 == 0).FirstOrDefault(x => x.Item1 == item.Item1);
                 sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| Win: {item.Item6}| Loss: {item.Item7}");
                 //sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
-                ////Update Stock
-                //var stock = _stockRepo.GetEntityByFilter(Builders<Stock>.Filter.Eq(x => x.s, item.Item1));
-                //if (stock == null)
-                //    continue;
-                //if(stock.indicator is null)
-                //{
-                //    stock.indicator = new List<IndicatorModel>();
-                //}
-                //stock.indicator.Add(new IndicatorModel
-                //{
-                //    type = (int)EIndicator.DanZangerVolumne,
-                //    rank = i - 1,
-                //    avg_rate = (double)item.Item3,
-                //    win_rate = (double)item.Item6,
-                //    loss_rate = (double)item.Item7
-                //});
-                //_stockRepo.Update(stock);
+                //Update Stock
+                var stock = _stockRepo.GetEntityByFilter(Builders<Stock>.Filter.Eq(x => x.s, item.Item1));
+                if (stock == null)
+                    continue;
+                if (stock.indicator is null)
+                {
+                    stock.indicator = new List<IndicatorModel>();
+                }
+                stock.indicator.Add(new IndicatorModel
+                {
+                    type = (int)EIndicator.GoldFish,
+                    rank = i - 1,
+                    avg_rate = (double)item.Item3,
+                    avg_num = (int)Math.Round(item.Item5),
+                    win_rate = (double)item.Item6,
+                    loss_rate = (double)item.Item7
+                });
+                _stockRepo.Update(stock);
             }
             Console.WriteLine(sBuilder.ToString());
         }

@@ -32,7 +32,7 @@ namespace StockTestCase
             //////#region Test All Ma Chung Khoan
             foreach (var stock in StaticVal._lStock.Where(x => x.rank == 1 || x.rank == 2))
             {
-                await _service.SurveyMa20(stock.s);
+                await _service.SurveyGoldFish(stock.s);
                 Thread.Sleep(1000);
             }
 

@@ -18,6 +18,9 @@ namespace StockLib.Service
             try
             {
                 var lDanCustom = new List<Stock>();
+                var lGoldFish = new List<Stock>();
+                var lSuperTrend = new List<Stock>();
+
                 foreach (var item in StaticVal._lStock)
                 {
                     if (item.indicator is null
@@ -40,6 +43,18 @@ namespace StockLib.Service
                     {
                         lDanCustom.Add(item);
                     }
+
+                    var isGoldFish = lData.CheckGoldFishBuy();
+                    if (isGoldFish)
+                    {
+                        lGoldFish.Add(item);
+                    }
+
+                    var isSuperTrend = lData.CheckSuperTrend();
+                    if (isSuperTrend)
+                    {
+                        lSuperTrend.Add(item);
+                    }
                 }
                 
                 var sBuilder = new StringBuilder();
@@ -55,7 +70,29 @@ namespace StockLib.Service
                     }
                 }
 
-                if(string.IsNullOrWhiteSpace(sBuilder.ToString()))
+                if (lGoldFish.Any())
+                {
+                    sBuilder.AppendLine("[Tín hiệu GoldFish]");
+
+                    foreach (var item in lGoldFish.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.GoldFish).rank))
+                    {
+                        var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.GoldFish);
+                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                    }
+                }
+
+                if (lSuperTrend.Any())
+                {
+                    sBuilder.AppendLine("[Tín hiệu SuperTrend]");
+
+                    foreach (var item in lSuperTrend.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank))
+                    {
+                        var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend);
+                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(sBuilder.ToString()))
                 {
                     return (0, null);
                 }
