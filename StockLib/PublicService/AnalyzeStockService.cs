@@ -237,9 +237,6 @@ namespace StockLib.PublicService
                 //}
                 //return;
 
-
-
-
                 await TongCucHaiQuan(dt);
                 if (dt.Day == 6)
                 {

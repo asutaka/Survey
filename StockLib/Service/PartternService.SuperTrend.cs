@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 using System.Xml.Linq;
+using ZstdSharp.Unsafe;
 
 namespace StockLib.Service
 {
@@ -282,8 +283,9 @@ namespace StockLib.Service
                     if (!flagBuy && trend[i] == 1)
                     {
                         flagBuy = true;
-                        if(i <= count - 2)
+                        if(i >= count - 2)
                         {
+                            flagBuy = false;
                             return true;
                         }
                     }
@@ -292,6 +294,7 @@ namespace StockLib.Service
                         flagBuy = false;
                     }
                 }
+                flagBuy = false;
 
                 decimal Up_Indicator(int index)
                 {

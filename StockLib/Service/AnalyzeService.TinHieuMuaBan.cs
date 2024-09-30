@@ -38,22 +38,31 @@ namespace StockLib.Service
                         a = 15;
                     }
 
-                    var isDanCustomSignal = lData.CheckDanZangerCustom(a);
-                    if (isDanCustomSignal)
+                    if (item.indicator.Any(x => x.type == (int)EIndicator.DanZangerVolumne))
                     {
-                        lDanCustom.Add(item);
+                        var isDanCustomSignal = lData.CheckDanZangerCustom(a);
+                        if (isDanCustomSignal)
+                        {
+                            lDanCustom.Add(item);
+                        }
                     }
 
-                    var isGoldFish = lData.CheckGoldFishBuy();
-                    if (isGoldFish)
+                    if (item.indicator.Any(x => x.type == (int)EIndicator.GoldFish))
                     {
-                        lGoldFish.Add(item);
+                        var isGoldFish = lData.CheckGoldFishBuy();
+                        if (isGoldFish)
+                        {
+                            lGoldFish.Add(item);
+                        }
                     }
 
-                    var isSuperTrend = lData.CheckSuperTrend();
-                    if (isSuperTrend)
+                    if (item.indicator.Any(x => x.type == (int)EIndicator.SuperTrend))
                     {
-                        lSuperTrend.Add(item);
+                        var isSuperTrend = lData.CheckSuperTrend();
+                        if (isSuperTrend)
+                        {
+                            lSuperTrend.Add(item);
+                        }
                     }
                 }
                 
@@ -61,6 +70,7 @@ namespace StockLib.Service
 
                 if (lDanCustom.Any())
                 {
+                    sBuilder.AppendLine();
                     sBuilder.AppendLine("[Tín hiệu Danz Volume]");
 
                     foreach (var item in lDanCustom.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.DanZangerVolumne).rank))
@@ -72,6 +82,7 @@ namespace StockLib.Service
 
                 if (lGoldFish.Any())
                 {
+                    sBuilder.AppendLine();
                     sBuilder.AppendLine("[Tín hiệu GoldFish]");
 
                     foreach (var item in lGoldFish.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.GoldFish).rank))
@@ -83,6 +94,7 @@ namespace StockLib.Service
 
                 if (lSuperTrend.Any())
                 {
+                    sBuilder.AppendLine();
                     sBuilder.AppendLine("[Tín hiệu SuperTrend]");
 
                     foreach (var item in lSuperTrend.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank))
