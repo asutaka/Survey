@@ -154,23 +154,23 @@ namespace StockLib.Service
                 sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| Win: {item.Item6}| Loss: {item.Item7}");
                 //sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
                 //Update Stock
-                var stock = _stockRepo.GetEntityByFilter(Builders<Stock>.Filter.Eq(x => x.s, item.Item1));
-                if (stock == null)
-                    continue;
-                if (stock.indicator is null)
-                {
-                    stock.indicator = new List<IndicatorModel>();
-                }
-                stock.indicator.Add(new IndicatorModel
-                {
-                    type = (int)EIndicator.GoldFish,
-                    rank = i - 1,
-                    avg_rate = (double)item.Item3,
-                    avg_num = (int)Math.Round(item.Item5),
-                    win_rate = (double)item.Item6,
-                    loss_rate = (double)item.Item7
-                });
-                _stockRepo.Update(stock);
+                //var stock = _stockRepo.GetEntityByFilter(Builders<Stock>.Filter.Eq(x => x.s, item.Item1));
+                //if (stock == null)
+                //    continue;
+                //if (stock.indicator is null)
+                //{
+                //    stock.indicator = new List<IndicatorModel>();
+                //}
+                //stock.indicator.Add(new IndicatorModel
+                //{
+                //    type = (int)EIndicator.GoldFish,
+                //    rank = i - 1,
+                //    avg_rate = (double)item.Item3,
+                //    avg_num = (int)Math.Round(item.Item5),
+                //    win_rate = (double)item.Item6,
+                //    loss_rate = (double)item.Item7
+                //});
+                //_stockRepo.Update(stock);
             }
             Console.WriteLine(sBuilder.ToString());
         }
