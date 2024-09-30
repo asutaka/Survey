@@ -243,10 +243,14 @@ namespace StockLib.PublicService
                     await TongCucThongKe(dt);
                 }
 
-                if (isDayOfWork)
+                if (isDayOfWork && !isPreTrade)
                 {
-                    await TinHieuMuaBan();
-                    if (isTimePrint && !isPreTrade)
+                    if(isRealTime)
+                    {
+                        await TinHieuMuaBan();
+                    }    
+                    
+                    if (isTimePrint)
                     {
                         if (isRealTime)
                         {
