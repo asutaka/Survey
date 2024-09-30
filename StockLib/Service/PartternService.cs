@@ -144,7 +144,7 @@ namespace StockLib.Service
 
         public void RankChungKhoan()
         {
-            var lTop = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(50).ToList();
+            var lTop = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(100).ToList();
             lTop = lTop.Where(x => x.Item6 >= x.Item7).ToList();
             var sBuilder = new StringBuilder();
             var i = 1;

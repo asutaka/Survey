@@ -96,18 +96,12 @@ namespace StockLib.Service
                     return false;
                 var count = lVal.Count();
                 var lHigh = new List<Quote>();
-                var lLow = new List<Quote>();
                 foreach (var itemVal in lVal)
                 {
                     lHigh.Add(new Quote
                     {
                         Date = itemVal.Date,
                         Close = itemVal.High
-                    });
-                    lLow.Add(new Quote
-                    {
-                        Date = itemVal.Date,
-                        Close = itemVal.Low
                     });
                 }
 
@@ -116,13 +110,21 @@ namespace StockLib.Service
                 var item = lVal.Last();
                 var ma6 = lSma_6.Last();
                 var ma39H = lSma_39_H.Last();
+                var near = lVal.SkipLast(1).Last(); 
+                var ma6_near = lSma_6.SkipLast(1).Last(); 
+                var ma39H_near = lSma_39_H.SkipLast(1).Last();
 
                 var k = ma6.Sma * 0.04 / 100;
                 var ab = ma39H.Sma + k;
                 var XXX = item.Close - lVal.ElementAt(count - 11).Close;
                 var buy = XXX > 0 && (double)item.Close > ab;
-                
-                return buy;
+
+                var k_near = ma6_near.Sma * 0.04 / 100;
+                var ab_near = ma39H_near.Sma + k_near;
+                var XXX_near = near.Close - lVal.ElementAt(count - 12).Close;
+                var buy_near = XXX_near > 0 && (double)near.Close > ab_near;
+
+                return buy && !buy_near;
             }
             catch (Exception ex)
             {
