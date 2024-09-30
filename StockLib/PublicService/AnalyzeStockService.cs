@@ -199,6 +199,23 @@ namespace StockLib.PublicService
             }
         }
 
+        private async Task TinHieuMuaBan()
+        {
+            try
+            {
+                var tinhieu = await _analyzeService.TinHieuMuaBan();
+                if (tinhieu.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idUser, tinhieu.Item2);
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TinHieuMuaBan)| {ex.Message}");
+            }
+        }
+
         public async Task AnalyzeJob()
         {
             try
@@ -221,21 +238,27 @@ namespace StockLib.PublicService
                 //return;
 
 
+
+
                 await TongCucHaiQuan(dt);
                 if (dt.Day == 6)
                 {
                     await TongCucThongKe(dt);
                 }
 
-                if (isDayOfWork && isTimePrint && !isPreTrade)
+                if (isDayOfWork)
                 {
-                    if (isRealTime)
+                    await TinHieuMuaBan();
+                    if (isTimePrint && !isPreTrade)
                     {
-                        await Realtime();
-                        return;
+                        if (isRealTime)
+                        {
+                            await Realtime();
+                            return;
+                        }
+                        await ThongKe(dt);
+                        await ThongKeTuDoanh(dt);
                     }
-                    await ThongKe(dt);
-                    await ThongKeTuDoanh(dt);
                 }
             }
             catch(Exception ex)
