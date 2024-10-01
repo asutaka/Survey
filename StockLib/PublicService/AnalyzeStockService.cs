@@ -245,12 +245,12 @@ namespace StockLib.PublicService
 
                 if (isDayOfWork)
                 {
-                    if(isRealTime 
+                    if (isRealTime
                         || (dt.Hour == 8 && dt.Minute >= 45))
                     {
                         await TinHieuMuaBan();
-                    }    
-                    
+                    }
+
                     if (!isPreTrade && isTimePrint)
                     {
                         if (isRealTime)

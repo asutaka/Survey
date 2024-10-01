@@ -29,6 +29,7 @@ namespace StockLib.Service
                 var haiquan = await _apiService.TongCucHaiQuan();
                 if(haiquan is null)
                     return (0, null);
+                haiquan.arr.Reverse();
 
                 var last = lConfig.MaxBy(x => x.t);
                 var va = 0;
@@ -39,33 +40,31 @@ namespace StockLib.Service
 
                     var strSplit = item.NGAY_SO_BO.Split("/");
                     var flagDetect = int.Parse(strSplit[0]) > 15 ? 1 : 2;
-
-                    var time = int.Parse($"{strSplit[2]}{strSplit[1]}{flagDetect}");
-                    if (time <= (last?.t ?? 0))
-                        return (0, null);
-
-                    va = time;
-                    var stream = await _apiService.TongCucHaiQuan(item.FILE_SO_BO);
-                    if (stream is null) return (0, null);
-
-                    var timeReport = 0;
                     var year = int.Parse(strSplit[2]);
                     var month = int.Parse(strSplit[1]);
-                    if(flagDetect == 2)
+                    if (flagDetect == 2)
                     {
                         month--;
                     }
-                    timeReport = int.Parse($"{year}{month.To2Digit()}{flagDetect}");
+
+                    var time = int.Parse($"{year}{month.To2Digit()}{flagDetect}");
+                    if (time <= (last?.t ?? 0))
+                        return (0, null);
+
+                    var stream = await _apiService.TongCucHaiQuan(item.FILE_SO_BO);
+                    if (stream is null) return (0, null);
 
                     var lHaiQuan = _fileService.TongCucHaiQuan(stream, isXuatKhau);
                     if (lHaiQuan?.Any() ?? false)
                     {
                         foreach (var itemHaiQuan in lHaiQuan)
                         {
-                            itemHaiQuan.d = timeReport;
+                            itemHaiQuan.d = time;
                             _haiquanRepo.InsertOne(itemHaiQuan);
                         }
                     }
+
+                    t = time;
                 }
 
                 var mes = TongCucHaiQuanPrint(dt, isXuatKhau);

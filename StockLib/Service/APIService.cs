@@ -706,7 +706,7 @@ namespace StockLib.Service
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 var requestMessage = new HttpRequestMessage();
-                var body = "{\"skip\":0,\"take\":5,\"ky\":\"\",\"textSearch\":\"\",\"the_loai\":\"0\",\"thoigianCongBo\":\"\",\"typeName\":\"GetListSoLieu\",\"language\":\"TIENG_VIET\"}";
+                var body = "{\"skip\":0,\"take\":10,\"ky\":\"\",\"textSearch\":\"\",\"the_loai\":\"0\",\"thoigianCongBo\":\"\",\"typeName\":\"GetListSoLieu\",\"language\":\"TIENG_VIET\"}";
                 requestMessage.Method = HttpMethod.Post;
                 requestMessage.Content = new StringContent(body, Encoding.UTF8, "text/plain");
 
