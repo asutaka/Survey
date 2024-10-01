@@ -370,6 +370,7 @@ namespace StockLib.Service
             {
                 _logger.LogError($"APIService.SSI_GetDataStock|EXCEPTION| {ex.Message}");
             }
+            Thread.Sleep(200);
             return lOutput;
         }
 
