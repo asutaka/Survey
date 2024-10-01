@@ -20,6 +20,7 @@ namespace StockLib.Service
                 var lDanCustom = new List<Stock>();
                 var lGoldFish = new List<Stock>();
                 var lSuperTrend = new List<Stock>();
+                var lSuperTrendPhrase2 = new List<Stock>();
 
                 foreach (var item in StaticVal._lStock)
                 {
@@ -63,6 +64,12 @@ namespace StockLib.Service
                         {
                             lSuperTrend.Add(item);
                         }
+
+                        var isSuperTrendPhrase2 = lData.CheckSuperTrendPharse2();
+                        if (isSuperTrendPhrase2)
+                        {
+                            lSuperTrendPhrase2.Add(item);
+                        }
                     }
                 }
                 
@@ -98,6 +105,18 @@ namespace StockLib.Service
                     sBuilder.AppendLine("[Tín hiệu SuperTrend]");
 
                     foreach (var item in lSuperTrend.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank).Take(10))
+                    {
+                        var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend);
+                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                    }
+                }
+
+                if (lSuperTrendPhrase2.Any())
+                {
+                    sBuilder.AppendLine();
+                    sBuilder.AppendLine("[Tín hiệu SuperTrend - Phrase 2]");
+
+                    foreach (var item in lSuperTrendPhrase2.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank).Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend);
                         sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
