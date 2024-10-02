@@ -23,14 +23,14 @@ namespace StockLib.DAL.Entity
         public string sec { get; set; }//sector
         public string subs { get; set; }//subSector
         public string fd { get; set; }//Năm thành lập(foundingDate)
-        public decimal cc { get; set; }//Vốn điều lệ(charterCapital)
+        public double cc { get; set; }//Vốn điều lệ(charterCapital)
         public int noe { get; set; }//Số lượng nhân viên(numberOfEmployee)
         public string ld { get; set; }//Ngày niêm yết(listingDate)
-        public decimal fp { get; set; }//Giá chào sàn(firstPrice)
-        public decimal iss { get; set; }//KL đang niêm yết(issueShare)
-        public decimal lv { get; set; }//Vốn hóa(listedValue)
+        public double fp { get; set; }//Giá chào sàn(firstPrice)
+        public double iss { get; set; }//KL đang niêm yết(issueShare)
+        public double lv { get; set; }//Vốn hóa(listedValue)
         public string n { get; set; }//companyName
-        public decimal q { get; set; }//SLCP lưu hành(quantity)
+        public double q { get; set; }//SLCP lưu hành(quantity)
     }
 
     public class H24DataModel

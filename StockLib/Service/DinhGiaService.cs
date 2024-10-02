@@ -17,7 +17,6 @@ namespace StockLib.Service
         private readonly ILogger<BllService> _logger;
 
         private readonly IChiSoPERepo _peRepo;
-        private readonly IShareRepo _shareRepo;
         private readonly IKeHoachRepo _kehoachRepo;
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkequyRepo;
@@ -31,7 +30,6 @@ namespace StockLib.Service
         private readonly IAPIService _apiService;
         public DinhGiaService(ILogger<BllService> logger,
                             IChiSoPERepo peRepo,
-                            IShareRepo shareRepo,
                             IKeHoachRepo kehoachRepo,
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
@@ -44,7 +42,6 @@ namespace StockLib.Service
         {
             _logger = logger;
             _peRepo = peRepo;
-            _shareRepo = shareRepo;
             _kehoachRepo = kehoachRepo;
             _haiquanRepo = haiquanRepo;
             _thongkeRepo = thongkeRepo;
@@ -946,13 +943,13 @@ namespace StockLib.Service
                 }
 
                 //True Path 
-                var share = _shareRepo.GetEntityByFilter(Builders<Share>.Filter.Eq(x => x.s, code));
-                if (share is null || share.share <= 0)
+                var stock = StaticVal._lStock.FirstOrDefault(x => x.s == code);
+                if (stock.p.q <= 0)
                 {
                     return (EPoint.VeryNegative, string.Empty);
                 }
 
-                var eps_truth = Math.Round(pf_truth * 1000000000 / share.share, 1);
+                var eps_truth = Math.Round(pf_truth * 1000000000 / stock.p.q, 1);
                 if (eps_truth == 0)
                 {
                     return (EPoint.VeryNegative, string.Empty);
