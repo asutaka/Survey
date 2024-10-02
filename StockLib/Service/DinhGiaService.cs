@@ -273,7 +273,7 @@ namespace StockLib.Service
             }
 
             var lDinhGia = new List<double>();
-            foreach (var item in stock.cat)
+            foreach (var item in stock.cat ?? new List<CategoryType>()) 
             {
                 if (item.ty <= 0)
                     continue;
