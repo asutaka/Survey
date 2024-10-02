@@ -11,12 +11,14 @@ namespace StockLib.Service
     public interface IPartternService
     {
         Task SurveySuperTrend(string code);
+        Task SurveySuperTrendPhrase2(string code);
         Task SurveyGoldFish(string code);
         Task SurveyVCP(string code);
         Task SurveyW(string code);
         Task SurveyDanZagerCustom(string code);
         Task Survey3C(string code);
         Task SurveyMa20(string code);
+        Task SurveyT3(string code);
         void RankChungKhoan();
         void TotalDays();
     }
@@ -163,7 +165,7 @@ namespace StockLib.Service
                 //}
                 //stock.indicator.Add(new IndicatorModel
                 //{
-                //    type = (int)EIndicator.GoldFish,
+                //    type = (int)EIndicator.SuperTrendPhrase2,
                 //    rank = i - 1,
                 //    avg_rate = (double)item.Item3,
                 //    avg_num = (int)Math.Round(item.Item5),

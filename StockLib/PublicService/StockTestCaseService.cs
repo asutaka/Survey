@@ -5,12 +5,14 @@ namespace StockLib.PublicService
     public interface IStockTestCaseService
     {
         Task SurveySuperTrend(string code);
+        Task SurveySuperTrendPhrase2(string code);
         Task SurveyGoldFish(string code);
         Task SurveyVCP(string code);
         Task SurveyW(string code);
         Task SurveyDanZagerCustom(string code);
         Task SurveyMa20(string code);
         Task Survey3C(string code);
+        Task SurveyT3(string code);
         void RankChungKhoan();
         void TotalDays();
     }
@@ -25,6 +27,11 @@ namespace StockLib.PublicService
         public async Task SurveySuperTrend(string code)
         {
             await _partternService.SurveySuperTrend(code);
+        }
+
+        public async Task SurveySuperTrendPhrase2(string code)
+        {
+            await _partternService.SurveySuperTrendPhrase2(code);
         }
 
         public async Task SurveyGoldFish(string code)
@@ -45,6 +52,11 @@ namespace StockLib.PublicService
         public async Task SurveyMa20(string code)
         {
             await _partternService.SurveyMa20(code);
+        }
+
+        public async Task SurveyT3(string code)
+        {
+            await _partternService.SurveyT3(code);
         }
 
         public async Task SurveyDanZagerCustom(string code)
