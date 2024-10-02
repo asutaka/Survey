@@ -48,14 +48,14 @@ namespace StockLib.Service
                         }
                     }
 
-                    if (item.indicator.Any(x => x.type == (int)EIndicator.GoldFish))
-                    {
-                        var isGoldFish = lData.CheckGoldFishBuy();
-                        if (isGoldFish)
-                        {
-                            lGoldFish.Add(item);
-                        }
-                    }
+                    //if (item.indicator.Any(x => x.type == (int)EIndicator.GoldFish))
+                    //{
+                    //    var isGoldFish = lData.CheckGoldFishBuy();
+                    //    if (isGoldFish)
+                    //    {
+                    //        lGoldFish.Add(item);
+                    //    }
+                    //}
 
                     if (item.indicator.Any(x => x.type == (int)EIndicator.SuperTrend))
                     {
