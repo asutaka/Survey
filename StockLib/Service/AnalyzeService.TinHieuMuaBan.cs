@@ -58,7 +58,11 @@ namespace StockLib.Service
                         {
                             lSuperTrend.Add(item);
                         }
+                    }
 
+
+                    if (item.indicator.Any(x => x.type == (int)EIndicator.SuperTrendPhrase2))
+                    {
                         var isSuperTrendPhrase2 = lData.CheckSuperTrendPharse2();
                         if (isSuperTrendPhrase2)
                         {
@@ -110,9 +114,9 @@ namespace StockLib.Service
                     sBuilder.AppendLine();
                     sBuilder.AppendLine("[Tín hiệu SuperTrend - Phrase 2]");
 
-                    foreach (var item in lSuperTrendPhrase2.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank).Take(10))
+                    foreach (var item in lSuperTrendPhrase2.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrendPhrase2).rank).Take(10))
                     {
-                        var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend);
+                        var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrendPhrase2);
                         sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%)");
                     }
                 }

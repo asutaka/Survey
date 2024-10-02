@@ -193,6 +193,9 @@ namespace StockLib.Service
                 var near4 = lSuperTrend.SkipLast(4).Last();
                 var near5 = lSuperTrend.SkipLast(5).Last();
 
+                var itemLast = lData.Last();
+                var itemNear = lData.SkipLast(1).Last();
+
                 if (near.LowerBand is null
                     || near2.LowerBand is null
                     || near3.LowerBand is null
@@ -204,8 +207,8 @@ namespace StockLib.Service
                     || near2.LowerBand != near5.LowerBand)
                     return false;
 
-                if (near.LowerBand > near2.LowerBand
-                    || (near.LowerBand == near2.LowerBand && last.LowerBand > near.LowerBand))
+                if ((near.LowerBand > near2.LowerBand && itemNear.Close > itemNear.Open)
+                    || (near.LowerBand == near2.LowerBand && last.LowerBand > near.LowerBand && itemLast.Close > itemLast.Open))
                     return true;
                 
                 return false;
