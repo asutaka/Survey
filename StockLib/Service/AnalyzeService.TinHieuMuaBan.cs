@@ -1,13 +1,7 @@
-﻿using iTextSharp.text.pdf.qrcode;
-using Microsoft.Extensions.Logging;
-using Skender.Stock.Indicators;
+﻿using Microsoft.Extensions.Logging;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
@@ -83,7 +77,7 @@ namespace StockLib.Service
                     foreach (var item in lDanCustom.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.DanZangerVolumne).rank).Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.DanZangerVolumne);
-                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%)");
                     }
                 }
 
@@ -95,7 +89,7 @@ namespace StockLib.Service
                     foreach (var item in lGoldFish.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.GoldFish).rank).Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.GoldFish);
-                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%)");
                     }
                 }
 
@@ -107,7 +101,7 @@ namespace StockLib.Service
                     foreach (var item in lSuperTrend.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank).Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend);
-                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%)");
                     }
                 }
 
@@ -119,7 +113,7 @@ namespace StockLib.Service
                     foreach (var item in lSuperTrendPhrase2.OrderByDescending(x => x.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend).rank).Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.type == (int)EIndicator.SuperTrend);
-                        sBuilder.AppendLine($"{item.s}|TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%");
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg_rate}%| Win/Loss: {indicator.win_rate}%/{indicator.loss_rate}%)");
                     }
                 }
 
