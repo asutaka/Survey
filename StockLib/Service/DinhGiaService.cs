@@ -22,7 +22,6 @@ namespace StockLib.Service
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
-        private readonly IStockTypeRepo _stockTypeRepo;
         
         private readonly IFinancialBanLeRepo _banleRepo;
         private readonly IFinancialBDSRepo _bdsRepo;
@@ -37,7 +36,6 @@ namespace StockLib.Service
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
-                            IStockTypeRepo stockTypeRepo,
                             IFinancialBanLeRepo banleRepo,
                             IFinancialBDSRepo bdsRepo,
                             IFinancialCKRepo ckRepo,
@@ -51,7 +49,6 @@ namespace StockLib.Service
             _haiquanRepo = haiquanRepo;
             _thongkeRepo = thongkeRepo;
             _thongkequyRepo = thongkequyRepo;
-            _stockTypeRepo = stockTypeRepo;
             _banleRepo = banleRepo;
             _bdsRepo = bdsRepo;
             _ckRepo = ckRepo;
@@ -260,7 +257,7 @@ namespace StockLib.Service
 
         public async Task<string> Mes_DinhGia(string input)
         {
-            var stock = _stockTypeRepo.GetEntityByFilter(Builders<StockType>.Filter.Eq(x => x.s, input));
+            var stock = StaticVal._lStock.FirstOrDefault(x => x.s == input);
             if (stock == null)
                 return null;
 
@@ -276,22 +273,12 @@ namespace StockLib.Service
             }
 
             var lDinhGia = new List<double>();
-            if(stock.ty1 > -1)
+            foreach (var item in stock.cat)
             {
-                var dg = await DinhGiaNganh(stock.s, stock.ty1);
-                if(dg.Item1 != EPoint.Unknown)
-                {
-                    strRes.AppendLine($"+ {dg.Item3.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
-                    if (!string.IsNullOrWhiteSpace(dg.Item2))
-                    {
-                        strRes.AppendLine(dg.Item2);
-                    }
-                    lDinhGia.Add((double)dg.Item1 * stock.ty1_r / 100);
-                }
-            }
-            if (stock.ty2 > -1)
-            {
-                var dg = await DinhGiaNganh(stock.s, stock.ty2);
+                if (item.ty <= 0)
+                    continue;
+
+                var dg = await DinhGiaNganh(stock.s, item.ty);
                 if (dg.Item1 != EPoint.Unknown)
                 {
                     strRes.AppendLine($"+ {dg.Item3.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
@@ -299,20 +286,7 @@ namespace StockLib.Service
                     {
                         strRes.AppendLine(dg.Item2);
                     }
-                    lDinhGia.Add((double)dg.Item1 * stock.ty2_r / 100);
-                }
-            }
-            if (stock.ty3 > -1)
-            {
-                var dg = await DinhGiaNganh(stock.s, stock.ty3);
-                if (dg.Item1 != EPoint.Unknown)
-                {
-                    strRes.AppendLine($"+  {dg.Item3.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
-                    if (!string.IsNullOrWhiteSpace(dg.Item2))
-                    {
-                        strRes.AppendLine(dg.Item2);
-                    }
-                    lDinhGia.Add((double)dg.Item1 * stock.ty3_r / 100);
+                    lDinhGia.Add((double)dg.Item1 * item.ty_r / 100);
                 }
             }
 
