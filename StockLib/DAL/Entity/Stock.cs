@@ -8,8 +8,6 @@ namespace StockLib.DAL.Entity
         public string s { get; set; }//symbol
         public string e { get; set; }//exchange
         public CompanyProfileDataModel p { get; set; } //profile
-        public List<H24DataModel> h24 { get; set; }//nhóm ngành lấy từ 24h smart money
-        public List<BCTCReleaseModel> bc { get; set; }//Thời gian release BCTC --> sẽ bỏ khi làm xong
         public int rank { get; set; }
         public List<CategoryType> cat { get; set; }//Nhóm ngành và tỉ lệ đóng góp của nhóm ngành
         public List<IndicatorModel> indicator { get; set; }
@@ -18,10 +16,6 @@ namespace StockLib.DAL.Entity
 
     public class CompanyProfileDataModel
     {
-        public string i { get; set; }//industryName
-        public string sups { get; set; }//superSector
-        public string sec { get; set; }//sector
-        public string subs { get; set; }//subSector
         public string fd { get; set; }//Năm thành lập(foundingDate)
         public double cc { get; set; }//Vốn điều lệ(charterCapital)
         public int noe { get; set; }//Số lượng nhân viên(numberOfEmployee)
@@ -31,19 +25,6 @@ namespace StockLib.DAL.Entity
         public double lv { get; set; }//Vốn hóa(listedValue)
         public string n { get; set; }//companyName
         public double q { get; set; }//SLCP lưu hành(quantity)
-    }
-
-    public class H24DataModel
-    {
-        public string code { get; set; }
-        public string name { get; set; }
-        public int level { get; set; }
-    }
-
-    public class BCTCReleaseModel
-    {
-        public long t { get; set; }
-        public string title { get; set; }
     }
 
     public class IndicatorModel

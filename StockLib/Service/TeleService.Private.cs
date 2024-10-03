@@ -255,9 +255,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5379"
-                                                                                || y.code == "3530"
-                                                                                || y.code == "3577")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.BanLe)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_BanLe(lMaCK);
                 if (lStream is null)
@@ -280,8 +278,7 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = StaticVal._lStock.Where(x => x.status == 1
-                                            && x.h24.Any(y => y.code == "2357"
-                                                        || y.code == "8600"))
+                                            && x.cat.Any(x => x.ty == (int)EStockType.BDS))
                                     .Where(x => !StaticVal._lXayDung.Contains(x.s))
                                     .Where(x => !StaticVal._lKCN.Contains(x.s))
                                     .Where(x => !StaticVal._lVin.Contains(x.s))
@@ -307,7 +304,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2777")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.CangBien)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_CangBien(lMaCK);
                 if (lStream is null)
@@ -352,7 +349,7 @@ namespace StockLib.Service
             try
             {
                 var lMaCK = StaticVal._lStock.Where(x => x.status == 1
-                                            && x.h24.Any(y => y.code == "8777"))
+                                            && x.cat.Any(x => x.ty == (int)EStockType.ChungKhoan))
                                     .OrderByDescending(x => x.p.lv)
                                     .Take(StaticVal._TAKE)
                                     .Select(x => x.s);
@@ -377,7 +374,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "3763")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.DetMay)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_DetMay(lMaCK);
                 if (lStream is null)
@@ -399,7 +396,12 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7535")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && (x.cat.Any(x => x.ty == (int)EStockType.DienGio 
+                                                                                        || x.ty == (int)EStockType.DienKhi 
+                                                                                        || x.ty == (int)EStockType.DienMatTroi
+                                                                                        || x.ty == (int)EStockType.DienThan
+                                                                                        || x.ty == (int)EStockType.ThuyDien
+                                                                                        || x.ty == (int)EStockType.NangLuong))).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Dien(lMaCK);
                 if (lStream is null)
@@ -421,7 +423,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1733")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.Go)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Go(lMaCK);
                 if (lStream is null)
@@ -443,7 +445,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "5751")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.HangKhong)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_HangKhong(lMaCK);
                 if (lStream is null)
@@ -465,8 +467,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2773"
-                                                                                    || y.code == "2779")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.Logistic || x.ty == (int)EStockType.VanTaiBien)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Logistic(lMaCK);
                 if (lStream is null)
@@ -488,7 +489,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8300")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.NganHang)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
                 var lStream = await _bllService.Chart_NganHang(lMaCK);
                 if (lStream is null)
                     return;
@@ -545,7 +546,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "3353")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.Oto || x.ty == (int)EStockType.OtoTai)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Oto(lMaCK);
                 if (lStream is null)
@@ -589,7 +590,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1771")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.Than)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Than(lMaCK);
                 if (lStream is null)
@@ -611,7 +612,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "1757")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.Thep)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_Thep(lMaCK);
                 if (lStream is null)
@@ -722,8 +723,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "7573"
-                                                                                    || y.code == "0500")).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
+                var lMaCK = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.DauKhi)).OrderByDescending(x => x.p.lv).Take(StaticVal._TAKE).Select(x => x.s);
 
                 var lStream = await _bllService.Chart_DauKhi(lMaCK);
                 if (lStream is null)

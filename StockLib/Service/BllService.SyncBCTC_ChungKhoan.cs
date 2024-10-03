@@ -13,7 +13,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lStockFilter = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "8777")).Select(x => x.s);
+                var lStockFilter = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.ChungKhoan)).Select(x => x.s);
 
                 foreach (var item in lStockFilter)
                 {

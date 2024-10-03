@@ -14,7 +14,7 @@ namespace StockLib.Service
             try
             {
                 var lStock = _stockRepo.GetAll();
-                var lStockFilter = lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "3353")).Select(x => x.s);
+                var lStockFilter = lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.Oto || x.ty == (int)EStockType.OtoTai)).Select(x => x.s);
                 foreach (var item in lStockFilter)
                 {
                     await SyncBCTC_Oto_KQKD(item);

@@ -13,8 +13,7 @@ namespace StockLib.Service
         {
             try
             {
-                var lBDS = StaticVal._lStock.Where(x => x.status == 1 && x.h24.Any(y => y.code == "2357" 
-                                                                        || y.code == "8600")).Select(x => x.s);
+                var lBDS = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.BDS)).Select(x => x.s);
                 foreach (var item in lBDS)
                 {
                     await SyncBCTC_BatDongSan_KQKD(item);
