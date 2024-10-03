@@ -98,7 +98,9 @@ namespace StockLib.Utils
 
     public enum EFinanceIndex
     {
-        [Display(Name = "Tỷ lệ chi phí hoạt động/Tổng thu nhập HĐKD trước dự phòng (CIR)")]
+        [Display(Name = "Chỉ số beta")]
+        Beta = 61,
+       [Display(Name = "Tỷ lệ chi phí hoạt động/Tổng thu nhập HĐKD trước dự phòng (CIR)")]
         CIR = 109
     }
 

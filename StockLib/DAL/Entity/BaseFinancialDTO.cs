@@ -1,12 +1,11 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
-
-namespace StockLib.DAL.Entity
+﻿namespace StockLib.DAL.Entity
 {
     public class BaseFinancialDTO : BaseDTO
     {
         public int d { get; set; }//Năm - Quý
         public string s { get; set; }//Mã CK
         public int pl { get; set; }//Ngày public BCTC
+        public double beta { get; set; }//Chỉ số beta
         public int t { get; set; }
         public double rv { get; set; }//Doanh thu
         public double pf { get; set; }//Lợi nhuận
