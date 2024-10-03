@@ -27,7 +27,7 @@ namespace StockLib.Service
         Task<List<Money24h_PTKTResponse>> Money24h_GetMaTheoChiBao_MA20();
         Task<List<Money24h_PTKTResponse>> Money24h_GetMaTheoChiBao_52W();
         Task<Money24h_NhomNganhResponse> Money24h_GetNhomNganh(EMoney24hTimeType type);
-        Task<List<Money24h_ForeignResponse>> Money24h_GetForeign(EMoney24hExchangeMode mode, EMoney24hTimeType type);
+        Task<List<Money24h_ForeignResponse>> Money24h_GetForeign(EExchange mode, EMoney24hTimeType type);
         Task<List<Money24h_KeHoach_Data>> Money24h_GetKeHoach(string code);
 
 
@@ -273,7 +273,7 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<Money24h_ForeignResponse>> Money24h_GetForeign(EMoney24hExchangeMode mode, EMoney24hTimeType type)
+        public async Task<List<Money24h_ForeignResponse>> Money24h_GetForeign(EExchange mode, EMoney24hTimeType type)
         {
             var lOutput = new List<Money24h_ForeignResponse>();
             try

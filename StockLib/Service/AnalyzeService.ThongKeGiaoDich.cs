@@ -134,9 +134,9 @@ namespace StockLib.Service
 
                 var strOutput = new StringBuilder();
                 var lData = new List<Money24h_ForeignResponse>();
-                lData.AddRange(await _apiService.Money24h_GetForeign(EMoney24hExchangeMode.HSX, type));
-                lData.AddRange(await _apiService.Money24h_GetForeign(EMoney24hExchangeMode.HNX, type));
-                lData.AddRange(await _apiService.Money24h_GetForeign(EMoney24hExchangeMode.UPCOM, type));
+                lData.AddRange(await _apiService.Money24h_GetForeign(EExchange.HSX, type));
+                lData.AddRange(await _apiService.Money24h_GetForeign(EExchange.HNX, type));
+                lData.AddRange(await _apiService.Money24h_GetForeign(EExchange.UPCOM, type));
                 if (!lData.Any())
                     return (0, null);
 

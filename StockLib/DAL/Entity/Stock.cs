@@ -6,7 +6,7 @@ namespace StockLib.DAL.Entity
     public class Stock : BaseDTO
     {
         public string s { get; set; }//symbol
-        public string e { get; set; }//exchange
+        public int ex { get; set; }//exchange
         public CompanyProfileDataModel p { get; set; } //profile
         public int rank { get; set; }
         public List<CategoryType> cat { get; set; }//Nhóm ngành và tỉ lệ đóng góp của nhóm ngành

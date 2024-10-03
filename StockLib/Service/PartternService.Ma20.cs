@@ -13,11 +13,11 @@ namespace StockLib.Service
                 _code = code;
                 var stock = StaticVal._lStock.FirstOrDefault(x => x.s == code);
                 decimal a = 10;
-                if (stock.e.Equals("Hose", StringComparison.OrdinalIgnoreCase))
+                if (stock.ex == (int)EExchange.HSX)
                 {
                     a = 7;
                 }
-                else if (stock.e.Equals("Upcom", StringComparison.OrdinalIgnoreCase))
+                else if (stock.ex == (int)EExchange.UPCOM)
                 {
                     a = 15;
                 }

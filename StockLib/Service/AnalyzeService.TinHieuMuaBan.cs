@@ -24,11 +24,11 @@ namespace StockLib.Service
 
                     var lData = await _apiService.SSI_GetDataStock(item.s);
                     decimal a = 10;
-                    if (item.e.Equals("Hose", StringComparison.OrdinalIgnoreCase))
+                    if (item.ex == (int)EExchange.HSX)
                     {
                         a = 7;
                     }
-                    else if (item.e.Equals("Upcom", StringComparison.OrdinalIgnoreCase))
+                    else if (item.ex == (int)EExchange.UPCOM)
                     {
                         a = 15;
                     }

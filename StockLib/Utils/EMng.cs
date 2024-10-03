@@ -112,7 +112,7 @@ namespace StockLib.Utils
         month = 3
     }
 
-    public enum EMoney24hExchangeMode
+    public enum EExchange
     {
         [Display(Name = "10")]
         HSX = 1,
