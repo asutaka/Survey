@@ -287,35 +287,35 @@ namespace StockLib.Service
                 }
             }
 
-            strRes.AppendLine();
-            if (!lDinhGia.Any())
-            {
-                strRes.AppendLine($"=> Kết Luận: {pe.Item1.GetDisplayName()}");
-                return strRes.ToString();
-            }    
-                
-            var avgPoint = Math.Round(lDinhGia.Sum() / lDinhGia.Count(), 1);
-            var total = Math.Round(((double)pe.Item1 + avgPoint) / 2, 1);
-            if(total > (double)EPoint.Positive)
-            {
-                strRes.AppendLine($"=> Kết Luận: {EPoint.VeryPositive.GetDisplayName()}");
-            }
-            else if (total > (double)EPoint.Normal)
-            {
-                strRes.AppendLine($"=> Kết Luận: {EPoint.Positive.GetDisplayName()}");
-            }
-            else if (total > (double)EPoint.Negative)
-            {
-                strRes.AppendLine($"=> Kết Luận: {EPoint.Normal.GetDisplayName()}");
-            }
-            else if (total > (double)EPoint.VeryNegative)
-            {
-                strRes.AppendLine($"=> Kết Luận: {EPoint.Negative.GetDisplayName()}");
-            }
-            else
-            {
-                strRes.AppendLine($"=> Kết Luận: {EPoint.VeryNegative.GetDisplayName()}");
-            }
+            //strRes.AppendLine();
+            //if (!lDinhGia.Any())
+            //{
+            //    strRes.AppendLine($"=> Kết Luận: {pe.Item1.GetDisplayName()}");
+            //    return strRes.ToString();
+            //}    
+
+            //var avgPoint = Math.Round(lDinhGia.Sum() / lDinhGia.Count(), 1);
+            //var total = Math.Round(((double)pe.Item1 + avgPoint) / 2, 1);
+            //if(total > (double)EPoint.Positive)
+            //{
+            //    strRes.AppendLine($"=> Kết Luận: {EPoint.VeryPositive.GetDisplayName()}");
+            //}
+            //else if (total > (double)EPoint.Normal)
+            //{
+            //    strRes.AppendLine($"=> Kết Luận: {EPoint.Positive.GetDisplayName()}");
+            //}
+            //else if (total > (double)EPoint.Negative)
+            //{
+            //    strRes.AppendLine($"=> Kết Luận: {EPoint.Normal.GetDisplayName()}");
+            //}
+            //else if (total > (double)EPoint.VeryNegative)
+            //{
+            //    strRes.AppendLine($"=> Kết Luận: {EPoint.Negative.GetDisplayName()}");
+            //}
+            //else
+            //{
+            //    strRes.AppendLine($"=> Kết Luận: {EPoint.VeryNegative.GetDisplayName()}");
+            //}
             return strRes.ToString();
         }
 
