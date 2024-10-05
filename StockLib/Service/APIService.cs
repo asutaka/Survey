@@ -36,6 +36,8 @@ namespace StockLib.Service
         Task<List<SSI_PEDetail>> SSI_GetFinance(string code);
         Task<SSI_Share> SSI_GetShare(string code);
 
+        Task<List<DSC_Data>> DSC_GetPost();
+
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
         Task<Stream> TongCucThongKe(DateTime dt);
@@ -785,6 +787,28 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.TongCucThongKe|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<DSC_Data>> DSC_GetPost()
+        {
+            var url = $"https://www.dsc.com.vn/_next/data/83x7wmD1bec8LOqcLMWqa/bao-cao-phan-tich/tat-ca-bao-cao.json?slug=tat-ca-bao-cao";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<DSC_Main>(responseMessageStr);
+                return responseModel?.pageProps?.dataCategory?.dataList?.data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.DSC_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }

@@ -37,6 +37,7 @@ namespace StockLib.DAL.Settings
             services.AddSingleton<IChiSoPERepo, ChiSoPERepo>();
             services.AddSingleton<IKeHoachRepo, KeHoachRepo>();
             services.AddSingleton<ISpecialInfoRepo, SpecialInfoRepo>();
+            services.AddSingleton<IConfigBaoCaoPhanTichRepo, ConfigBaoCaoPhanTichRepo>();
         }
     }
 }

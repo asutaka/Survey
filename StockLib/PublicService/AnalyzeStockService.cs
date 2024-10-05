@@ -199,6 +199,23 @@ namespace StockLib.PublicService
             }
         }
 
+        private async Task BaoCaoPhanTich(DateTime dt)
+        {
+            try
+            {
+                var tinhieu = await _analyzeService.BaoCaoPhanTich(dt);
+                if (tinhieu.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idUser, tinhieu.Item2);
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.BaoCaoPhanTich|EXCEPTION(TinHieuMuaBan)| {ex.Message}");
+            }
+        }
+
         private async Task TinHieuMuaBan()
         {
             try
@@ -212,7 +229,7 @@ namespace StockLib.PublicService
             }
             catch (Exception ex)
             {
-                _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TinHieuMuaBan)| {ex.Message}");
+                _logger.LogError($"AnalyzeStockService.TinHieuMuaBan|EXCEPTION(TinHieuMuaBan)| {ex.Message}");
             }
         }
 
@@ -237,6 +254,7 @@ namespace StockLib.PublicService
                 //}
                 //return;
 
+                await BaoCaoPhanTich(dt);
                 await TongCucHaiQuan(dt);
                 if (dt.Day == 6)
                 {

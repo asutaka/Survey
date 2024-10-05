@@ -19,6 +19,7 @@ namespace StockLib.Service
         Task TongCucThongKeQuyHis();
         Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
         Task<(int, string)> TinHieuMuaBan();
+        Task<(int, string)> BaoCaoPhanTich(DateTime dt);
     }
     public partial class AnalyzeService : IAnalyzeService
     {
@@ -31,6 +32,7 @@ namespace StockLib.Service
         private readonly IThongKeRepo _thongkeRepo;
         private readonly IThongKeQuyRepo _thongkeQuyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
+        private readonly IConfigBaoCaoPhanTichRepo _bcptRepo;
         public AnalyzeService(ILogger<AnalyzeService> logger,
                             IAPIService apiService,
                             IFileService fileService,
@@ -39,7 +41,8 @@ namespace StockLib.Service
                             ICategoryRepo categoryRepo,
                             IThongKeRepo thongkeRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
-                            IThongKeQuyRepo thongkeQuyRepo) 
+                            IThongKeQuyRepo thongkeQuyRepo,
+                            IConfigBaoCaoPhanTichRepo bcptRepo) 
         {
             _logger = logger;
             _apiService = apiService;
@@ -50,6 +53,7 @@ namespace StockLib.Service
             _thongkeRepo = thongkeRepo;
             _thongkeQuyRepo = thongkeQuyRepo;
             _haiquanRepo = haiquanRepo;
+            _bcptRepo = bcptRepo;
         }
     }
 }

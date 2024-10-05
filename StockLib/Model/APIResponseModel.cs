@@ -241,4 +241,46 @@
         public List<double> c { get; set; }
         public List<double> t { get; set; }
     }
+
+    public class DSC_Main
+    {
+        public DSC_PageProp pageProps { get; set; }
+    }
+
+    public class DSC_PageProp
+    {
+        public DSC_DataCategory dataCategory { get; set; }
+    }
+
+    public class DSC_DataCategory
+    {
+        public DSC_DataList dataList { get; set; }
+    }
+
+    public class DSC_DataList
+    {
+        public List<DSC_Data> data { get; set; }
+    }
+
+    public class DSC_Data
+    {
+        public int id { get; set; }
+        public DSC_Atribute attributes { get; set; }
+    }
+
+    public class DSC_Atribute
+    {
+        public string title { get; set; }
+        public DateTime createdAt { get; set; }
+        public DateTime updatedAt { get; set; }
+        public DateTime publishedAt { get; set; }
+        public DateTime public_at { get; set; }
+        public string slug { get; set; }
+        public DSC_Category category_id { get; set; }
+    }
+
+    public class DSC_Category
+    {
+        public DSC_Data data { get; set; }
+    }
 }

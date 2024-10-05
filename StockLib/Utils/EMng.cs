@@ -457,4 +457,10 @@ namespace StockLib.Utils
         SuperTrend = 5,
         SuperTrendPhrase2 = 6
     }
+
+    public enum ESource
+    {
+        DSC = 1,
+
+    }
 }
