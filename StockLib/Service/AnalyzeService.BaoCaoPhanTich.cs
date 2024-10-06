@@ -103,7 +103,7 @@ namespace StockLib.Service
                                 ty = (int)ESource.DSC
                             });
 
-                            sBuilder.AppendLine($"[VNDirect - Phân tích cổ phiếu] - {itemValid.tagsCode}: {itemValid.newsTitle}");
+                            sBuilder.AppendLine($"[VNDirect - Phân tích cổ phiếu] {itemValid.newsTitle}");
                             sBuilder.AppendLine($"Link: https://dstock.vndirect.com.vn/trung-tam-phan-tich/bao-cao-phan-tich-dn");
                         }
                     }

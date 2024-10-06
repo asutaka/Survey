@@ -821,7 +821,16 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                ////var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                //var html = await responseMessage.Content.ReadAsStringAsync();
+
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
 
