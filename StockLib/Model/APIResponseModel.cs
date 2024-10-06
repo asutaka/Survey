@@ -319,4 +319,11 @@
         public string Title { get; set; }
         public DateTime Date { get; set; }
     }
+
+    public class SSI_Data
+    {
+        public string id { get; set; }
+        public string title { get; set; }
+        public DateTime date { get; set; }
+    }
 }

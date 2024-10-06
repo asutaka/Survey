@@ -201,6 +201,48 @@ namespace StockLib.Service
                     }
                 }
 
+                var lSSI = await _apiService.SSI_GetPost();
+                if (lSSI != null)
+                {
+                    var lValid = lSSI.Where(x => x.date >= time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.SSI),
+                                builder.Eq(x => x.key, itemValid.id),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id,
+                                ty = (int)ESource.SSI
+                            });
+
+                            sBuilder.AppendLine($"[SSI - Phân tích cổ phiếu] {itemValid.title}");
+                            sBuilder.AppendLine($"Link: https://www.ssi.com.vn/khach-hang-ca-nhan/bao-cao-cong-ty");
+                        }
+                    }
+                }
+
                 if (sBuilder.Length > 0)
                 {
                     return (1, sBuilder.ToString());

@@ -464,8 +464,7 @@ namespace StockLib.Utils
         VNDirect = 2,
         MigrateAsset = 3,
         Agribank = 4,
-
-        //SSI = 5,
+        SSI = 5,
         //BSC = 6,
         //MBS = 7,
         //PSI = 8,

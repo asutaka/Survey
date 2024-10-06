@@ -40,6 +40,7 @@ namespace StockLib.Service
         Task<List<VNDirect_Data>> VNDirect_GetPost();
         Task<List<MigrateAsset_Data>> MigrateAsset_GetPost();
         Task<List<AGR_Data>> Agribank_GetPost();
+        Task<List<SSI_Data>> SSI_GetPost();
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
@@ -890,6 +891,56 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.Agribank_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<SSI_Data>> SSI_GetPost()
+        {
+            try
+            {
+                var lResult = new List<SSI_Data>();
+                var link = string.Empty;
+                var url = $"https://www.ssi.com.vn/khach-hang-ca-nhan/bao-cao-cong-ty";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                for (int i = 0; i < 15; i++)
+                {
+                    var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/main/section[2]/div/div[2]/div[2]/div/div[2]/div[{i+1}]/div[1]/a") as HtmlNode;
+                    var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/main/section[2]/div/div[2]/div[2]/div/div[2]/div[{i + 1}]/div[2]/p/span") as HtmlNode;
+                    var title = nodeCode?.InnerText.Replace("\n", "").Trim();
+                    var timeStr = nodeTime?.InnerText;
+                    var strSplit = timeStr.Split('/');
+                    if(strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
+                    {
+                        var year = int.Parse(strSplit[2]);
+                        var month = int.Parse(strSplit[1]);
+                        var day = int.Parse(strSplit[0]);
+                        lResult.Add(new SSI_Data
+                        {
+                            id = $"{strSplit[2]}{strSplit[1]}{strSplit[0]}{title.Substring(0, 3)}",
+                            title = title,
+                            date = new DateTime(year, month, day)
+                        });
+                    }
+                }
+
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.SSI_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }
