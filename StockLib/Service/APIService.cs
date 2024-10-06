@@ -35,8 +35,9 @@ namespace StockLib.Service
         Task<List<Quote>> SSI_GetDataStock_Alltime(string code);
         Task<List<SSI_PEDetail>> SSI_GetFinance(string code);
         Task<SSI_Share> SSI_GetShare(string code);
-
+        //
         Task<List<DSC_Data>> DSC_GetPost();
+        Task<List<VNDirect_Data>> VNDirect_GetPost();
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
@@ -809,6 +810,28 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.DSC_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<VNDirect_Data>> VNDirect_GetPost()
+        {
+            var url = $"https://api-finfo.vndirect.com.vn/v4/news?q=newsType:company_report~locale:VN~newsSource:VNDIRECT&sort=newsDate:desc~newsTime:desc&size=20";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<VNDirect_Main>(responseMessageStr);
+                return responseModel?.data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.VNDirect_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }

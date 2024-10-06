@@ -283,4 +283,18 @@
     {
         public DSC_Data data { get; set; }
     }
+
+    public class VNDirect_Main 
+    {
+        public List<VNDirect_Data> data { get; set; }
+    }
+
+    public class VNDirect_Data
+    {
+        public string newsId { get; set; }
+        public string tagsCode { get; set; }
+        public string newsTitle { get; set; }
+        public string newsDate { get; set; }
+        public string newsTime { get; set; }
+    }
 }
