@@ -466,7 +466,7 @@ namespace StockLib.Utils
         Agribank = 4,
         SSI = 5,
         BSC = 6,
-        //MBS = 7,
+        MBS = 7,
         //PSI = 8,
         //Cafef = 9,
     }
