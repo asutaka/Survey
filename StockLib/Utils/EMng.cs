@@ -468,6 +468,6 @@ namespace StockLib.Utils
         BSC = 6,
         MBS = 7,
         //PSI = 8,
-        //Cafef = 9,
+        CafeF = 9,
     }
 }
