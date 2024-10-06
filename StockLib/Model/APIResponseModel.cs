@@ -320,7 +320,7 @@
         public DateTime Date { get; set; }
     }
 
-    public class SSI_Data
+    public class BCPT_Crawl_Data
     {
         public string id { get; set; }
         public string title { get; set; }

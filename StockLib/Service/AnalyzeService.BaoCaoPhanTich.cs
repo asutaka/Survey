@@ -243,6 +243,49 @@ namespace StockLib.Service
                     }
                 }
 
+                var lBSC = await _apiService.BSC_GetPost();
+                if (lBSC != null)
+                {
+                    time = time.AddDays(-7);
+                    var lValid = lBSC.Where(x => x.date >= time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.BSC),
+                                builder.Eq(x => x.key, itemValid.id),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id,
+                                ty = (int)ESource.BSC
+                            });
+
+                            sBuilder.AppendLine($"[BSC - Phân tích cổ phiếu] {itemValid.title}");
+                            sBuilder.AppendLine($"Link: https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/1");
+                        }
+                    }
+                }
+
                 if (sBuilder.Length > 0)
                 {
                     return (1, sBuilder.ToString());
