@@ -313,7 +313,8 @@ namespace StockLib.Service
             "XK",
             "Xuat Khau",
             "XK hh",
-            "XK hang hoa"
+            "XK hang hoa",
+            "XK Thang"
         };
 
         private void XuatKhau(ExcelWorksheet sheet, DateTime dt)
@@ -349,7 +350,8 @@ namespace StockLib.Service
             "NK",
             "Nhap Khau",
             "NK hh",
-            "NK hang hoa"
+            "NK hang hoa",
+            "NK Thang"
         };
 
         private void NhapKhau(ExcelWorksheet sheet, DateTime dt)
