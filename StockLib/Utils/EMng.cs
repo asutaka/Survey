@@ -461,6 +461,7 @@ namespace StockLib.Utils
     public enum ESource
     {
         DSC = 1,
-        VNDirect = 2
+        VNDirect = 2,
+        MigrateAsset = 3
     }
 }

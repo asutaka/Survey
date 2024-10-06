@@ -297,4 +297,18 @@
         public string newsDate { get; set; }
         public string newsTime { get; set; }
     }
+
+    public class MigrateAsset_Main
+    {
+        public List<MigrateAsset_Data> data { get; set; }
+    }
+
+    public class MigrateAsset_Data
+    {
+        public int id { get; set; }
+        public string title { get; set; }
+        public string file_path { get; set; }
+        public DateTime published_at { get; set; }
+        public string stock_related { get; set; }
+    }
 }
