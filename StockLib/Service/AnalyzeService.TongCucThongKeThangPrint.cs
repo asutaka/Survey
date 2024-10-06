@@ -155,6 +155,44 @@ namespace StockLib.Service
             return strBuilder.ToString();
         }
 
+        private string XNKStr(DateTime dt, List<ThongKe> lData)
+        {
+            var strBuilder = new StringBuilder();
+            var ThuySan = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_ThuySan);
+            var CaPhe = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_CaPhe);
+            var Gao = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_Gao);
+            var HoaChat = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_HoaChat);
+            var SPHoaChat = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_SPHoaChat);
+            var ChatDeo = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_ChatDeo);
+            var SPChatDeo = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_SPChatDeo);
+            var CaoSu = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_CaoSu);
+            var Go = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_Go);
+            var DetMay = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_DetMay);
+            var SatThep = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_SatThep);
+            var SPSatThep = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_SPSatThep);
+            var DayDien = GetDataWithRate(lData, dt, EKeyTongCucThongKe.XK_DayDien);
+            strBuilder.AppendLine($"*Xuất khẩu:");
+            strBuilder.AppendLine($"1. Thủy sản: {Math.Round(ThuySan.Item1, 1)} triệu USD(tháng liền trước: {ThuySan.Item2}%; cùng kỳ: {ThuySan.Item3}%)");
+            strBuilder.AppendLine($"2. Cà phê: {Math.Round(CaPhe.Item1, 1)} triệu USD(tháng liền trước: {CaPhe.Item2}%; cùng kỳ: {CaPhe.Item3}%)");
+            strBuilder.AppendLine($"3. Gạo: {Math.Round(Gao.Item1, 1)} triệu USD(tháng liền trước: {Gao.Item2}%; cùng kỳ: {Gao.Item3}%)");
+            strBuilder.AppendLine($"4. Hóa chất: {Math.Round(HoaChat.Item1, 1)} triệu USD(tháng liền trước: {HoaChat.Item2}%; cùng kỳ: {HoaChat.Item3}%)");
+            strBuilder.AppendLine($"5. SP hóa chất: {Math.Round(SPHoaChat.Item1, 1)} triệu USD(tháng liền trước: {SPHoaChat.Item2}%; cùng kỳ: {SPHoaChat.Item3}%)");
+            strBuilder.AppendLine($"6. Chất dẻo: {Math.Round(ChatDeo.Item1, 1)} triệu USD(tháng liền trước: {ChatDeo.Item2}%; cùng kỳ: {ChatDeo.Item3}%)");
+            strBuilder.AppendLine($"7. SP chất dẻo: {Math.Round(SPChatDeo.Item1, 1)} triệu USD(tháng liền trước: {SPChatDeo.Item2}%; cùng kỳ: {SPChatDeo.Item3}%)");
+            strBuilder.AppendLine($"8. Cao su: {Math.Round(CaoSu.Item1, 1)} triệu USD(tháng liền trước: {CaoSu.Item2}%; cùng kỳ: {CaoSu.Item3}%)");
+            strBuilder.AppendLine($"9. Gỗ: {Math.Round(Go.Item1, 1)} triệu USD(tháng liền trước: {Go.Item2}%; cùng kỳ: {Go.Item3}%)");
+            strBuilder.AppendLine($"10. Dệt may: {Math.Round(DetMay.Item1, 1)} triệu USD(tháng liền trước: {DetMay.Item2}%; cùng kỳ: {DetMay.Item3}%)");
+            strBuilder.AppendLine($"11. Sắt thép: {Math.Round(SatThep.Item1, 1)} triệu USD(tháng liền trước: {SatThep.Item2}%; cùng kỳ: {SatThep.Item3}%)");
+            strBuilder.AppendLine($"12. SP sắt thép: {Math.Round(SPSatThep.Item1, 1)} triệu USD(tháng liền trước: {SPSatThep.Item2}%; cùng kỳ: {SPSatThep.Item3}%)");
+            strBuilder.AppendLine($"13. Dây điện: {Math.Round(DayDien.Item1, 1)} triệu USD(tháng liền trước: {DayDien.Item2}%; cùng kỳ: {DayDien.Item3}%)");
+
+            var Oto = GetDataWithRate(lData, dt, EKeyTongCucThongKe.NK_Oto);
+            strBuilder.AppendLine($"*Nhập khẩu:");
+            strBuilder.AppendLine($"1. Ô tô: {Math.Round(Oto.Item1, 1)} triệu USD(tháng liền trước: {Oto.Item2}%; cùng kỳ: {Oto.Item3}%)");
+
+            return strBuilder.ToString();
+        }
+
         private string TongCucThongKeThangPrint(DateTime dt)
         {
             var filter = Builders<ThongKe>.Filter.Eq(x => x.d, int.Parse($"{dt.Year}{dt.Month.To2Digit()}"));
@@ -172,7 +210,10 @@ namespace StockLib.Service
             strBuilder.AppendLine(KCNStr(dt, lData));
             strBuilder.AppendLine(DienStr(dt, lData));
             strBuilder.AppendLine(DautucongStr(dt, lData));
+            strBuilder.AppendLine(XNKStr(dt, lData));
             return strBuilder.ToString();
         }
     }
 }
+
+

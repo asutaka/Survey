@@ -321,7 +321,7 @@ namespace StockLib.Service
             var cVal = 4;
             var cPrice = 3;
             var cQoQ = 10;
-            if(dt.Month == 1)
+            if(dt.Month == 1 || dt.Month % 3 == 0)
             {
                 cVal = 7;
                 cPrice = 6;
@@ -357,7 +357,7 @@ namespace StockLib.Service
             var cVal = 4;
             var cPrice = 3;
             var cQoQ = 10;
-            if (dt.Month == 1)
+            if (dt.Month == 1 || dt.Month % 3 == 0)
             {
                 cVal = 7;
                 cPrice = 6;
