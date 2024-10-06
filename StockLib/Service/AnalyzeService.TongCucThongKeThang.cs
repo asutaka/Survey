@@ -163,7 +163,7 @@ namespace StockLib.Service
                     return (0, null);
                 var monthStr = url.Substring(index - 2, 2).Replace("T", "");
                 var month = Math.Abs(int.Parse(monthStr));
-                var t = long.Parse($"{dtNow.Year}{dtNow.Month.To2Digit()}");
+                var t = long.Parse($"{year}{month.To2Digit()}");
                 var dtLocal = new DateTime(year, month, 28);
 
                 var mode = EConfigDataType.TongCucThongKeThang;

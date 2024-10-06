@@ -255,7 +255,7 @@ namespace StockLib.Service
                         }
                     }
                 }
-                var t = long.Parse($"{dtNow.Year}{dtNow.GetQuarter()}");
+                var t = long.Parse($"{year}{dtNow.AddMonths(-1).GetQuarter()}");
                 var dtLocal = new DateTime(year, month, 28);
                 if (dtLocal.Month % 3 != 0)
                     return (0, null);
