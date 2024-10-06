@@ -39,6 +39,7 @@ namespace StockLib.Service
         Task<List<DSC_Data>> DSC_GetPost();
         Task<List<VNDirect_Data>> VNDirect_GetPost();
         Task<List<MigrateAsset_Data>> MigrateAsset_GetPost();
+        Task<List<AGR_Data>> Agribank_GetPost();
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
@@ -863,6 +864,32 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.MigrateAsset_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<AGR_Data>> Agribank_GetPost()
+        {
+            var url = $"https://agriseco.com.vn/api/Data/Report/SearchReports?categoryID=1&sourceID=5&sectorID=null&symbol=&keywords=&startDate=2022/10/6&endDate=2024/10/7&startIndex=0&count=10";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<List<AGR_Data>>(responseMessageStr);
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Agribank_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }

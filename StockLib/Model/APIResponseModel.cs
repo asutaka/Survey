@@ -311,4 +311,12 @@
         public DateTime published_at { get; set; }
         public string stock_related { get; set; }
     }
+
+    public class AGR_Data
+    {
+        public int ReportID { get; set; }
+        public string Symbol { get; set; }
+        public string Title { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

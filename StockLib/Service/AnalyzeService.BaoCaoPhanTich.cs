@@ -159,6 +159,48 @@ namespace StockLib.Service
                     }
                 }
 
+                var lAgribank = await _apiService.Agribank_GetPost();
+                if (lAgribank != null)
+                {
+                    var lValid = lAgribank.Where(x => x.Date > time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.Agribank),
+                                builder.Eq(x => x.key, itemValid.ReportID.ToString()),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.ReportID.ToString(),
+                                ty = (int)ESource.Agribank
+                            });
+
+                            sBuilder.AppendLine($"[Agribank - Phân tích cổ phiếu] {itemValid.Title.Replace("AGR Snapshot", "").Trim()}");
+                            sBuilder.AppendLine($"Link: https://agriseco.com.vn/Report/ReportFile/{itemValid.ReportID}");
+                        }
+                    }
+                }
+
                 if (sBuilder.Length > 0)
                 {
                     return (1, sBuilder.ToString());

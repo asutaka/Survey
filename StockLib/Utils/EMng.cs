@@ -462,6 +462,7 @@ namespace StockLib.Utils
     {
         DSC = 1,
         VNDirect = 2,
-        MigrateAsset = 3
+        MigrateAsset = 3,
+        Agribank = 4
     }
 }
