@@ -100,7 +100,7 @@ namespace StockLib.Service
                             {
                                 d = d,
                                 key = itemValid.newsId,
-                                ty = (int)ESource.DSC
+                                ty = (int)ESource.VNDirect
                             });
 
                             sBuilder.AppendLine($"[VNDirect - Phân tích cổ phiếu] {itemValid.newsTitle}");
