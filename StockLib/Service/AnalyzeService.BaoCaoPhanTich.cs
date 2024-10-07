@@ -327,48 +327,89 @@ namespace StockLib.Service
                     }
                 }
 
-                //var lCafeF = await _apiService.CafeF_GetPost();
-                //if (lCafeF != null)
-                //{
-                //    time = time.AddDays(-3);
-                //    var lValid = lCafeF.Where(x => x.date >= time);
-                //    if (lValid?.Any() ?? false)
-                //    {
-                //        foreach (var itemValid in lValid)
-                //        {
-                //            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
-                //            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
-                //            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
-                //            {
-                //                builder.Eq(x => x.d, d),
-                //                builder.Eq(x => x.ty, (int)ESource.CafeF),
-                //                builder.Eq(x => x.key, itemValid.id),
-                //            };
-                //            foreach (var item in lFilter)
-                //            {
-                //                if (filter is null)
-                //                {
-                //                    filter = item;
-                //                    continue;
-                //                }
-                //                filter &= item;
-                //            }
-                //            var entityValid = _bcptRepo.GetEntityByFilter(filter);
-                //            if (entityValid != null)
-                //                continue;
+                var lPSI = await _apiService.PSI_GetPost();
+                if (lPSI != null)
+                {
+                    var lValid = lPSI.Where(x => x.date >= time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.PSI),
+                                builder.Eq(x => x.key, itemValid.id),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
 
-                //            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
-                //            {
-                //                d = d,
-                //                key = itemValid.id,
-                //                ty = (int)ESource.CafeF
-                //            });
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id,
+                                ty = (int)ESource.PSI
+                            });
 
-                //            sBuilder.AppendLine($"[CafeF - Phân tích] {itemValid.title}");
-                //            sBuilder.AppendLine($"Link: https://s.cafef.vn/phan-tich-bao-cao.chn");
-                //        }
-                //    }
-                //}
+                            sBuilder.AppendLine($"[PSI - Phân tích cổ phiếu] {itemValid.title}");
+                            sBuilder.AppendLine($"Link: https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep");
+                        }
+                    }
+                }
+
+                var lCafeF = await _apiService.CafeF_GetPost();
+                if (lCafeF != null)
+                {
+                    var lValid = lCafeF.Where(x => x.date >= time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.CafeF),
+                                builder.Eq(x => x.key, itemValid.id),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id,
+                                ty = (int)ESource.CafeF
+                            });
+
+                            sBuilder.AppendLine($"[CafeF - Phân tích] {itemValid.title}");
+                            sBuilder.AppendLine($"Link: https://s.cafef.vn/phan-tich-bao-cao.chn");
+                        }
+                    }
+                }
 
                 if (sBuilder.Length > 0)
                 {

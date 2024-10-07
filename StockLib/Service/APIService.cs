@@ -43,6 +43,7 @@ namespace StockLib.Service
         Task<List<BCPT_Crawl_Data>> SSI_GetPost();
         Task<List<BCPT_Crawl_Data>> BSC_GetPost();
         Task<List<BCPT_Crawl_Data>> MBS_GetPost();
+        Task<List<BCPT_Crawl_Data>> PSI_GetPost();
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
@@ -924,15 +925,18 @@ namespace StockLib.Service
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/main/section[2]/div/div[2]/div[2]/div/div[2]/div[{i + 1}]/div[2]/p/span");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
+                    if (string.IsNullOrWhiteSpace(timeStr))
+                        continue;
+
                     var strSplit = timeStr.Split('/');
                     if(strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
-                        var year = int.Parse(strSplit[2]);
-                        var month = int.Parse(strSplit[1]);
-                        var day = int.Parse(strSplit[0]);
+                        var year = int.Parse(strSplit[2].Trim());
+                        var month = int.Parse(strSplit[1].Trim());
+                        var day = int.Parse(strSplit[0].Trim());
                         lResult.Add(new BCPT_Crawl_Data
                         {
-                            id = $"{strSplit[2]}{strSplit[1]}{strSplit[0]}{title.Substring(0, 3)}",
+                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
                             date = new DateTime(year, month, day)
                         });
@@ -974,15 +978,18 @@ namespace StockLib.Service
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[4]/div[4]/div[2]/div/table/tbody/tr[{i + 1}]/td[1]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
+                    if (string.IsNullOrWhiteSpace(timeStr))
+                        continue;
+
                     var strSplit = timeStr.Split('/');
                     if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
-                        var year = int.Parse(strSplit[2]);
-                        var month = int.Parse(strSplit[1]);
-                        var day = int.Parse(strSplit[0]);
+                        var year = int.Parse(strSplit[2].Trim());
+                        var month = int.Parse(strSplit[1].Trim());
+                        var day = int.Parse(strSplit[0].Trim());
                         lResult.Add(new BCPT_Crawl_Data
                         {
-                            id = $"{strSplit[2]}{strSplit[1]}{strSplit[0]}{title.Substring(0, 3)}",
+                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
                             date = new DateTime(year, month, day)
                         });
@@ -1019,19 +1026,22 @@ namespace StockLib.Service
 
                 for (int i = 0; i < 10; i++)
                 {
-                    var nodeCode = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/a") as HtmlNode;
-                    var nodeTime = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/div[1]") as HtmlNode;
+                    var nodeCode = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/a");
+                    var nodeTime = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/div[1]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
+                    if (string.IsNullOrWhiteSpace(timeStr))
+                        continue;
+
                     var strSplit = timeStr.Split('/');
                     if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
-                        var year = int.Parse(strSplit[2]);
-                        var month = int.Parse(strSplit[1]);
-                        var day = int.Parse(strSplit[0]);
+                        var year = int.Parse(strSplit[2].Trim());
+                        var month = int.Parse(strSplit[1].Trim());
+                        var day = int.Parse(strSplit[0].Trim());
                         lResult.Add(new BCPT_Crawl_Data
                         {
-                            id = $"{strSplit[2]}{strSplit[1]}{strSplit[0]}{title.Substring(0, 3)}",
+                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
                             date = new DateTime(year, month, day)
                         });
@@ -1043,6 +1053,58 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.MBS_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<BCPT_Crawl_Data>> PSI_GetPost()
+        {
+            try
+            {
+                var lResult = new List<BCPT_Crawl_Data>();
+                var link = string.Empty;
+                var url = $"https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                for (int i = 0; i < 10; i++)
+                {
+                    var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[2]/div[1]/div[1]");
+                    var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[1]/div/div[1]");
+                    var title = nodeCode?.InnerText.Replace("\n", "").Trim();
+                    var timeStr = nodeTime?.InnerText.Trim().Replace("\n","/");
+                    if (string.IsNullOrWhiteSpace(timeStr))
+                        continue;
+
+                    var strSplit = timeStr.Split('/');
+                    if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
+                    {
+                        var year = int.Parse(strSplit[2].Trim());
+                        var month = int.Parse(strSplit[1].Trim());
+                        var day = int.Parse(strSplit[0].Trim());
+                        lResult.Add(new BCPT_Crawl_Data
+                        {
+                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
+                            title = title,
+                            date = new DateTime(year, month, day)
+                        });
+                    }
+                }
+
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.PSI_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }
@@ -1072,15 +1134,18 @@ namespace StockLib.Service
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"//*[@id=\"ContentPlaceHolder1_AnalyzeReportList1_rptData_itemTR_{i}\"]/td[1]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
+                    if (string.IsNullOrWhiteSpace(timeStr))
+                        continue;
+
                     var strSplit = timeStr.Split('/');
                     if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
-                        var year = int.Parse(strSplit[2]);
-                        var month = int.Parse(strSplit[1]);
-                        var day = int.Parse(strSplit[0]);
+                        var year = int.Parse(strSplit[2].Trim());
+                        var month = int.Parse(strSplit[1].Trim());
+                        var day = int.Parse(strSplit[0].Trim());
                         lResult.Add(new BCPT_Crawl_Data
                         {
-                            id = $"{strSplit[2]}{strSplit[1]}{strSplit[0]}{title.Substring(0, 3)}",
+                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
                             date = new DateTime(year, month, day)
                         });
