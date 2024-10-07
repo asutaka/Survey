@@ -23,9 +23,9 @@ namespace StockTestCase
         public async Task Run(string[] args)
         {
             //await _service.SurveyGoldFish("DC4");
-            //await _service.SurveySuperTrend("L18");
+            await _service.SurveySuperTrend("L18");
             //await _service.SurveySuperTrendPhrase2("L18");
-            await _service.SurveyT3("L18");
+            //await _service.SurveyT3("L18");
             //await _service.SurveyVCP("NTL");
             //await _service.SurveyMa20("TCH");
             //await _service.SurveyDanZagerCustom("TCH");
