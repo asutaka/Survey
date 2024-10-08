@@ -320,6 +320,25 @@
         public DateTime Date { get; set; }
     }
 
+    public class VCBS_Main
+    {
+        public List<VCBS_Data> data { get; set; }
+    }
+
+    public class VCBS_Data
+    {
+        public int id { get; set; }
+        public string stockSymbol { get; set; }
+        public string name { get; set; }
+        public VCBS_Category category { get; set; }
+        public DateTime publishedAt { get; set; }
+    }
+
+    public class VCBS_Category
+    {
+        public string code { get; set; }
+    }
+
     public class BCPT_Crawl_Data
     {
         public string id { get; set; }

@@ -469,5 +469,6 @@ namespace StockLib.Utils
         MBS = 7,
         PSI = 8,
         CafeF = 9,
+        VCBS = 10
     }
 }

@@ -243,6 +243,61 @@ namespace StockLib.Service
                     }
                 }
 
+                var lVCBS = await _apiService.VCBS_GetPost();
+                if (lVCBS != null)
+                {
+                    var lValid = lVCBS.Where(x => x.publishedAt >= time
+                                            && (x.category.code == "BCVM" || x.category.code == "BCDN" || x.category.code == "BCN"));
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.VCBS),
+                                builder.Eq(x => x.key, itemValid.id.ToString()),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id.ToString(),
+                                ty = (int)ESource.VCBS
+                            });
+
+                            if(itemValid.category.code == "BCDN")
+                            {
+                                sBuilder.AppendLine($"[VCBS - Phân tích cổ phiếu] {itemValid.name}");
+                            }
+                            else if(itemValid.category.code == "BCN")
+                            {
+                                sBuilder.AppendLine($"[VCBS - Báo cáo Ngành] {itemValid.name}");
+                            }
+                            else
+                            {
+                                sBuilder.AppendLine($"[VCBS - Báo cáo vĩ mô] {itemValid.name}");
+                            }
+                            
+                            sBuilder.AppendLine($"Link: https://www.vcbs.com.vn/trung-tam-phan-tich/bao-cao-chi-tiet");
+                        }
+                    }
+                }
+
                 var lBSC = await _apiService.BSC_GetPost();
                 if (lBSC != null)
                 {

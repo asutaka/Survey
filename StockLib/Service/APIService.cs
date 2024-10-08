@@ -42,6 +42,7 @@ namespace StockLib.Service
         Task<List<AGR_Data>> Agribank_GetPost();
         Task<List<BCPT_Crawl_Data>> SSI_GetPost();
         Task<List<BCPT_Crawl_Data>> BSC_GetPost();
+        Task<List<VCBS_Data>> VCBS_GetPost();
         Task<List<BCPT_Crawl_Data>> MBS_GetPost();
         Task<List<BCPT_Crawl_Data>> PSI_GetPost();
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
@@ -895,6 +896,32 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.Agribank_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<VCBS_Data>> VCBS_GetPost()
+        {
+            var url = $"https://www.vcbs.com.vn/api/v1/ttpt-reports?limit=15&page=1&keyword=&locale=vi";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<VCBS_Main>(responseMessageStr);
+                return responseModel.data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.VCBS_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }
