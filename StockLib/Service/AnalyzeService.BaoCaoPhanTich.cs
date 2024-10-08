@@ -12,7 +12,7 @@ namespace StockLib.Service
         {
             try
             {
-                
+
                 //var tmp = await _apiService.MacroMicro_WCI();
                 //var tmp1 = await _apiService.Investing_BDTI("940798");//BDTI
 
