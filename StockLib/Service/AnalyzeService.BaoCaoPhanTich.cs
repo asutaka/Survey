@@ -12,6 +12,11 @@ namespace StockLib.Service
         {
             try
             {
+                
+                //var tmp = await _apiService.MacroMicro_WCI();
+                //var tmp1 = await _apiService.Investing_BDTI("940798");//BDTI
+
+
                 var sBuilder = new StringBuilder();
                 var time = new DateTime(dt.Year, dt.Month, dt.Day);
                 var d = int.Parse($"{time.Year}{time.Month.To2Digit()}{time.Day.To2Digit()}");

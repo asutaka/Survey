@@ -314,5 +314,10 @@ namespace StockLib.Utils
             "PVT",
             "PC1"
         };
+
+        public static List<string> _lInvesting = new List<string>
+        {
+            "3bc34e2c78fe3ed469698b88b71fff01_1day.json"   //BAID - BDTI
+        };
     }
 }

@@ -47,6 +47,9 @@ namespace StockLib.Service
         Task<List<BCPT_Crawl_Data>> PSI_GetPost();
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
+        Task<MacroMicro_WCI_Main> MacroMicro_WCI();
+        Task<List<List<float>>> Investing_BDTI(string code);
+
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
         Task<Stream> TongCucThongKe(DateTime dt);
@@ -1184,6 +1187,64 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.CafeF_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<MacroMicro_WCI_Main> MacroMicro_WCI()
+        {
+            var url = $"https://en.macromicro.me/charts/data/44756";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("authorization", "Bearer aa658fec0f739b8651e2ae2d8f74a6eb");
+                requestMessage.Headers.Add("cookie", "PHPSESSID=qel07aehcojn8v22e2md2gkiuf; aiExplainOn=off; app_ui_support_btn=1; telegram=1728398881; mm_sess_pages=2; cf_clearance=yNMbMzfX29Fnx_9j_f6YwRxiEWKd0zo9XBWv4dV_OOw-1728399595-1.2.1.1-Y5NoZO3KUaHJ_uTH9oGYETC6Z4XOtyCVvssrtazqzv22ErBM4QxJVxG8Wlrw3Old0u65qo7W6Q4gj9R2TxqvFaTaFy._fZ2PGu8T3Pr6ds7gPcTtHB6gHMMu2ybvSNX5r0o4JGnUWA_JDvwLTHgvnLSctUuN5YVvwgmFQ4yoqjv4A.Q0tcjcxivK6QcuixEB7uaVe5j2n_st4ccU42AIcgCSlF9nrS7BPsdfGiRhkmG6xFyRo6nPyZmzNRpJ9UbzhilA8Wln7.rSBBUq0jAZMDZ_0Z8Q5pLmfwaJK3nG_rczDASOlRVOFTa62CMZpL7BCewObMOPmowaK4rHxSV5IfXZA9grkKy5qKZdkhpKwUdeSwxIVMSZVevVLi2my0oB; PHPSESSID=8g819a8jg7mrdm1qmtft5vgv38");
+                requestMessage.Headers.Add("referer", "https://en.macromicro.me/charts/44756/drewry-world-container-index");
+                requestMessage.Headers.Add("User-Agent", "PostmanRuntime/7.42.0");
+                requestMessage.Method = HttpMethod.Get;
+                //string curlScript = client.GenerateCurlInString(requestMessage);
+
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<MacroMicro_WCI_Main>(responseMessageStr);
+                return responseModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.MacroMicro_WCI|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<List<float>>> Investing_BDTI(string code)
+        {
+            var url = $"https://api.investing.com/api/financialdata/{code}/historical/chart/?interval=P1D&pointscount=60";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("Cookie", "__cf_bm=2rmqLKQjU85QP4NrZ.74WTxWikEnUoM_HGsR6n0CRkE-1728407522-1.0.1.1-eGkoNjFqxVYd61.zFK9IBlWTptBx1emed7EwW9E8leyjYt8OBESJabXsseCeVbZ78XZpjAuumh.KXX9pAmgonA3.MuobMCy5gC5_mcAu9wI; __cflb=02DiuEaBtsFfH7bEbN4qQwLpwTUxNYEGzM655fP2cxy24; __cf_bm=f0oiMA_A8dd2OZU4RUDRMRU24Zu0es_VuBo_MrlpsVo-1728407622-1.0.1.1-zTakPYXUmPlGUTZZCy8iN4uJ_An7hdgXxAqS5Qt1smSs75VrlZqfMgvqqT9FBhFfJTnlJft5DNWPSlwYHabTXfu9R1aquHIsYLd2m.3ANWM; __cflb=02DiuEaBtsFfH7bEbN4qQwLpwTUxNYEGzM655fP2cxy24");
+                requestMessage.Headers.Add("User-Agent", "PostmanRuntime/7.42.0");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<Investing_Main>(responseMessageStr);
+                return responseModel.data;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Investing_BDTI|EXCEPTION| {ex.Message}");
             }
             return null;
         }

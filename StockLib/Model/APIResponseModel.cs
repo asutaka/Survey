@@ -1,4 +1,6 @@
-﻿namespace StockLib.Model
+﻿using Newtonsoft.Json;
+
+namespace StockLib.Model
 {
     public class BCTCFileUploadResponse
     {
@@ -344,5 +346,26 @@
         public string id { get; set; }
         public string title { get; set; }
         public DateTime date { get; set; }
+    }
+
+    public class MacroMicro_WCI_Main
+    {
+        public MacroMicro_WCI_Data data { get; set; }
+    }
+
+    public class MacroMicro_WCI_Data
+    {
+        [JsonProperty(PropertyName = "c:44756")]
+        public MacroMicro_Close c { get; set; }
+    }
+
+    public class MacroMicro_Close
+    {
+        public List<List<object>> series { get; set; }
+    }
+
+    public class Investing_Main
+    {
+        public List<List<float>> data { get; set; }
     }
 }
