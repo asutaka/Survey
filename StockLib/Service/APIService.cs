@@ -50,7 +50,6 @@ namespace StockLib.Service
         Task<List<BCPT_Crawl_Data>> PSI_GetPost();
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
-        Task<MacroMicro_WCI_Main> MacroMicro_WCI();
         Task<List<MacroVar_Data>> MacroVar_GetData(string id);
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
@@ -173,243 +172,6 @@ namespace StockLib.Service
             return null;
         }
         #endregion
-
-        public async Task<double> Tradingeconimic_GetForex(string code)
-        {
-            try
-            {
-                //LV1
-                var link = string.Empty;
-                var url = $"https://tradingeconomics.com/commodity/{code}";
-                var client = _client.CreateClient();
-                client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
-
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
-                requestMessage.Method = HttpMethod.Get;
-                var responseMessage = await client.SendAsync(requestMessage);
-
-                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                var html = await responseMessage.Content.ReadAsStringAsync();
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-
-                var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"aspnetForm\"]/div[5]/div/div[1]/div[4]/div/div/table/tr") as IEnumerable<HtmlNode>;
-                var lVal = new List<string>();
-                var istrue = false;
-                var iscomplete = false;
-                foreach (var item in nodes)
-                {
-                    foreach (HtmlNode node in item.ChildNodes)
-                    {
-                        if (string.IsNullOrWhiteSpace(node.InnerText))
-                            continue;
-
-                        if (!istrue && node.InnerText.RemoveSpace().Replace("-","").Contains(code.RemoveSpace().Replace("-", ""), StringComparison.OrdinalIgnoreCase))
-                        {
-                            istrue = true;
-                            continue;
-                        }
-
-                        if (!istrue)
-                            continue;
-
-                        if (!node.InnerText.Contains("%"))
-                            continue;
-                        lVal.Add(node.InnerText.Replace("%", ""));
-                        iscomplete = true;
-                    }
-                    if (iscomplete)
-                        break;
-                }
-                
-                if(lVal.Any())
-                {
-                    var isDouble = double.TryParse(lVal.Last(), out var val);
-                    if (isDouble)
-                        return val;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"APIService.Tradingeconimic_GetForex|EXCEPTION| {ex.Message}");
-            }
-            return 0;
-        }
-
-        public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()
-        {
-            try
-            {
-                var lCode = new List<string>
-                {
-                    "Crude Oil",//Dầu thô
-                    "Natural gas",//Khí thiên nhiên
-                    "Coal",//Than
-                    "Gold",//Vàng
-                    "Steel",//Thép
-                    "HRC Steel",//Thép HRC
-                    "Rubber", //Cao su
-                    "Coffee", //Cà phê
-                    "Rice", //Gạo
-                    "Sugar", //Đường
-                    "Urea", //U rê
-                };
-
-                var lResult = new List<TradingEconomics_Data>();
-
-                //LV1
-                var link = string.Empty;
-                var url = $"https://tradingeconomics.com/commodities";
-                var client = _client.CreateClient();
-                client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(15);
-
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
-                requestMessage.Method = HttpMethod.Get;
-                var responseMessage = await client.SendAsync(requestMessage);
-
-                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                var html = await responseMessage.Content.ReadAsStringAsync();
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-
-                var tableNodes = doc.DocumentNode.SelectNodes("//table");
-                foreach (var item in tableNodes)
-                {
-                    var tbody = item.ChildNodes["tbody"];
-                    foreach (var row in tbody.ChildNodes.Where(r => r.Name == "tr"))
-                    {
-                        var model = new TradingEconomics_Data();
-                        var columnsArray = row.ChildNodes.Where(c => c.Name == "td").ToArray();
-                        for (int i = 0; i < columnsArray.Length; i++)
-                        {
-                            if (i == 0)
-                            {
-                                model.Code = columnsArray[i].InnerText.Trim().Split("\r")[0].Trim();
-                            }
-                            else if (i == 4)
-                            {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
-                                if (isFloat)
-                                {
-                                    model.Weekly = val;
-                                }
-                            }
-                            else if (i == 5)
-                            {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
-                                if (isFloat)
-                                {
-                                    model.Monthly = val;
-                                }
-                            }
-                            else if (i == 6)
-                            {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
-                                if (isFloat)
-                                {
-                                    model.YTD = val;
-                                }
-                            }
-                            else if (i == 7)
-                            {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
-                                if (isFloat)
-                                {
-                                    model.YoY = val;
-                                }
-                            }
-                        }
-                        if(!string.IsNullOrWhiteSpace(model.Code)
-                            && lCode.Contains(model.Code))
-                        {
-                            lResult.Add(model);
-                        }
-                    }
-                }
-
-                return lResult;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"APIService.Tradingeconimic_Commodities|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
-
-        public async Task<(float, float)> Drewry_WCI()
-        {
-            try
-            {
-                var link = string.Empty;
-                var url = $"https://www.drewry.co.uk/supply-chain-advisors/supply-chain-expertise/world-container-index-assessed-by-drewry";
-                var client = _client.CreateClient();
-                client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(15);
-
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
-                requestMessage.Method = HttpMethod.Get;
-                var responseMessage = await client.SendAsync(requestMessage);
-
-                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                var html = await responseMessage.Content.ReadAsStringAsync();
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
-
-                var urls = doc.DocumentNode.Descendants("img")
-                                .Select(e => e.GetAttributeValue("src", null))
-                                .Where(s => !String.IsNullOrEmpty(s));
-                var truePath = urls.FirstOrDefault(x => x.Contains("WCI-Table"));
-                if (truePath != null)
-                {
-                    //Call Next
-                    var clientDetail = new HttpClient { BaseAddress = new Uri(truePath) };
-                    responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                    var content = await responseMessage.Content.ReadAsStringAsync();
-                    //Xử lý tiếp
-                    var tmpx = 1;
-                    //var model = JsonConvert.DeserializeObject<HSXTudoanhModel>(content);
-                    //var lastID = model.rows?.FirstOrDefault()?.cell?.FirstOrDefault();
-                }
-
-                var tmp = 1;
-
-                var tableNodes = doc.DocumentNode.SelectNodes("//table");
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError($"APIService.Drewry_WCI|EXCEPTION| {ex.Message}");
-            }
-            return (0, 0);
-        }
-
-        public async Task<Stream> GetChartImage(string body)
-        {
-            try
-            {
-                var url = ServiceSetting._chartLocal;
-                var client = _client.CreateClient();
-                client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(10);
-                var requestMessage = new HttpRequestMessage();
-                //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
-                requestMessage.Method = HttpMethod.Post;
-                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
-
-                var responseMessage = await client.SendAsync(requestMessage);
-                var result = await responseMessage.Content.ReadAsStreamAsync();
-                return result;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"APIService.GetChartImage|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
 
         #region 24H Money
         public async Task<List<Money24h_PTKTResponse>> Money24h_GetMaTheoChiBao_MA20()
@@ -1377,38 +1139,6 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<MacroMicro_WCI_Main> MacroMicro_WCI()
-        {
-            var url = $"https://en.macromicro.me/charts/data/44756";
-            try
-            {
-                var client = _client.CreateClient();
-                client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Headers.Add("authorization", "Bearer aa658fec0f739b8651e2ae2d8f74a6eb");
-                requestMessage.Headers.Add("cookie", "PHPSESSID=qel07aehcojn8v22e2md2gkiuf; aiExplainOn=off; app_ui_support_btn=1; telegram=1728398881; mm_sess_pages=2; cf_clearance=yNMbMzfX29Fnx_9j_f6YwRxiEWKd0zo9XBWv4dV_OOw-1728399595-1.2.1.1-Y5NoZO3KUaHJ_uTH9oGYETC6Z4XOtyCVvssrtazqzv22ErBM4QxJVxG8Wlrw3Old0u65qo7W6Q4gj9R2TxqvFaTaFy._fZ2PGu8T3Pr6ds7gPcTtHB6gHMMu2ybvSNX5r0o4JGnUWA_JDvwLTHgvnLSctUuN5YVvwgmFQ4yoqjv4A.Q0tcjcxivK6QcuixEB7uaVe5j2n_st4ccU42AIcgCSlF9nrS7BPsdfGiRhkmG6xFyRo6nPyZmzNRpJ9UbzhilA8Wln7.rSBBUq0jAZMDZ_0Z8Q5pLmfwaJK3nG_rczDASOlRVOFTa62CMZpL7BCewObMOPmowaK4rHxSV5IfXZA9grkKy5qKZdkhpKwUdeSwxIVMSZVevVLi2my0oB; PHPSESSID=8g819a8jg7mrdm1qmtft5vgv38");
-                requestMessage.Headers.Add("referer", "https://en.macromicro.me/charts/44756/drewry-world-container-index");
-                requestMessage.Headers.Add("User-Agent", "PostmanRuntime/7.42.0");
-                requestMessage.Method = HttpMethod.Get;
-                //string curlScript = client.GenerateCurlInString(requestMessage);
-
-                var responseMessage = await client.SendAsync(requestMessage);
-
-                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
-                    return null;
-
-                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
-                var responseModel = JsonConvert.DeserializeObject<MacroMicro_WCI_Main>(responseMessageStr);
-                return responseModel;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"APIService.MacroMicro_WCI|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
-
         public async Task<List<MacroVar_Data>> MacroVar_GetData(string id)
         {
             var url = $"https://macrovar.com/wp-json/mesmerize-api/v1/market-data-wid";
@@ -1433,6 +1163,282 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.MacroVar_BDTI|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<double> Tradingeconimic_GetForex(string code)
+        {
+            try
+            {
+                //LV1
+                var link = string.Empty;
+                var url = $"https://tradingeconomics.com/commodity/{code}";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"aspnetForm\"]/div[5]/div/div[1]/div[4]/div/div/table/tr") as IEnumerable<HtmlNode>;
+                var lVal = new List<string>();
+                var istrue = false;
+                var iscomplete = false;
+                foreach (var item in nodes)
+                {
+                    foreach (HtmlNode node in item.ChildNodes)
+                    {
+                        if (string.IsNullOrWhiteSpace(node.InnerText))
+                            continue;
+
+                        if (!istrue && node.InnerText.RemoveSpace().Replace("-", "").Contains(code.RemoveSpace().Replace("-", ""), StringComparison.OrdinalIgnoreCase))
+                        {
+                            istrue = true;
+                            continue;
+                        }
+
+                        if (!istrue)
+                            continue;
+
+                        if (!node.InnerText.Contains("%"))
+                            continue;
+                        lVal.Add(node.InnerText.Replace("%", ""));
+                        iscomplete = true;
+                    }
+                    if (iscomplete)
+                        break;
+                }
+
+                if (lVal.Any())
+                {
+                    var isDouble = double.TryParse(lVal.Last(), out var val);
+                    if (isDouble)
+                        return val;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Tradingeconimic_GetForex|EXCEPTION| {ex.Message}");
+            }
+            return 0;
+        }
+
+        public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()
+        {
+            try
+            {
+                var lCode = new List<string>
+                {
+                    "Crude Oil",//Dầu thô
+                    "Natural gas",//Khí thiên nhiên
+                    "Coal",//Than
+                    "Gold",//Vàng
+                    "Steel",//Thép
+                    "HRC Steel",//Thép HRC
+                    "Rubber", //Cao su
+                    "Coffee", //Cà phê
+                    "Rice", //Gạo
+                    "Sugar", //Đường
+                    "Urea", //U rê
+                };
+
+                var lResult = new List<TradingEconomics_Data>();
+
+                //LV1
+                var link = string.Empty;
+                var url = $"https://tradingeconomics.com/commodities";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var tableNodes = doc.DocumentNode.SelectNodes("//table");
+                foreach (var item in tableNodes)
+                {
+                    var tbody = item.ChildNodes["tbody"];
+                    foreach (var row in tbody.ChildNodes.Where(r => r.Name == "tr"))
+                    {
+                        var model = new TradingEconomics_Data();
+                        var columnsArray = row.ChildNodes.Where(c => c.Name == "td").ToArray();
+                        for (int i = 0; i < columnsArray.Length; i++)
+                        {
+                            if (i == 0)
+                            {
+                                model.Code = columnsArray[i].InnerText.Trim().Split("\r")[0].Trim();
+                            }
+                            else if (i == 4)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.Weekly = val;
+                                }
+                            }
+                            else if (i == 5)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.Monthly = val;
+                                }
+                            }
+                            else if (i == 6)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.YTD = val;
+                                }
+                            }
+                            else if (i == 7)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.YoY = val;
+                                }
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(model.Code)
+                            && lCode.Contains(model.Code))
+                        {
+                            lResult.Add(model);
+                        }
+                    }
+                }
+
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Tradingeconimic_Commodities|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<(float, float)> Drewry_WCI()
+        {
+            try
+            {
+                var link = string.Empty;
+                var url = $"https://www.drewry.co.uk/supply-chain-advisors/supply-chain-expertise/world-container-index-assessed-by-drewry";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var urls = doc.DocumentNode.Descendants("img")
+                                .Select(e => e.GetAttributeValue("src", null))
+                                .Where(s => !String.IsNullOrEmpty(s));
+                var truePath = urls.FirstOrDefault(x => x.Contains("WCI-Table"));
+                if (truePath != null)
+                {
+                    //Call Next
+                    var clientDetail = new HttpClient { BaseAddress = new Uri(truePath) };
+                    responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                    var content = await responseMessage.Content.ReadAsStringAsync();
+                    doc.LoadHtml(content);
+                    var gs = doc.DocumentNode.Descendants("tspan");
+                    var count = 0;
+                    var isFirst = true;
+                    var flag = false;
+                    var sBuilder = new StringBuilder();
+
+                    foreach (var item in gs)
+                    {
+                        if (isFirst)
+                        {
+                            isFirst = false;
+                            continue;
+                        }
+
+                        if (flag)
+                        {
+                            sBuilder.AppendLine(item.InnerText);
+                            if(item.InnerText.Contains("%"))
+                            {
+                                count++;
+                            }
+
+                            if (count >= 2)
+                                break;
+                        }
+
+                        if (item.InnerText.Contains("$"))
+                        {
+                            count++;
+                        }
+
+                        if(count >= 3)
+                        {
+                            flag = true;
+                            count = 0;
+                            continue;
+                        }
+                    }
+
+                    var strSplit = sBuilder.ToString().Split("%");
+                    if(strSplit.Length >= 2)
+                    {
+                        var isFloat1 = float.TryParse(strSplit[0].Replace("\r\n", ""), out var val1);
+                        var isFloat2 = float.TryParse(strSplit[1].Replace("\r\n", ""), out var val2);
+                        return (val1, val2);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Drewry_WCI|EXCEPTION| {ex.Message}");
+            }
+            return (0, 0);
+        }
+
+        public async Task<Stream> GetChartImage(string body)
+        {
+            try
+            {
+                var url = ServiceSetting._chartLocal;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(10);
+                var requestMessage = new HttpRequestMessage();
+                //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/json");
+
+                var responseMessage = await client.SendAsync(requestMessage);
+                var result = await responseMessage.Content.ReadAsStreamAsync();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.GetChartImage|EXCEPTION| {ex.Message}");
             }
             return null;
         }

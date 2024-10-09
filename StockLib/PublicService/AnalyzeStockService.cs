@@ -260,8 +260,6 @@ namespace StockLib.PublicService
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
 
-                await TraceGia(dt);
-                return;
                 //try
                 //{
                 //    //await _analyzeService.TongCucThongKeThangHis();
@@ -280,7 +278,9 @@ namespace StockLib.PublicService
                     await TongCucThongKe(dt);
                 }
 
-                if(dt.Hour >= 17 && dt.Hour <= 18)
+                if(dt.Minute < 30 && (dt.Hour == 9 
+                    || dt.Hour == 13
+                    || dt.Hour == 17))
                 {
                     await TraceGia(dt);
                 }

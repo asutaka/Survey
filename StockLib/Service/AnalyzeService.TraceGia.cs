@@ -29,9 +29,11 @@ namespace StockLib.Service
 
                 var strOutput = new StringBuilder();
                 var wci = await _apiService.Drewry_WCI();
+                if (wci.Item1 >= flag || wci.Item1 <= -flag)
+                {
+                    strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%");
+                }
 
-
-                //var lWCI = await _apiService.MacroMicro_WCI();
                 var lBDTI = await _apiService.MacroVar_GetData("84286"); //BDTI: cước vận tải dầu
                 if (lBDTI?.Any() ?? false) 
                 {
