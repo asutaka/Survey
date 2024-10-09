@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using HttpClientToCurl;
+using iTextSharp.text.pdf.qrcode;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
@@ -8,6 +9,8 @@ using StockLib.Model;
 using StockLib.Service.Settings;
 using StockLib.Utils;
 using System.Text;
+using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
 
 namespace StockLib.Service
 {
@@ -48,7 +51,7 @@ namespace StockLib.Service
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
         Task<MacroMicro_WCI_Main> MacroMicro_WCI();
-        Task<List<List<float>>> Investing_BDTI(string code);
+        Task<List<MacroVar_Data>> MacroVar_GetData(string id);
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
@@ -61,6 +64,8 @@ namespace StockLib.Service
         Task<Stream> StreamTongCucThongKe(string url);
 
         Task<double> Tradingeconimic_GetForex(string code);
+        Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
+        Task<(float, float)> Drewry_WCI();
     }
     public partial class APIService : IAPIService
     {
@@ -118,6 +123,7 @@ namespace StockLib.Service
                 var url = "https://finance.vietstock.vn/data/getdocument";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 requestMessage.Headers.Add("Cookie", "ASP.NET_SessionId=kez23nkspuoomciouahd1xqp; __RequestVerificationToken=5t0qgD3M2IWZKLXukNsWaFE2ZCWl_cKVOn2SDHUDDw6NIEfBM1FC1HWEnrE9BzsrKeZrRWbGyYItV21WS4E6t-CTsKZqRvQIv6Ma5qAegwU1; language=vi-VN; _ga=GA1.1.1323687995.1720524498; _ga_EXMM0DKVEX=GS1.1.1720524497.1.0.1720524497.60.0.0; vts_usr_lg=A48AA659415FEE16F7CD0976F49923629A486E7AD4073A0F7F92268AEC798D2599F993737255E9990209E28582ABC797C68C46C2209B505875B2542FB92A23DCEFB76C9610DA504D7C120024CAB560DA51EC06B2D17034BFA7F517529B3FF3340438A76004E762194D4CAC1C45600B90CF3FF9475AB984756A4F22DC52765B59; finance_viewedstock=ACB,; Theme=Light");
@@ -145,6 +151,7 @@ namespace StockLib.Service
                 var url = $"https://api.vietstock.vn/tvnew/history?symbol={code}&resolution=1D&from={dt.AddYears(-1).AddMonths(-3).ToUnixTimeSeconds()}&to={dt.ToUnixTimeSeconds()}&countback=500";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("Referer", "https://stockchart.vietstock.vn/");
                 requestMessage.Method = HttpMethod.Get;
@@ -176,6 +183,7 @@ namespace StockLib.Service
                 var url = $"https://tradingeconomics.com/commodity/{code}";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -230,6 +238,155 @@ namespace StockLib.Service
             return 0;
         }
 
+        public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()
+        {
+            try
+            {
+                var lCode = new List<string>
+                {
+                    "Crude Oil",//Dầu thô
+                    "Natural gas",//Khí thiên nhiên
+                    "Coal",//Than
+                    "Gold",//Vàng
+                    "Steel",//Thép
+                    "HRC Steel",//Thép HRC
+                    "Rubber", //Cao su
+                    "Coffee", //Cà phê
+                    "Rice", //Gạo
+                    "Sugar", //Đường
+                    "Urea", //U rê
+                };
+
+                var lResult = new List<TradingEconomics_Data>();
+
+                //LV1
+                var link = string.Empty;
+                var url = $"https://tradingeconomics.com/commodities";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var tableNodes = doc.DocumentNode.SelectNodes("//table");
+                foreach (var item in tableNodes)
+                {
+                    var tbody = item.ChildNodes["tbody"];
+                    foreach (var row in tbody.ChildNodes.Where(r => r.Name == "tr"))
+                    {
+                        var model = new TradingEconomics_Data();
+                        var columnsArray = row.ChildNodes.Where(c => c.Name == "td").ToArray();
+                        for (int i = 0; i < columnsArray.Length; i++)
+                        {
+                            if (i == 0)
+                            {
+                                model.Code = columnsArray[i].InnerText.Trim().Split("\r")[0].Trim();
+                            }
+                            else if (i == 4)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.Weekly = val;
+                                }
+                            }
+                            else if (i == 5)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.Monthly = val;
+                                }
+                            }
+                            else if (i == 6)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.YTD = val;
+                                }
+                            }
+                            else if (i == 7)
+                            {
+                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                if (isFloat)
+                                {
+                                    model.YoY = val;
+                                }
+                            }
+                        }
+                        if(!string.IsNullOrWhiteSpace(model.Code)
+                            && lCode.Contains(model.Code))
+                        {
+                            lResult.Add(model);
+                        }
+                    }
+                }
+
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Tradingeconimic_Commodities|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<(float, float)> Drewry_WCI()
+        {
+            try
+            {
+                var link = string.Empty;
+                var url = $"https://www.drewry.co.uk/supply-chain-advisors/supply-chain-expertise/world-container-index-assessed-by-drewry";
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+
+                var urls = doc.DocumentNode.Descendants("img")
+                                .Select(e => e.GetAttributeValue("src", null))
+                                .Where(s => !String.IsNullOrEmpty(s));
+                var truePath = urls.FirstOrDefault(x => x.Contains("WCI-Table"));
+                if (truePath != null)
+                {
+                    //Call Next
+                    var clientDetail = new HttpClient { BaseAddress = new Uri(truePath) };
+                    responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                    var content = await responseMessage.Content.ReadAsStringAsync();
+                    //Xử lý tiếp
+                    var tmpx = 1;
+                    //var model = JsonConvert.DeserializeObject<HSXTudoanhModel>(content);
+                    //var lastID = model.rows?.FirstOrDefault()?.cell?.FirstOrDefault();
+                }
+
+                var tmp = 1;
+
+                var tableNodes = doc.DocumentNode.SelectNodes("//table");
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"APIService.Drewry_WCI|EXCEPTION| {ex.Message}");
+            }
+            return (0, 0);
+        }
+
         public async Task<Stream> GetChartImage(string body)
         {
             try
@@ -237,6 +394,7 @@ namespace StockLib.Service
                 var url = ServiceSetting._chartLocal;
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(10);
                 var requestMessage = new HttpRequestMessage();
                 //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 requestMessage.Method = HttpMethod.Post;
@@ -272,6 +430,7 @@ namespace StockLib.Service
                 var url = string.Format(urlBase, type.GetDisplayName());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var result = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<Money24h_NhomNganhResponse>(result);
@@ -296,6 +455,7 @@ namespace StockLib.Service
                 var url = string.Format(urlBase, mode.GetDisplayName(), type.GetDisplayName());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<Money24h_ForeignAPIResponse>(resultArray);
@@ -360,6 +520,7 @@ namespace StockLib.Service
                 var url = string.Format(urlBase, code, "1D", DateTimeOffset.Now.AddYears(-2).ToUnixTimeSeconds(), DateTimeOffset.Now.ToUnixTimeSeconds());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<SSI_DataTradingResponse>(resultArray);
@@ -408,6 +569,7 @@ namespace StockLib.Service
                     var url = string.Format(urlBase, code, "1D", dtLast.ToUnixTimeSeconds(), dtFirst.ToUnixTimeSeconds());
                     var client = _client.CreateClient();
                     client.BaseAddress = new Uri(url);
+                    client.Timeout = TimeSpan.FromSeconds(5);
                     var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var resultArray = await responseMessage.Content.ReadAsStringAsync();
                     var responseModel = JsonConvert.DeserializeObject<SSI_DataTradingResponse>(resultArray);
@@ -447,6 +609,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<SSI_PEResponse>(responseMessageStr);
@@ -466,6 +629,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<SSI_ShareResponse>(responseMessageStr);
@@ -487,6 +651,7 @@ namespace StockLib.Service
                 var strDate = $"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}";
                 var url = string.Format(urlBase, strDate, mode.ToString());
                 var client = _client.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(5);
                 client.BaseAddress = new Uri(url);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 return await responseMessage.Content.ReadAsStreamAsync();
@@ -507,6 +672,7 @@ namespace StockLib.Service
                 var url = "https://www.hsx.vn";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -564,6 +730,7 @@ namespace StockLib.Service
                 var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -578,6 +745,7 @@ namespace StockLib.Service
                     return null;
                 //LV2
                 var clientDetail = new HttpClient { BaseAddress = new Uri(link) };
+                clientDetail.Timeout = TimeSpan.FromSeconds(5);
                 responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 html = await responseMessage.Content.ReadAsStringAsync();
                 doc.LoadHtml(html);
@@ -610,6 +778,7 @@ namespace StockLib.Service
                     var url = $"https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged={i}";
                     var client = _client.CreateClient();
                     client.BaseAddress = new Uri(url);
+                    client.Timeout = TimeSpan.FromSeconds(5);
                     var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -627,6 +796,7 @@ namespace StockLib.Service
                 foreach (var item in lLink)
                 {
                     var clientDetail = new HttpClient { BaseAddress = new Uri(item) };
+                    clientDetail.Timeout = TimeSpan.FromSeconds(5);
                     var responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -657,6 +827,7 @@ namespace StockLib.Service
                     var url = $"https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged={i}";
                     var client = _client.CreateClient();
                     client.BaseAddress = new Uri(url);
+                    client.Timeout = TimeSpan.FromSeconds(5);
                     var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -675,6 +846,7 @@ namespace StockLib.Service
                 foreach (var item in lLink)
                 {
                     var clientDetail = new HttpClient { BaseAddress = new Uri(item) };
+                    clientDetail.Timeout = TimeSpan.FromSeconds(5);
                     var responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -701,6 +873,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
@@ -720,6 +893,7 @@ namespace StockLib.Service
                 var url = "https://www.customs.gov.vn/bridge?url=/customs/api/GetTKHQInfo";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 var body = "{\"skip\":0,\"take\":10,\"ky\":\"\",\"textSearch\":\"\",\"the_loai\":\"0\",\"thoigianCongBo\":\"\",\"typeName\":\"GetListSoLieu\",\"language\":\"TIENG_VIET\"}";
                 requestMessage.Method = HttpMethod.Post;
@@ -745,6 +919,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
@@ -767,6 +942,7 @@ namespace StockLib.Service
                 var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged=2";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -810,6 +986,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
@@ -832,6 +1009,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -858,6 +1036,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -884,6 +1063,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -910,6 +1090,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -938,6 +1119,7 @@ namespace StockLib.Service
                 var url = $"https://www.ssi.com.vn/khach-hang-ca-nhan/bao-cao-cong-ty";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -991,6 +1173,7 @@ namespace StockLib.Service
                 var url = $"https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/1";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1044,6 +1227,7 @@ namespace StockLib.Service
                 var url = $"https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/nghien-cuu-co-phieu/";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1096,6 +1280,7 @@ namespace StockLib.Service
                 var url = $"https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1148,6 +1333,7 @@ namespace StockLib.Service
                 var url = $"https://s.cafef.vn/phan-tich-bao-cao.chn";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1198,6 +1384,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(5);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("authorization", "Bearer aa658fec0f739b8651e2ae2d8f74a6eb");
                 requestMessage.Headers.Add("cookie", "PHPSESSID=qel07aehcojn8v22e2md2gkiuf; aiExplainOn=off; app_ui_support_btn=1; telegram=1728398881; mm_sess_pages=2; cf_clearance=yNMbMzfX29Fnx_9j_f6YwRxiEWKd0zo9XBWv4dV_OOw-1728399595-1.2.1.1-Y5NoZO3KUaHJ_uTH9oGYETC6Z4XOtyCVvssrtazqzv22ErBM4QxJVxG8Wlrw3Old0u65qo7W6Q4gj9R2TxqvFaTaFy._fZ2PGu8T3Pr6ds7gPcTtHB6gHMMu2ybvSNX5r0o4JGnUWA_JDvwLTHgvnLSctUuN5YVvwgmFQ4yoqjv4A.Q0tcjcxivK6QcuixEB7uaVe5j2n_st4ccU42AIcgCSlF9nrS7BPsdfGiRhkmG6xFyRo6nPyZmzNRpJ9UbzhilA8Wln7.rSBBUq0jAZMDZ_0Z8Q5pLmfwaJK3nG_rczDASOlRVOFTa62CMZpL7BCewObMOPmowaK4rHxSV5IfXZA9grkKy5qKZdkhpKwUdeSwxIVMSZVevVLi2my0oB; PHPSESSID=8g819a8jg7mrdm1qmtft5vgv38");
@@ -1222,29 +1409,30 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<List<float>>> Investing_BDTI(string code)
+        public async Task<List<MacroVar_Data>> MacroVar_GetData(string id)
         {
-            var url = $"https://api.investing.com/api/financialdata/{code}/historical/chart/?interval=P1D&pointscount=60";
+            var url = $"https://macrovar.com/wp-json/mesmerize-api/v1/market-data-wid";
+            var body = $"wid={id}";
             try
             {
                 var client = _client.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(5);
                 client.BaseAddress = new Uri(url);
                 var requestMessage = new HttpRequestMessage();
-                requestMessage.Headers.Add("Cookie", "__cf_bm=2rmqLKQjU85QP4NrZ.74WTxWikEnUoM_HGsR6n0CRkE-1728407522-1.0.1.1-eGkoNjFqxVYd61.zFK9IBlWTptBx1emed7EwW9E8leyjYt8OBESJabXsseCeVbZ78XZpjAuumh.KXX9pAmgonA3.MuobMCy5gC5_mcAu9wI; __cflb=02DiuEaBtsFfH7bEbN4qQwLpwTUxNYEGzM655fP2cxy24; __cf_bm=f0oiMA_A8dd2OZU4RUDRMRU24Zu0es_VuBo_MrlpsVo-1728407622-1.0.1.1-zTakPYXUmPlGUTZZCy8iN4uJ_An7hdgXxAqS5Qt1smSs75VrlZqfMgvqqT9FBhFfJTnlJft5DNWPSlwYHabTXfu9R1aquHIsYLd2m.3ANWM; __cflb=02DiuEaBtsFfH7bEbN4qQwLpwTUxNYEGzM655fP2cxy24");
-                requestMessage.Headers.Add("User-Agent", "PostmanRuntime/7.42.0");
-                requestMessage.Method = HttpMethod.Get;
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
                 var responseMessage = await client.SendAsync(requestMessage);
 
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
 
                 var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
-                var responseModel = JsonConvert.DeserializeObject<Investing_Main>(responseMessageStr);
+                var responseModel = JsonConvert.DeserializeObject<MacroVar_Main>(responseMessageStr);
                 return responseModel.data;
             }
             catch (Exception ex)
             {
-                _logger.LogError($"APIService.Investing_BDTI|EXCEPTION| {ex.Message}");
+                _logger.LogError($"APIService.MacroVar_BDTI|EXCEPTION| {ex.Message}");
             }
             return null;
         }

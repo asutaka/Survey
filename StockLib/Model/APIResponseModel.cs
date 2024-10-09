@@ -364,8 +364,23 @@ namespace StockLib.Model
         public List<List<object>> series { get; set; }
     }
 
-    public class Investing_Main
+    public class MacroVar_Main
     {
-        public List<List<float>> data { get; set; }
+        public List<MacroVar_Data> data { get; set; }
+    }
+
+    public class MacroVar_Data
+    {
+        public string date { get; set; }
+        public float value { get; set; }
+    }
+
+    public class TradingEconomics_Data
+    {
+        public string Code { get; set; }
+        public float Weekly { get; set; }
+        public float Monthly { get; set; }
+        public float YTD { get; set; }
+        public float YoY { get; set; }
     }
 }

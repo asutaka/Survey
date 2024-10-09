@@ -216,6 +216,23 @@ namespace StockLib.PublicService
             }
         }
 
+        private async Task TraceGia(DateTime dt)
+        {
+            try
+            {
+                var tinhieu = await _analyzeService.TraceGia(dt);
+                if (tinhieu.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idUser, tinhieu.Item2);
+                    Thread.Sleep(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.BaoCaoPhanTich|EXCEPTION(TinHieuMuaBan)| {ex.Message}");
+            }
+        }
+
         private async Task TinHieuMuaBan()
         {
             try
@@ -243,6 +260,8 @@ namespace StockLib.PublicService
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
 
+                await TraceGia(dt);
+                return;
                 //try
                 //{
                 //    //await _analyzeService.TongCucThongKeThangHis();
@@ -259,6 +278,11 @@ namespace StockLib.PublicService
                 if (dt.Day == 6)
                 {
                     await TongCucThongKe(dt);
+                }
+
+                if(dt.Hour >= 17 && dt.Hour <= 18)
+                {
+                    await TraceGia(dt);
                 }
 
                 if (isDayOfWork)

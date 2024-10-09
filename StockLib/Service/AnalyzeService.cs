@@ -20,6 +20,7 @@ namespace StockLib.Service
         Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
         Task<(int, string)> TinHieuMuaBan();
         Task<(int, string)> BaoCaoPhanTich(DateTime dt);
+        Task<(int, string)> TraceGia(DateTime dt);
     }
     public partial class AnalyzeService : IAnalyzeService
     {

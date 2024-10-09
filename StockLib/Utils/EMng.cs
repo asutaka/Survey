@@ -140,7 +140,8 @@ namespace StockLib.Utils
         TongCucThongKeQuy = 42,
         TongCucHaiQuan_XK = 43,
         TongCucHaiQuan_NK = 44,
-        CurrentTime = 50
+        CurrentTime = 50,
+        TraceGia = 60
     }
 
     public enum EHnxExchange
