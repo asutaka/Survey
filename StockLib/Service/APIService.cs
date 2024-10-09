@@ -122,7 +122,7 @@ namespace StockLib.Service
                 var url = "https://finance.vietstock.vn/data/getdocument";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 //requestMessage.Headers.Add("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
                 requestMessage.Headers.Add("Cookie", "ASP.NET_SessionId=kez23nkspuoomciouahd1xqp; __RequestVerificationToken=5t0qgD3M2IWZKLXukNsWaFE2ZCWl_cKVOn2SDHUDDw6NIEfBM1FC1HWEnrE9BzsrKeZrRWbGyYItV21WS4E6t-CTsKZqRvQIv6Ma5qAegwU1; language=vi-VN; _ga=GA1.1.1323687995.1720524498; _ga_EXMM0DKVEX=GS1.1.1720524497.1.0.1720524497.60.0.0; vts_usr_lg=A48AA659415FEE16F7CD0976F49923629A486E7AD4073A0F7F92268AEC798D2599F993737255E9990209E28582ABC797C68C46C2209B505875B2542FB92A23DCEFB76C9610DA504D7C120024CAB560DA51EC06B2D17034BFA7F517529B3FF3340438A76004E762194D4CAC1C45600B90CF3FF9475AB984756A4F22DC52765B59; finance_viewedstock=ACB,; Theme=Light");
@@ -150,7 +150,7 @@ namespace StockLib.Service
                 var url = $"https://api.vietstock.vn/tvnew/history?symbol={code}&resolution=1D&from={dt.AddYears(-1).AddMonths(-3).ToUnixTimeSeconds()}&to={dt.ToUnixTimeSeconds()}&countback=500";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("Referer", "https://stockchart.vietstock.vn/");
                 requestMessage.Method = HttpMethod.Get;
@@ -192,7 +192,7 @@ namespace StockLib.Service
                 var url = string.Format(urlBase, type.GetDisplayName());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var result = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<Money24h_NhomNganhResponse>(result);
@@ -217,7 +217,7 @@ namespace StockLib.Service
                 var url = string.Format(urlBase, mode.GetDisplayName(), type.GetDisplayName());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<Money24h_ForeignAPIResponse>(resultArray);
@@ -282,7 +282,7 @@ namespace StockLib.Service
                 var url = string.Format(urlBase, code, "1D", DateTimeOffset.Now.AddYears(-2).ToUnixTimeSeconds(), DateTimeOffset.Now.ToUnixTimeSeconds());
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var resultArray = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<SSI_DataTradingResponse>(resultArray);
@@ -331,7 +331,7 @@ namespace StockLib.Service
                     var url = string.Format(urlBase, code, "1D", dtLast.ToUnixTimeSeconds(), dtFirst.ToUnixTimeSeconds());
                     var client = _client.CreateClient();
                     client.BaseAddress = new Uri(url);
-                    client.Timeout = TimeSpan.FromSeconds(5);
+                    client.Timeout = TimeSpan.FromSeconds(15);
                     var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var resultArray = await responseMessage.Content.ReadAsStringAsync();
                     var responseModel = JsonConvert.DeserializeObject<SSI_DataTradingResponse>(resultArray);
@@ -371,7 +371,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<SSI_PEResponse>(responseMessageStr);
@@ -391,7 +391,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
                 var responseModel = JsonConvert.DeserializeObject<SSI_ShareResponse>(responseMessageStr);
@@ -413,7 +413,7 @@ namespace StockLib.Service
                 var strDate = $"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}";
                 var url = string.Format(urlBase, strDate, mode.ToString());
                 var client = _client.CreateClient();
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 client.BaseAddress = new Uri(url);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 return await responseMessage.Content.ReadAsStreamAsync();
@@ -434,7 +434,7 @@ namespace StockLib.Service
                 var url = "https://www.hsx.vn";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -492,7 +492,7 @@ namespace StockLib.Service
                 var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -507,7 +507,7 @@ namespace StockLib.Service
                     return null;
                 //LV2
                 var clientDetail = new HttpClient { BaseAddress = new Uri(link) };
-                clientDetail.Timeout = TimeSpan.FromSeconds(5);
+                clientDetail.Timeout = TimeSpan.FromSeconds(15);
                 responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 html = await responseMessage.Content.ReadAsStringAsync();
                 doc.LoadHtml(html);
@@ -540,7 +540,7 @@ namespace StockLib.Service
                     var url = $"https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged={i}";
                     var client = _client.CreateClient();
                     client.BaseAddress = new Uri(url);
-                    client.Timeout = TimeSpan.FromSeconds(5);
+                    client.Timeout = TimeSpan.FromSeconds(15);
                     var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -558,7 +558,7 @@ namespace StockLib.Service
                 foreach (var item in lLink)
                 {
                     var clientDetail = new HttpClient { BaseAddress = new Uri(item) };
-                    clientDetail.Timeout = TimeSpan.FromSeconds(5);
+                    clientDetail.Timeout = TimeSpan.FromSeconds(15);
                     var responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -589,7 +589,7 @@ namespace StockLib.Service
                     var url = $"https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged={i}";
                     var client = _client.CreateClient();
                     client.BaseAddress = new Uri(url);
-                    client.Timeout = TimeSpan.FromSeconds(5);
+                    client.Timeout = TimeSpan.FromSeconds(15);
                     var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -608,7 +608,7 @@ namespace StockLib.Service
                 foreach (var item in lLink)
                 {
                     var clientDetail = new HttpClient { BaseAddress = new Uri(item) };
-                    clientDetail.Timeout = TimeSpan.FromSeconds(5);
+                    clientDetail.Timeout = TimeSpan.FromSeconds(15);
                     var responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
                     var html = await responseMessage.Content.ReadAsStringAsync();
                     var doc = new HtmlDocument();
@@ -635,7 +635,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
@@ -655,7 +655,7 @@ namespace StockLib.Service
                 var url = "https://www.customs.gov.vn/bridge?url=/customs/api/GetTKHQInfo";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 var body = "{\"skip\":0,\"take\":10,\"ky\":\"\",\"textSearch\":\"\",\"the_loai\":\"0\",\"thoigianCongBo\":\"\",\"typeName\":\"GetListSoLieu\",\"language\":\"TIENG_VIET\"}";
                 requestMessage.Method = HttpMethod.Post;
@@ -681,7 +681,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
@@ -704,7 +704,7 @@ namespace StockLib.Service
                 var url = "https://www.gso.gov.vn/bao-cao-tinh-hinh-kinh-te-xa-hoi-hang-thang/?paged=2";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
                 var doc = new HtmlDocument();
@@ -748,7 +748,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
                     return null;
@@ -771,7 +771,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -798,7 +798,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -825,7 +825,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -852,7 +852,7 @@ namespace StockLib.Service
             {
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
@@ -881,7 +881,7 @@ namespace StockLib.Service
                 var url = $"https://www.ssi.com.vn/khach-hang-ca-nhan/bao-cao-cong-ty";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -935,7 +935,7 @@ namespace StockLib.Service
                 var url = $"https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/1";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -989,7 +989,7 @@ namespace StockLib.Service
                 var url = $"https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/nghien-cuu-co-phieu/";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1042,7 +1042,7 @@ namespace StockLib.Service
                 var url = $"https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1095,7 +1095,7 @@ namespace StockLib.Service
                 var url = $"https://s.cafef.vn/phan-tich-bao-cao.chn";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
@@ -1146,7 +1146,7 @@ namespace StockLib.Service
             try
             {
                 var client = _client.CreateClient();
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
                 client.BaseAddress = new Uri(url);
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Method = HttpMethod.Post;
@@ -1176,7 +1176,7 @@ namespace StockLib.Service
                 var url = $"https://tradingeconomics.com/commodity/{code}";
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
-                client.Timeout = TimeSpan.FromSeconds(5);
+                client.Timeout = TimeSpan.FromSeconds(15);
 
                 var requestMessage = new HttpRequestMessage();
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
