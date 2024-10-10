@@ -21,6 +21,9 @@ namespace StockLib.Service
         Task SurveyT3(string code);
         void RankChungKhoan();
         void TotalDays();
+
+        Task SurveyCoinSuperTrend(string code);
+        Task SurveyCoinSuperTrendPhrase2(string code);
     }
     public partial class PartternService : IPartternService
     {

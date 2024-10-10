@@ -21,6 +21,8 @@ namespace StockLib.Service
         Task<(int, string)> TinHieuMuaBan();
         Task<(int, string)> BaoCaoPhanTich(DateTime dt);
         Task<(int, string)> TraceGia(DateTime dt);
+
+        Task<(int, string)> TinHieuMuaBanCoin();
     }
     public partial class AnalyzeService : IAnalyzeService
     {
@@ -34,10 +36,12 @@ namespace StockLib.Service
         private readonly IThongKeQuyRepo _thongkeQuyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IConfigBaoCaoPhanTichRepo _bcptRepo;
+        private readonly ICoinRepo _coinRepo;
         public AnalyzeService(ILogger<AnalyzeService> logger,
                             IAPIService apiService,
                             IFileService fileService,
                             IStockRepo stockRepo,
+                            ICoinRepo coinRepo,
                             IConfigDataRepo configRepo,
                             ICategoryRepo categoryRepo,
                             IThongKeRepo thongkeRepo,
@@ -49,6 +53,7 @@ namespace StockLib.Service
             _apiService = apiService;
             _fileService = fileService;
             _stockRepo = stockRepo;
+            _coinRepo = coinRepo;
             _configRepo = configRepo;
             _categoryRepo = categoryRepo;
             _thongkeRepo = thongkeRepo;

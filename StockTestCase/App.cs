@@ -22,8 +22,10 @@ namespace StockTestCase
 
         public async Task Run(string[] args)
         {
+            //await _service.SurveyCoinSuperTrendPhrase2("BTCUSDT");
+
             //await _service.SurveyGoldFish("DC4");
-            await _service.SurveySuperTrend("L18");
+            //await _service.SurveySuperTrend("L18");
             //await _service.SurveySuperTrendPhrase2("L18");
             //await _service.SurveyT3("L18");
             //await _service.SurveyVCP("NTL");
@@ -41,6 +43,31 @@ namespace StockTestCase
             //_service.RankChungKhoan();
             //_service.TotalDays();
             //////#endregion
+            ///
+
+            ////#region Test All Coin
+            var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
+
+
+            foreach (var coin in lSymbol.Data)
+            {
+                if (coin.QuoteAsset != "USDT")
+                    continue;
+
+                if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
+                    continue;
+
+                await _service.SurveyCoinSuperTrend(coin.Alias);
+                Thread.Sleep(1000);
+            }
+
+            _service.RankChungKhoan();
+            //_service.TotalDays();
+            ////#endregion
+
+            //var lCoin = await GlobalVal.BinanceInstance().SpotApi.ExchangeData.GetProductsAsync();
+            //var lData = lCoin.Data.Where(x => x.QuoteAsset == "USDT");
+
         }
     }
 }

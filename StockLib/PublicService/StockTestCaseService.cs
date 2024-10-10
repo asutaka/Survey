@@ -15,6 +15,9 @@ namespace StockLib.PublicService
         Task SurveyT3(string code);
         void RankChungKhoan();
         void TotalDays();
+
+        Task SurveyCoinSuperTrend(string code);
+        Task SurveyCoinSuperTrendPhrase2(string code);
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -32,6 +35,16 @@ namespace StockLib.PublicService
         public async Task SurveySuperTrendPhrase2(string code)
         {
             await _partternService.SurveySuperTrendPhrase2(code);
+        }
+
+        public async Task SurveyCoinSuperTrend(string code)
+        {
+            await _partternService.SurveyCoinSuperTrend(code);
+        }
+
+        public async Task SurveyCoinSuperTrendPhrase2(string code)
+        {
+            await _partternService.SurveyCoinSuperTrendPhrase2(code);
         }
 
         public async Task SurveyGoldFish(string code)

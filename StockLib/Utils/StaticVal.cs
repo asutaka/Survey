@@ -1,13 +1,38 @@
-﻿using StockLib.DAL.Entity;
+﻿using Binance.Net.Clients;
+using Bybit.Net.Clients;
+using StockLib.DAL.Entity;
 
 namespace StockLib.Utils
 {
     public static class StaticVal
     {
+        private static BybitRestClient _bybit;
+        private static BinanceRestClient _binance;
+
         public static (long, long, long, long) _currentTime;//yearquarter + year + quarter + flag
         public static int _TAKE = 15;
         public static List<Stock> _lStock = new List<Stock>();
         public static int _MaxRate = 500;
+
+        public static BybitRestClient ByBitInstance()
+        {
+            if (_bybit == null)
+            {
+                _bybit = new BybitRestClient();
+            }
+            return _bybit;
+        }
+
+
+        public static BinanceRestClient BinanceInstance()
+        {
+            if (_binance == null)
+            {
+                _binance = new BinanceRestClient();
+            }
+            return _binance;
+        }
+
 
         public static List<string> _lBanLeKey = new List<string>
         {
