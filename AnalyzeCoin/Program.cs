@@ -8,6 +8,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddHttpClient();
         services.AddSLib();
     })
+    .UseWindowsService()
     .Build();
 
 await host.RunAsync();
