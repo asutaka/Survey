@@ -14,6 +14,7 @@ namespace StockLib.Service
             {
                 var lCoin = _coinRepo.GetAll();
 
+                var lDanZVolume = new List<Coin>();
                 var lSuperTrend = new List<Coin>();
                 var lSuperTrendPhrase2 = new List<Coin>();
 
@@ -23,7 +24,7 @@ namespace StockLib.Service
                         || !item.indicator.Any())
                         continue;
 
-                    var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, item.s, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 1000);
+                    var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, item.s, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 1000);
                     var lData = lByBit.Data.List.Select(x => new Quote
                     {
                         Date = x.StartTime,
@@ -36,10 +37,10 @@ namespace StockLib.Service
 
                     if (item.indicator.Any(x => x.ty == (int)EIndicator.DanZangerVolumne))
                     {
-                        var isSuperTrend = lData.CheckDanZangerCustom(7);
-                        if (isSuperTrend)
+                        var isDanz = lData.CheckDanZangerCustom(7);
+                        if (isDanz)
                         {
-                            lSuperTrend.Add(item);
+                            lDanZVolume.Add(item);
                         }
                     }    
                     
@@ -65,6 +66,19 @@ namespace StockLib.Service
 
                 var sBuilder = new StringBuilder();
 
+
+                if (lDanZVolume.Any())
+                {
+                    sBuilder.AppendLine();
+                    sBuilder.AppendLine("[Tín hiệu DanZVolume - COIN]");
+
+                    foreach (var item in lDanZVolume.Take(10))
+                    {
+                        var indicator = item.indicator.FirstOrDefault(x => x.ty == (int)EIndicator.SuperTrend);
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg}%|Nam giu: {indicator.num}| Win/Loss: {indicator.win}%/{indicator.loss}%)");
+                    }
+                }
+
                 if (lSuperTrend.Any())
                 {
                     sBuilder.AppendLine();
@@ -73,7 +87,7 @@ namespace StockLib.Service
                     foreach (var item in lSuperTrend.Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.ty == (int)EIndicator.SuperTrend);
-                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg}%| Win/Loss: {indicator.win}%/{indicator.loss}%)");
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg}%|Nam giu: {indicator.num}| Win/Loss: {indicator.win}%/{indicator.loss}%)");
                     }
                 }
 
@@ -85,7 +99,7 @@ namespace StockLib.Service
                     foreach (var item in lSuperTrendPhrase2.Take(10))
                     {
                         var indicator = item.indicator.FirstOrDefault(x => x.ty == (int)EIndicator.SuperTrendPhrase2);
-                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg}%| Win/Loss: {indicator.win}%/{indicator.loss}%)");
+                        sBuilder.AppendLine($"{item.s}(TP trung bình: {indicator.avg}%|Nam giu: {indicator.num}| Win/Loss: {indicator.win}%/{indicator.loss}%)");
                     }
                 }
 
