@@ -11,7 +11,7 @@ namespace StockLib.Service
             try
             {
                 _code = code;
-                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 1000);
+                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 1000);
                 var lData = lByBit.Data.List.Select(x => new Quote
                 {
                     Date = x.StartTime,
@@ -84,7 +84,7 @@ namespace StockLib.Service
             {
                 _code = code;
 
-                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 500);
+                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 500);
                 var lData = lByBit.Data.List.Select(x => new Quote
                 {
                     Date = x.StartTime,

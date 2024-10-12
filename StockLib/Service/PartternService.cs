@@ -19,24 +19,28 @@ namespace StockLib.Service
         Task Survey3C(string code);
         Task SurveyMa20(string code);
         Task SurveyT3(string code);
-        void RankChungKhoan();
+        void RankChungKhoan(EIndicator eVal, int val);
         void TotalDays();
 
         Task SurveyCoinSuperTrend(string code);
         Task SurveyCoinSuperTrendPhrase2(string code);
+        Task SurveyCoinDanZagerCustom(string code);
     }
     public partial class PartternService : IPartternService
     {
         private readonly ILogger<PartternService> _logger;
         private readonly IAPIService _apiService;
         private readonly IStockRepo _stockRepo;
+        private readonly ICoinRepo _coinRepo;
         public PartternService(ILogger<PartternService> logger,
                                 IAPIService apiService,
-                                IStockRepo stockRepo) 
+                                IStockRepo stockRepo,
+                                ICoinRepo coinRepo) 
         {
             _logger = logger;
             _apiService = apiService;
             _stockRepo = stockRepo;
+            _coinRepo = coinRepo;
         }
 
         string _code = string.Empty;
@@ -147,7 +151,7 @@ namespace StockLib.Service
             _lPivot.Clear();
         }
 
-        public void RankChungKhoan()
+        public void RankChungKhoan(EIndicator eVal, int val)
         {
             var lTop = _lCode.Where(x => x.Item2 == 1 && x.Item3 != x.Item4).OrderByDescending(x => x.Item3).Take(100).ToList();
             lTop = lTop.Where(x => x.Item6 >= x.Item7).ToList();
@@ -155,6 +159,9 @@ namespace StockLib.Service
             var i = 1;
             foreach (var item in lTop)
             {
+                if (val > 0 && Math.Round(item.Item3) < val)
+                    break;
+
                 var SB = _lCode.Where(x => x.Item2 == 0).FirstOrDefault(x => x.Item1 == item.Item1);
                 sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| Win: {item.Item6}| Loss: {item.Item7}");
                 //sBuilder.AppendLine($"{i++}.{item.Item1}|AVG: {item.Item3}%|Total: {item.Item4}%|Nam_giu_tb: {Math.Round(item.Item5)}| AVG Loss: {SB.Item3}%| Total Loss: {SB.Item4}%");
@@ -176,6 +183,45 @@ namespace StockLib.Service
                 //    loss_rate = (double)item.Item7
                 //});
                 //_stockRepo.Update(stock);
+
+                //Update Coin
+                //var coin = _coinRepo.GetEntityByFilter(Builders<Coin>.Filter.Eq(x => x.s, item.Item1));
+                //var isInsert = false;
+                //if (coin == null)
+                //{
+                //    coin = new Coin
+                //    {
+                //        s = item.Item1,
+                //        indicator = new List<IndicatorCoin>(),
+                //        status = 1
+                //    };
+                //    isInsert = true;
+                //}
+                  
+                //if (coin.indicator is null)
+                //{
+                //    coin.indicator = new List<IndicatorCoin>();
+                //}
+
+                //coin.indicator.Add(new IndicatorCoin
+                //{
+                //    ty = (int)eVal,
+                //    rank = i - 1,
+                //    avg = (double)item.Item3,
+                //    total = (double)item.Item4,
+                //    num = (int)Math.Round(item.Item5),
+                //    win = (int)item.Item6,
+                //    loss = (int)item.Item7
+                //});
+
+                //if(isInsert)
+                //{
+                //    _coinRepo.InsertOne(coin);
+                //}
+                //else
+                //{
+                //    _coinRepo.Update(coin);
+                //}
             }
             Console.WriteLine(sBuilder.ToString());
         }

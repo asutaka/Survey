@@ -34,6 +34,15 @@ namespace StockLib.Service
                         Volume = x.Volume,
                     }).ToList();
 
+                    if (item.indicator.Any(x => x.ty == (int)EIndicator.DanZangerVolumne))
+                    {
+                        var isSuperTrend = lData.CheckDanZangerCustom(7);
+                        if (isSuperTrend)
+                        {
+                            lSuperTrend.Add(item);
+                        }
+                    }    
+                    
                     if (item.indicator.Any(x => x.ty == (int)EIndicator.SuperTrend))
                     {
                         var isSuperTrend = lData.CheckSuperTrend();

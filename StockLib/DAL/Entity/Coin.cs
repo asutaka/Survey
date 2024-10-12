@@ -13,6 +13,7 @@ namespace StockLib.DAL.Entity
     public class IndicatorCoin
     {
         public int ty { get; set; }//Loại chỉ báo
+        public int rank { get; set; }
         public double avg { get; set; }//TP Trung bình mỗi lần vào lệnh
         public double total { get; set; }//Tổng TP
         public int num { get; set; }//Số nến nắm giữ TB

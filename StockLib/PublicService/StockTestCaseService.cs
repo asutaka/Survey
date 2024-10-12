@@ -1,4 +1,5 @@
 ﻿using StockLib.Service;
+using StockLib.Utils;
 
 namespace StockLib.PublicService
 {
@@ -13,11 +14,12 @@ namespace StockLib.PublicService
         Task SurveyMa20(string code);
         Task Survey3C(string code);
         Task SurveyT3(string code);
-        void RankChungKhoan();
+        void RankChungKhoan(EIndicator eVal, int val);
         void TotalDays();
 
         Task SurveyCoinSuperTrend(string code);
         Task SurveyCoinSuperTrendPhrase2(string code);
+        Task SurveyCoinDanZagerCustom(string code);
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -45,6 +47,11 @@ namespace StockLib.PublicService
         public async Task SurveyCoinSuperTrendPhrase2(string code)
         {
             await _partternService.SurveyCoinSuperTrendPhrase2(code);
+        }
+
+        public async Task SurveyCoinDanZagerCustom(string code)
+        {
+            await _partternService.SurveyCoinDanZagerCustom(code);
         }
 
         public async Task SurveyGoldFish(string code)
@@ -82,9 +89,9 @@ namespace StockLib.PublicService
             await _partternService.Survey3C(code);
         }
 
-        public void RankChungKhoan()
+        public void RankChungKhoan(EIndicator eVal, int val)
         {
-            _partternService.RankChungKhoan();
+            _partternService.RankChungKhoan(eVal, val);
         }
 
         public void TotalDays()
