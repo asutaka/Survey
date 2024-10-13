@@ -336,6 +336,30 @@ namespace StockLib.Model
         public DateTime publishedAt { get; set; }
     }
 
+    public class VCI_Main
+    {
+        public VCI_Data data { get; set; }
+    }
+
+    public class VCI_Data
+    {
+        public VCI_Response pagingGeneralResponses { get; set; }
+    }
+
+    public class VCI_Response
+    {
+        public List<VCI_Content> content { get; set; }
+    }
+
+    public class VCI_Content 
+    {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string file { get; set; }
+        public DateTime makerDate { get; set; }
+        public string pageLink { get; set; }
+    }
+
     public class VCBS_Category
     {
         public string code { get; set; }

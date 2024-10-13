@@ -471,6 +471,7 @@ namespace StockLib.Utils
         PSI = 8,
         CafeF = 9,
         VCBS = 10,
-        FPTS = 11
+        FPTS = 11,
+        VCI = 12
     }
 }

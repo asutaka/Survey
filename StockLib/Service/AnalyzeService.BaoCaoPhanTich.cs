@@ -243,6 +243,61 @@ namespace StockLib.Service
                     }
                 }
 
+                var lVCI = await _apiService.VCI_GetPost();
+                if (lVCI != null)
+                {
+                    var lValid = lVCI.Where(x => x.makerDate >= time
+                                            && (x.pageLink == "company-research" || x.pageLink == "sector-reports" || x.pageLink == "macroeconomics"));
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.VCI),
+                                builder.Eq(x => x.key, itemValid.id.ToString()),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id.ToString(),
+                                ty = (int)ESource.VCI
+                            });
+
+                            if (itemValid.pageLink == "company-research")
+                            {
+                                sBuilder.AppendLine($"[VCI - Phân tích cổ phiếu] {itemValid.name}");
+                            }
+                            else if (itemValid.pageLink == "sector-reports")
+                            {
+                                sBuilder.AppendLine($"[VCI - Báo cáo Ngành] {itemValid.name}");
+                            }
+                            else
+                            {
+                                sBuilder.AppendLine($"[VCI - Báo cáo vĩ mô] {itemValid.name}");
+                            }
+
+                            sBuilder.AppendLine($"Link: {itemValid.file}");
+                        }
+                    }
+                }
+
                 var lVCBS = await _apiService.VCBS_GetPost();
                 if (lVCBS != null)
                 {

@@ -43,6 +43,7 @@ namespace StockLib.Service
         Task<List<VNDirect_Data>> VNDirect_GetPost();
         Task<List<MigrateAsset_Data>> MigrateAsset_GetPost();
         Task<List<AGR_Data>> Agribank_GetPost();
+        Task<List<VCI_Content>> VCI_GetPost();
         Task<List<BCPT_Crawl_Data>> SSI_GetPost();
         Task<List<BCPT_Crawl_Data>> BSC_GetPost();
         Task<List<VCBS_Data>> VCBS_GetPost();
@@ -738,6 +739,33 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.TongCucThongKe|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<VCI_Content>> VCI_GetPost()
+        {
+            var url = $"https://www.vietcap.com.vn/api/cms-service/v1/page/analysis?is-all=true&page=0&size=20&direction=DESC&sortBy=date&language=2";
+            try
+            {
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<VCI_Main>(responseMessageStr);
+                return responseModel.data.pagingGeneralResponses.content;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.VCI_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }
