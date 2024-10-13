@@ -745,7 +745,25 @@ namespace StockLib.Service
 
         public async Task<List<VCI_Content>> VCI_GetPost()
         {
-            var url = $"https://www.vietcap.com.vn/api/cms-service/v1/page/analysis?is-all=true&page=0&size=20&direction=DESC&sortBy=date&language=2";
+            var lResult = new List<VCI_Content>();
+            var lEng = await VCI_GetPost_Lang(2);
+            if(lEng?.Any() ?? false)
+            {
+                lResult.AddRange(lEng);
+            }
+
+            var lVi = await VCI_GetPost_Lang(1);
+            if (lVi?.Any() ?? false)
+            {
+                lResult.AddRange(lVi);
+            }
+
+            return lResult;
+        }
+
+        private async Task<List<VCI_Content>> VCI_GetPost_Lang(int lang)
+        {
+            var url = $"https://www.vietcap.com.vn/api/cms-service/v1/page/analysis?is-all=true&page=0&size=10&direction=DESC&sortBy=date&language={lang}";
             try
             {
                 var client = _client.CreateClient();
