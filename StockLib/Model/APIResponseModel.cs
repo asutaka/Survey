@@ -396,4 +396,25 @@ namespace StockLib.Model
         public float YTD { get; set; }
         public float YoY { get; set; }
     }
+
+    public class Metal_Main
+    {
+        public Metal_Data data { get; set; }
+    }
+
+    public class Metal_Data
+    {
+        public List<Metal_Detail> priceListList { get; set; }
+    }
+
+    public class Metal_Detail
+    {
+        public Metal_Price metalsPrice { get; set; }
+    }
+
+    public class Metal_Price
+    {
+        public float average { get; set; }
+        public string renewDate { get; set; }
+    }
 }

@@ -8,6 +8,7 @@ using Skender.Stock.Indicators;
 using StockLib.Model;
 using StockLib.Service.Settings;
 using StockLib.Utils;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using UglyToad.PdfPig.Content;
@@ -65,7 +66,7 @@ namespace StockLib.Service
 
 
         Task<List<MacroVar_Data>> MacroVar_GetData(string id);
-        Task Metal_GetYellowPhotpho();
+        Task<List<Metal_Detail>> Metal_GetYellowPhotpho();
         Task<double> Tradingeconimic_GetForex(string code);
         Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
         Task<(float, float)> Drewry_WCI();
@@ -1360,83 +1361,25 @@ namespace StockLib.Service
             return 0;
         }
 
-        public async Task Metal_GetYellowPhotpho()
+        public async Task<List<Metal_Detail>> Metal_GetYellowPhotpho()
         {
             try
             {
-                var client = new HttpClient();
-                var request = new HttpRequestMessage(HttpMethod.Get, "https://www.metal.com/Ternary-precursor-material/202005210065");
-                request.Headers.Add("Host", "www.metal.com");11
-                //request.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+                var url = "https://www.metal.com/api/spotcenter/get_history_prices?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjZWxscGhvbmUiOiIiLCJjb21wYW55X2lkIjowLCJjb21wYW55X3N0YXR1cyI6MCwiY3JlYXRlX2F0IjoxNzI4ODE0NDE2LCJlbWFpbCI6Im5ndXllbnBodTEzMTJAZ21haWwuY29tIiwiZW5fZW5kX3RpbWUiOjAsImVuX3JlZ2lzdGVyX3N0ZXAiOjIsImVuX3JlZ2lzdGVyX3RpbWUiOjE3MjY5MzExMjUsImVuX3N0YXJ0X3RpbWUiOjAsImVuX3VzZXJfdHlwZSI6MCwiZW5kX3RpbWUiOjAsImlzX21haWwiOjAsImlzX3Bob25lIjowLCJsYW5ndWFnZSI6IiIsImx5X2VuZF90aW1lIjowLCJseV9zdGFydF90aW1lIjowLCJseV91c2VyX3R5cGUiOjAsInJlZ2lzdGVyX3RpbWUiOjE3MjY5MzExMjQsInN0YXJ0X3RpbWUiOjAsInVuaXF1ZV9pZCI6ImZiNzA2MWY5MTY3OGRiMWVmMmE0MDhiNzZhM2JmZGI1IiwidXNlcl9pZCI6Mzg2Mzk0MywidXNlcl9sYW5ndWFnZSI6ImNuIiwidXNlcl9uYW1lIjoiU01NMTcyNjkzMTEyNUd3IiwidXNlcl90eXBlIjowLCJ6eF9lbmRfdGltZSI6MCwienhfc3RhcnRfdGltZSI6MCwienhfdXNlcl90eXBlIjowfQ.Cto8fQMsanSaEDjBWPNPSMMSX68AaQp8_5uLgnVUYXE&id=202005210065&beginDate=2021-10-13&endDate=2024-10-13&needQuote=0";
+                var client = _client.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(15);
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
                 var response = await client.SendAsync(request);
                 response.EnsureSuccessStatusCode();
-                var tmp = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(await response.Content.ReadAsStringAsync());
-                var zz = 1;
-
-
-                ////LV1
-                //var link = string.Empty;
-                //var url = $"https://www.metal.com/Lithium%20Battery%20Cathode%20Precursor%20and%20Material/202005210065?type=3%20Years";
-                //var client = _client.CreateClient();
-                //client.BaseAddress = new Uri(url);
-                //client.Timeout = TimeSpan.FromSeconds(15);
-
-                //var requestMessage = new HttpRequestMessage();
-                //requestMessage.Headers.Add("Host", "www.metal.com");
-                //requestMessage.Headers.Add("User-Agent", "PostmanRuntime/7.42.0");
-                //requestMessage.Method = HttpMethod.Get;
-
-                //client.GenerateCurlInConsole(requestMessage);
-
-                //var responseMessage = await client.SendAsync(requestMessage);
-
-                ////var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                //var tmp = 1;
-                //var html = await responseMessage.Content.ReadAsStringAsync();
-                //var doc = new HtmlDocument();
-                //doc.LoadHtml(html);
-
-                //var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"aspnetForm\"]/div[5]/div/div[1]/div[4]/div/div/table/tr") as IEnumerable<HtmlNode>;
-                //var lVal = new List<string>();
-                //var istrue = false;
-                //var iscomplete = false;
-                //foreach (var item in nodes)
-                //{
-                //    foreach (HtmlNode node in item.ChildNodes)
-                //    {
-                //        if (string.IsNullOrWhiteSpace(node.InnerText))
-                //            continue;
-
-                //        if (!istrue && node.InnerText.RemoveSpace().Replace("-", "").Contains(code.RemoveSpace().Replace("-", ""), StringComparison.OrdinalIgnoreCase))
-                //        {
-                //            istrue = true;
-                //            continue;
-                //        }
-
-                //        if (!istrue)
-                //            continue;
-
-                //        if (!node.InnerText.Contains("%"))
-                //            continue;
-                //        lVal.Add(node.InnerText.Replace("%", ""));
-                //        iscomplete = true;
-                //    }
-                //    if (iscomplete)
-                //        break;
-                //}
-
-                //if (lVal.Any())
-                //{
-                //    var isDouble = double.TryParse(lVal.Last(), out var val);
-                //    if (isDouble)
-                //        return val;
-                //}
+                var responseMessageStr = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<Metal_Main>(responseMessageStr);
+                return responseModel?.data?.priceListList;
             }
             catch(Exception ex)
             {
                 _logger.LogError($"APIService.Metal_GetYellowPhotpho|EXCEPTION| {ex.Message}");
             }
+            return null; 
         }
 
         public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()

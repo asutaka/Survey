@@ -29,9 +29,53 @@ namespace StockLib.Service
 
                 var strOutput = new StringBuilder();
 
-                //phunv
                 //photpho vang
-                await _apiService.Metal_GetYellowPhotpho();
+                var lPhotpho = await _apiService.Metal_GetYellowPhotpho();
+                if (lPhotpho?.Any() ?? false)
+                {
+                    var cur = lPhotpho.First();
+                    var time = cur.metalsPrice.renewDate.ToDateTime("yyyy-MM-dd");
+                    var nearTime = time.AddDays(-6);
+
+                    var near = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{nearTime.Day.To2Digit()}"
+                                                        || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 1).To2Digit()}"
+                                                        || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 2).To2Digit()}"
+                                                        || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 3).To2Digit()}");
+                    if(near != null)
+                    {
+                        var prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}");
+                        if (prev is null)
+                        {
+                            prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 1).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 2).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 3).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 4).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 5).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 6).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 1).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 2).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 3).To2Digit()}"
+                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 4).To2Digit()}");
+                        }
+
+                        var strMes = string.Empty;
+                        var rate = Math.Round(100 * (-1 + cur.metalsPrice.average / near.metalsPrice.average), 1);
+                        if (rate >= flag || rate <= -flag)
+                        {
+                            strMes = $"- Giá phốt pho vàng(weekly): {rate}%";
+                            if (prev != null)
+                            {
+                                var ratePrev = Math.Round(100 * (-1 + cur.metalsPrice.average / prev.metalsPrice.average), 1);
+                                strMes += $" |YoY: {Math.Round(ratePrev, 1)}%";
+                            }
+                        }
+                       if(!string.IsNullOrWhiteSpace(strMes))
+                        {
+                            strOutput.AppendLine(strMes);
+                        }
+                    }
+                }
 
                 var wci = await _apiService.Drewry_WCI();
                 if (wci.Item1 >= flag || wci.Item1 <= -flag)

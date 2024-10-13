@@ -260,9 +260,6 @@ namespace StockLib.PublicService
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
 
-                //phunv
-                await TraceGia(dt);
-                return;
                 //try
                 //{
                 //    //await _analyzeService.TongCucThongKeThangHis();
