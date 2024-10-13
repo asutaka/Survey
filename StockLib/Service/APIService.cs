@@ -8,6 +8,7 @@ using Skender.Stock.Indicators;
 using StockLib.Model;
 using StockLib.Service.Settings;
 using StockLib.Utils;
+using System.Net.Http.Headers;
 using System.Text;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
@@ -52,8 +53,6 @@ namespace StockLib.Service
         Task<List<BCPT_Crawl_Data>> FPTS_GetPost(bool isNganh);
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
-        Task<List<MacroVar_Data>> MacroVar_GetData(string id);
-
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
         Task<Stream> TuDoanhHSX(DateTime dt);
         Task<Stream> TongCucThongKe(DateTime dt);
@@ -64,6 +63,9 @@ namespace StockLib.Service
         Task<List<string>> DSTongCucThongKe();
         Task<Stream> StreamTongCucThongKe(string url);
 
+
+        Task<List<MacroVar_Data>> MacroVar_GetData(string id);
+        Task Metal_GetYellowPhotpho();
         Task<double> Tradingeconimic_GetForex(string code);
         Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
         Task<(float, float)> Drewry_WCI();
@@ -743,11 +745,12 @@ namespace StockLib.Service
             return null;
         }
 
+        #region Phân tích doanh nghiệp
         public async Task<List<VCI_Content>> VCI_GetPost()
         {
             var lResult = new List<VCI_Content>();
             var lEng = await VCI_GetPost_Lang(2);
-            if(lEng?.Any() ?? false)
+            if (lEng?.Any() ?? false)
             {
                 lResult.AddRange(lEng);
             }
@@ -942,7 +945,7 @@ namespace StockLib.Service
 
                 for (int i = 0; i < 15; i++)
                 {
-                    var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/main/section[2]/div/div[2]/div[2]/div/div[2]/div[{i+1}]/div[1]/a");
+                    var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/main/section[2]/div/div[2]/div[2]/div/div[2]/div[{i + 1}]/div[1]/a");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/main/section[2]/div/div[2]/div[2]/div/div[2]/div[{i + 1}]/div[2]/p/span");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
@@ -950,7 +953,7 @@ namespace StockLib.Service
                         continue;
 
                     var strSplit = timeStr.Split('/');
-                    if(strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
+                    if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
                         var year = int.Parse(strSplit[2].Trim());
                         var month = int.Parse(strSplit[1].Trim());
@@ -996,7 +999,7 @@ namespace StockLib.Service
 
                 for (int i = 0; i < 10; i++)
                 {
-                    var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[4]/div[4]/div[2]/div/table/tbody/tr[{i+1}]/td[2]/a");
+                    var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[4]/div[4]/div[2]/div/table/tbody/tr[{i + 1}]/td[2]/a");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[4]/div[4]/div[2]/div/table/tbody/tr[{i + 1}]/td[1]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
@@ -1105,7 +1108,7 @@ namespace StockLib.Service
                     var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[2]/div[1]/div[1]");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[1]/div/div[1]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
-                    var timeStr = nodeTime?.InnerText.Trim().Replace("\n","/");
+                    var timeStr = nodeTime?.InnerText.Trim().Replace("\n", "/");
                     if (string.IsNullOrWhiteSpace(timeStr))
                         continue;
 
@@ -1139,7 +1142,7 @@ namespace StockLib.Service
             {
                 var url = $"https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=179";
                 var indexCode = 2;
-                if(isNganh)
+                if (isNganh)
                 {
                     url = $"https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=174";
                     indexCode = 3;
@@ -1195,11 +1198,11 @@ namespace StockLib.Service
                             });
                         }
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         _logger.LogError($"APIService.FPTS_GetPost|EXCEPTION(DETAIL)| INPUT: {JsonConvert.SerializeObject(item)}| {ex.Message}");
                     }
-                  
+
                 }
 
                 return lResult;
@@ -1262,7 +1265,8 @@ namespace StockLib.Service
                 _logger.LogError($"APIService.CafeF_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
-        }
+        } 
+        #endregion
 
         public async Task<List<MacroVar_Data>> MacroVar_GetData(string id)
         {
@@ -1354,6 +1358,85 @@ namespace StockLib.Service
                 _logger.LogError($"APIService.Tradingeconimic_GetForex|EXCEPTION| {ex.Message}");
             }
             return 0;
+        }
+
+        public async Task Metal_GetYellowPhotpho()
+        {
+            try
+            {
+                var client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://www.metal.com/Ternary-precursor-material/202005210065");
+                request.Headers.Add("Host", "www.metal.com");11
+                //request.Headers.ContentType = new MediaTypeHeaderValue("text/html");
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var tmp = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(await response.Content.ReadAsStringAsync());
+                var zz = 1;
+
+
+                ////LV1
+                //var link = string.Empty;
+                //var url = $"https://www.metal.com/Lithium%20Battery%20Cathode%20Precursor%20and%20Material/202005210065?type=3%20Years";
+                //var client = _client.CreateClient();
+                //client.BaseAddress = new Uri(url);
+                //client.Timeout = TimeSpan.FromSeconds(15);
+
+                //var requestMessage = new HttpRequestMessage();
+                //requestMessage.Headers.Add("Host", "www.metal.com");
+                //requestMessage.Headers.Add("User-Agent", "PostmanRuntime/7.42.0");
+                //requestMessage.Method = HttpMethod.Get;
+
+                //client.GenerateCurlInConsole(requestMessage);
+
+                //var responseMessage = await client.SendAsync(requestMessage);
+
+                ////var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
+                //var tmp = 1;
+                //var html = await responseMessage.Content.ReadAsStringAsync();
+                //var doc = new HtmlDocument();
+                //doc.LoadHtml(html);
+
+                //var nodes = doc.DocumentNode.SelectNodes("//*[@id=\"aspnetForm\"]/div[5]/div/div[1]/div[4]/div/div/table/tr") as IEnumerable<HtmlNode>;
+                //var lVal = new List<string>();
+                //var istrue = false;
+                //var iscomplete = false;
+                //foreach (var item in nodes)
+                //{
+                //    foreach (HtmlNode node in item.ChildNodes)
+                //    {
+                //        if (string.IsNullOrWhiteSpace(node.InnerText))
+                //            continue;
+
+                //        if (!istrue && node.InnerText.RemoveSpace().Replace("-", "").Contains(code.RemoveSpace().Replace("-", ""), StringComparison.OrdinalIgnoreCase))
+                //        {
+                //            istrue = true;
+                //            continue;
+                //        }
+
+                //        if (!istrue)
+                //            continue;
+
+                //        if (!node.InnerText.Contains("%"))
+                //            continue;
+                //        lVal.Add(node.InnerText.Replace("%", ""));
+                //        iscomplete = true;
+                //    }
+                //    if (iscomplete)
+                //        break;
+                //}
+
+                //if (lVal.Any())
+                //{
+                //    var isDouble = double.TryParse(lVal.Last(), out var val);
+                //    if (isDouble)
+                //        return val;
+                //}
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"APIService.Metal_GetYellowPhotpho|EXCEPTION| {ex.Message}");
+            }
         }
 
         public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()

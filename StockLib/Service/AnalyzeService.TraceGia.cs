@@ -28,6 +28,11 @@ namespace StockLib.Service
                 }
 
                 var strOutput = new StringBuilder();
+
+                //phunv
+                //photpho vang
+                await _apiService.Metal_GetYellowPhotpho();
+
                 var wci = await _apiService.Drewry_WCI();
                 if (wci.Item1 >= flag || wci.Item1 <= -flag)
                 {
