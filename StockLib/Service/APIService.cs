@@ -48,6 +48,7 @@ namespace StockLib.Service
         Task<List<VCBS_Data>> VCBS_GetPost();
         Task<List<BCPT_Crawl_Data>> MBS_GetPost();
         Task<List<BCPT_Crawl_Data>> PSI_GetPost();
+        Task<List<BCPT_Crawl_Data>> FPTS_GetPost(bool isNganh);
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
         Task<List<MacroVar_Data>> MacroVar_GetData(string id);
@@ -1086,6 +1087,84 @@ namespace StockLib.Service
             return null;
         }
 
+        public async Task<List<BCPT_Crawl_Data>> FPTS_GetPost(bool isNganh)
+        {
+            try
+            {
+                var url = $"https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=179";
+                var indexCode = 2;
+                if(isNganh)
+                {
+                    url = $"https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=174";
+                    indexCode = 3;
+                }
+
+                var lResult = new List<BCPT_Crawl_Data>();
+                var link = string.Empty;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+                var lNode = doc.DocumentNode.SelectNodes($"//*[@id=\"grid\"]")?.Nodes();
+                if (!lNode.Any())
+                    return null;
+
+                foreach (var item in lNode)
+                {
+                    try
+                    {
+                        if (item.Name != "tr" || item.InnerText.Trim().Length < 100)
+                            continue;
+                        var nodeTime = item.ChildNodes[1];
+                        var nodeCode = item.ChildNodes[2];
+                        var nodeTitle = item.ChildNodes[3];
+
+                        var title = nodeTitle?.InnerText.Replace("\n", "").Trim();
+                        var code = nodeCode?.InnerText.Trim();
+                        var timeStr = nodeTime?.InnerText.Trim().Replace("\n", "/");
+                        if (string.IsNullOrWhiteSpace(timeStr))
+                            continue;
+
+                        var strSplit = timeStr.Split('/');
+                        if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
+                        {
+                            var year = int.Parse(strSplit[2].Trim());
+                            var month = int.Parse(strSplit[1].Trim());
+                            var day = int.Parse(strSplit[0].Trim());
+                            title = $"{code} {title}";
+
+                            lResult.Add(new BCPT_Crawl_Data
+                            {
+                                id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
+                                title = title,
+                                date = new DateTime(year, month, day)
+                            });
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        _logger.LogError($"APIService.FPTS_GetPost|EXCEPTION(DETAIL)| INPUT: {JsonConvert.SerializeObject(item)}| {ex.Message}");
+                    }
+                  
+                }
+
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.FPTS_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
         public async Task<List<BCPT_Crawl_Data>> CafeF_GetPost()
         {
             try
@@ -1248,6 +1327,7 @@ namespace StockLib.Service
                     "Rice", //Gạo
                     "Sugar", //Đường
                     "Urea", //U rê
+                    "polyvinyl", //Ống nhựa PVC
                 };
 
                 var lResult = new List<TradingEconomics_Data>();
