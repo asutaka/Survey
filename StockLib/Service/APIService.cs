@@ -1400,6 +1400,7 @@ namespace StockLib.Service
                     "Sugar", //Đường
                     "Urea", //U rê
                     "polyvinyl", //Ống nhựa PVC
+                    "Nickel", //Niken
                 };
 
                 var lResult = new List<TradingEconomics_Data>();

@@ -163,6 +163,10 @@ namespace StockLib.Service
                         {
                             strOutput.AppendLine($"   - Giá nhựa PVC(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
+                        else if (item.Code == "Nickel")
+                        {
+                            strOutput.AppendLine($"   - Giá Niken-PC1(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                        }
                     }
                 }
 
