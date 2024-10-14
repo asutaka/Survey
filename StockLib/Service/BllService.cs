@@ -72,7 +72,6 @@ namespace StockLib.Service
         private readonly IFinancialOtoRepo _otoRepo;
         private readonly IFinancialCangBienRepo _cangbienRepo;
         private readonly IFinancialThuySanRepo _thuysanRepo;
-        private readonly IFinancialXimangRepo _ximangRepo;
         private readonly IFinancialDetMayRepo _detmayRepo;
         private readonly IFinancialDauKhiRepo _daukhiRepo;
         private readonly IFinancialHangKhongRepo _hangkhongRepo;
@@ -101,7 +100,6 @@ namespace StockLib.Service
                             IFinancialDetMayRepo detmayRepo,
                             IFinancialDauKhiRepo daukhiRepo,
                             IFinancialHangKhongRepo hangkhongRepo,
-                            IFinancialXimangRepo ximangRepo,
                             IFinancialLogisticRepo logisticRepo,
                             IKeHoachRepo kehoachRepo,
                             IChiSoPERepo peRepo,
@@ -127,7 +125,6 @@ namespace StockLib.Service
             _detmayRepo = detmayRepo;
             _peRepo = peRepo;
             _hangkhongRepo = hangkhongRepo;
-            _ximangRepo = ximangRepo;
             _logisticRepo = logisticRepo;
             _daukhiRepo = daukhiRepo;
             _configRepo = configRepo;

@@ -11,7 +11,7 @@ namespace StockLib.Service
     {
         public async Task SyncTest()
         {
-            //var lData = _nhuaRepo.GetAll();
+            //var lData = _ximangRepo.GetAll();
             //foreach (var item in lData)
             //{
             //    var entity = new Financial
