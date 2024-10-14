@@ -14,7 +14,7 @@ namespace StockLib.Service
                 var step1 = 5;
                 var step2 = 15;
                 //Người mua trả tiền trước
-                var lBDS = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.s, code));
+                var lBDS = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
                 if (lBDS is null || lBDS.Count() < 5)
                 {
                     return (EPoint.VeryNegative, string.Empty);

@@ -25,12 +25,12 @@ namespace StockLib.Service
 
             //Người mua, tồn kho, tỉ lệ người mua/tồn kho
             var time = GetCurrentTime();
-            var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
             if (!lFinancial.Any())
                 return null;
 
             var lMaCKSort = StaticVal._lStock.Where(x => lMaCK5Quarter.Contains(x.s) || lMaCK1Quarter.Contains(x.s)).OrderBy(x => x.rank).Select(x => x.s);
-            var lFinancialFilter = new List<Financial_BDS>();
+            var lFinancialFilter = new List<Financial>();
             foreach (var item in lMaCKSort)
             {
                 var first = lFinancial.FirstOrDefault(x => x.s == item);
@@ -76,15 +76,15 @@ namespace StockLib.Service
             try
             {
                 var time = GetCurrentTime();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
+                var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
                 lFinancial = lFinancial.Where(x => lInput.Contains(x.s))
                                         .Where(x => x.bp >= 500 && x.inv >= 500).ToList();
 
-                var lFinancialPrev1 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
-                var lFinancialPrev2 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter()));
-                var lFinancialPrev3 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
-                var lFinancialPrev4 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
-                var lFinancialPrev5 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev1 = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
+                var lFinancialPrev2 = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev3 = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev4 = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
+                var lFinancialPrev5 = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter().GetPrevQuarter()));
 
                 var lLast = new List<(string, double, double, double, double, double, int)>();
                 var lClean1 = DetectSymbol(lFinancial, lFinancialPrev1);
@@ -131,7 +131,7 @@ namespace StockLib.Service
 
                 return lLast.OrderByDescending(x => x.Item7).Take(10).Select(x => x.Item1);
 
-                List<(string, double)> DetectSymbol(List<Financial_BDS> lCur, List<Financial_BDS> lPrev)
+                List<(string, double)> DetectSymbol(List<Financial> lCur, List<Financial> lPrev)
                 {
                     var lClean = new List<(string, double)>();
                     foreach (var item in lCur)
@@ -163,11 +163,11 @@ namespace StockLib.Service
             try
             {
                 var time = GetCurrentTime();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
+                var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
                 lFinancial = lFinancial.Where(x => lInput.Contains(x.s))
                                         .Where(x => x.bp >= 500 && x.inv >= 500).ToList();
 
-                var lFinancialPrev1 = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
+                var lFinancialPrev1 = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1.GetPrevQuarter()));
 
                 var lLast = new List<(string, double)>();
                 var lClean1 = DetectSymbol(lFinancial, lFinancialPrev1);
@@ -182,7 +182,7 @@ namespace StockLib.Service
 
                 return lLast.OrderByDescending(x => x.Item2).Take(5).Select(x => x.Item1);
 
-                List<(string, double)> DetectSymbol(List<Financial_BDS> lCur, List<Financial_BDS> lPrev)
+                List<(string, double)> DetectSymbol(List<Financial> lCur, List<Financial> lPrev)
                 {
                     var lClean = new List<(string, double)>();
                     foreach (var item in lCur)
@@ -212,7 +212,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_BatDongSan(string code)
         {
-            var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.s, code));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -227,7 +227,7 @@ namespace StockLib.Service
             lOutput.Add(streamDoanhThu);
             return lOutput;
         }
-        private async Task<Stream> Chart_BDS_NguoiMua(List<Financial_BDS> lFinancial, string code)
+        private async Task<Stream> Chart_BDS_NguoiMua(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -276,7 +276,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_BDS_TonKho(List<Financial_BDS> lFinancial, string code)
+        private async Task<Stream> Chart_BDS_TonKho(List<Financial> lFinancial, string code)
         {
             try
             {

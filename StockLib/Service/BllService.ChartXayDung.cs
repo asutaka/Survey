@@ -15,7 +15,7 @@ namespace StockLib.Service
                 var lOutput = new List<Stream>();
                 var lMaCK = lInput.Take(15).ToList();
                 var time = GetCurrentTime();
-                var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.d, time.Item1));
+                var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
                 lFinancial = lFinancial.Where(x => StaticVal._lXayDung.Contains(x.s)).ToList();
                 if (!lFinancial.Any())
                     return null;
@@ -36,12 +36,12 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_XayDung_TonKho(IEnumerable<string> lInput, List<Financial_BDS> lFinancial)
+        private async Task<Stream> Chart_XayDung_TonKho(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
                 var time = GetCurrentTime();
-                var lOrderBy = new List<Financial_BDS>();
+                var lOrderBy = new List<Financial>();
                 foreach (var item in lInput)
                 {
                     var cur = lFinancial.FirstOrDefault(x => x.s == item);
@@ -87,12 +87,12 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_XayDung_NoTaiChinh(IEnumerable<string> lInput, List<Financial_BDS> lFinancial)
+        private async Task<Stream> Chart_XayDung_NoTaiChinh(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
                 var time = GetCurrentTime();
-                var lOrderBy = new List<Financial_BDS>();
+                var lOrderBy = new List<Financial>();
                 foreach (var item in lInput)
                 {
                     var cur = lFinancial.FirstOrDefault(x => x.s == item);
@@ -140,7 +140,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_XayDung(string code)
         {
-            var lFinancial = _bdsRepo.GetByFilter(Builders<Financial_BDS>.Filter.Eq(x => x.s, code));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -156,7 +156,7 @@ namespace StockLib.Service
             return lOutput;
         }
 
-        private async Task<Stream> Chart_XayDung_TonKho(List<Financial_BDS> lFinancial, string code)
+        private async Task<Stream> Chart_XayDung_TonKho(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -206,7 +206,7 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_XayDung_NoTaiChinh(List<Financial_BDS> lFinancial, string code)
+        private async Task<Stream> Chart_XayDung_NoTaiChinh(List<Financial> lFinancial, string code)
         {
             try
             {

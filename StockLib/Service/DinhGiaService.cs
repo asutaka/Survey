@@ -22,7 +22,6 @@ namespace StockLib.Service
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         
-        private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialCKRepo _ckRepo;
         private readonly ISpecialInfoRepo _specRepo;
         private readonly IFinancialRepo _financialRepo;
@@ -34,7 +33,6 @@ namespace StockLib.Service
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
-                            IFinancialBDSRepo bdsRepo,
                             IFinancialCKRepo ckRepo,
                             ISpecialInfoRepo specRepo,
                             IFinancialRepo financialRepo,
@@ -46,7 +44,6 @@ namespace StockLib.Service
             _haiquanRepo = haiquanRepo;
             _thongkeRepo = thongkeRepo;
             _thongkequyRepo = thongkequyRepo;
-            _bdsRepo = bdsRepo;
             _ckRepo = ckRepo;
             _specRepo = specRepo;
             _apiService = apiService;

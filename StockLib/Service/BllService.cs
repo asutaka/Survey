@@ -64,7 +64,6 @@ namespace StockLib.Service
         private readonly ILogger<BllService> _logger;
         private readonly IStockRepo _stockRepo;
         private readonly IFinancialRepo _financialRepo;
-        private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialNHRepo _nhRepo;
         private readonly IFinancialCKRepo _ckRepo;
         private readonly IFinancialThuySanRepo _thuysanRepo;
@@ -81,7 +80,6 @@ namespace StockLib.Service
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
                             IFinancialRepo financialRepo,
-                            IFinancialBDSRepo financialBDSRepo,
                             IFinancialNHRepo financialNHRepo,
                             IFinancialCKRepo financialCKRepo,
                             IFinancialThuySanRepo thuysanRepo,
@@ -98,7 +96,6 @@ namespace StockLib.Service
             _logger = logger;
             _stockRepo = stockRepo;
             _financialRepo = financialRepo;
-            _bdsRepo = financialBDSRepo;
             _nhRepo = financialNHRepo;
             _ckRepo = financialCKRepo;
             _thuysanRepo = thuysanRepo;
