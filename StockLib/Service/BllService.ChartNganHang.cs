@@ -20,7 +20,7 @@ namespace StockLib.Service
             }
             var time = GetCurrentTime();
 
-            var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, time.Item1));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
             if (!lFinancial.Any())
                 return null;
             var streamTinDung = await Chart_NganHang_TangTruongTinDung_RoomTinDung(lNganHang, lFinancial);
@@ -34,7 +34,7 @@ namespace StockLib.Service
 
             return lOutput;
         }
-        private async Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang, List<Financial_NH> lFinancial)
+        private async Task<Stream> Chart_NganHang_TangTruongTinDung_RoomTinDung(IEnumerable<string> lNganHang, List<Financial> lFinancial)
         {
             try
             {
@@ -91,7 +91,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lNganHang, List<Financial_NH> lFinancial)
+        private async Task<Stream> Chart_NganHang_NoXau(IEnumerable<string> lNganHang, List<Financial> lFinancial)
         {
             try
             {
@@ -108,7 +108,7 @@ namespace StockLib.Service
                     quarterPrev = 4;
                     yearPrev--;
                 }
-                var lFinancialPrev = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+                var lFinancialPrev = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
                 var lBaoPhu = new List<double>();
                 var lTiLeNo = new List<double>();
@@ -200,7 +200,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lNganHang, List<Financial_NH> lFinancial)
+        private async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(IEnumerable<string> lNganHang, List<Financial> lFinancial)
         {
             try
             {
@@ -277,7 +277,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_NganHang(string code)
         {
-            var lFinancial = _nhRepo.GetByFilter(Builders<Financial_NH>.Filter.Eq(x => x.s, code));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -294,7 +294,7 @@ namespace StockLib.Service
             lOutput.Add(streamDoanhThu);
             return lOutput;
         }
-        private async Task<Stream> Chart_NganHang_TangTruongTinDung(List<Financial_NH> lFinancial, string code)
+        private async Task<Stream> Chart_NganHang_TangTruongTinDung(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -335,7 +335,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_NganHang_NoXau(List<Financial_NH> lFinancial, string code)
+        private async Task<Stream> Chart_NganHang_NoXau(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -434,7 +434,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(List<Financial_NH> lFinancial, string code)
+        private async Task<Stream> Chart_NganHang_NimCasaChiPhiVon(List<Financial> lFinancial, string code)
         {
             try
             {

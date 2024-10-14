@@ -9,9 +9,9 @@ namespace StockLib.Service
 {
     public partial class BllService
     {
-        public async Task SyncTest()
+      public async Task SyncTest()
       {
-            //var lData = _ckRepo.GetAll();
+            //var lData = _nhRepo.GetAll();
             //foreach (var item in lData)
             //{
             //    var entity = new Financial
@@ -26,12 +26,19 @@ namespace StockLib.Service
             //        pfn = item.pfn,
             //        //inv = item.inv,
             //        debt = item.debt,
-            //        eq = item.eq,
-            //        broker = item.broker,
-            //        bcost = item.bcost,
-            //        idebt = item.idebt,
-            //        trade = item.trade,
-            //        itrade = item.itrade,
+            //        risk = item.risk,
+            //        nim_r = item.nim_r,
+            //        casa_r = item.casa_r,
+            //        cir_r = item.cir_r,
+            //        credit_r = item.credit_r,
+            //        cost_r = item.cost_r,
+            //        debt1 = item.debt1,
+            //        debt2 = item.debt2,
+            //        debt3 = item.debt3,
+            //        debt4 = item.debt4,
+            //        debt5 = item.debt5,
+            //        cover_r = item.cover_r,
+            //        room = item.room
             //    };
             //    _financialRepo.InsertOne(entity);
             //}

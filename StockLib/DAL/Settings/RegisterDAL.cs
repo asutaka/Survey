@@ -8,7 +8,6 @@ namespace StockLib.DAL.Settings
         {
             services.AddSingleton<IStockRepo, StockRepo>();
             services.AddSingleton<IFinancialRepo, FinancialRepo>();
-            services.AddSingleton<IFinancialNHRepo, FinancialNHRepo>();
             services.AddSingleton<IUserMessageRepo, UserMessageRepo>();
             services.AddSingleton<IConfigDataRepo, ConfigDataRepo>();
             services.AddSingleton<ICategoryRepo, CategoryRepo>();

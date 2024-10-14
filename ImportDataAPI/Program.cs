@@ -75,22 +75,22 @@ app.MapPost("/upload", async (HttpRequest request, IImportDataAPIService service
 
             if(isRead)
             {
-                foreach (var item in dic)
-                {
-                    var strSplit = item.Value.ToString().Replace("Q", "").Split('/');
-                    var d = int.Parse($"{strSplit[1]}{strSplit[0]}");
-                    var res = service.GetFinancial_NH(d, name.Trim().ToUpper());
-                    if (res is null)
-                        continue;
-                    var val = sheet.Cells[i, item.Key].Value;
-                    var check = double.TryParse(val?.ToString() ?? string.Empty, out var valDouble);
-                    if (!check)
-                        continue;
+                //foreach (var item in dic)
+                //{
+                //    var strSplit = item.Value.ToString().Replace("Q", "").Split('/');
+                //    var d = int.Parse($"{strSplit[1]}{strSplit[0]}");
+                //    var res = service.GetFinancial_NH(d, name.Trim().ToUpper());
+                //    if (res is null)
+                //        continue;
+                //    var val = sheet.Cells[i, item.Key].Value;
+                //    var check = double.TryParse(val?.ToString() ?? string.Empty, out var valDouble);
+                //    if (!check)
+                //        continue;
 
-                    res.casa_r = Math.Round(valDouble * 100, 1);
-                    res.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                    service.UpdateFinancial_NH(res);
-                }
+                //    res.casa_r = Math.Round(valDouble * 100, 1);
+                //    res.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+                //    service.UpdateFinancial_NH(res);
+                //}
                 break;
             }
         }

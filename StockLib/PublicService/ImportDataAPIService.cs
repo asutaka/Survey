@@ -6,21 +6,21 @@ namespace StockLib.PublicService
 {
     public interface IImportDataAPIService
     {
-        Financial_NH GetFinancial_NH(int d, string s);
-        void UpdateFinancial_NH(Financial_NH entity);
+        Financial GetFinancial(int d, string s);
+        void UpdateFinancial(Financial entity);
     }
     public class ImportDataAPIService : IImportDataAPIService
     {
-        private readonly IFinancialNHRepo _repo;
-        public ImportDataAPIService(IFinancialNHRepo repo)
+        private readonly IFinancialRepo _repo;
+        public ImportDataAPIService(IFinancialRepo repo)
         {
             _repo = repo;
         }
-        public Financial_NH GetFinancial_NH(int d, string s)
+        public Financial GetFinancial(int d, string s)
         {
-            FilterDefinition<Financial_NH> filter = null;
-            var builder = Builders<Financial_NH>.Filter;
-            var lFilter = new List<FilterDefinition<Financial_NH>>
+            FilterDefinition<Financial> filter = null;
+            var builder = Builders<Financial>.Filter;
+            var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, s),
                             builder.Eq(x => x.d, d)
@@ -40,7 +40,7 @@ namespace StockLib.PublicService
             return lRes.FirstOrDefault();
         }
 
-        public void UpdateFinancial_NH(Financial_NH entity)
+        public void UpdateFinancial(Financial entity)
         {
             _repo.Update(entity);
         }

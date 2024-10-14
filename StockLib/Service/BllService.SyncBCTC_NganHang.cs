@@ -68,7 +68,7 @@ namespace StockLib.Service
 
         private void SyncBCTC_TinhCacChiSoConLai()
         {
-            var lData = _nhRepo.GetAll();
+            var lData = _financialRepo.GetAll();
             foreach (var item in lData)
             {
                 var totalRisk = item.debt3 + item.debt4 + item.debt5;
@@ -77,7 +77,7 @@ namespace StockLib.Service
 
                 item.cover_r = Math.Round(item.risk??0 * 100 / totalRisk, 1);
                 item.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                _nhRepo.Update(item);
+                _financialRepo.Update(item);
             }
         }
 
@@ -184,9 +184,9 @@ namespace StockLib.Service
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_NH> filter = null;
-                        var builder = Builders<Financial_NH>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_NH>>
+                        FilterDefinition<Financial> filter = null;
+                        var builder = Builders<Financial>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -202,18 +202,18 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _nhRepo.GetByFilter(filter);
-                        Financial_NH entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _financialRepo.GetByFilter(filter);
+                        Financial entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             //insert
-                            entityUpdate = new Financial_NH
+                            entityUpdate = new Financial
                             {
                                 d = int.Parse($"{year}{quarter}"),
                                 s = code,
                                 t = (int)DateTimeOffset.Now.ToUnixTimeSeconds()
                             };
-                            _nhRepo.InsertOne(entityUpdate);
+                            _financialRepo.InsertOne(entityUpdate);
                         }
 
                         //
@@ -235,7 +235,7 @@ namespace StockLib.Service
                             default: break;
                         };
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _nhRepo.Update(entityUpdate);
+                        _financialRepo.Update(entityUpdate);
 
                         void AssignData(double? thunhaplai, double? thunhaptudichvu, double? loinhuan)
                         {
@@ -308,9 +308,9 @@ namespace StockLib.Service
                         var year = element.YearPeriod;
                         var quarter = element.ReportTermID - 1;
 
-                        FilterDefinition<Financial_NH> filter = null;
-                        var builder = Builders<Financial_NH>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_NH>>
+                        FilterDefinition<Financial> filter = null;
+                        var builder = Builders<Financial>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -326,8 +326,8 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _nhRepo.GetByFilter(filter);
-                        Financial_NH entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _financialRepo.GetByFilter(filter);
+                        Financial entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             continue;
@@ -350,7 +350,7 @@ namespace StockLib.Service
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _nhRepo.Update(entityUpdate);
+                        _financialRepo.Update(entityUpdate);
 
                         void AssignData(double? cir)
                         {
@@ -649,9 +649,9 @@ namespace StockLib.Service
                 {
                     var elementKQKD = _lSubKQKD[i];
 
-                    FilterDefinition<Financial_NH> filter = null;
-                    var builder = Builders<Financial_NH>.Filter;
-                    var lFilter = new List<FilterDefinition<Financial_NH>>
+                    FilterDefinition<Financial> filter = null;
+                    var builder = Builders<Financial>.Filter;
+                    var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, elementKQKD.d)
@@ -667,8 +667,8 @@ namespace StockLib.Service
                         filter &= itemFilter;
                     }
 
-                    var lUpdate = _nhRepo.GetByFilter(filter);
-                    Financial_NH entityUpdate = lUpdate.FirstOrDefault();
+                    var lUpdate = _financialRepo.GetByFilter(filter);
+                    Financial entityUpdate = lUpdate.FirstOrDefault();
                     if (lUpdate is null || !lUpdate.Any())
                     {
                         continue;
@@ -706,7 +706,7 @@ namespace StockLib.Service
                     entityUpdate.risk = Math.Abs(elementCDKT.TrichhLap);
 
                     entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                    _nhRepo.Update(entityUpdate);
+                    _financialRepo.Update(entityUpdate);
                 }
             }
             catch (Exception ex)
@@ -809,9 +809,9 @@ namespace StockLib.Service
 
                     var pl = int.Parse($"{date.Year}{date.Month.To2Digit()}{date.Day.To2Digit()}{date.Hour.To2Digit()}");
 
-                    FilterDefinition<Financial_NH> filter = null;
-                    var builder = Builders<Financial_NH>.Filter;
-                    var lFilter = new List<FilterDefinition<Financial_NH>>
+                    FilterDefinition<Financial> filter = null;
+                    var builder = Builders<Financial>.Filter;
+                    var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -827,8 +827,8 @@ namespace StockLib.Service
                         filter &= itemFilter;
                     }
 
-                    var lUpdate = _nhRepo.GetByFilter(filter);
-                    Financial_NH entityUpdate = lUpdate.FirstOrDefault();
+                    var lUpdate = _financialRepo.GetByFilter(filter);
+                    Financial entityUpdate = lUpdate.FirstOrDefault();
                     if (lUpdate is null || !lUpdate.Any())
                     {
                         continue;
@@ -836,7 +836,7 @@ namespace StockLib.Service
 
                     entityUpdate.pl = pl;
                     entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                    _nhRepo.Update(entityUpdate);
+                    _financialRepo.Update(entityUpdate);
                 }
             }
         }
