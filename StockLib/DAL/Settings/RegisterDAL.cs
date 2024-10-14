@@ -7,7 +7,7 @@ namespace StockLib.DAL.Settings
         public static void DALDependencies(this IServiceCollection services)
         {
             services.AddSingleton<IStockRepo, StockRepo>();
-            services.AddSingleton<IStockFinancialRepo, StockFinancialRepo>();
+            services.AddSingleton<IFinancialRepo, FinancialRepo>();
             services.AddSingleton<IFinancialBDSRepo, FinancialBDSRepo>();
             services.AddSingleton<IFinancialNHRepo, FinancialNHRepo>();
             services.AddSingleton<IUserMessageRepo, UserMessageRepo>();
@@ -17,7 +17,6 @@ namespace StockLib.DAL.Settings
             services.AddSingleton<IFinancialDienRepo, FinancialDienRepo>();
             services.AddSingleton<IFinancialOtoRepo, FinancialOtoRepo>();
             services.AddSingleton<IFinancialCangBienRepo, FinancialCangBienRepo>();
-            services.AddSingleton<IFinancialPhanBonRepo, FinancialPhanBonRepo>();
             services.AddSingleton<IFinancialThanRepo, FinancialThanRepo>();
             services.AddSingleton<IFinancialThuySanRepo, FinancialThuySanRepo>();
             services.AddSingleton<IFinancialNhuaRepo, FinancialNhuaRepo>();

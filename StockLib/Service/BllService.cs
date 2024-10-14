@@ -8,6 +8,7 @@ namespace StockLib.Service
 {
     public interface IBllService
     {
+        Task SyncTest();
         Task SyncBCTC_BatDongSan();
         Task SyncBCTC_NganHang();
         Task SyncBCTC_ChungKhoan();
@@ -62,7 +63,7 @@ namespace StockLib.Service
     {
         private readonly ILogger<BllService> _logger;
         private readonly IStockRepo _stockRepo;
-        private readonly IStockFinancialRepo _financialRepo;
+        private readonly IFinancialRepo _financialRepo;
         private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialNHRepo _nhRepo;
         private readonly IFinancialCKRepo _ckRepo;
@@ -71,7 +72,6 @@ namespace StockLib.Service
         private readonly IFinancialDienRepo _dienRepo;
         private readonly IFinancialOtoRepo _otoRepo;
         private readonly IFinancialCangBienRepo _cangbienRepo;
-        private readonly IFinancialPhanBonRepo _phanbonRepo;
         private readonly IFinancialThanRepo _thanRepo;
         private readonly IFinancialThuySanRepo _thuysanRepo;
         private readonly IFinancialNhuaRepo _nhuaRepo;
@@ -95,7 +95,7 @@ namespace StockLib.Service
 
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
-                            IStockFinancialRepo financialRepo,
+                            IFinancialRepo financialRepo,
                             IFinancialBDSRepo financialBDSRepo,
                             IFinancialNHRepo financialNHRepo,
                             IFinancialCKRepo financialCKRepo,
@@ -104,7 +104,6 @@ namespace StockLib.Service
                             IFinancialDienRepo financialDienRepo,
                             IFinancialOtoRepo otoRepo,
                             IFinancialCangBienRepo cangbienRepo,
-                            IFinancialPhanBonRepo phanbonRepo,
                             IFinancialThanRepo thanRepo,
                             IFinancialThuySanRepo thuysanRepo,
                             IFinancialCaoSuRepo caosuRepo,
@@ -137,7 +136,6 @@ namespace StockLib.Service
             _dienRepo = financialDienRepo;
             _otoRepo = otoRepo;
             _cangbienRepo = cangbienRepo;
-            _phanbonRepo = phanbonRepo;
             _thanRepo = thanRepo;
             _thuysanRepo = thuysanRepo;
             _caosuRepo = caosuRepo;

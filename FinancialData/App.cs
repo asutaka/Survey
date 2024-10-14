@@ -17,6 +17,7 @@ namespace FinancialData
 
         public async Task Run(string[] args)
         {
+            await _service.SyncTest();
             //await _service.SyncBCTC_BatDongSan();
             //await _service.SyncBCTC_NganHang();
             //await _service.SyncBCTC_ChungKhoan();
@@ -37,7 +38,7 @@ namespace FinancialData
             //await _service.SyncBCTC_Ximang();
             //await _service.SyncBCTC_DauKhi();
 
-            await _service.SyncPE();
+            //await _service.SyncPE();
             //await _service.SyncKeHoach();
             //await _service.SyncShare();
         }

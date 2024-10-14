@@ -15,7 +15,7 @@ namespace StockLib.Service
                 var lOutput = new List<Stream>();
                 var lMaCK = lInput.Take(15).ToList();
                 var time = GetCurrentTime();
-                var lFinancial = _phanbonRepo.GetByFilter(Builders<Financial_PhanBon>.Filter.Eq(x => x.d, time.Item1));
+                var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
@@ -37,12 +37,12 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_PhanBon_TonKho(IEnumerable<string> lInput, List<Financial_PhanBon> lFinancial)
+        private async Task<Stream> Chart_PhanBon_TonKho(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
                 var time = GetCurrentTime();
-                var lOrderBy = new List<Financial_PhanBon>();
+                var lOrderBy = new List<Financial>();
                 foreach (var item in lInput)
                 {
                     var cur = lFinancial.FirstOrDefault(x => x.s == item);
@@ -88,12 +88,12 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_PhanBon_NoTaiChinh(IEnumerable<string> lInput, List<Financial_PhanBon> lFinancial)
+        private async Task<Stream> Chart_PhanBon_NoTaiChinh(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
                 var time = GetCurrentTime();
-                var lOrderBy = new List<Financial_PhanBon>();
+                var lOrderBy = new List<Financial>();
                 foreach (var item in lInput)
                 {
                     var cur = lFinancial.FirstOrDefault(x => x.s == item);
@@ -141,7 +141,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_PhanBon(string code)
         {
-            var lFinancial = _phanbonRepo.GetByFilter(Builders<Financial_PhanBon>.Filter.Eq(x => x.s, code));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -159,7 +159,7 @@ namespace StockLib.Service
             return lOutput;
         }
 
-        private async Task<Stream> Chart_PhanBon_TonKho(List<Financial_PhanBon> lFinancial, string code)
+        private async Task<Stream> Chart_PhanBon_TonKho(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -209,7 +209,7 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_PhanBon_NoTaiChinh(List<Financial_PhanBon> lFinancial, string code)
+        private async Task<Stream> Chart_PhanBon_NoTaiChinh(List<Financial> lFinancial, string code)
         {
             try
             {

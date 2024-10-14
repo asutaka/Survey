@@ -4,6 +4,7 @@ namespace StockLib.PublicService
 {
     public interface IFinancialDataService
     {
+        Task SyncTest();
         Task SyncBCTC_BatDongSan();
         Task SyncBCTC_NganHang();
         Task SyncBCTC_ChungKhoan();
@@ -34,6 +35,11 @@ namespace StockLib.PublicService
         public FinancialDataService(IBllService bllService)
         {
             _bllService = bllService;
+        }
+
+        public async Task SyncTest()
+        {
+            await _bllService.SyncTest();
         }
 
         public async Task SyncBCTC_BatDongSan()
