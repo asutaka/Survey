@@ -16,7 +16,7 @@ namespace StockLib.Service
             var lTake = lInput.Take(15);
             var time = GetCurrentTime();
 
-            var lFinancial = _ckRepo.GetByFilter(Builders<Financial_CK>.Filter.Eq(x => x.d, time.Item1));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
             if (!lFinancial.Any())
                 return null;
             var streamTinDung = await Chart_CK_TangTruongTinDung_RoomTinDung(lTake, lFinancial);
@@ -30,7 +30,7 @@ namespace StockLib.Service
 
             return lOutput;
         }
-        private async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
+        private async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace StockLib.Service
                     quarterPrev = 4;
                     yearPrev--;
                 }
-                var lFinancialPrev = _ckRepo.GetByFilter(Builders<Financial_CK>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
+                var lFinancialPrev = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, int.Parse($"{yearPrev}{quarterPrev}")));
 
                 var lMargin = new List<double>();
                 var lVonChu = new List<double>();
@@ -134,7 +134,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
+        private async Task<Stream> Chart_CK_TuDoanh(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
@@ -204,7 +204,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput, List<Financial_CK> lFinancial)
+        private async Task<Stream> Chart_CK_MoiGioi(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
@@ -278,7 +278,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_ChungKhoan(string code)
         {
-            var lFinancial = _ckRepo.GetByFilter(Builders<Financial_CK>.Filter.Eq(x => x.s, code));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -295,7 +295,7 @@ namespace StockLib.Service
             lOutput.Add(streamDoanhThu);
             return lOutput;
         }
-        private async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(List<Financial_CK> lFinancial, string code)
+        private async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -376,7 +376,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_CK_TuDoanh(List<Financial_CK> lFinancial, string code)
+        private async Task<Stream> Chart_CK_TuDoanh(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -436,7 +436,7 @@ namespace StockLib.Service
             }
             return null;
         }
-        private async Task<Stream> Chart_CK_MoiGioi(List<Financial_CK> lFinancial, string code)
+        private async Task<Stream> Chart_CK_MoiGioi(List<Financial> lFinancial, string code)
         {
             try
             {

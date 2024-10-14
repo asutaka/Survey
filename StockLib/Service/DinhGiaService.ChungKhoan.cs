@@ -37,7 +37,7 @@ namespace StockLib.Service
                 var eVNINDEX = EPointResponse(rate, 5, 15, "Khối lượng giao dịch tháng cùng kỳ");
                 sBuilder.AppendLine(eVNINDEX.Item2);
                 //margin
-                var lck = _ckRepo.GetByFilter(Builders<Financial_CK>.Filter.Eq(x => x.s, code));
+                var lck = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
                 if(lck is null || !lck.Any())
                 {
                     return (EPoint.Unknown, string.Empty);

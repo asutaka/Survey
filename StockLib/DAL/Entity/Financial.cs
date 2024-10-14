@@ -14,8 +14,14 @@ namespace StockLib.DAL.Entity
         public double pfg { get; set; }//Lợi nhuận Gộp 
         public double pfn { get; set; }//Lợi nhuận Ròng
         public double inv { get; set; }//Tồn Kho
-        public double debt { get; set; }//Nợ tài chính
+        public double debt { get; set; }//Nợ tài chính - Đối với mã chứng khoán: Các khoản cho vay(phần rất lớn là tăng trưởng margin)(CDKT)
         public double eq { get; set; }//Vốn chủ sở hữu
         public double bp { get; set; }//Người mua trả tiền trước
+        //Các property cho chứng khoán
+        public double broker { get; set; } //Doanh thu môi giới
+        public double bcost { get; set; } //Chi phí môi giới
+        public double idebt { get; set; } //Lãi từ các khoản cho vay
+        public double trade { get; set; } //Doanh thu tự doanh
+        public double itrade { get; set; } //Tài sản tự doanh
     }
 }

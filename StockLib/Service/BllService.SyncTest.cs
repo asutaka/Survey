@@ -11,7 +11,7 @@ namespace StockLib.Service
     {
         public async Task SyncTest()
       {
-            //var lData = _thuysanRepo.GetAll();
+            //var lData = _ckRepo.GetAll();
             //foreach (var item in lData)
             //{
             //    var entity = new Financial
@@ -24,9 +24,14 @@ namespace StockLib.Service
             //        pf = item.pf,
             //        pfg = item.pfg,
             //        pfn = item.pfn,
-            //        inv = item.inv,
+            //        //inv = item.inv,
             //        debt = item.debt,
             //        eq = item.eq,
+            //        broker = item.broker,
+            //        bcost = item.bcost,
+            //        idebt = item.idebt,
+            //        trade = item.trade,
+            //        itrade = item.itrade,
             //    };
             //    _financialRepo.InsertOne(entity);
             //}
