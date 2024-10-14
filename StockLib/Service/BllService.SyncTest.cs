@@ -11,7 +11,7 @@ namespace StockLib.Service
     {
         public async Task SyncTest()
         {
-            //var lData = _daukhiRepo.GetAll();
+            //var lData = _dienRepo.GetAll();
             //foreach (var item in lData)
             //{
             //    var entity = new Financial
