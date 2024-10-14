@@ -12,7 +12,6 @@ namespace StockLib.DAL.Settings
             services.AddSingleton<IFinancialNHRepo, FinancialNHRepo>();
             services.AddSingleton<IUserMessageRepo, UserMessageRepo>();
             services.AddSingleton<IFinancialCKRepo, FinancialCKRepo>();
-            services.AddSingleton<IFinancialThepRepo, FinancialThepRepo>();
             services.AddSingleton<IFinancialBanLeRepo, FinancialBanLeRepo>();
             services.AddSingleton<IFinancialDienRepo, FinancialDienRepo>();
             services.AddSingleton<IFinancialOtoRepo, FinancialOtoRepo>();
