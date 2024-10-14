@@ -69,7 +69,6 @@ namespace StockLib.Service
         private readonly IFinancialCKRepo _ckRepo;
         private readonly IFinancialCangBienRepo _cangbienRepo;
         private readonly IFinancialThuySanRepo _thuysanRepo;
-        private readonly IFinancialHangKhongRepo _hangkhongRepo;
         private readonly IKeHoachRepo _kehoachRepo;
         private readonly IChiSoPERepo _peRepo;
         private readonly IConfigDataRepo _configRepo;
@@ -88,7 +87,6 @@ namespace StockLib.Service
                             IFinancialCKRepo financialCKRepo,
                             IFinancialCangBienRepo cangbienRepo,
                             IFinancialThuySanRepo thuysanRepo,
-                            IFinancialHangKhongRepo hangkhongRepo,
                             IKeHoachRepo kehoachRepo,
                             IChiSoPERepo peRepo,
                             IConfigDataRepo configRepo,
@@ -108,7 +106,6 @@ namespace StockLib.Service
             _cangbienRepo = cangbienRepo;
             _thuysanRepo = thuysanRepo;
             _peRepo = peRepo;
-            _hangkhongRepo = hangkhongRepo;
             _configRepo = configRepo;
             _thongkequyRepo = thongkequyRepo;
             _thongkeRepo = thongkeRepo;
