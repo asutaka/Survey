@@ -130,9 +130,9 @@ namespace StockLib.Service
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_CangBien> filter = null;
-                        var builder = Builders<Financial_CangBien>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_CangBien>>
+                        FilterDefinition<Financial> filter = null;
+                        var builder = Builders<Financial>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial>>
                             {
                                 builder.Eq(x => x.s, code),
                                 builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -148,18 +148,18 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _cangbienRepo.GetByFilter(filter);
-                        Financial_CangBien entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _financialRepo.GetByFilter(filter);
+                        Financial entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             //insert
-                            entityUpdate = new Financial_CangBien
+                            entityUpdate = new Financial
                             {
                                 d = int.Parse($"{year}{quarter}"),
                                 s = code,
                                 t = (int)DateTimeOffset.Now.ToUnixTimeSeconds()
                             };
-                            _cangbienRepo.InsertOne(entityUpdate);
+                            _financialRepo.InsertOne(entityUpdate);
                         }
 
                         //
@@ -182,7 +182,7 @@ namespace StockLib.Service
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _cangbienRepo.Update(entityUpdate);
+                        _financialRepo.Update(entityUpdate);
 
                         void AssignData(double? DoanhThu, double? LoiNhuan, double? LoiNhuanGop, double? LoiNhuanRong)
                         {
@@ -303,9 +303,9 @@ namespace StockLib.Service
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_CangBien> filter = null;
-                        var builder = Builders<Financial_CangBien>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_CangBien>>
+                        FilterDefinition<Financial> filter = null;
+                        var builder = Builders<Financial>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -321,8 +321,8 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _cangbienRepo.GetByFilter(filter);
-                        Financial_CangBien entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _financialRepo.GetByFilter(filter);
+                        Financial entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             continue;
@@ -347,7 +347,7 @@ namespace StockLib.Service
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _cangbienRepo.Update(entityUpdate);
+                        _financialRepo.Update(entityUpdate);
 
                         void AssignData(double? VayNganHan, double? VayDaiHan, double? VonChuSH)
                         {

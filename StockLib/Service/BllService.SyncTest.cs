@@ -10,8 +10,8 @@ namespace StockLib.Service
     public partial class BllService
     {
         public async Task SyncTest()
-        {
-            //var lData = _hangkhongRepo.GetAll();
+      {
+            //var lData = _cangbienRepo.GetAll();
             //foreach (var item in lData)
             //{
             //    var entity = new Financial
