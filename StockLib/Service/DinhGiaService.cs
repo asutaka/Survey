@@ -22,10 +22,10 @@ namespace StockLib.Service
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         
-        private readonly IFinancialBanLeRepo _banleRepo;
         private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialCKRepo _ckRepo;
         private readonly ISpecialInfoRepo _specRepo;
+        private readonly IFinancialRepo _financialRepo;
 
         private readonly IAPIService _apiService;
         public DinhGiaService(ILogger<BllService> logger,
@@ -34,10 +34,10 @@ namespace StockLib.Service
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
-                            IFinancialBanLeRepo banleRepo,
                             IFinancialBDSRepo bdsRepo,
                             IFinancialCKRepo ckRepo,
                             ISpecialInfoRepo specRepo,
+                            IFinancialRepo financialRepo,
                             IAPIService apiService)
         {
             _logger = logger;
@@ -46,11 +46,11 @@ namespace StockLib.Service
             _haiquanRepo = haiquanRepo;
             _thongkeRepo = thongkeRepo;
             _thongkequyRepo = thongkequyRepo;
-            _banleRepo = banleRepo;
             _bdsRepo = bdsRepo;
             _ckRepo = ckRepo;
             _specRepo = specRepo;
             _apiService = apiService;
+            _financialRepo = financialRepo;
         }
         private async Task<(EPoint, string, EStockType)> DinhGiaNganh(string code, int nganh)
         {

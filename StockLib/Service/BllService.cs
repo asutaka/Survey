@@ -67,7 +67,6 @@ namespace StockLib.Service
         private readonly IFinancialBDSRepo _bdsRepo;
         private readonly IFinancialNHRepo _nhRepo;
         private readonly IFinancialCKRepo _ckRepo;
-        private readonly IFinancialBanLeRepo _banleRepo;
         private readonly IFinancialDienRepo _dienRepo;
         private readonly IFinancialCangBienRepo _cangbienRepo;
         private readonly IFinancialThuySanRepo _thuysanRepo;
@@ -90,7 +89,6 @@ namespace StockLib.Service
                             IFinancialBDSRepo financialBDSRepo,
                             IFinancialNHRepo financialNHRepo,
                             IFinancialCKRepo financialCKRepo,
-                            IFinancialBanLeRepo financialBanLeRepo,
                             IFinancialDienRepo financialDienRepo,
                             IFinancialCangBienRepo cangbienRepo,
                             IFinancialThuySanRepo thuysanRepo,
@@ -113,7 +111,6 @@ namespace StockLib.Service
             _bdsRepo = financialBDSRepo;
             _nhRepo = financialNHRepo;
             _ckRepo = financialCKRepo;
-            _banleRepo = financialBanLeRepo;
             _dienRepo = financialDienRepo;
             _cangbienRepo = cangbienRepo;
             _thuysanRepo = thuysanRepo;

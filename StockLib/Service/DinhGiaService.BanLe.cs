@@ -18,7 +18,7 @@ namespace StockLib.Service
                 //Tổng mức
                 var tongmuc =  ModeThongKe(EKeyTongCucThongKe.BanLe, step1, step2);
                 //Tồn kho
-                var lBanLe = _banleRepo.GetByFilter(Builders<Financial_BanLe>.Filter.Eq(x => x.s, code));
+                var lBanLe = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
                 if(lBanLe is null || !lBanLe.Any())
                 {
                     return (EPoint.VeryNegative, string.Empty);
