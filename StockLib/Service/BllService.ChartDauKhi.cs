@@ -15,7 +15,7 @@ namespace StockLib.Service
                 var lOutput = new List<Stream>();
                 var lMaCK = lInput.Take(15).ToList();
                 var time = GetCurrentTime();
-                var lFinancial = _daukhiRepo.GetByFilter(Builders<Financial_DauKhi>.Filter.Eq(x => x.d, time.Item1));
+                var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.d, time.Item1));
                 if (!lFinancial.Any())
                     return null;
 
@@ -35,12 +35,12 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_DauKhi_TonKho(IEnumerable<string> lInput, List<Financial_DauKhi> lFinancial)
+        private async Task<Stream> Chart_DauKhi_TonKho(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
                 var time = GetCurrentTime();
-                var lOrderBy = new List<Financial_DauKhi>();
+                var lOrderBy = new List<Financial>();
                 foreach (var item in lInput)
                 {
                     var cur = lFinancial.FirstOrDefault(x => x.s == item);
@@ -86,12 +86,12 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_DauKhi_NoTaiChinh(IEnumerable<string> lInput, List<Financial_DauKhi> lFinancial)
+        private async Task<Stream> Chart_DauKhi_NoTaiChinh(IEnumerable<string> lInput, List<Financial> lFinancial)
         {
             try
             {
                 var time = GetCurrentTime();
-                var lOrderBy = new List<Financial_DauKhi>();
+                var lOrderBy = new List<Financial>();
                 foreach (var item in lInput)
                 {
                     var cur = lFinancial.FirstOrDefault(x => x.s == item);
@@ -139,7 +139,7 @@ namespace StockLib.Service
 
         private async Task<List<Stream>> Chart_DauKhi(string code)
         {
-            var lFinancial = _daukhiRepo.GetByFilter(Builders<Financial_DauKhi>.Filter.Eq(x => x.s, code));
+            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
             if (!lFinancial.Any())
                 return null;
 
@@ -155,7 +155,7 @@ namespace StockLib.Service
             return lOutput;
         }
 
-        private async Task<Stream> Chart_DauKhi_TonKho(List<Financial_DauKhi> lFinancial, string code)
+        private async Task<Stream> Chart_DauKhi_TonKho(List<Financial> lFinancial, string code)
         {
             try
             {
@@ -205,7 +205,7 @@ namespace StockLib.Service
             return null;
         }
 
-        private async Task<Stream> Chart_DauKhi_NoTaiChinh(List<Financial_DauKhi> lFinancial, string code)
+        private async Task<Stream> Chart_DauKhi_NoTaiChinh(List<Financial> lFinancial, string code)
         {
             try
             {

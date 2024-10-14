@@ -129,9 +129,9 @@ namespace StockLib.Service
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_DauKhi> filter = null;
-                        var builder = Builders<Financial_DauKhi>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_DauKhi>>
+                        FilterDefinition<Financial> filter = null;
+                        var builder = Builders<Financial>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial>>
                             {
                                 builder.Eq(x => x.s, code),
                                 builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -147,18 +147,18 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _daukhiRepo.GetByFilter(filter);
-                        Financial_DauKhi entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _financialRepo.GetByFilter(filter);
+                        Financial entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             //insert
-                            entityUpdate = new Financial_DauKhi
+                            entityUpdate = new Financial
                             {
                                 d = int.Parse($"{year}{quarter}"),
                                 s = code,
                                 t = (int)DateTimeOffset.Now.ToUnixTimeSeconds()
                             };
-                            _daukhiRepo.InsertOne(entityUpdate);
+                            _financialRepo.InsertOne(entityUpdate);
                         }
 
                         //
@@ -181,7 +181,7 @@ namespace StockLib.Service
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _daukhiRepo.Update(entityUpdate);
+                        _financialRepo.Update(entityUpdate);
 
                         void AssignData(double? DoanhThu, double? LoiDauKhin, double? LoiDauKhinGop, double? LoiDauKhinRong)
                         {
@@ -302,9 +302,9 @@ namespace StockLib.Service
                             quarter = 2;
                         }
 
-                        FilterDefinition<Financial_DauKhi> filter = null;
-                        var builder = Builders<Financial_DauKhi>.Filter;
-                        var lFilter = new List<FilterDefinition<Financial_DauKhi>>
+                        FilterDefinition<Financial> filter = null;
+                        var builder = Builders<Financial>.Filter;
+                        var lFilter = new List<FilterDefinition<Financial>>
                         {
                             builder.Eq(x => x.s, code),
                             builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
@@ -320,8 +320,8 @@ namespace StockLib.Service
                             filter &= itemFilter;
                         }
 
-                        var lUpdate = _daukhiRepo.GetByFilter(filter);
-                        Financial_DauKhi entityUpdate = lUpdate.FirstOrDefault();
+                        var lUpdate = _financialRepo.GetByFilter(filter);
+                        Financial entityUpdate = lUpdate.FirstOrDefault();
                         if (lUpdate is null || !lUpdate.Any())
                         {
                             continue;
@@ -347,7 +347,7 @@ namespace StockLib.Service
                         };
 
                         entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                        _daukhiRepo.Update(entityUpdate);
+                        _financialRepo.Update(entityUpdate);
 
                         void AssignData(double? TonKho, double? VayNganHan, double? VayDaiHan, double? VonChuSH)
                         {
