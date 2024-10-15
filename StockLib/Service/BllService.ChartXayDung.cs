@@ -137,26 +137,5 @@ namespace StockLib.Service
             }
             return null;
         }
-
-        private async Task<List<Stream>> Chart_XayDung(string code)
-        {
-            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
-            if (!lFinancial.Any())
-                return null;
-
-            var lOutput = new List<Stream>();
-
-            lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamDoanhThu);
-
-            var streamTonKho = await Chart_TonKho(lFinancial, code);
-            lOutput.Add(streamTonKho);
-
-            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
-            lOutput.Add(streamNoTaiChinh);
-            
-            return lOutput;
-        }
     }
 }

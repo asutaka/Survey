@@ -1,12 +1,8 @@
 ﻿using MongoDB.Driver.Linq;
-using System;
-using System.Collections.Generic;
+using StockLib.DAL.Entity;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Utils
 {
@@ -64,6 +60,126 @@ namespace StockLib.Utils
             if (val > 9)
                 return val.ToString();
             return $"0{val}";
+        }
+
+        public static bool IsTonKho(this Stock stock)
+        {
+            if(stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.XayDung,
+                (int)EStockType.KCN,
+                (int)EStockType.BDS,
+                (int)EStockType.Thep,
+                (int)EStockType.BanLe,
+                (int)EStockType.Oto,
+                (int)EStockType.OtoTai,
+                (int)EStockType.PhanBon,
+                (int)EStockType.Than,
+                (int)EStockType.XiMang,
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsFDI(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.KCN
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsNguoiMua(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.KCN,
+                (int)EStockType.BDS
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsXuatKhau(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Thep,
+                (int)EStockType.Than,
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsNhapKhau(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Oto,
+                (int)EStockType.OtoTai,
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsForeign(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.DauKhi
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
         }
 
         public static long GetPrevQuarter(this int time)

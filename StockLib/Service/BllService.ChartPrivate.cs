@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using Newtonsoft.Json;
 using StockLib.DAL.Entity;
 using StockLib.Model;
@@ -379,6 +380,86 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"BllService.Chart_TonKho|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        private async Task<Stream> Chart_FDI()
+        {
+            try
+            {
+                var lFDI = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.FDI));
+                var maxD = lFDI.MaxBy(x => x.d).d;
+                lFDI = lFDI.Where(x => x.d == maxD).OrderByDescending(x => x.va).Take(StaticVal._TAKE).ToList();
+
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lFDI.Select(x => Math.Round(x.va/1000, 1)),
+                        name = "Vốn đăng ký",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    }
+                };
+
+                return await Chart_BasicBase($"Vốn FDI đăng ký", lFDI.Select(x => x.content).ToList(), lSeries, "giá trị: tỷ USD", "giá trị: %");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_FDI|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
+
+        private async Task<Stream> Chart_NguoiMua(List<Financial> lFinancial, string code)
+        {
+            try
+            {
+                var time = GetCurrentTime();
+                var lTangTruong = new List<double>();
+                foreach (var item in lFinancial)
+                {
+                    double tangTruong = 0;
+                    var prevQuarter = item.d.GetPrevQuarter();
+                    var prev = lFinancial.FirstOrDefault(x => x.d == prevQuarter);
+                    if (prev is not null && prev.bp > 0)
+                    {
+                        tangTruong = Math.Round(100 * (-1 + item.bp / prev.bp), 1);
+                    }
+
+                    lTangTruong.Add(tangTruong);
+                }
+                var lTake = lFinancial.TakeLast(StaticVal._TAKE);
+
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTake.Select(x => x.bp),
+                        name = "Người mua trả tiền trước",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lTangTruong.TakeLast(StaticVal._TAKE),
+                        name = "Tăng trưởng người mua",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
+                        color = "#C00000",
+                        yAxis = 1,
+                    }
+                };
+
+                return await Chart_BasicBase($"{code} - Người mua trả tiền trước Quý {time.Item3}/{time.Item2} (QoQoY)", lTake.Select(x => x.d.GetNameQuarter()).ToList(), lSeries);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_NguoiMua|EXCEPTION| {ex.Message}");
             }
             return null;
         }
