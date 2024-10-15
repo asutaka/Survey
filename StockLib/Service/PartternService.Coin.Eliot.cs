@@ -36,7 +36,7 @@ namespace StockLib.Service
         {
             try
             {
-                var dt = new DateTime(2024, 9, 30, 15,0,0);
+                var dt = new DateTime(2024, 10, 1, 15,0,0);
                 var lTmp = lData.Where(x => (x.Date - dt).TotalDays < 0).ToList();
 
                 var lZigZagTest = lTmp.GetZigZag();
