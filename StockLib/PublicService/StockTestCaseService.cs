@@ -20,6 +20,7 @@ namespace StockLib.PublicService
         Task SurveyCoinSuperTrend(string code);
         Task SurveyCoinSuperTrendPhrase2(string code);
         Task SurveyCoinDanZagerCustom(string code);
+        Task SurveyCoinEliot(string code);
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -82,6 +83,11 @@ namespace StockLib.PublicService
         public async Task SurveyDanZagerCustom(string code)
         {
             await _partternService.SurveyDanZagerCustom(code);
+        }
+
+        public async Task SurveyCoinEliot(string code)
+        {
+            await _partternService.SurveyCoinEliot(code);
         }
 
         public async Task Survey3C(string code)

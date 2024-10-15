@@ -54,10 +54,10 @@ namespace StockTestCase
                 if (coin.QuoteAsset != "USDT")
                     continue;
 
-                //if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
-                //    continue;
+                if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
+                    continue;
 
-                await _service.SurveyCoinDanZagerCustom(coin.Alias);
+                await _service.SurveyCoinEliot(coin.Alias);
                 Thread.Sleep(1000);
             }
 

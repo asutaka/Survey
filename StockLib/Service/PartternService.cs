@@ -2,7 +2,6 @@
 using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using StockLib.DAL;
-using StockLib.DAL.Entity;
 using StockLib.Utils;
 using System.Text;
 
@@ -25,6 +24,7 @@ namespace StockLib.Service
         Task SurveyCoinSuperTrend(string code);
         Task SurveyCoinSuperTrendPhrase2(string code);
         Task SurveyCoinDanZagerCustom(string code);
+        Task SurveyCoinEliot(string code);
     }
     public partial class PartternService : IPartternService
     {
