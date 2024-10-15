@@ -94,63 +94,16 @@ namespace StockLib.Service
             var lOutput = new List<Stream>();
 
             lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamNoTaiChinh = await Chart_Logistic_NoTaiChinh(lFinancial, code);
             var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            var streamThongKe = await Chart_ThongKeQuy_Logistic();
-            lOutput.Add(streamNoTaiChinh);
             lOutput.Add(streamDoanhThu);
+
+            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
+            lOutput.Add(streamNoTaiChinh);
+
+            var streamThongKe = await Chart_ThongKeQuy_Logistic();
             lOutput.Add(streamThongKe);
+            
             return lOutput;
-        }
-
-        private async Task<Stream> Chart_Logistic_NoTaiChinh(List<Financial> lFinancial, string code)
-        {
-            try
-            {
-                var time = GetCurrentTime();
-                var lTangTruong = new List<double>();
-                foreach (var item in lFinancial)
-                {
-                    double tangTruong = 0;
-                    var prevQuarter = item.d.GetPrevQuarter();
-                    var prev = lFinancial.FirstOrDefault(x => x.d == prevQuarter);
-                    if (prev is not null && prev.debt > 0)
-                    {
-                        tangTruong = Math.Round(100 * (-1 + item.debt / prev.debt), 1);
-                    }
-
-                    lTangTruong.Add(tangTruong);
-                }
-                var lTake = lFinancial.TakeLast(StaticVal._TAKE);
-
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTake.Select(x => x.debt),
-                        name = "Nợ tài chính",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lTangTruong.TakeLast(StaticVal._TAKE),
-                        name = "Tăng trưởng nợ",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}%" },
-                        color = "#C00000",
-                        yAxis = 1,
-                    }
-                };
-
-                return await Chart_BasicBase($"{code} - Nợ Quý {time.Item3}/{time.Item2} (QoQoY)", lTake.Select(x => x.d.GetNameQuarter()).ToList(), lSeries);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_Logistic_NoTaiChinh|EXCEPTION| {ex.Message}");
-            }
-            return null;
         }
 
         private async Task<Stream> Chart_ThongKeQuy_Logistic()

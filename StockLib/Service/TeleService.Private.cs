@@ -282,6 +282,7 @@ namespace StockLib.Service
                     return;
                 foreach (var stream in lStream)
                 {
+                    if (stream is null) continue;
                     await BotInstance().SendPhotoAsync(userId, InputFile.FromStream(stream));
                 }
 
