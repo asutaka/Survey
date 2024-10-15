@@ -126,7 +126,7 @@ namespace StockLib.Utils
             return false;
         }
 
-        public static bool IsXuatKhau(this Stock stock)
+        public static bool IsXNK(this Stock stock)
         {
             if (stock.cat is null)
                 return false;
@@ -135,23 +135,13 @@ namespace StockLib.Utils
             {
                 (int)EStockType.Thep,
                 (int)EStockType.Than,
-            };
-            foreach (var item in lCat)
-            {
-                if (stock.cat.Any(x => x.ty == item))
-                    return true;
-            }
-
-            return false;
-        }
-
-        public static bool IsNhapKhau(this Stock stock)
-        {
-            if (stock.cat is null)
-                return false;
-
-            var lCat = new List<int>
-            {
+                (int)EStockType.PhanBon,
+                (int)EStockType.HoaChat,
+                (int)EStockType.Go,
+                (int)EStockType.Gao,
+                (int)EStockType.XiMang,
+                (int)EStockType.CaPhe,
+                (int)EStockType.CaoSu,
                 (int)EStockType.Oto,
                 (int)EStockType.OtoTai,
             };
@@ -172,6 +162,24 @@ namespace StockLib.Utils
             var lCat = new List<int>
             {
                 (int)EStockType.DauKhi
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsBanLe(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.BanLe
             };
             foreach (var item in lCat)
             {

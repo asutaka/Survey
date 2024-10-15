@@ -464,6 +464,82 @@ namespace StockLib.Service
             return null;
         }
 
+        private async Task<Stream> Chart_XNK(IEnumerable<(double, double, string)> lVal, bool isXK, string title, string unit1, string unit2)
+        {
+            try
+            {
+                var strMode = isXK ? "xuất khẩu" : "nhập khẩu";
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lVal.TakeLast(25).Select(x => x.Item1),
+                        name = $"Giá trị {strMode} {title}",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    }
+                };
+
+                if (lVal.Sum(x => x.Item2) > 0)
+                {
+                    lSeries.Add(new HighChartSeries_BasicColumn
+                    {
+                        data = lVal.TakeLast(25).Select(x => x.Item1),
+                        name = $"Giá {title}",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#C00000",
+                        yAxis = 1
+                    });
+                }
+
+                return await Chart_BasicBase($"{strMode} - Thống kê nửa tháng", lVal.TakeLast(25).Select(x => x.Item3).ToList(), lSeries, $"giá trị: {unit1}", $"giá trị: {unit2}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_XNK|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
+
+        private async Task<Stream> Chart_ThongKe_BanLe()
+        {
+            try
+            {
+                var lBanLe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.BanLe)).OrderBy(x => x.d);
+                var lSeries = new List<HighChartSeries_BasicColumn>
+                {
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lBanLe.TakeLast(StaticVal._TAKE).Select(x => Math.Round(x.va/1000, 1)),
+                        name = "Tổng mức bán lẻ",
+                        type = "column",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#012060"
+                    },
+                    new HighChartSeries_BasicColumn
+                    {
+                        data = lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
+                        name = "So với cùng kỳ",
+                        type = "spline",
+                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
+                        color = "#C00000",
+                        yAxis = 1
+                    }
+                };
+
+                return await Chart_BasicBase($"Tổng mức bán lẻ so với cùng kỳ năm ngoái(QoQ)", lBanLe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameMonth()).ToList(), lSeries, "giá trị: nghìn tỷ", "giá trị: %");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"BllService.Chart_BanLe|EXCEPTION| {ex.Message}");
+            }
+
+            return null;
+        }
+
         private async Task<Stream> Chart_BasicBase(string title, List<string> lCat, List<HighChartSeries_BasicColumn> lSerie, string titleX = null, string titleY = null)
         {
             try
