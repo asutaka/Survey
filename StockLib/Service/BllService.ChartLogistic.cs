@@ -2,7 +2,6 @@
 using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Model;
-using StockLib.Utils;
 
 namespace StockLib.Service
 {
@@ -22,8 +21,6 @@ namespace StockLib.Service
                 var streamNo = await Chart_Logistic_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
 
-                var streamThongKe = await Chart_ThongKeQuy_Logistic();
-                lOutput.Add(streamThongKe);
                 return lOutput;
 
             }
@@ -82,65 +79,6 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_Logistic_NoTaiChinh|EXCEPTION| {ex.Message}");
             }
-            return null;
-        }
-
-        private async Task<List<Stream>> Chart_Logistic(string code)
-        {
-            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
-            if (!lFinancial.Any())
-                return null;
-
-            var lOutput = new List<Stream>();
-
-            lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamDoanhThu);
-
-            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
-            lOutput.Add(streamNoTaiChinh);
-
-            var streamThongKe = await Chart_ThongKeQuy_Logistic();
-            lOutput.Add(streamThongKe);
-            
-            return lOutput;
-        }
-
-        private async Task<Stream> Chart_ThongKeQuy_Logistic()
-        {
-            try
-            {
-                var lThongKe_GiaVTBien = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaVT_Bien)).OrderBy(x => x.d);
-                var lThongKe_GiaVTBuuChinh = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaVT_BuuChinh)).OrderBy(x => x.d);
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lThongKe_GiaVTBien.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
-                        name = "Giá VT Biển",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                        yAxis = 1
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lThongKe_GiaVTBuuChinh.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
-                        name = "Giá vận tải bưu chính",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "rgba(158, 159, 163, 0.5)",
-                        yAxis = 1
-                    }
-                };
-
-                return await Chart_BasicBase($"Giá vận tải quý so với cùng kỳ năm ngoái(QoQ)", lThongKe_GiaVTBien.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameQuarter()).ToList(), lSeries, "Đơn vị: %", "Đơn vị: %");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_ThongKeQuy_Logistic|EXCEPTION| {ex.Message}");
-            }
-
             return null;
         }
     }

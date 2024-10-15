@@ -84,54 +84,5 @@ namespace StockLib.Service
             }
             return null;
         }
-
-        private async Task<List<Stream>> Chart_CangBien(string code)
-        {
-            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
-            if (!lFinancial.Any())
-                return null;
-
-            var lOutput = new List<Stream>();
-
-            lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamDoanhThu);
-
-            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
-            lOutput.Add(streamNoTaiChinh);
-
-            var streamThongKe = await Chart_ThongKeQuy_CangBien();
-            lOutput.Add(streamThongKe);
-
-            return lOutput;
-        }
-
-        private async Task<Stream> Chart_ThongKeQuy_CangBien()
-        {
-            try
-            {
-                var lThongKe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaVT_KhoBai)).OrderBy(x => x.d);
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lThongKe.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
-                        name = "So với cùng kỳ",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                        yAxis = 1
-                    }
-                };
-
-                return await Chart_BasicBase($"Giá vận tải kho bãi quý so với cùng kỳ năm ngoái(QoQ)", lThongKe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameQuarter()).ToList(), lSeries, "Đơn vị: %", "Đơn vị: %");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_ThongKeQuy_CangBien|EXCEPTION| {ex.Message}");
-            }
-
-            return null;
-        }
     }
 }

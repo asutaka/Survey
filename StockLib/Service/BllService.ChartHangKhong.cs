@@ -106,32 +106,6 @@ namespace StockLib.Service
             return lOutput;
         }
 
-        private async Task<Stream> Chart_ThongKeQuy_HangKhong()
-        {
-            try
-            {
-                var lThongKe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)EKeyTongCucThongKe.QUY_GiaVT_HangKhong)).OrderBy(x => x.d);
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lThongKe.TakeLast(StaticVal._TAKE).Select(x => x.qoq - 100),
-                        name = "So với cùng kỳ",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                        yAxis = 1
-                    }
-                };
-
-                return await Chart_BasicBase($"Giá vận tải hàng không quý so với cùng kỳ năm ngoái(QoQ)", lThongKe.TakeLast(StaticVal._TAKE).Select(x => x.d.GetNameQuarter()).ToList(), lSeries, "Đơn vị: %", "Đơn vị: %");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_ThongKeQuy_HangKhong|EXCEPTION| {ex.Message}");
-            }
-
-            return null;
-        }
+       
     }
 }

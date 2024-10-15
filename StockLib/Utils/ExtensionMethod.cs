@@ -135,6 +135,7 @@ namespace StockLib.Utils
             {
                 (int)EStockType.Thep,
                 (int)EStockType.Than,
+                (int)EStockType.ThuySan,
                 (int)EStockType.PhanBon,
                 (int)EStockType.HoaChat,
                 (int)EStockType.Go,
@@ -180,6 +181,96 @@ namespace StockLib.Utils
             var lCat = new List<int>
             {
                 (int)EStockType.BanLe
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsCangBien(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.CangBien
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsHangKhong(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.HangKhong
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsCaoSu(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.CaoSu
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsNganHang(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.NganHang
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsChungKhoan(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.ChungKhoan
             };
             foreach (var item in lCat)
             {

@@ -2,7 +2,6 @@
 using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Model;
-using StockLib.Utils;
 
 namespace StockLib.Service
 {
@@ -25,7 +24,8 @@ namespace StockLib.Service
                 var streamNo = await Chart_CaoSu_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
 
-                var streamXK = await Chart_XuatKhau_CaoSu();
+                var stock = _stockRepo.GetEntityByFilter(Builders<Stock>.Filter.Eq(x => x.s, "GVR"));
+                var streamXK = await Chart_XNK(stock);
                 lOutput.Add(streamXK);
                 return lOutput;
 
@@ -136,70 +136,6 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_CaoSu_No|EXCEPTION| {ex.Message}");
             }
-            return null;
-        }
-
-        private async Task<List<Stream>> Chart_CaoSu(string code)
-        {
-            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
-            if (!lFinancial.Any())
-                return null;
-
-            var lOutput = new List<Stream>();
-
-            lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamDoanhThu);
-
-            var streamTonKho = await Chart_TonKho(lFinancial, code);
-            lOutput.Add(streamTonKho);
-
-            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
-            lOutput.Add(streamNoTaiChinh);
-
-            var streamXK = await Chart_XuatKhau_CaoSu();
-            lOutput.Add(streamXK);
-            
-            return lOutput;
-        }
-
-        private async Task<Stream> Chart_XuatKhau_CaoSu()
-        {
-            try
-            {
-                var lCaoSu = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.CaoSu)).OrderBy(x => x.d);
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lCaoSu.TakeLast(25).Select(x => x.va),
-                        name = "Giá trị xuất khẩu cao su",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    }
-                };
-
-                if (lCaoSu.Sum(x => x.price) > 0)
-                {
-                    lSeries.Add(new HighChartSeries_BasicColumn
-                    {
-                        data = lCaoSu.TakeLast(25).Select(x => x.price),
-                        name = "Giá cao su",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                        yAxis = 1
-                    });
-                }
-
-                return await Chart_BasicBase($"Xuất khẩu - Thống kê nửa tháng", lCaoSu.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_XuatKhau_CaoSu|EXCEPTION| {ex.Message}");
-            }
-
             return null;
         }
     }

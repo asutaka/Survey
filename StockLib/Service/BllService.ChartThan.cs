@@ -25,7 +25,8 @@ namespace StockLib.Service
                 var streamNo = await Chart_Than_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
 
-                var streamXK = await Chart_XuatKhau_Than();
+                var stock = _stockRepo.GetEntityByFilter(Builders<Stock>.Filter.Eq(x => x.s, "CLM"));
+                var streamXK = await Chart_XNK(stock);
                 lOutput.Add(streamXK);
                 return lOutput;
 
@@ -136,70 +137,6 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_Than_No|EXCEPTION| {ex.Message}");
             }
-            return null;
-        }
-
-        private async Task<List<Stream>> Chart_Than(string code)
-        {
-            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
-            if (!lFinancial.Any())
-                return null;
-
-            var lOutput = new List<Stream>();
-
-            lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamDoanhThu);
-
-            var streamTonKho = await Chart_TonKho(lFinancial, code);
-            lOutput.Add(streamTonKho);
-
-            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
-            lOutput.Add(streamNoTaiChinh);
-
-            var streamXK = await Chart_XuatKhau_Than();
-            lOutput.Add(streamXK);
-            
-            return lOutput;
-        }
-
-        private async Task<Stream> Chart_XuatKhau_Than()
-        {
-            try
-            {
-                var lThan = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.Than)).OrderBy(x => x.d);
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lThan.TakeLast(25).Select(x => x.va),
-                        name = "Giá trị xuất khẩu Than",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060"
-                    }
-                };
-
-                if (lThan.Sum(x => x.price) > 0)
-                {
-                    lSeries.Add(new HighChartSeries_BasicColumn
-                    {
-                        data = lThan.TakeLast(25).Select(x => x.price),
-                        name = "Giá xuất khẩu",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                        yAxis = 1
-                    });
-                }
-
-                return await Chart_BasicBase($"Xuất khẩu - Thống kê nửa tháng", lThan.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_XuatKhau|EXCEPTION| {ex.Message}");
-            }
-
             return null;
         }
     }

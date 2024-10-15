@@ -285,14 +285,18 @@ namespace StockLib.Service
             var lOutput = new List<Stream>();
 
             lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamTangTruongTinDung = await Chart_CK_TangTruongTinDung_RoomTinDung(lFinancial, code);
-            var streamTuDoanh = await Chart_CK_TuDoanh(lFinancial, code);
-            var streamMoiGioi = await Chart_CK_MoiGioi(lFinancial, code);
             var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamTangTruongTinDung);
-            lOutput.Add(streamTuDoanh);
-            lOutput.Add(streamMoiGioi);
             lOutput.Add(streamDoanhThu);
+
+            var streamTangTruongTinDung = await Chart_CK_TangTruongTinDung_RoomTinDung(lFinancial, code);
+            lOutput.Add(streamTangTruongTinDung);
+
+            var streamTuDoanh = await Chart_CK_TuDoanh(lFinancial, code);
+            lOutput.Add(streamTuDoanh);
+
+            var streamMoiGioi = await Chart_CK_MoiGioi(lFinancial, code);
+            lOutput.Add(streamMoiGioi);
+            
             return lOutput;
         }
         private async Task<Stream> Chart_CK_TangTruongTinDung_RoomTinDung(List<Financial> lFinancial, string code)

@@ -25,8 +25,6 @@ namespace StockLib.Service
                 var streamNo = await Chart_Oto_NoTaiChinh(lInput, lFinancial);
                 lOutput.Add(streamNo);
 
-                var streamNK = await Chart_NhapKhau_Oto();
-                lOutput.Add(streamNK);
                 return lOutput;
 
             }
@@ -136,93 +134,6 @@ namespace StockLib.Service
             {
                 _logger.LogError($"BllService.Chart_Oto_No|EXCEPTION| {ex.Message}");
             }
-            return null;
-        }
-
-        private async Task<List<Stream>> Chart_Oto(string code)
-        {
-            var lFinancial = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
-            if (!lFinancial.Any())
-                return null;
-
-            var lOutput = new List<Stream>();
-
-            lFinancial = lFinancial.OrderBy(x => x.d).ToList();
-            var streamDoanhThu = await Chart_DoanhThu_LoiNhuan(lFinancial.Select(x => new BaseFinancialDTO { d = x.d, rv = x.rv, pf = x.pf }).ToList(), code);
-            lOutput.Add(streamDoanhThu);
-
-            var streamTonKho = await Chart_TonKho(lFinancial, code);
-            lOutput.Add(streamTonKho);
-
-            var streamNoTaiChinh = await Chart_NoTaiChinh(lFinancial, code);
-            lOutput.Add(streamNoTaiChinh);
-
-            var streamNK = await Chart_NhapKhau_Oto();
-            lOutput.Add(streamNK);
-            
-            return lOutput;
-        }
-
-        private async Task<Stream> Chart_NhapKhau_Oto()
-        {
-            try
-            {
-                var lOto9cho_NK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.Oto9Cho_NK)).OrderBy(x => x.d);
-                var lOtotai_NK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)EHaiQuan.OtoVanTai_NK)).OrderBy(x => x.d);
-
-                var lSeries = new List<HighChartSeries_BasicColumn>
-                {
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lOto9cho_NK.TakeLast(25).Select(x => x.va),
-                        name = "Giá trị nhập khẩu ô tô dưới 9 chỗ",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060",
-                    },
-                    new HighChartSeries_BasicColumn
-                    {
-                        data = lOtotai_NK.TakeLast(25).Select(x => x.va),
-                        name = "Giá trị nhập khẩu ô tô tải",
-                        type = "column",
-                        dataLabels = new HighChartDataLabel{ enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                    }
-                };
-
-                if (lOto9cho_NK.Sum(x => x.price) > 0)
-                {
-                    lSeries.Add(new HighChartSeries_BasicColumn
-                    {
-                        data = lOto9cho_NK.TakeLast(25).Select(x => x.price),
-                        name = "Giá nhập khẩu ô tô dưới 9 chỗ",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#012060",
-                        yAxis = 1
-                    });
-                }
-
-                if (lOtotai_NK.Sum(x => x.price) > 0)
-                {
-                    lSeries.Add(new HighChartSeries_BasicColumn
-                    {
-                        data = lOtotai_NK.TakeLast(25).Select(x => x.price),
-                        name = "Giá nhập khẩu ô tô tải",
-                        type = "spline",
-                        dataLabels = new HighChartDataLabel { enabled = true, format = "{point.y:.1f}" },
-                        color = "#C00000",
-                        yAxis = 1
-                    });
-                }
-
-                return await Chart_BasicBase($"Nhập khẩu - Thống kê nửa tháng", lOto9cho_NK.TakeLast(25).Select(x => x.d.GetNameHaiQuan()).ToList(), lSeries, "giá trị: triệu USD", "giá trị: USD");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"BllService.Chart_NhapKhau|EXCEPTION| {ex.Message}");
-            }
-
             return null;
         }
     }
