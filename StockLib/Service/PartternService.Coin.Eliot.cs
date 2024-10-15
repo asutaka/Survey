@@ -40,7 +40,7 @@ namespace StockLib.Service
                 var lTmp = lData.Where(x => (x.Date - dt).TotalDays < 0).ToList();
 
                 var lZigZagTest = lTmp.GetZigZag();
-                var lZigZag = lData.GetZigZag();
+                var lZigZag = lData.GetZigZag(EndType.Close, 3.5M);
                 var isStart = false;
                 var i = -1;
                 //foreach (var item in lSuperTrend)
