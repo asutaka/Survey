@@ -10,6 +10,7 @@ namespace StockLib.DAL.Entity
         public CompanyProfileDataModel p { get; set; } //profile
         public int rank { get; set; }
         public List<CategoryType> cat { get; set; }//Nhóm ngành và tỉ lệ đóng góp của nhóm ngành
+        public List<int> f { get; set; }//follow: Giá những mặt hàng cần quan tâm
         public List<IndicatorModel> indicator { get; set; }
         public int status { get; set; }
     }

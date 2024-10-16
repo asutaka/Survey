@@ -474,4 +474,24 @@ namespace StockLib.Utils
         FPTS = 11,
         VCI = 12
     }
+
+    public enum EPrice
+    {
+        Crude_Oil = 1,//Dầu thô
+        Natural_gas = 2,//Khí thiên nhiên
+        Coal = 3,//Than
+        Rubber = 4,//Cao su
+        Steel = 5,//Thép
+        HRC_Steel = 6,//Thép HRC
+        Gold = 4,//Vàng
+        Coffee = 32,//Cà phê
+        Rice = 33,//Gạo
+        Sugar = 40,//Đường
+        Urea = 11,//U rê
+        polyvinyl = 19,//Ống nhựa PVC
+        Nickel = 13,//Niken
+        WCI = 14,//World Container Index: chỉ số vận tải container
+        YellowPhotpho = 15,//Phốt pho vàng
+        BDTI = 16,//Cước vận tải dầu
+    }
 }

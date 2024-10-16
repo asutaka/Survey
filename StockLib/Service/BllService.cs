@@ -56,7 +56,6 @@ namespace StockLib.Service
         Task<List<Stream>> Chart_XayDung(IEnumerable<string> lInput);
         Task<List<Stream>> Chart_DauKhi(IEnumerable<string> lInput);
         Task<string> Mes_DinhGia(string input);
-        string Mes_ThongTin(string input);
         Task<List<Stream>> Chart_MaCK(string input);
     }
     public partial class BllService : IBllService
@@ -72,7 +71,6 @@ namespace StockLib.Service
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IAPIService _apiService;
         private readonly IDinhGiaService _dinhgiaService;
-        private readonly IThongTinService _thongtinService;
 
         public BllService(ILogger<BllService> logger,
                             IStockRepo stockRepo,
@@ -84,8 +82,7 @@ namespace StockLib.Service
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
                             IAPIService apiService,
-                            IDinhGiaService dinhgiaService,
-                            IThongTinService thongtinService)
+                            IDinhGiaService dinhgiaService)
         {
             _logger = logger;
             _stockRepo = stockRepo;
@@ -98,18 +95,12 @@ namespace StockLib.Service
             _apiService = apiService;
             _dinhgiaService = dinhgiaService;
             _kehoachRepo = kehoachRepo;
-            _thongtinService = thongtinService;
             StockInstance();
         }
 
         public async Task<string> Mes_DinhGia(string input)
         {
             return await _dinhgiaService.Mes_DinhGia(input);
-        }
-
-        public string Mes_ThongTin(string input)
-        {
-            return _thongtinService.Mes_ThongTinCoPhieu(input);
         }
 
         private (long, long, long) GetCurrentTime()

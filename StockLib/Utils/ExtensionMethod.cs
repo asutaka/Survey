@@ -281,6 +281,134 @@ namespace StockLib.Utils
             return false;
         }
 
+        public static bool IsCrude_Oil(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Crude_Oil);
+        }
+
+        public static bool IsNatural_gas(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Natural_gas);
+        }
+
+        public static bool IsCoal(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Coal);
+        }
+
+        public static bool IsGold(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Gold);
+        }
+
+        public static bool IsSteel(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Steel);
+        }
+
+        public static bool IsHRC_Steel(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.HRC_Steel);
+        }
+
+        public static bool IsRubber(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Rubber);
+        }
+
+        public static bool IsCoffee(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Coffee);
+        }
+
+        public static bool IsRice(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Rice);
+        }
+
+        public static bool IsSugar(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Sugar);
+        }
+
+        public static bool IsUrea(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Urea);
+        }
+
+        public static bool IsPolyvinyl(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.polyvinyl);
+        }
+
+        public static bool IsNickel(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.Nickel);
+        }
+
+        public static bool IsWCI(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.WCI);
+        }
+
+        public static bool IsYellowPhotpho(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.YellowPhotpho);
+        }
+
+        public static bool IsBDTI(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.BDTI);
+        }
+
         public static long GetPrevQuarter(this int time)
         {
             var year = time / 10;

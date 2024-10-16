@@ -91,23 +91,17 @@ namespace StockLib.Service
                 return (detmay.Item1, detmay.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.DienGio) { }//Không định giá được
-
             if (eNganh == EStockType.DienKhi)
             {
                 var dien = await DG_DienKhi(code);
                 return (dien.Item1, dien.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.DienMatTroi) { }//Không định giá được
-
             if (eNganh == EStockType.DienThan)
             {
                 var dien = await DG_DienThan(code);
                 return (dien.Item1, dien.Item2, eNganh);
             }
-
-            if (eNganh == EStockType.ThuyDien) { }//Không định giá được
 
             if (eNganh == EStockType.Forex)
             {
@@ -183,8 +177,6 @@ namespace StockLib.Service
                 return (thuysan.Item1, thuysan.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.XayDung) { }//Không định giá được
-
             if (eNganh == EStockType.XiMang)
             {
                 var ximang = DG_XiMang(code);
@@ -203,8 +195,6 @@ namespace StockLib.Service
                 return (channuoi.Item1, channuoi.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.HoaChat) { }//Không định giá được
-
             if (eNganh == EStockType.CaPhe)
             {
                 var cafe = await DG_CaPhe(code);
@@ -216,14 +206,6 @@ namespace StockLib.Service
                 var gao = await DG_Gao(code);
                 return (gao.Item1, gao.Item2, eNganh);
             }
-
-            if (eNganh == EStockType.Duoc){ }//Không định giá được
-
-            if (eNganh == EStockType.DichVuYTe) { }//Không định giá được
-
-            if (eNganh == EStockType.BaoHiem) { }//Không định giá được
-
-            if (eNganh == EStockType.CNTT) { }//Không định giá được
 
             if (eNganh == EStockType.DauTuCong)
             {
@@ -253,14 +235,208 @@ namespace StockLib.Service
                 return null;
 
             var strRes = new StringBuilder();
-            strRes.AppendLine($"Định giá cổ phiếu {stock.s}");
+            strRes.AppendLine($"Mã cổ phiếu {stock.s}: {stock.p.n}");
+
+            var mesThongTin = Mes_ThongTinCoPhieu(input);
+            if(!string.IsNullOrWhiteSpace(mesThongTin))
+            {
+                strRes.AppendLine($"+ Lĩnh vực: {mesThongTin}");
+            }
 
             var lQuote = await _apiService.SSI_GetDataStock(stock.s);
-            var pe = DinhGiaPE(input, lQuote);
-            strRes.AppendLine($"+ P/E: {pe.Item1.GetDisplayName()}");
-            if(!string.IsNullOrWhiteSpace(pe.Item2))
+            var pe = PECoPhieu(input, lQuote);
+            if(!string.IsNullOrWhiteSpace(pe))
             {
-                strRes.AppendLine(pe.Item2);
+                strRes.AppendLine($"+ P/E");
+                strRes.AppendLine(pe);
+            }
+
+            if (stock.f?.Any() ?? false)
+            {
+                foreach (var item in stock.f)
+                {
+                    var leconomic = await _apiService.Tradingeconimic_Commodities();
+                    if (stock.IsCrude_Oil())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Crude_Oil.ToString());
+                        if(first != null)
+                        {
+                            strRes.AppendLine($"+ Giá dầu thô: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsNatural_gas())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Natural_gas.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá khí tự nhiên: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsCoal())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Coal.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Than: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsRubber())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Rubber.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Cao su: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsSteel())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Steel.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Thép: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsHRC_Steel())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.HRC_Steel.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Thép HRC: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsGold())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Gold.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Vàng: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsCoffee())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Coffee.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Cà phê: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsRice())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Rice.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Gạo: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsSugar())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Sugar.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Đường: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsUrea())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Urea.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá U-rê: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsPolyvinyl())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.polyvinyl.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá nhựa PVC: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+                    if (stock.IsNickel())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.Nickel.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá Niken: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
+
+                    if (stock.IsWCI())
+                    {
+                        var wci = await _apiService.Drewry_WCI();
+                        strRes.AppendLine($"+ Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%");
+                    }
+                    if (stock.IsYellowPhotpho())
+                    {
+                        var lPhotpho = await _apiService.Metal_GetYellowPhotpho();
+                        if (lPhotpho?.Any() ?? false)
+                        {
+                            var cur = lPhotpho.First();
+                            var time = cur.metalsPrice.renewDate.ToDateTime("yyyy-MM-dd");
+                            var nearTime = time.AddDays(-6);
+
+                            var near = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{nearTime.Day.To2Digit()}"
+                                                                || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 1).To2Digit()}"
+                                                                || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 2).To2Digit()}"
+                                                                || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 3).To2Digit()}");
+                            if (near != null)
+                            {
+                                var prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}");
+                                if (prev is null)
+                                {
+                                    prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 1).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 2).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 3).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 4).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 5).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 6).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 1).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 2).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 3).To2Digit()}"
+                                                                    || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 4).To2Digit()}");
+                                }
+
+                                var rate = Math.Round(100 * (-1 + cur.metalsPrice.average / near.metalsPrice.average), 1);
+                                var strMes = $"- Giá phốt pho vàng(weekly): {rate}%";
+                                if (prev != null)
+                                {
+                                    var ratePrev = Math.Round(100 * (-1 + cur.metalsPrice.average / prev.metalsPrice.average), 1);
+                                    strMes += $" |YoY: {Math.Round(ratePrev, 1)}%";
+                                }
+                                strRes.AppendLine(strMes);
+                            }
+                        }
+                    }
+                    if (stock.IsBDTI())
+                    {
+                        var lBDTI = await _apiService.MacroVar_GetData("84286"); //BDTI: cước vận tải dầu
+                        if (lBDTI?.Any() ?? false)
+                        {
+                            var dt = DateTime.Now;
+                            var lTake = lBDTI.TakeLast(7);
+                            var last = lTake.Last();
+                            var timeLast = last.date.ToDateTime("yyyy-MM-dd");
+                            if(timeLast.Year != dt.Year
+                                || timeLast.Month != dt.Month
+                                || timeLast.Day != dt.Day)
+                            {
+                                strRes.AppendLine($"+ Giá cước vận tải dầu thô(weekly): 0%");
+                                break;
+                            }
+                            foreach (var itemReverse in lTake.Reverse())
+                            {
+                                var time = itemReverse.date.ToDateTime("yyyy-MM-dd");
+                                if ((timeLast - time).TotalDays >= 6)
+                                {
+                                    var rate = Math.Round(100 * (-1 + last.value / itemReverse.value), 1);
+                                    strRes.AppendLine($"+ Giá cước vận tải dầu thô(weekly): {rate}%");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             var lDinhGia = new List<double>();
@@ -281,36 +457,44 @@ namespace StockLib.Service
                 }
             }
 
-            //strRes.AppendLine();
-            //if (!lDinhGia.Any())
-            //{
-            //    strRes.AppendLine($"=> Kết Luận: {pe.Item1.GetDisplayName()}");
-            //    return strRes.ToString();
-            //}    
-
-            //var avgPoint = Math.Round(lDinhGia.Sum() / lDinhGia.Count(), 1);
-            //var total = Math.Round(((double)pe.Item1 + avgPoint) / 2, 1);
-            //if(total > (double)EPoint.Positive)
-            //{
-            //    strRes.AppendLine($"=> Kết Luận: {EPoint.VeryPositive.GetDisplayName()}");
-            //}
-            //else if (total > (double)EPoint.Normal)
-            //{
-            //    strRes.AppendLine($"=> Kết Luận: {EPoint.Positive.GetDisplayName()}");
-            //}
-            //else if (total > (double)EPoint.Negative)
-            //{
-            //    strRes.AppendLine($"=> Kết Luận: {EPoint.Normal.GetDisplayName()}");
-            //}
-            //else if (total > (double)EPoint.VeryNegative)
-            //{
-            //    strRes.AppendLine($"=> Kết Luận: {EPoint.Negative.GetDisplayName()}");
-            //}
-            //else
-            //{
-            //    strRes.AppendLine($"=> Kết Luận: {EPoint.VeryNegative.GetDisplayName()}");
-            //}
             return strRes.ToString();
+        }
+
+        public string Mes_ThongTinCoPhieu(string code)
+        {
+            if (code.Equals("PVD"))
+            {
+                return $"{code}: Cho thuê giàn khoan";
+            }
+            else if (code.Equals("PVS"))
+            {
+                return $"{code}: Thăm dò và khai thác dầu khí";
+            }
+            else if (code.Equals("PVT") || code.Equals("PVP"))
+            {
+                return $"{code}: Vận tải dầu khí";
+            }
+            else if (code.Equals("GAS"))
+            {
+                return $"{code}: Chế biến và phân phối khí(mua trong nước + nhập khẩu)";
+            }
+            else if (code.Equals("BSR"))
+            {
+                return $"{code}: Chế biến dầu mỏ(100% nhập khẩu)";
+            }
+            else if (code.Equals("POW"))
+            {
+                return $"{code}: Điện khí(khí là nguyên liệu đầu vào)";
+            }
+            else if (code.Equals("PLX"))
+            {
+                return $"{code}: Phân phối dầu khí(chiếm 50% thị phần)";
+            }
+            else if (code.Equals("OIL"))
+            {
+                return $"{code}: Phân phối dầu khí(chiếm 20% thị phần)";
+            }
+            return string.Empty;
         }
 
         private (EPoint, string) XNK(EStockType eType, double step1, double step2)
@@ -878,20 +1062,20 @@ namespace StockLib.Service
             return (EPoint.Unknown, string.Empty);
         }
 
-        private (EPoint, string) DinhGiaPE(string code, List<Quote> lQuote)
+        private string PECoPhieu(string code, List<Quote> lQuote)
         {
             try
             {
                 var dt = DateTime.Now;
                 if (lQuote is null || !lQuote.Any())
                 {
-                    return (EPoint.VeryNegative, string.Empty);
+                    return string.Empty;
                 }
                 //pe
                 var lpe = _peRepo.GetByFilter(Builders<ChiSoPE>.Filter.Eq(x => x.s, code));
                 if (lpe is null || !lpe.Any())
                 {
-                    return (EPoint.Negative, string.Empty);
+                    return string.Empty;
                 }
 
                 var quote = lQuote.MaxBy(x => x.Date);//Giá mới nhất
@@ -926,33 +1110,28 @@ namespace StockLib.Service
                     pf_truth = Math.Round(curPlan.pf_plan * avgRate / 100, 1);
                 }
 
-                if (pf_truth < 0)
+                if (pf_truth <= 0)
                 {
-                    return (EPoint.VeryNegative, string.Empty);
-                }
-
-                if (pf_truth == 0)
-                {
-                    return (EPoint.Negative, string.Empty);
+                    return string.Empty;
                 }
 
                 //True Path 
                 var stock = StaticVal._lStock.FirstOrDefault(x => x.s == code);
                 if (stock.p.q <= 0)
                 {
-                    return (EPoint.VeryNegative, string.Empty);
+                    return string.Empty;
                 }
 
                 var eps_truth = Math.Round(pf_truth * 1000000000 / stock.p.q, 1);
                 if (eps_truth == 0)
                 {
-                    return (EPoint.VeryNegative, string.Empty);
+                    return string.Empty;
                 }
                 
                 var pe_truth = Math.Round((double)quote.Close * 1000 / eps_truth, 1);
                 if (pe_truth <= 0)
                 {
-                    return (EPoint.VeryNegative, string.Empty);
+                    return string.Empty;
                 }
                 var sBuilder = new StringBuilder();
                 sBuilder.AppendLine($"   - PE dự phóng: {Math.Round(pe_truth, 1)}");
@@ -960,63 +1139,40 @@ namespace StockLib.Service
                 var lastPE = lpe.MaxBy(x => x.d);
                 if (lastPE.eps <= 0)
                 {
-                    return (EPoint.VeryNegative, sBuilder.ToString());
+                    return sBuilder.ToString();
                 }
 
                 var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
                 var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
                 sBuilder.AppendLine($"   - PE trung bình quý {dt.GetQuarterStr()}: {Math.Round(pe_avg, 1)}");
                 sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
-                if (pe_cur >= pe_avg
-                    || pe_cur >= pe_truth)
-                {
-                    return (EPoint.Normal, sBuilder.ToString());
-                }
 
-                if (pe_cur * 1.05 < pe_truth)
-                {
-                    return (EPoint.VeryPositive, sBuilder.ToString());
-                }
-
-                return (EPoint.Positive, sBuilder.ToString());
+                return sBuilder.ToString();
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.DinhGiaPE|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.VeryNegative, string.Empty);
+            return string.Empty;
         }
 
-        private (EPoint, string) DinhGiaPEkoKeHoach(List<ChiSoPE> lpe, Quote quote, DateTime dt)
+        private string DinhGiaPEkoKeHoach(List<ChiSoPE> lpe, Quote quote, DateTime dt)
         {
-            var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
-            if (pe_avg <= 0)
-            {
-                return (EPoint.VeryNegative, string.Empty);
-            }
             var sBuilder = new StringBuilder();
+            
+            var pe_avg = lpe.Where(x => x.d.ToString().EndsWith(dt.GetQuarter().ToString())).Average(x => x.pe);
             sBuilder.AppendLine($"   - PE trung bình: {Math.Round(pe_avg, 1)}");
 
-
             var lastPE = lpe.MaxBy(x => x.d);
-            if (lastPE.eps <= 0)
+            if (lastPE.eps == 0)
             {
-                return (EPoint.VeryNegative, sBuilder.ToString());
+                return sBuilder.ToString();
             }
 
             var pe_cur = Math.Round((double)quote.Close * 1000 / lastPE.eps, 1);
             sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
-            if (pe_cur >= pe_avg)
-            {
-                return (EPoint.Normal, sBuilder.ToString());
-            }
-
-            if (pe_cur * 1.05 < pe_avg)
-            {
-                return (EPoint.VeryPositive, sBuilder.ToString());
-            }
-
-            return (EPoint.Positive, sBuilder.ToString());
+            
+            return sBuilder.ToString();
         }
 
         private (EPoint, string) EPointResponse(double val, double step1, double step2, string mes)
