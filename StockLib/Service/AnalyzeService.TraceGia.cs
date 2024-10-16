@@ -83,31 +83,10 @@ namespace StockLib.Service
                     strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%");
                 }
 
-                var lBDTI = await _apiService.MacroVar_GetData("84286"); //BDTI: cước vận tải dầu
-                if (lBDTI?.Any() ?? false) 
+                var bdti = await _apiService.Macrovar_Commodities();
+                if (bdti.ow >= flag || bdti.ow <= -flag)
                 {
-                    var lTake = lBDTI.TakeLast(7);
-                    var last = lTake.Last();
-                    var timeLast = last.date.ToDateTime("yyyy-MM-dd");
-
-                    if (timeLast.Day == dt.Day
-                        && timeLast.Month == dt.Month
-                        && timeLast.Year == dt.Year)
-                    {
-                        foreach (var item in lTake.Reverse())
-                        {
-                            var time = item.date.ToDateTime("yyyy-MM-dd");
-                            if ((timeLast - time).TotalDays >= 6)
-                            {
-                                var rate = Math.Round(100 * (-1 + last.value / item.value), 1);
-                                if (rate >= flag || rate <= -flag)
-                                {
-                                    strOutput.AppendLine($"   - Giá cước vận tải dầu thô(weekly): {rate}%");
-                                    break;
-                                }
-                            }
-                        }
-                    }
+                    strOutput.AppendLine($"   - Cước vận tải dầu thô(weekly): {bdti.ow}%| YoY: {bdti.oy}");
                 }
 
                 var lEconomic = await _apiService.Tradingeconimic_Commodities();

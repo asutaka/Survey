@@ -183,12 +183,6 @@ namespace StockLib.Service
                 return (ximang.Item1, ximang.Item2, eNganh);
             }
 
-            if (eNganh == EStockType.VanTaiBien)
-            {
-                var vt = await DG_VanTaiBien(code);
-                return (vt.Item1, vt.Item2, eNganh);
-            }
-
             if (eNganh == EStockType.ChanNuoi)
             {
                 var channuoi = await DG_ChanNuoi(code);
@@ -249,6 +243,7 @@ namespace StockLib.Service
             {
                 strRes.AppendLine($"+ P/E");
                 strRes.AppendLine(pe);
+                strRes.AppendLine();
             }
 
             if (stock.f?.Any() ?? false)
@@ -410,30 +405,10 @@ namespace StockLib.Service
                     }
                     if (stock.IsBDTI())
                     {
-                        var lBDTI = await _apiService.MacroVar_GetData("84286"); //BDTI: cước vận tải dầu
-                        if (lBDTI?.Any() ?? false)
+                        var bdti = await _apiService.Macrovar_Commodities(); //BDTI: cước vận tải dầu
+                        if (bdti != null)
                         {
-                            var dt = DateTime.Now;
-                            var lTake = lBDTI.TakeLast(7);
-                            var last = lTake.Last();
-                            var timeLast = last.date.ToDateTime("yyyy-MM-dd");
-                            if(timeLast.Year != dt.Year
-                                || timeLast.Month != dt.Month
-                                || timeLast.Day != dt.Day)
-                            {
-                                strRes.AppendLine($"+ Giá cước vận tải dầu thô(weekly): 0%");
-                                break;
-                            }
-                            foreach (var itemReverse in lTake.Reverse())
-                            {
-                                var time = itemReverse.date.ToDateTime("yyyy-MM-dd");
-                                if ((timeLast - time).TotalDays >= 6)
-                                {
-                                    var rate = Math.Round(100 * (-1 + last.value / itemReverse.value), 1);
-                                    strRes.AppendLine($"+ Giá cước vận tải dầu thô(weekly): {rate}%");
-                                    break;
-                                }
-                            }
+                            strRes.AppendLine($"+ Cước vận tải dầu thô(weekly): {bdti.ow}%| YoY: {bdti.oy}%");
                         }
                     }
                 }
@@ -464,35 +439,35 @@ namespace StockLib.Service
         {
             if (code.Equals("PVD"))
             {
-                return $"{code}: Cho thuê giàn khoan";
+                return $"Cho thuê giàn khoan";
             }
             else if (code.Equals("PVS"))
             {
-                return $"{code}: Thăm dò và khai thác dầu khí";
+                return $"Thăm dò và khai thác dầu khí";
             }
             else if (code.Equals("PVT") || code.Equals("PVP"))
             {
-                return $"{code}: Vận tải dầu khí";
+                return $"Vận tải dầu khí";
             }
             else if (code.Equals("GAS"))
             {
-                return $"{code}: Chế biến và phân phối khí(mua trong nước + nhập khẩu)";
+                return $"Chế biến và phân phối khí(mua trong nước + nhập khẩu)";
             }
             else if (code.Equals("BSR"))
             {
-                return $"{code}: Chế biến dầu mỏ(100% nhập khẩu)";
+                return $"Chế biến dầu mỏ(100% nhập khẩu)";
             }
             else if (code.Equals("POW"))
             {
-                return $"{code}: Điện khí(khí là nguyên liệu đầu vào)";
+                return $"Điện khí(khí là nguyên liệu đầu vào)";
             }
             else if (code.Equals("PLX"))
             {
-                return $"{code}: Phân phối dầu khí(chiếm 50% thị phần)";
+                return $"Phân phối dầu khí(chiếm 50% thị phần)";
             }
             else if (code.Equals("OIL"))
             {
-                return $"{code}: Phân phối dầu khí(chiếm 20% thị phần)";
+                return $"Phân phối dầu khí(chiếm 20% thị phần)";
             }
             return string.Empty;
         }

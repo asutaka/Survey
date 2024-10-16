@@ -397,6 +397,24 @@ namespace StockLib.Model
         public float YoY { get; set; }
     }
 
+    public class MacroVar_Commodities_Main
+    {
+        public MacroVar_Commodities_Price prices { get; set; }
+    }
+
+    public class MacroVar_Commodities_Price
+    {
+        [JsonProperty(PropertyName ="172")]
+        public MacroVar_Commodities_Data num { get; set; }
+    }
+
+    public class MacroVar_Commodities_Data
+    {
+        public double pr { get; set; }
+        public double ow { get; set; }
+        public double oy { get; set; }
+    }
+
     public class Metal_Main
     {
         public Metal_Data data { get; set; }

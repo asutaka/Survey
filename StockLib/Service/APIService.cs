@@ -65,10 +65,10 @@ namespace StockLib.Service
         Task<Stream> StreamTongCucThongKe(string url);
 
 
-        Task<List<MacroVar_Data>> MacroVar_GetData(string id);
         Task<List<Metal_Detail>> Metal_GetYellowPhotpho();
         Task<double> Tradingeconimic_GetForex(string code);
         Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
+        Task<MacroVar_Commodities_Data> Macrovar_Commodities();
         Task<(float, float)> Drewry_WCI();
     }
     public partial class APIService : IAPIService
@@ -1269,34 +1269,6 @@ namespace StockLib.Service
         } 
         #endregion
 
-        public async Task<List<MacroVar_Data>> MacroVar_GetData(string id)
-        {
-            var url = $"https://macrovar.com/wp-json/mesmerize-api/v1/market-data-wid";
-            var body = $"wid={id}";
-            try
-            {
-                var client = _client.CreateClient();
-                client.Timeout = TimeSpan.FromSeconds(15);
-                client.BaseAddress = new Uri(url);
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Method = HttpMethod.Post;
-                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-                var responseMessage = await client.SendAsync(requestMessage);
-
-                if (responseMessage.StatusCode != System.Net.HttpStatusCode.OK)
-                    return null;
-
-                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
-                var responseModel = JsonConvert.DeserializeObject<MacroVar_Main>(responseMessageStr);
-                return responseModel.data;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"APIService.MacroVar_BDTI|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
-
         public async Task<double> Tradingeconimic_GetForex(string code)
         {
             try
@@ -1482,6 +1454,34 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.Tradingeconimic_Commodities|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<MacroVar_Commodities_Data> Macrovar_Commodities()
+        {
+            var url = $"https://macrovar.com/wp-admin/admin-ajax.php";
+            var body = $"action=update_market_tables&nonce=01ba1875c1&cntid=-1";
+            try
+            {
+                var client = _client.CreateClient();
+                client.Timeout = TimeSpan.FromSeconds(15);
+                client.BaseAddress = new Uri(url);
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Method = HttpMethod.Post;
+                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                if (responseMessage.StatusCode != HttpStatusCode.OK)
+                    return null;
+
+                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<MacroVar_Commodities_Main>(responseMessageStr);
+                return responseModel?.prices?.num;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Macrovar_Commodities|EXCEPTION| {ex.Message}");
             }
             return null;
         }

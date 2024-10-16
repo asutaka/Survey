@@ -2,6 +2,7 @@
 using StockLib.PublicService;
 using StockLib.Service;
 using StockLib.Utils;
+using System.Data;
 
 namespace StockTestCase
 {
