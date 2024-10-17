@@ -191,6 +191,24 @@ namespace StockLib.Utils
             return false;
         }
 
+        public static bool IsBDS(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.BDS
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
         public static bool IsCangBien(this Stock stock)
         {
             if (stock.cat is null)
@@ -235,6 +253,258 @@ namespace StockLib.Utils
             var lCat = new List<int>
             {
                 (int)EStockType.CaoSu
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsCaPhe(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.CaPhe
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsDauTuCong(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.DauTuCong
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsDetMay(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.DetMay
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsGao(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Gao
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsGo(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Go
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsNhua(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Nhua
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsOto(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Oto
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsOtoTai(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.OtoTai
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsPhanBon(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.PhanBon
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsThan(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Than
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsThep(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Thep
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsThuySan(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.Thep
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsXimang(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.XiMang
+            };
+            foreach (var item in lCat)
+            {
+                if (stock.cat.Any(x => x.ty == item))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsHoaChat(this Stock stock)
+        {
+            if (stock.cat is null)
+                return false;
+
+            var lCat = new List<int>
+            {
+                (int)EStockType.HoaChat
             };
             foreach (var item in lCat)
             {
@@ -369,6 +639,14 @@ namespace StockLib.Utils
             return stock.f.Any(x => x == (int)EPrice.Urea);
         }
 
+        public static bool IsMilk(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.milk);
+        }
+
         public static bool IsPolyvinyl(this Stock stock)
         {
             if (stock.f is null)
@@ -407,6 +685,14 @@ namespace StockLib.Utils
                 return false;
 
             return stock.f.Any(x => x == (int)EPrice.BDTI);
+        }
+
+        public static bool IsDXY(this Stock stock)
+        {
+            if (stock.f is null)
+                return false;
+
+            return stock.f.Any(x => x == (int)EPrice.DXY);
         }
 
         public static long GetPrevQuarter(this int time)

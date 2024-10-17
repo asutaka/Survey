@@ -477,21 +477,41 @@ namespace StockLib.Utils
 
     public enum EPrice
     {
+        [Display(Name = "Crude Oil")]
         Crude_Oil = 1,//Dầu thô
+        [Display(Name = "Natural gas")]
         Natural_gas = 2,//Khí thiên nhiên
+        [Display(Name = "Coal")]
         Coal = 3,//Than
+        [Display(Name = "Rubber")]
         Rubber = 4,//Cao su
+        [Display(Name = "Steel")]
         Steel = 5,//Thép
+        [Display(Name = "HRC Steel")]
         HRC_Steel = 6,//Thép HRC
+        [Display(Name = "Gold")]
         Gold = 4,//Vàng
+        [Display(Name = "Coffee")]
         Coffee = 32,//Cà phê
+        [Display(Name = "Rice")]
         Rice = 33,//Gạo
+        [Display(Name = "Sugar")]
         Sugar = 40,//Đường
+        [Display(Name = "Urea")]
         Urea = 11,//U rê
+        [Display(Name = "polyvinyl")]
         polyvinyl = 19,//Ống nhựa PVC
+        [Display(Name = "Nickel")]
         Nickel = 13,//Niken
+        [Display(Name = "WCI")]
         WCI = 14,//World Container Index: chỉ số vận tải container
+        [Display(Name = "YellowPhotpho")]
         YellowPhotpho = 15,//Phốt pho vàng
+        [Display(Name = "BDTI")]
         BDTI = 16,//Cước vận tải dầu
+        [Display(Name = "milk")]
+        milk = 17,//Giá sữa
+        [Display(Name = "DXY")]
+        DXY = 18,//Chỉ số đô la
     }
 }

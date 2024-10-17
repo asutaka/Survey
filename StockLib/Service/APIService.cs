@@ -1360,19 +1360,20 @@ namespace StockLib.Service
             {
                 var lCode = new List<string>
                 {
-                    "Crude Oil",//Dầu thô
-                    "Natural gas",//Khí thiên nhiên
-                    "Coal",//Than
-                    "Gold",//Vàng
-                    "Steel",//Thép
-                    "HRC Steel",//Thép HRC
-                    "Rubber", //Cao su
-                    "Coffee", //Cà phê
-                    "Rice", //Gạo
-                    "Sugar", //Đường
-                    "Urea", //U rê
-                    "polyvinyl", //Ống nhựa PVC
-                    "Nickel", //Niken
+                    EPrice.Crude_Oil.GetDisplayName(),//Dầu thô
+                    EPrice.Natural_gas.GetDisplayName(),//Khí thiên nhiên
+                    EPrice.Coal.GetDisplayName(),//Than
+                    EPrice.Gold.GetDisplayName(),//Vàng
+                    EPrice.Steel.GetDisplayName(),//Thép
+                    EPrice.HRC_Steel.GetDisplayName(),//Thép HRC
+                    EPrice.Rubber.GetDisplayName(), //Cao su
+                    EPrice.Coffee.GetDisplayName(), //Cà phê
+                    EPrice.Rice.GetDisplayName(), //Gạo
+                    EPrice.Sugar.GetDisplayName(), //Đường
+                    EPrice.Urea.GetDisplayName(), //U rê
+                    EPrice.polyvinyl.GetDisplayName(), //Ống nhựa PVC
+                    EPrice.Nickel.GetDisplayName(), //Niken
+                    EPrice.milk.GetDisplayName()//Sữa
                 };
 
                 var lResult = new List<TradingEconomics_Data>();

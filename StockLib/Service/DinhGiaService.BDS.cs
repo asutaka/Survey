@@ -1,13 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using StockLib.DAL.Entity;
-using StockLib.Utils;
 
 namespace StockLib.Service
 {
     public partial class DinhGiaService
     {
-        private (EPoint, string) DG_BDS(string code)
+        private string DG_BDS(string code)
         {
             try
             {
@@ -17,7 +16,7 @@ namespace StockLib.Service
                 var lBDS = _financialRepo.GetByFilter(Builders<Financial>.Filter.Eq(x => x.s, code));
                 if (lBDS is null || lBDS.Count() < 5)
                 {
-                    return (EPoint.VeryNegative, string.Empty);
+                    return string.Empty;
                 }
                 lBDS = lBDS.OrderByDescending(x => x.d).Take(5).ToList();
                 var first = lBDS.First().bp;
@@ -52,30 +51,30 @@ namespace StockLib.Service
 
                 if (countGreat >= 3) 
                 {
-                    return (EPoint.VeryPositive, $"   - Tăng trưởng người mua({countGreat}/5)");
+                    return $"   - Tăng trưởng người mua({countGreat}/5)";
                 }
                 else if (isGreate) 
                 {
-                    return (EPoint.Positive, $"   - Tăng trưởng người mua đột biến quý gần nhất");
+                    return $"   - Tăng trưởng người mua đột biến quý gần nhất";
                 }
                 else if(countLess >= 4)
                 {
-                    return (EPoint.VeryNegative, $"   - Suy giảm người mua({countLess}/5)");
+                    return $"   - Suy giảm người mua({countLess}/5)";
                 }
                 else if (countLess == 3)
                 {
-                    return (EPoint.Negative, $"   - Suy giảm người mua({countLess}/5)");
+                    return $"   - Suy giảm người mua({countLess}/5)";
                 }
                 else
                 {
-                    return (EPoint.Normal, $"   - Chưa có đột biến người mua");
+                    return $"   - Chưa có đột biến người mua";
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.DG_BDS|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
     }
 }

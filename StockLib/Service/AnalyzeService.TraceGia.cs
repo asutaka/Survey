@@ -94,57 +94,61 @@ namespace StockLib.Service
                 {
                     if (item.Weekly >= flag || item.Weekly <= -flag) 
                     {
-                        if(item.Code == "Crude Oil")
+                        if(item.Code == EPrice.Crude_Oil.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Dầu Thô(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if(item.Code == "Natural gas")
+                        else if(item.Code == EPrice.Natural_gas.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Khí Tự Nhiên(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Coal")
+                        else if (item.Code == EPrice.Coal.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Than(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Gold")
+                        else if (item.Code == EPrice.Gold.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Vàng(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Steel")
+                        else if (item.Code == EPrice.Steel.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Thép(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "HRC Steel")
+                        else if (item.Code == EPrice.HRC_Steel.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Thép HRC(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Rubber")
+                        else if (item.Code == EPrice.Rubber.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Cao Su(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Coffee")
+                        else if (item.Code == EPrice.Coffee.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Cà Phê(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Rice")
+                        else if (item.Code == EPrice.Rice.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Gạo(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Sugar")
+                        else if (item.Code == EPrice.Sugar.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Đường(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Urea")
+                        else if (item.Code == EPrice.Urea.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá U rê(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "polyvinyl")
+                        else if (item.Code == EPrice.polyvinyl.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá nhựa PVC(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
-                        else if (item.Code == "Nickel")
+                        else if (item.Code == EPrice.Nickel.GetDisplayName())
                         {
                             strOutput.AppendLine($"   - Giá Niken-PC1(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                        }
+                        else if (item.Code == EPrice.milk.GetDisplayName())
+                        {
+                            strOutput.AppendLine($"   - Giá Sữa(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
                         }
                     }
                 }

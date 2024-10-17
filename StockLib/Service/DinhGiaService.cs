@@ -4,6 +4,7 @@ using Skender.Stock.Indicators;
 using StockLib.DAL;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace StockLib.Service
@@ -45,181 +46,6 @@ namespace StockLib.Service
             _specRepo = specRepo;
             _apiService = apiService;
             _financialRepo = financialRepo;
-        }
-        private async Task<(EPoint, string, EStockType)> DinhGiaNganh(string code, int nganh)
-        {
-            var eNganh = (EStockType)nganh;
-            if(eNganh == EStockType.BanLe)
-            {
-                var banle = DG_BanLe(code);
-                return (banle.Item1, banle.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.BDS)
-            {
-                var bds = DG_BDS(code);
-                return (bds.Item1, bds.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.CangBien)
-            {
-                var vt = await DG_CangBien(code);
-                return (vt.Item1, vt.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.CaoSu)
-            {
-                var caosu = DG_CaoSu(code);
-                return (caosu.Item1, caosu.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.ChungKhoan)
-            {
-                var ck = await DG_ChungKhoan(code);
-                return (ck.Item1, ck.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.DauKhi)
-            {
-                var daukhi = await DG_DauKhi(code);
-                return (daukhi.Item1, daukhi.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.DetMay)
-            {
-                var detmay = DG_DetMay(code);
-                return (detmay.Item1, detmay.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.DienKhi)
-            {
-                var dien = await DG_DienKhi(code);
-                return (dien.Item1, dien.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.DienThan)
-            {
-                var dien = await DG_DienThan(code);
-                return (dien.Item1, dien.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Forex)
-            {
-                var forex = await DinhGia_Forex(EForex.DXU1, 2, 5);
-                return (Swap(forex.Item1), forex.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Go)
-            {
-                var go = DG_Go(code);
-                return (go.Item1, go.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.HangKhong)
-            {
-                var hk = DG_HangKhong(code);
-                return (hk.Item1, hk.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.KCN)
-            {
-                var kcn = DG_KCN(code);
-                return (kcn.Item1, kcn.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Logistic)
-            {
-                var vt = DG_Logistic(code);
-                return (vt.Item1, vt.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.NganHang){}
-
-            if (eNganh == EStockType.Nhua)
-            {
-                var than = DG_Nhua(code);
-                return (than.Item1, than.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Oto)
-            {
-                var oto = DG_Oto(code);
-                return (Swap(oto.Item1), oto.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.OtoTai)
-            {
-                var oto = DG_OtoTai(code);
-                return (Swap(oto.Item1), oto.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.PhanBon)
-            {
-                var ure = await DG_PhanBon(code);
-                return (ure.Item1, ure.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Than)
-            {
-                var than = await DG_Than(code);
-                return (than.Item1, than.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Thep)
-            {
-                var thep = await DG_Thep(code);
-                return (thep.Item1, thep.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.ThuySan)
-            {
-                var thuysan = DG_ThuySan(code);
-                return (thuysan.Item1, thuysan.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.XiMang)
-            {
-                var ximang = DG_XiMang(code);
-                return (ximang.Item1, ximang.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.ChanNuoi)
-            {
-                var channuoi = await DG_ChanNuoi(code);
-                return (channuoi.Item1, channuoi.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.CaPhe)
-            {
-                var cafe = await DG_CaPhe(code);
-                return (cafe.Item1, cafe.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Gao)
-            {
-                var gao = await DG_Gao(code);
-                return (gao.Item1, gao.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.DauTuCong)
-            {
-                var dtc = DG_DauTuCong(code);
-                return (dtc.Item1, dtc.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Duong)
-            {
-                var duong = await DG_Duong(code);
-                return (duong.Item1, duong.Item2, eNganh);
-            }
-
-            if (eNganh == EStockType.Sua)
-            {
-                var sua = await DG_Sua(code);
-                return (sua.Item1, sua.Item2, eNganh);
-            }
-
-            return (EPoint.Unknown, string.Empty, eNganh);
         }
 
         public async Task<string> Mes_DinhGia(string input)
@@ -355,6 +181,14 @@ namespace StockLib.Service
                             strRes.AppendLine($"+ Giá Niken: Weekly({first.Weekly}%)|YoY({first.YoY})");
                         }
                     }
+                    if (stock.IsMilk())
+                    {
+                        var first = leconomic.FirstOrDefault(x => x.Code == EPrice.milk.ToString());
+                        if (first != null)
+                        {
+                            strRes.AppendLine($"+ Giá sữa: Weekly({first.Weekly}%)|YoY({first.YoY})");
+                        }
+                    }
 
                     if (stock.IsWCI())
                     {
@@ -411,26 +245,166 @@ namespace StockLib.Service
                             strRes.AppendLine($"+ Cước vận tải dầu thô(weekly): {bdti.ow}%| YoY: {bdti.oy}%");
                         }
                     }
-                }
-            }
-
-            var lDinhGia = new List<double>();
-            foreach (var item in stock.cat ?? new List<CategoryType>()) 
-            {
-                if (item.ty <= 0)
-                    continue;
-
-                var dg = await DinhGiaNganh(stock.s, item.ty);
-                if (dg.Item1 != EPoint.Unknown)
-                {
-                    strRes.AppendLine($"+ {dg.Item3.GetDisplayName()}: {dg.Item1.GetDisplayName()}");
-                    if (!string.IsNullOrWhiteSpace(dg.Item2))
+                    if (stock.IsDXY())
                     {
-                        strRes.AppendLine(dg.Item2);
+                        var lVal = await _apiService.VietStock_GetForex(EForex.DXU1.ToString());
+                        if (lVal is null || !lVal.t.Any())
+                            return string.Empty;
+
+                        var c_last = lVal.c.Last();
+                        var c_near = lVal.c.SkipLast(6).Last();
+
+                        var t_prev = ((long)lVal.t.Last()).UnixTimeStampToDateTime().AddYears(-1).AddMonths(1);
+                        var dtPrev = new DateTime(t_prev.Year, t_prev.Month, 1, 0, 0, 0);
+                        var timestamp = new DateTimeOffset(dtPrev).ToUnixTimeSeconds();
+                        var t_index = lVal.t.Where(x => x < timestamp).Max(x => x);
+                        var index = lVal.t.IndexOf(t_index);
+                        var c_prev = lVal.c.ElementAt(index);
+
+                        var weekly = Math.Round(100 * (-1 + c_last / c_near), 1);
+                        var qoq = Math.Round(100 * (-1 + c_last / c_prev), 1);
+                        return $"+ Chỉ số USD QoQ(weekly): {weekly}%| YoY: {qoq}%";
                     }
-                    lDinhGia.Add((double)dg.Item1 * item.ty_r / 100);
                 }
             }
+
+            if(stock.IsBanLe())
+            {
+                strRes.AppendLine(ModeThongKe(EKeyTongCucThongKe.BanLe));
+            }
+
+            if(stock.IsBDS())
+            {
+                strRes.AppendLine(DG_BDS(stock.s));
+            }    
+
+            if (stock.IsCaPhe())
+            {
+                var eHaiQuan = EHaiQuan.None;
+                var eThongKe = EKeyTongCucThongKe.XK_CaPhe;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsCangBien())
+            {
+                var vt = ModeThongKe(EKeyTongCucThongKe.VanTai_DuongBien);
+                var gia = ModeThongKe(EKeyTongCucThongKe.QUY_GiaVT_KhoBai);
+                strRes.AppendLine(vt);
+                strRes.AppendLine(gia);
+            }
+
+            if (stock.IsCaoSu())
+            {
+                var eHaiQuan = EHaiQuan.CaoSu;
+                var eThongKe = EKeyTongCucThongKe.XK_CaoSu;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsChungKhoan())
+            {
+                strRes.AppendLine(await DG_ChungKhoan(stock.s));
+            }    
+
+            if (stock.IsDauTuCong())
+            {
+                strRes.AppendLine(ModeThongKe(EKeyTongCucThongKe.DauTuCong));
+            }
+
+            if(stock.IsDetMay())
+            {
+                var eHaiQuan = EHaiQuan.DetMay;
+                var eThongKe = EKeyTongCucThongKe.XK_DetMay;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsGao())
+            {
+                var eHaiQuan = EHaiQuan.Gao;
+                var eThongKe = EKeyTongCucThongKe.XK_Gao;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsGo())
+            {
+                var eHaiQuan = EHaiQuan.Go;
+                var eThongKe = EKeyTongCucThongKe.XK_Go;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsHangKhong())
+            {
+                var vt = ModeThongKe(EKeyTongCucThongKe.VanTai_HangKhong);
+                var hk = ModeThongKe(EKeyTongCucThongKe.HanhKhach_HangKhong);
+                var giave = ModeThongKe(EKeyTongCucThongKe.QUY_GiaVT_HangKhong);
+                strRes.AppendLine(vt);
+                strRes.AppendLine(hk);
+                strRes.AppendLine(giave);
+            }
+
+            if (stock.IsHoaChat())
+            {
+                var eHaiQuan = EHaiQuan.HoaChat;
+                var eThongKe = EKeyTongCucThongKe.XK_HoaChat;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if (stock.IsNhua())
+            {
+                var eHaiQuan = EHaiQuan.SPChatDeo;
+                var eThongKe = EKeyTongCucThongKe.XK_SPChatDeo;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsOto())
+            {
+                var eHaiQuan = EHaiQuan.Oto9Cho_NK;
+                var eThongKe = EKeyTongCucThongKe.None;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if (stock.IsOtoTai())
+            {
+                var eHaiQuan = EHaiQuan.OtoVanTai_NK;
+                var eThongKe = EKeyTongCucThongKe.None;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsPhanBon())
+            {
+                var eHaiQuan = EHaiQuan.PhanBon;
+                var eThongKe = EKeyTongCucThongKe.None;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsThan())
+            {
+                var eHaiQuan = EHaiQuan.Than;
+                var eThongKe = EKeyTongCucThongKe.None;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if (stock.IsThep())
+            {
+                var eHaiQuan = EHaiQuan.SatThep;
+                var eThongKe = EKeyTongCucThongKe.XK_SatThep;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            if(stock.IsThuySan())
+            {
+                var eHaiQuan = EHaiQuan.ThuySan;
+                var eThongKe = EKeyTongCucThongKe.XK_ThuySan;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }    
+
+            if(stock.IsXimang())
+            {
+                var eHaiQuan = EHaiQuan.Ximang;
+                var eThongKe = EKeyTongCucThongKe.XK_Ximang;
+                strRes.AppendLine(ModeXNK(eThongKe, eHaiQuan));
+            }
+
+            
 
             return strRes.ToString();
         }
@@ -470,138 +444,6 @@ namespace StockLib.Service
                 return $"Phân phối dầu khí(chiếm 20% thị phần)";
             }
             return string.Empty;
-        }
-
-        private (EPoint, string) XNK(EStockType eType, double step1, double step2)
-        {
-            try
-            {
-                if(eType == EStockType.CaoSu)
-                {
-                    var eHaiQuan = EHaiQuan.CaoSu;
-                    var eThongKe = EKeyTongCucThongKe.XK_CaoSu;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.DetMay)
-                {
-                    var eHaiQuan = EHaiQuan.DetMay;
-                    var eThongKe = EKeyTongCucThongKe.XK_DetMay;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.Go)
-                {
-                    var eHaiQuan = EHaiQuan.Go;
-                    var eThongKe = EKeyTongCucThongKe.XK_Go;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.Nhua)
-                {
-                    var eHaiQuan = EHaiQuan.ChatDeo;
-                    var eThongKe = EKeyTongCucThongKe.XK_ChatDeo;
-                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
-
-                    var eHaiQuanSP = EHaiQuan.SPChatDeo;
-                    var eThongKeSP = EKeyTongCucThongKe.XK_SPChatDeo;
-                    var modeSP = ModeXNK(eThongKeSP, eHaiQuanSP, step1, step2);
-
-                    var sBuilder = new StringBuilder();
-                    sBuilder.AppendLine(mode.Item2);
-                    sBuilder.AppendLine($"   - SP {modeSP.Item2}");
-                    return (MergeEnpoint(mode.Item1, modeSP.Item1), sBuilder.ToString());
-                }
-                else if (eType == EStockType.Oto)
-                {
-                    var eHaiQuan = EHaiQuan.Oto9Cho_NK;
-                    var eThongKe = EKeyTongCucThongKe.None;
-                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.OtoTai)
-                {
-                    var eHaiQuan = EHaiQuan.OtoVanTai_NK;
-                    var eThongKe = EKeyTongCucThongKe.None;
-                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.PhanBon)
-                {
-                    var eHaiQuan = EHaiQuan.PhanBon;
-                    var eThongKe = EKeyTongCucThongKe.None;
-                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.Than)
-                {
-                    var eHaiQuan = EHaiQuan.Than;
-                    var eThongKe = EKeyTongCucThongKe.None;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.Thep)
-                {
-                    var eHaiQuan = EHaiQuan.SatThep;
-                    var eThongKe = EKeyTongCucThongKe.XK_SatThep;
-                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
-
-                    var eHaiQuanSP = EHaiQuan.SPSatThep;
-                    var eThongKeSP = EKeyTongCucThongKe.XK_SPSatThep;
-                    var modeSP = ModeXNK(eThongKeSP, eHaiQuanSP, step1, step2);
-
-                    var eHaiQuanNK = EHaiQuan.SPSatThep_NK;
-                    var eThongKeNK = EKeyTongCucThongKe.NK_SPSatThep;
-                    var modeNK = ModeXNK(eThongKeNK, eHaiQuanNK, step1, step2);
-
-                    var sBuilder = new StringBuilder();
-                    sBuilder.AppendLine(mode.Item2);
-                    sBuilder.AppendLine($"   - SP {modeSP.Item2}");
-                    sBuilder.AppendLine($"   - NK {modeNK.Item2}");
-
-                    var merge = MergeEnpoint(mode.Item1, modeSP.Item1, Swap(modeNK.Item1));
-                    return (merge, sBuilder.ToString());
-
-                }
-                else if (eType == EStockType.ThuySan)
-                {
-                    var eHaiQuan = EHaiQuan.ThuySan;
-                    var eThongKe = EKeyTongCucThongKe.XK_ThuySan;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.XiMang)
-                {
-                    var eHaiQuan = EHaiQuan.Ximang;
-                    var eThongKe = EKeyTongCucThongKe.XK_Ximang;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.HoaChat)
-                {
-                    var eHaiQuan = EHaiQuan.HoaChat;
-                    var eThongKe = EKeyTongCucThongKe.XK_HoaChat;
-                    var mode = ModeXNK(eThongKe, eHaiQuan, step1, step2);
-
-                    var eHaiQuanSP = EHaiQuan.SPHoaChat;
-                    var eThongKeSP = EKeyTongCucThongKe.XK_SPHoaChat;
-                    var modeSP = ModeXNK(eThongKeSP, eHaiQuanSP, step1, step2);
-                    
-                    var sBuilder = new StringBuilder();
-                    sBuilder.AppendLine(mode.Item2);
-                    sBuilder.AppendLine($"   - SP {modeSP.Item2}");
-                    return (MergeEnpoint(mode.Item1, modeSP.Item1), sBuilder.ToString());
-
-                }
-                else if (eType == EStockType.CaPhe)
-                {
-                    var eHaiQuan = EHaiQuan.None;
-                    var eThongKe = EKeyTongCucThongKe.XK_CaPhe;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-                else if (eType == EStockType.Gao)
-                {
-                    var eHaiQuan = EHaiQuan.Gao;
-                    var eThongKe = EKeyTongCucThongKe.XK_Gao;
-                    return ModeXNK(eThongKe, eHaiQuan, step1, step2);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"DinhGiaService.HaiQuanXNK|EXCEPTION| {ex.Message}");
-            }
-            return (EPoint.Unknown, string.Empty);
         }
 
         private EPoint Swap(EPoint point)
@@ -645,7 +487,7 @@ namespace StockLib.Service
             return EPoint.VeryNegative;
         }
 
-        private (EPoint, string) ModeXNK(EKeyTongCucThongKe eThongKe, EHaiQuan eHaiQuan, double step1, double step2)
+        private string ModeXNK(EKeyTongCucThongKe eThongKe, EHaiQuan eHaiQuan)
         {
             try
             {
@@ -725,141 +567,93 @@ namespace StockLib.Service
 
                 if (mode == 1)
                 {
-                    return HaiQuanXNK(eHaiQuan, step1, step2);
+                    return HaiQuanXNK(eHaiQuan);
                 }
                 else if(mode == 2)
                 {
-                    return ThongKeXNK(eThongKe, step1, step2);
+                    return ThongKeXNK(eThongKe);
                 }
                 else
                 {
-                    return ThongKeQuyXNK(eThongKe, step1, step2);
+                    return ThongKeQuyXNK(eThongKe);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ModeXNK|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
 
-        private (EPoint, string) HaiQuanXNK(EHaiQuan eHaiQuan, double step1, double step2)
+        private string HaiQuanXNK(EHaiQuan eHaiQuan)
         {
             try
             {
                 var lXK = _haiquanRepo.GetByFilter(Builders<ThongKeHaiQuan>.Filter.Eq(x => x.key, (int)eHaiQuan)).OrderByDescending(x => x.d);
                 if (lXK is null || !lXK.Any())
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    return string.Empty;
                 }
                 var cur = lXK.First();
                 var prev = lXK.FirstOrDefault(x => x.d == cur.d - 1000);
                 if (prev is null)
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    return string.Empty;
                 }
 
                 var rate = Math.Round(Math.Round(cur.va * 100 / prev.va, 1) - 100, 1);
-                if (rate >= step2)
-                {
-                    return (EPoint.VeryPositive, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= step1)
-                {
-                    return (EPoint.Positive, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step1)
-                {
-                    return (EPoint.Normal, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step2)
-                {
-                    return (EPoint.Negative, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
-                }
-                return (EPoint.VeryNegative, $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%");
+                return $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%";
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.HaiQuanXNK|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty); 
+            return string.Empty; 
         }
 
-        private (EPoint, string) ThongKeXNK(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        private string ThongKeXNK(EKeyTongCucThongKe eThongKe)
         {
             try
             {
                 var lThongKe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
                 if(lThongKe is null || !lThongKe.Any())
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    return string.Empty;
                 }    
 
                 var cur = lThongKe.FirstOrDefault();
                 var rate = Math.Round(cur.qoq - 100, 1);
-                if(rate >= step2)
-                {
-                    return (EPoint.VeryPositive, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
-                }
-                else if(rate >= step1)
-                {
-                    return (EPoint.Positive, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step1)
-                {
-                    return (EPoint.Normal, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step2)
-                {
-                    return (EPoint.Negative, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
-                }
-                return (EPoint.VeryNegative, $"   - Xuất khẩu Tháng cùng kỳ: {rate}%");
+                return $"   - Xuất khẩu Tháng cùng kỳ: {rate}%";
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ThongKeXNK|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
 
-        private (EPoint, string) ThongKeQuyXNK(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        private string ThongKeQuyXNK(EKeyTongCucThongKe eThongKe)
         {
             try
             {
                 var lThongKe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
                 if (!lThongKe.Any())
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    return string.Empty;
                 }
 
                 var cur = lThongKe.FirstOrDefault();
                 var rate = Math.Round(cur.qoq - 100, 1);
-                if (rate >= step2)
-                {
-                    return (EPoint.VeryPositive, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
-                }
-                else if (rate >= step1)
-                {
-                    return (EPoint.Positive, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step1)
-                {
-                    return (EPoint.Normal, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step2)
-                {
-                    return (EPoint.Negative, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
-                }
-                return (EPoint.VeryNegative, $"   - Xuất khẩu Quý cùng kỳ: {rate}%");
+                return $"   - Xuất khẩu Quý cùng kỳ: {rate}%";
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ThongKeQuyXNK|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
 
-        private (EPoint, string) ModeThongKe(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        private string ModeThongKe(EKeyTongCucThongKe eThongKe)
         {
             try
             {
@@ -919,28 +713,28 @@ namespace StockLib.Service
 
                 if (mode == 2)
                 {
-                    return ThongKeOther(eThongKe, step1, step2);
+                    return ThongKeOther(eThongKe);
                 }
                 else
                 {
-                    return ThongKeQuyOther(eThongKe, step1, step2);
+                    return ThongKeQuyOther(eThongKe);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ModeThongKe|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
 
-        private (EPoint, string) ThongKeOther(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        private string ThongKeOther(EKeyTongCucThongKe eThongKe)
         {
             try
             {
                 var lThongKe = _thongkeRepo.GetByFilter(Builders<ThongKe>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
                 if (lThongKe is null || !lThongKe.Any())
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    return string.Empty;
                 }
 
                 var strTitle = eThongKe.GetDisplayName();
@@ -951,7 +745,7 @@ namespace StockLib.Service
                     var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
                     if (prev is null || prev.va <= 0)
                     {
-                        return (EPoint.Unknown, string.Empty);
+                        return string.Empty;
                     }
                     rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
                 }
@@ -959,40 +753,24 @@ namespace StockLib.Service
                 {
                     rate = Math.Round(cur.qoq - 100, 1);
                 }
-               
-                if (rate >= step2)
-                {
-                    return (EPoint.VeryPositive, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= step1)
-                {
-                    return (EPoint.Positive, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step1)
-                {
-                    return (EPoint.Normal, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step2)
-                {
-                    return (EPoint.Negative, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
-                }
-                return (EPoint.VeryNegative, $"   - {strTitle} Tháng cùng kỳ: {rate}%");
+
+                return $"   - {strTitle} Tháng cùng kỳ: {rate}%";
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ThongKeOther|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
 
-        private (EPoint, string) ThongKeQuyOther(EKeyTongCucThongKe eThongKe, double step1, double step2)
+        private string ThongKeQuyOther(EKeyTongCucThongKe eThongKe)
         {
             try
             {
                 var lThongKe = _thongkequyRepo.GetByFilter(Builders<ThongKeQuy>.Filter.Eq(x => x.key, (int)eThongKe)).OrderByDescending(x => x.d);
                 if (!lThongKe.Any())
                 {
-                    return (EPoint.Unknown, string.Empty);
+                    return string.Empty;
                 }
 
                 var strTitle = eThongKe.GetDisplayName();
@@ -1003,7 +781,7 @@ namespace StockLib.Service
                     var prev = lThongKe.FirstOrDefault(x => x.d == cur.d - 100);
                     if (prev is null || prev.va <= 0)
                     {
-                        return (EPoint.Unknown, string.Empty);
+                        return string.Empty;
                     }
                     rate = Math.Round(100 * (-1 + cur.va / prev.va), 1);
                 }
@@ -1012,29 +790,13 @@ namespace StockLib.Service
                     rate = Math.Round(cur.qoq - 100, 1);
                 }
 
-                if (rate >= step2)
-                {
-                    return (EPoint.VeryPositive, $"   - {strTitle} Quý cùng kỳ: {rate}%");
-                }
-                else if (rate >= step1)
-                {
-                    return (EPoint.Positive, $"   - {strTitle} Quý cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step1)
-                {
-                    return (EPoint.Normal, $"   - {strTitle} Quý cùng kỳ: {rate}%");
-                }
-                else if (rate >= -step2)
-                {
-                    return (EPoint.Negative, $"   - {strTitle} Quý cùng kỳ: {rate}%");
-                }
-                return (EPoint.VeryNegative, $"   - {strTitle} Quý cùng kỳ: {rate}%");
+                return $"   - {strTitle} Quý cùng kỳ: {rate}%";
             }
             catch (Exception ex)
             {
                 _logger.LogError($"DinhGiaService.ThongKeQuyXNK|EXCEPTION| {ex.Message}");
             }
-            return (EPoint.Unknown, string.Empty);
+            return string.Empty;
         }
 
         private string PECoPhieu(string code, List<Quote> lQuote)
