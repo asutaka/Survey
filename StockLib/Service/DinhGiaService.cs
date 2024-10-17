@@ -557,7 +557,7 @@ namespace StockLib.Service
                 }
 
                 var rate = Math.Round(Math.Round(cur.va * 100 / prev.va, 1) - 100, 1);
-                return $"   - Xuất khẩu Hải Quan nửa Tháng cùng kỳ: {rate}%";
+                return $"+ Xuất khẩu Hải Quan nửa Tháng(YoY): {rate}%";
             }
             catch (Exception ex)
             {
@@ -578,7 +578,7 @@ namespace StockLib.Service
 
                 var cur = lThongKe.FirstOrDefault();
                 var rate = Math.Round(cur.qoq - 100, 1);
-                return $"   - Xuất khẩu Tháng cùng kỳ: {rate}%";
+                return $"+ Xuất khẩu {eThongKe.GetDisplayName()}(YoY): {rate}%";
             }
             catch (Exception ex)
             {
@@ -599,7 +599,7 @@ namespace StockLib.Service
 
                 var cur = lThongKe.FirstOrDefault();
                 var rate = Math.Round(cur.qoq - 100, 1);
-                return $"   - Xuất khẩu Quý cùng kỳ: {rate}%";
+                return $"+ Xuất khẩu {eThongKe.GetDisplayName()} quý(YoY): {rate}%";
             }
             catch (Exception ex)
             {

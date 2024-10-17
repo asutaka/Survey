@@ -1443,7 +1443,7 @@ namespace StockLib.Service
                             }
                         }
                         if (!string.IsNullOrWhiteSpace(model.Code)
-                            && lCode.Contains(model.Code))
+                            && lCode.Any(x => x.Equals(model.Code, StringComparison.OrdinalIgnoreCase)))
                         {
                             lResult.Add(model);
                         }
