@@ -4,7 +4,6 @@ using Skender.Stock.Indicators;
 using StockLib.DAL;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
-using System.Runtime.Intrinsics.X86;
 using System.Text;
 
 namespace StockLib.Service
@@ -23,7 +22,6 @@ namespace StockLib.Service
         private readonly IThongKeQuyRepo _thongkequyRepo;
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         
-        private readonly ISpecialInfoRepo _specRepo;
         private readonly IFinancialRepo _financialRepo;
 
         private readonly IAPIService _apiService;
@@ -33,7 +31,6 @@ namespace StockLib.Service
                             IThongKeRepo thongkeRepo,
                             IThongKeQuyRepo thongkequyRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
-                            ISpecialInfoRepo specRepo,
                             IFinancialRepo financialRepo,
                             IAPIService apiService)
         {
@@ -43,7 +40,6 @@ namespace StockLib.Service
             _haiquanRepo = haiquanRepo;
             _thongkeRepo = thongkeRepo;
             _thongkequyRepo = thongkequyRepo;
-            _specRepo = specRepo;
             _apiService = apiService;
             _financialRepo = financialRepo;
         }
@@ -444,47 +440,6 @@ namespace StockLib.Service
                 return $"Phân phối dầu khí(chiếm 20% thị phần)";
             }
             return string.Empty;
-        }
-
-        private EPoint Swap(EPoint point)
-        {
-            if (point == EPoint.VeryPositive)
-                return EPoint.VeryNegative;
-            if (point == EPoint.VeryNegative)
-                return EPoint.VeryPositive;
-            if (point == EPoint.Positive)
-                return EPoint.Negative;
-            if (point == EPoint.Negative)
-                return EPoint.Positive;
-            return point;
-        }
-
-        private EPoint MergeEnpoint(EPoint e1, EPoint e2)
-        {
-            var res = 0.5 * ((double)e1 + (double)e2);
-            if (res > (double)EPoint.Positive)
-                return EPoint.VeryPositive;
-            if (res > (double)EPoint.Normal)
-                return EPoint.Positive;
-            if (res > (double)EPoint.Negative)
-                return EPoint.Normal;
-            if (res > (double)EPoint.VeryNegative)
-                return EPoint.Negative;
-            return EPoint.VeryNegative;
-        }
-
-        private EPoint MergeEnpoint(EPoint e1, EPoint e2, EPoint e3)
-        {
-            var res = ((double)e1 + (double)e2 + (double)e3) / 3;
-            if (res > (double)EPoint.Positive)
-                return EPoint.VeryPositive;
-            if (res > (double)EPoint.Normal)
-                return EPoint.Positive;
-            if (res > (double)EPoint.Negative)
-                return EPoint.Normal;
-            if (res > (double)EPoint.VeryNegative)
-                return EPoint.Negative;
-            return EPoint.VeryNegative;
         }
 
         private string ModeXNK(EKeyTongCucThongKe eThongKe, EHaiQuan eHaiQuan)
@@ -910,33 +865,6 @@ namespace StockLib.Service
             sBuilder.AppendLine($"   - PE hiện tại: {Math.Round(pe_cur, 1)}");
             
             return sBuilder.ToString();
-        }
-
-        private (EPoint, string) EPointResponse(double val, double step1, double step2, string mes)
-        {
-            (EPoint, string) output;
-            output.Item2 = $"   - {mes}: {val}%";
-            if (val >= step2)
-            {
-                output.Item1 = EPoint.VeryPositive;
-            }
-            else if (val >= step1)
-            {
-                output.Item1 = EPoint.Positive;
-            }
-            else if (val >= -step1)
-            {
-                output.Item1 = EPoint.Normal;
-            }
-            else if (val >= -step2)
-            {
-                output.Item1 = EPoint.Negative;
-            }
-            else
-            {
-                output.Item1 = EPoint.VeryNegative;
-            }
-            return output;
         }
     }
 }
