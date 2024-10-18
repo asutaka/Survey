@@ -494,7 +494,7 @@ namespace StockLib.Service
                     });
                 }
 
-                return await Chart_BasicBase($"{strMode} - Thống kê nửa tháng", lVal.TakeLast(25).Select(x => x.Item3).ToList(), lSeries, $"giá trị: {unit1}", $"giá trị: {unit2}");
+                return await Chart_BasicBase($"{strMode} {title}", lVal.TakeLast(25).Select(x => x.Item3).ToList(), lSeries, $"giá trị: {unit1}", $"giá trị: {unit2}");
             }
             catch (Exception ex)
             {
