@@ -677,7 +677,7 @@ namespace StockLib.Service
 
             var monthHaiQuan = (lastHaiQuan.d - yearHaiQuan * 1000) / 10;
             var monthThongKe = lastThongKe.d - yearThongKe * 100;
-            var monthThongKeQuy = lastThongKeQuy.d - yearThongKeQuy * 10;
+            var monthThongKeQuy = (lastThongKeQuy.d - yearThongKeQuy * 10) * 3;
 
             var dayHaiQuan = lastHaiQuan.d % 10 == 1 ? 15 : 26;
             var dayThongKe = 27;
