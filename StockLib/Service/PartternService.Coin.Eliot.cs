@@ -36,7 +36,6 @@ namespace StockLib.Service
         {
             try
             {
-                lData = lData.SkipLast(9).ToList();
                 var dt = new DateTime(2024, 10, 1, 15,0,0);
                 var lTmp = lData.Where(x => (x.Date - dt).TotalDays < 0).ToList();
 
