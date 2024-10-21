@@ -55,7 +55,10 @@ namespace StockTestCase
                 if (coin.QuoteAsset != "USDT")
                     continue;
 
-                if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
+                //if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
+                //    continue;
+
+                if (coin.BaseAsset != "BTC")
                     continue;
 
                 await _service.SurveyCoinEliot(coin.Alias);
