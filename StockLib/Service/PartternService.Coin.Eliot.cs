@@ -11,7 +11,7 @@ namespace StockLib.Service
             try
             {
                 _code = code;
-                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneDay, null, null, 1000);
+                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneWeek, null, null, 1000);
                 var lData = lByBit.Data.List.Select(x => new Quote
                 {
                     Date = x.StartTime,
@@ -36,8 +36,6 @@ namespace StockLib.Service
         {
             try
             {
-                var dt = new DateTime(2024, 10, 1, 15,0,0);
-                var lTmp = lData.Where(x => (x.Date - dt).TotalDays < 0).ToList();
 
                 var lFrac = lData.GetFractal();
                 var isStart = false;
