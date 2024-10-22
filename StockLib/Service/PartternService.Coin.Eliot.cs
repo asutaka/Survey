@@ -36,8 +36,61 @@ namespace StockLib.Service
         {
             try
             {
-
                 var lFrac = lData.GetFractal();
+                var lFracFilter = lFrac.Where(x => x.FractalBear != null || x.FractalBull != null);
+                var lFracResult = new List<FractalResult>();
+                foreach ( var fractal in lFracFilter)
+                {
+                    var last = lFracResult.LastOrDefault();
+                    if(last != null)
+                    {
+                        if(last.FractalBear != null && fractal.FractalBear != null)
+                        {
+                            if(last.FractalBear < fractal.FractalBear)
+                            {
+                                lFracResult.Remove(last);
+                                lFracResult.Add(fractal);
+                            }
+                            continue;
+                        }
+                        else if (last.FractalBull != null && fractal.FractalBull != null)
+                        {
+                            if (last.FractalBull > fractal.FractalBull)
+                            {
+                                lFracResult.Remove(last);
+                                lFracResult.Add(fractal);
+                            }
+                            continue;
+                        }
+                    }
+
+                    lFracResult.Add(fractal);
+                }
+
+                decimal low = 0, high = 0, div = 0;
+                foreach (var item in lFracResult)
+                {
+                    if(item.FractalBull != null)
+                    {
+                        if(div > 0)
+                        {
+                            var rate = Math.Round((high - item.FractalBull.Value) / div, 1);
+                            if(rate >= 0.3M && rate <= 0.6M)
+                            {
+                                Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy")}");
+                            }    
+                        }
+
+                        low = item.FractalBull.Value;
+                    }
+                    if(item.FractalBear != null)
+                    {
+                        high = item.FractalBear.Value;
+                        div = high - low;
+                    }
+                }
+
+
                 var isStart = false;
                 var i = -1;
                 //foreach (var item in lSuperTrend)
