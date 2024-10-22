@@ -11,18 +11,19 @@ namespace StockLib.Service
             try
             {
                 _code = code;
-                var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneWeek, null, null, 1000);
-                var lData = lByBit.Data.List.Select(x => new Quote
-                {
-                    Date = x.StartTime,
-                    Open = x.OpenPrice,
-                    High = x.HighPrice,
-                    Low = x.LowPrice,
-                    Close = x.ClosePrice,
-                    Volume = x.Volume,
-                }).ToList();
-
-                lData.Reverse();
+                //var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneWeek, null, null, 1000);
+                //var lData = lByBit.Data.List.Select(x => new Quote
+                //{
+                //    Date = x.StartTime,
+                //    Open = x.OpenPrice,
+                //    High = x.HighPrice,
+                //    Low = x.LowPrice,
+                //    Close = x.ClosePrice,
+                //    Volume = x.Volume,
+                //}).ToList();
+                //lData.Reverse();
+                
+                var lData = await _apiService.GetCoinData_Binance(code, "1w", 0);
 
                 await SurveyCoinEliot(lData);
             }
@@ -67,28 +68,28 @@ namespace StockLib.Service
                     lFracResult.Add(fractal);
                 }
 
-                decimal low = 0, high = 0, div = 0;
-                foreach (var item in lFracResult)
-                {
-                    if(item.FractalBull != null)
-                    {
-                        if(div > 0)
-                        {
-                            var rate = Math.Round((high - item.FractalBull.Value) / div, 1);
-                            if(rate >= 0.3M && rate <= 0.6M)
-                            {
-                                Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy")}");
-                            }    
-                        }
+                //decimal low = 0, high = 0, div = 0;
+                //foreach (var item in lFracResult)
+                //{
+                //    if(item.FractalBull != null)
+                //    {
+                //        if(div > 0)
+                //        {
+                //            var rate = Math.Round((high - item.FractalBull.Value) / div, 1);
+                //            if(rate >= 0.3M && rate <= 0.6M)
+                //            {
+                //                Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy")}");
+                //            }    
+                //        }
 
-                        low = item.FractalBull.Value;
-                    }
-                    if(item.FractalBear != null)
-                    {
-                        high = item.FractalBear.Value;
-                        div = high - low;
-                    }
-                }
+                //        low = item.FractalBull.Value;
+                //    }
+                //    if(item.FractalBear != null)
+                //    {
+                //        high = item.FractalBear.Value;
+                //        div = high - low;
+                //    }
+                //}
 
 
                 var isStart = false;

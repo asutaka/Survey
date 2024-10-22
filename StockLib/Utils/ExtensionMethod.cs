@@ -24,6 +24,14 @@ namespace StockLib.Utils
             return dateTime;
         }
 
+        public static DateTime UnixTimeStampMinisecondToDateTime(this long unixTimeStamp)
+        {
+            DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dtDateTime = dtDateTime.AddMilliseconds(unixTimeStamp).ToUniversalTime();
+            return dtDateTime;
+        }
+
+
         public static DateTime UnixTimeStampToDateTime(this decimal unixTimeStamp, bool isSecond = true)
         {
             // Unix timestamp is seconds past epoch

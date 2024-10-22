@@ -4,6 +4,7 @@ using iTextSharp.text.pdf.qrcode;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Skender.Stock.Indicators;
 using StockLib.Model;
 using StockLib.Service.Settings;
@@ -18,6 +19,7 @@ namespace StockLib.Service
 {
     public interface IAPIService
     {
+        Task<List<Quote>> GetCoinData_Binance(string coin, string mode, long fromTime);
         Task<ReportDataIDResponse> VietStock_CDKT_GetListReportData(string code);
         Task<ReportDataIDResponse> VietStock_KQKD_GetListReportData(string code);
         Task<ReportTempIDResponse> VietStock_CSTC_GetListTempID(string code);
@@ -1596,6 +1598,47 @@ namespace StockLib.Service
             }
             return null;
         }
+
+        public async Task<List<Quote>> GetCoinData_Binance(string coin, string mode, long fromTime)
+        {
+            var url = string.Format("https://api3.binance.com/api/v3/klines?symbol={0}&interval={1}&startTime={2}&limit=1000", coin, mode, fromTime);
+            try
+            {
+                using var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "");
+                request.Content = new StringContent("",
+                                                    Encoding.UTF8,
+                                                    "application/json");
+
+                var response = await client.SendAsync(request);
+                var contents = await response.Content.ReadAsStringAsync();
+                var lArray = JArray.Parse(contents);
+                if (lArray.Any())
+                {
+                    var lOut = lArray.Select(x => new Quote
+                    {
+                        Date = long.Parse(x[0].ToString()).UnixTimeStampMinisecondToDateTime(),
+                        Open = decimal.Parse(x[1].ToString()),
+                        High = decimal.Parse(x[2].ToString()),
+                        Low = decimal.Parse(x[3].ToString()),
+                        Close = decimal.Parse(x[4].ToString()),
+                        Volume = decimal.Parse(x[5].ToString()),
+                    }).ToList();
+                    return lOut;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"APIService.GetCoinData_Binance|EXCEPTION|INPUT: coin:{coin}| {ex.Message}");
+            }
+            return new List<Quote>();
+        }
+
 
         private class SSI_DataTradingResponse
         {
