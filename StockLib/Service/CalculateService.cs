@@ -120,66 +120,66 @@ namespace StockLib.Service
                 lMes.Add(strOutput.ToString());
                 //
                 strOutput.Clear();
-                strOutput.AppendLine("[Dan Zanger]");
+                //strOutput.AppendLine("[Dan Zanger]");
 
-                var lTrenEma21 = lReport.Where(x => x.isPriceUp && x.isCrossEma21Up)
-                            .OrderBy(x => x.rank)
-                            .Take(20);
-                if (lTrenEma21.Any())
-                {
-                    strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top cp cắt lên E21:");
-                    var index = 1;
-                    foreach (var item in lTrenEma21)
-                    {
-                        var content = $"{index++}. {item.s}";
-                        if (item.isIchi)
-                        {
-                            content += " - Ichimoku";
-                        }
-                        strOutput.AppendLine(content);
-                    }
-                }
+                //var lTrenEma21 = lReport.Where(x => x.isPriceUp && x.isCrossEma21Up)
+                //            .OrderBy(x => x.rank)
+                //            .Take(20);
+                //if (lTrenEma21.Any())
+                //{
+                //    strOutput.AppendLine();
+                //    strOutput.AppendLine($"*Top cp cắt lên E21:");
+                //    var index = 1;
+                //    foreach (var item in lTrenEma21)
+                //    {
+                //        var content = $"{index++}. {item.s}";
+                //        if (item.isIchi)
+                //        {
+                //            content += " - Ichimoku";
+                //        }
+                //        strOutput.AppendLine(content);
+                //    }
+                //}
 
-                var lTrenEma50 = lReport.Where(x => x.isPriceUp && x.isCrossEma50Up)
-                            .OrderBy(x => x.rank)
-                            .Take(20);
-                if (lTrenEma50.Any())
-                {
-                    strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top cp cắt lên E50:");
-                    var index = 1;
-                    foreach (var item in lTrenEma50)
-                    {
-                        var content = $"{index++}. {item.s}";
-                        if (item.isIchi)
-                        {
-                            content += " - Ichimoku";
-                        }
-                        strOutput.AppendLine(content);
-                    }
-                }
+                //var lTrenEma50 = lReport.Where(x => x.isPriceUp && x.isCrossEma50Up)
+                //            .OrderBy(x => x.rank)
+                //            .Take(20);
+                //if (lTrenEma50.Any())
+                //{
+                //    strOutput.AppendLine();
+                //    strOutput.AppendLine($"*Top cp cắt lên E50:");
+                //    var index = 1;
+                //    foreach (var item in lTrenEma50)
+                //    {
+                //        var content = $"{index++}. {item.s}";
+                //        if (item.isIchi)
+                //        {
+                //            content += " - Ichimoku";
+                //        }
+                //        strOutput.AppendLine(content);
+                //    }
+                //}
 
-                var lEma21_50 = lReport.Where(x => x.isPriceUp && x.isEma21_50)
-                           .OrderBy(x => x.rank)
-                           .Take(20);
-                if (lEma21_50.Any())
-                {
-                    strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top cp E21 cắt E50:");
-                    var index = 1;
-                    foreach (var item in lEma21_50)
-                    {
-                        var content = $"{index++}. {item.s}";
-                        if (item.isIchi)
-                        {
-                            content += " - Ichimoku";
-                        }
-                        strOutput.AppendLine(content);
-                    }
-                }
+                //var lEma21_50 = lReport.Where(x => x.isPriceUp && x.isEma21_50)
+                //           .OrderBy(x => x.rank)
+                //           .Take(20);
+                //if (lEma21_50.Any())
+                //{
+                //    strOutput.AppendLine();
+                //    strOutput.AppendLine($"*Top cp E21 cắt E50:");
+                //    var index = 1;
+                //    foreach (var item in lEma21_50)
+                //    {
+                //        var content = $"{index++}. {item.s}";
+                //        if (item.isIchi)
+                //        {
+                //            content += " - Ichimoku";
+                //        }
+                //        strOutput.AppendLine(content);
+                //    }
+                //}
 
-                lMes.Add(strOutput.ToString());
+                //lMes.Add(strOutput.ToString());
 
                 var dtEnd = DateTime.Now;
                 var ts = (dtEnd - dtStart).TotalSeconds;
