@@ -37,36 +37,60 @@ namespace StockLib.Service
         {
             try
             {
-                var lFrac = lData.GetFractal();
-                var lFracFilter = lFrac.Where(x => x.FractalBear != null || x.FractalBull != null);
-                var lFracResult = new List<FractalResult>();
-                foreach ( var fractal in lFracFilter)
+                var lCheck = new List<Quote>();
+                int index = 0;
+                foreach (Quote l in lData)
                 {
-                    var last = lFracResult.LastOrDefault();
-                    if(last != null)
+                    index++;
+                    lCheck.Add(l);
+                    var lFrac = lCheck.GetFractal();
+                    var lFracFilter = lFrac.Where(x => x.FractalBear != null || x.FractalBull != null);
+                    var lFracResult = new List<FractalResult>();
+                    foreach (var fractal in lFracFilter)
                     {
-                        if(last.FractalBear != null && fractal.FractalBear != null)
+                        var last = lFracResult.LastOrDefault();
+                        if (last != null)
                         {
-                            if(last.FractalBear < fractal.FractalBear)
+                            if (last.FractalBear != null && fractal.FractalBear != null)
                             {
-                                lFracResult.Remove(last);
-                                lFracResult.Add(fractal);
+                                if (last.FractalBear < fractal.FractalBear)
+                                {
+                                    lFracResult.Remove(last);
+                                    lFracResult.Add(fractal);
+                                }
+                                continue;
                             }
-                            continue;
-                        }
-                        else if (last.FractalBull != null && fractal.FractalBull != null)
-                        {
-                            if (last.FractalBull > fractal.FractalBull)
+                            else if (last.FractalBull != null && fractal.FractalBull != null)
                             {
-                                lFracResult.Remove(last);
-                                lFracResult.Add(fractal);
+                                if (last.FractalBull > fractal.FractalBull)
+                                {
+                                    lFracResult.Remove(last);
+                                    lFracResult.Add(fractal);
+                                }
+                                continue;
                             }
-                            continue;
                         }
+
+                        lFracResult.Add(fractal);
                     }
 
-                    lFracResult.Add(fractal);
+                    if(lFracResult.Any())
+                    {
+                        var last = lFracResult.Last();
+                        var near = lFracResult.SkipLast(1).LastOrDefault();
+                        if (near != null && (l.Date - near.Date).TotalDays / 7 < 3)
+                        {
+                            var isBull = near.FractalBull != null;
+                            _logger.LogInformation($"Trace {index} {l.Date.ToShortDateString()}: {near.Date.ToShortDateString()}({(isBull ? "L" : "H")})");
+                        }
+                        if ((l.Date - last.Date).TotalDays/7 < 3)
+                        {
+                            var isBull = last.FractalBull != null;
+                            _logger.LogInformation($"Trace {index} {l.Date.ToShortDateString()}: {last.Date.ToShortDateString()}({(isBull? "L" : "H")})");
+                        }
+                    }    
                 }
+                
 
                 //decimal low = 0, high = 0, div = 0;
                 //foreach (var item in lFracResult)
