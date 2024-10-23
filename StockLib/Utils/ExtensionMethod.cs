@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver.Linq;
+using Skender.Stock.Indicators;
 using StockLib.DAL.Entity;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
@@ -46,6 +47,11 @@ namespace StockLib.Utils
             }
             
             return dateTime;
+        }
+
+        public static decimal GetRateCandleStick(this Quote val)
+        {
+            return Math.Abs(Math.Round(100 * (val.Close - val.Open) / (val.High - val.Low), 1));
         }
 
         public static string GetDisplayName(this Enum enumValue)

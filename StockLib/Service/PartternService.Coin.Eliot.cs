@@ -39,59 +39,75 @@ namespace StockLib.Service
             {
                 var lCheck = new List<Quote>();
                 int index = 0;
+                int indexBuy = 0;
+                var lFracSignal = new List<FractalResult>();
+                var flag = false;
+                var buy = false;
+                var lTmp = lData.GetFractal();
+                FractalResult top = null;
+                Quote cur = null;
                 foreach (Quote l in lData)
                 {
                     index++;
                     lCheck.Add(l);
-                    var lFrac = lCheck.GetFractal();
-                    var lFracFilter = lFrac.Where(x => x.FractalBear != null || x.FractalBull != null);
-                    var lFracResult = new List<FractalResult>();
-                    foreach (var fractal in lFracFilter)
+                    if (flag && !buy)
                     {
-                        var last = lFracResult.LastOrDefault();
-                        if (last != null)
+                        if(l.GetRateCandleStick() >= 25)
                         {
-                            if (last.FractalBear != null && fractal.FractalBear != null)
+                            if (l.Close > top.FractalBear)
                             {
-                                if (last.FractalBear < fractal.FractalBear)
-                                {
-                                    lFracResult.Remove(last);
-                                    lFracResult.Add(fractal);
-                                }
-                                continue;
-                            }
-                            else if (last.FractalBull != null && fractal.FractalBull != null)
-                            {
-                                if (last.FractalBull > fractal.FractalBull)
-                                {
-                                    lFracResult.Remove(last);
-                                    lFracResult.Add(fractal);
-                                }
+                                cur = l;
+                                buy = true;
+                                indexBuy = index;
                                 continue;
                             }
                         }
-
-                        lFracResult.Add(fractal);
                     }
 
-                    if(lFracResult.Any())
+                    var lFrac = lCheck.GetFractal();
+                    var lastFrac = lFrac?.SkipLast(2)?.LastOrDefault();
+                    if (lastFrac != null 
+                        && (lastFrac.FractalBear != null || lastFrac.FractalBull != null))
                     {
-                        var last = lFracResult.Last();
-                        var near = lFracResult.SkipLast(1).LastOrDefault();
-                        if (near != null && (l.Date - near.Date).TotalDays / 7 < 3)
+                        if(buy)
                         {
-                            var isBull = near.FractalBull != null;
-                            _logger.LogInformation($"Trace {index} {l.Date.ToShortDateString()}: {near.Date.ToShortDateString()}({(isBull ? "L" : "H")})");
+                            var rate = Math.Round(100 * (-1 + l.Close / cur.Close), 1);
+                            _logger.LogInformation($"BUY: {cur.Date.ToString("dd/MM/yyyy")}|SELL: {l.Date.ToString("dd/MM/yyyy")}|Giu: {index - indexBuy} nen| Rate: {rate}%");  
                         }
-                        if ((l.Date - last.Date).TotalDays/7 < 3)
-                        {
-                            var isBull = last.FractalBull != null;
-                            _logger.LogInformation($"Trace {index} {l.Date.ToShortDateString()}: {last.Date.ToShortDateString()}({(isBull? "L" : "H")})");
-                        }
-                    }    
-                }
-                
 
+                        flag = false;
+                        buy = false;
+                        top = null;
+                        cur = null;
+                        lFracSignal.Add(lastFrac);
+                    }
+
+                    if (!flag) 
+                    {
+                        var lastSignal = lFracSignal?.LastOrDefault();
+                        var nearSignal = lFracSignal?.SkipLast(1).LastOrDefault();
+                        if (lastSignal != null && nearSignal != null)
+                        {
+                            //if (lastSignal.FractalBear != null && nearSignal.FractalBear is null)
+                            //{
+                            //    //LH - Short
+                            //    flag = true;
+                            //    cur = l;
+                            //}
+
+                            if (lastSignal.FractalBull != null 
+                                && nearSignal.FractalBull is null
+                                && nearSignal.FractalBear > lastSignal.FractalBull)
+                            {
+                                //HL - Long
+                                flag = true;
+                                top = nearSignal;
+                            }
+                        }
+                    }
+                }
+
+                var tmp = 1;
                 //decimal low = 0, high = 0, div = 0;
                 //foreach (var item in lFracResult)
                 //{
