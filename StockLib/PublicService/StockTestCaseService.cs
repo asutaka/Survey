@@ -21,6 +21,7 @@ namespace StockLib.PublicService
         Task SurveyCoinSuperTrendPhrase2(string code);
         Task SurveyCoinDanZagerCustom(string code);
         Task SurveyCoinEliot(string code);
+        void PrintAll();
     }
     public class StockTestCaseService : IStockTestCaseService
     {
@@ -103,6 +104,11 @@ namespace StockLib.PublicService
         public void TotalDays()
         {
             _partternService.TotalDays();
+        }
+
+        public void PrintAll()
+        {
+            _partternService.PrintAll();
         }
     }
 }

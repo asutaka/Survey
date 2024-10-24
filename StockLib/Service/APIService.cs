@@ -1617,6 +1617,9 @@ namespace StockLib.Service
 
                 var response = await client.SendAsync(request);
                 var contents = await response.Content.ReadAsStringAsync();
+                if (contents.Length < 200)
+                    return new List<Quote>();
+
                 var lArray = JArray.Parse(contents);
                 if (lArray.Any())
                 {

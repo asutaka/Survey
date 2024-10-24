@@ -58,12 +58,13 @@ namespace StockTestCase
                 //if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
                 //    continue;
 
-                if (coin.BaseAsset != "BTC")
-                    continue;
+                //if (coin.BaseAsset != "BTC")
+                //    continue;
 
                 await _service.SurveyCoinEliot(coin.Alias);
                 Thread.Sleep(1000);
             }
+            _service.PrintAll();
 
             _service.RankChungKhoan(EIndicator.DanZangerVolumne, 7);
             //_service.TotalDays();

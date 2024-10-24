@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 using StockLib.Utils;
+using System.Runtime.ConstrainedExecution;
+using System;
 
 namespace StockLib.Service
 {
@@ -22,9 +24,8 @@ namespace StockLib.Service
                 //    Volume = x.Volume,
                 //}).ToList();
                 //lData.Reverse();
-                
-                var lData = await _apiService.GetCoinData_Binance(code, "1w", 0);
 
+                var lData = await _apiService.GetCoinData_Binance(code, "1w", 0);
                 await SurveyCoinEliot(lData);
             }
             catch (Exception ex)
@@ -33,140 +34,229 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SurveyCoinEliot(List<Quote> lData)
+        private List<(DateTime, DateTime, int, decimal)> lTotal = new List<(DateTime, DateTime, int, decimal)>();
+        public void PrintAll()
         {
-            try
+            foreach (var item in lTotal.OrderBy(x => x.Item1).ThenBy(x => x.Item2))
             {
-                var lCheck = new List<Quote>();
-                int index = 0;
-                int indexBuy = 0;
-                var lFracSignal = new List<FractalResult>();
-                var flag = false;
-                var buy = false;
-                var lTmp = lData.GetFractal();
-                FractalResult top = null;
-                Quote cur = null;
-                foreach (Quote l in lData)
+                _logger.LogInformation($"BUY: {item.Item1.ToString("dd/MM/yyyy")}|SELL: {item.Item2.ToString("dd/MM/yyyy")}|Giu: {item.Item3} nen| Rate: {item.Item4}%");
+            } 
+        }
+        private async Task LongVuotDinh(List<Quote> lData)
+        {
+            var lCheck = new List<Quote>();
+            int index = 0;
+            int indexBuy = 0;
+            var lFracSignal = new List<FractalResult>();
+            var flag = false;
+            var buy = false;
+            FractalResult top = null;
+            Quote cur = null;
+            foreach (Quote l in lData)
+            {
+                index++;
+                lCheck.Add(l);
+                if (flag && !buy)
                 {
-                    index++;
-                    lCheck.Add(l);
-                    if (flag && !buy)
+                    if (l.GetRateCandleStick() >= 25)
                     {
-                        if(l.GetRateCandleStick() >= 25)
+                        if (l.Close > top.FractalBear)
                         {
-                            if (l.Close > top.FractalBear)
-                            {
-                                cur = l;
-                                buy = true;
-                                indexBuy = index;
-                                continue;
-                            }
-                        }
-                    }
-
-                    var lFrac = lCheck.GetFractal();
-                    var lastFrac = lFrac?.SkipLast(2)?.LastOrDefault();
-                    if (lastFrac != null 
-                        && (lastFrac.FractalBear != null || lastFrac.FractalBull != null))
-                    {
-                        if(buy)
-                        {
-                            var rate = Math.Round(100 * (-1 + l.Close / cur.Close), 1);
-                            _logger.LogInformation($"BUY: {cur.Date.ToString("dd/MM/yyyy")}|SELL: {l.Date.ToString("dd/MM/yyyy")}|Giu: {index - indexBuy} nen| Rate: {rate}%");  
-                        }
-
-                        flag = false;
-                        buy = false;
-                        top = null;
-                        cur = null;
-                        lFracSignal.Add(lastFrac);
-                    }
-
-                    if (!flag) 
-                    {
-                        var lastSignal = lFracSignal?.LastOrDefault();
-                        var nearSignal = lFracSignal?.SkipLast(1).LastOrDefault();
-                        if (lastSignal != null && nearSignal != null)
-                        {
-                            //if (lastSignal.FractalBear != null && nearSignal.FractalBear is null)
-                            //{
-                            //    //LH - Short
-                            //    flag = true;
-                            //    cur = l;
-                            //}
-
-                            if (lastSignal.FractalBull != null 
-                                && nearSignal.FractalBull is null
-                                && nearSignal.FractalBear > lastSignal.FractalBull)
-                            {
-                                //HL - Long
-                                flag = true;
-                                top = nearSignal;
-                            }
+                            cur = l;
+                            buy = true;
+                            indexBuy = index;
+                            continue;
                         }
                     }
                 }
 
-                var tmp = 1;
-                //decimal low = 0, high = 0, div = 0;
-                //foreach (var item in lFracResult)
-                //{
-                //    if(item.FractalBull != null)
-                //    {
-                //        if(div > 0)
-                //        {
-                //            var rate = Math.Round((high - item.FractalBull.Value) / div, 1);
-                //            if(rate >= 0.3M && rate <= 0.6M)
-                //            {
-                //                Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy")}");
-                //            }    
-                //        }
+                var lFrac = lCheck.GetFractal();
+                var lastFrac = lFrac?.SkipLast(2)?.LastOrDefault();
+                if (lastFrac != null
+                    && (lastFrac.FractalBear != null || lastFrac.FractalBull != null))
+                {
+                    if (buy)
+                    {
+                        var rate = Math.Round(100 * (-1 + l.Close / cur.Close), 1);
+                        //_logger.LogInformation($"BUY: {cur.Date.ToString("dd/MM/yyyy")}|SELL: {l.Date.ToString("dd/MM/yyyy")}|Giu: {index - indexBuy} nen| Rate: {rate}%");
+                        lTotal.Add((cur.Date, l.Date, (index - indexBuy), rate));
+                    }
 
-                //        low = item.FractalBull.Value;
-                //    }
-                //    if(item.FractalBear != null)
-                //    {
-                //        high = item.FractalBear.Value;
-                //        div = high - low;
-                //    }
-                //}
+                    flag = false;
+                    buy = false;
+                    top = null;
+                    cur = null;
+                    lFracSignal.Add(lastFrac);
+                }
 
+                if (!flag)
+                {
+                    var lastSignal = lFracSignal?.LastOrDefault();
+                    var nearSignal = lFracSignal?.SkipLast(1).LastOrDefault();
+                    if (lastSignal != null && nearSignal != null)
+                    {
+                        if (lastSignal.FractalBull != null
+                            && nearSignal.FractalBull is null
+                            && nearSignal.FractalBear > lastSignal.FractalBull)
+                        {
+                            //HL - Long
+                            flag = true;
+                            top = nearSignal;
+                        }
+                    }
+                }
+            }
+        }
 
-                var isStart = false;
-                var i = -1;
-                //foreach (var item in lSuperTrend)
-                //{
-                //    i++;
-                //    var itemData = lData.ElementAt(i);
-                //    if (!isStart)
-                //    {
-                //        if (item.UpperBand != null)
-                //        {
-                //            isStart = true;
-                //        }
-                //        continue;
-                //    }
+        private async Task LongVuotDinhThemFilter(List<Quote> lData)
+        {
+            var lCheck = new List<Quote>();
+            int index = 0;
+            int indexBuy = 0;
+            var lFracSignal = new List<FractalResult>();
+            var flag = false;
+            var buy = false;
+            decimal rateEliot = 0;
+            FractalResult top = null;
+            Quote cur = null;
+            foreach (Quote l in lData)
+            {
+                index++;
+                lCheck.Add(l);
+                if (flag && !buy)
+                {
+                    if (l.GetRateCandleStick() >= 25)
+                    {
+                        //if (l.Close > top.FractalBear 
+                            //&& rateEliot >= 30 && rateEliot <= 60)
+                        if (l.Close > top.FractalBear)
+                        {
+                            cur = l;
+                            buy = true;
+                            indexBuy = index;
+                            continue;
+                        }
+                    }
+                }
 
-                //    if (!_flagBuy)
-                //    {
-                //        if (item.LowerBand != null)
-                //        {
-                //            PrintBuy(itemData, i, true);
-                //            _flagBuy = true;
-                //        }
-                //        continue;
-                //    }
+                var lFrac = lCheck.GetFractal();
+                var lastFrac = lFrac?.SkipLast(2)?.LastOrDefault();
+                if (lastFrac != null
+                    && (lastFrac.FractalBear != null || lastFrac.FractalBull != null))
+                {
+                    if (buy)
+                    {
+                        var rate = Math.Round(100 * (-1 + l.Close / cur.Close), 1);
+                        _logger.LogInformation($"BUY: {cur.Date.ToString("dd/MM/yyyy")}|SELL: {l.Date.ToString("dd/MM/yyyy")}|Giu: {index - indexBuy} nen| Eliot: {rateEliot}%| Rate: {rate}%");
+                    }
 
-                //    if (_flagBuy)
-                //    {
-                //        if (item.UpperBand != null)
-                //        {
-                //            PrintBuy(itemData, i, false);
-                //            _flagBuy = false;
-                //        }
-                //    }
-                //}
-                //PrintBuyLast();
+                    flag = false;
+                    buy = false;
+                    top = null;
+                    cur = null;
+                    lFracSignal.Add(lastFrac);
+                }
+
+                if (!flag)
+                {
+                    var lastSignal = lFracSignal?.LastOrDefault();
+                    var nearSignal = lFracSignal?.SkipLast(1).LastOrDefault();
+                    var nearNext = lFracSignal?.SkipLast(2).LastOrDefault();
+                    if (lastSignal != null && nearSignal != null)
+                    {
+                        if (lastSignal.FractalBull != null
+                            && nearSignal.FractalBull is null
+                            && nearSignal.FractalBear > lastSignal.FractalBull
+                            && nearNext?.FractalBull != null) 
+                        {
+                            var up = nearSignal.FractalBear - nearNext.FractalBull;
+                            var down = nearSignal.FractalBear - lastSignal.FractalBull;
+                            rateEliot = Math.Round(100 * (down.Value / up.Value), 1);
+                            //_logger.LogInformation($"INFO: {rateEliot}%");
+
+                            //HL - Long
+                            flag = true;
+                            top = nearSignal;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task ShortThungDay(List<Quote> lData)
+        {
+            var lCheck = new List<Quote>();
+            int index = 0;
+            int indexBuy = 0;
+            var lFracSignal = new List<FractalResult>();
+            var flag = false;
+            var buy = false;
+            FractalResult top = null;
+            Quote cur = null;
+            foreach (Quote l in lData)
+            {
+                index++;
+                lCheck.Add(l);
+                if (flag && !buy)
+                {
+                    if (l.GetRateCandleStick() >= 40)
+                    {
+                        //cur = l;
+                        //buy = true;
+                        //indexBuy = index;
+                        //continue;
+                        if (l.Close < top.FractalBull)
+                        {
+                            cur = l;
+                            buy = true;
+                            indexBuy = index;
+                            continue;
+                        }
+                    }
+                }
+
+                var lFrac = lCheck.GetFractal();
+                var lastFrac = lFrac?.SkipLast(2)?.LastOrDefault();
+                if (lastFrac != null
+                    && (lastFrac.FractalBear != null || lastFrac.FractalBull != null))
+                {
+                    if (buy)
+                    {
+                        var rate = Math.Round(100 * (-1 + cur.Close / l.Close), 1);
+                        _logger.LogInformation($"BUY: {cur.Date.ToString("dd/MM/yyyy")}|SELL: {l.Date.ToString("dd/MM/yyyy")}|Giu: {index - indexBuy} nen| Rate: {rate}%");
+                    }
+
+                    flag = false;
+                    buy = false;
+                    top = null;
+                    cur = null;
+                    lFracSignal.Add(lastFrac);
+                }
+
+                if (!flag)
+                {
+                    var lastSignal = lFracSignal?.LastOrDefault();
+                    var nearSignal = lFracSignal?.SkipLast(1).LastOrDefault();
+                    if (lastSignal != null && nearSignal != null)
+                    {
+                        if (lastSignal.FractalBear != null
+                            && nearSignal.FractalBear is null
+                            && lastSignal.FractalBear > nearSignal.FractalBull)
+                        {
+                            //LH - Short
+                            flag = true;
+                            top = nearSignal;
+                        }
+                    }
+                }
+            }
+        }
+
+        private async Task SurveyCoinEliot(List<Quote> lData)
+        {
+            try
+            {
+                await LongVuotDinh(lData);
             }
             catch (Exception ex)
             {

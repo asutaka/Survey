@@ -51,6 +51,8 @@ namespace StockLib.Utils
 
         public static decimal GetRateCandleStick(this Quote val)
         {
+            if (val.High == val.Low)
+                return 0;
             return Math.Abs(Math.Round(100 * (val.Close - val.Open) / (val.High - val.Low), 1));
         }
 

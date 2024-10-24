@@ -25,6 +25,7 @@ namespace StockLib.Service
         Task SurveyCoinSuperTrendPhrase2(string code);
         Task SurveyCoinDanZagerCustom(string code);
         Task SurveyCoinEliot(string code);
+        void PrintAll();
     }
     public partial class PartternService : IPartternService
     {
