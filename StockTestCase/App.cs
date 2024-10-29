@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using StockLib.DAL.Entity;
 using StockLib.PublicService;
 using StockLib.Service;
 using StockLib.Utils;
@@ -47,26 +48,27 @@ namespace StockTestCase
             ///
 
             ////#region Test All Coin
-            var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
+            await _service.SurveyCoinEliot("");
+            //var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
 
 
-            foreach (var coin in lSymbol.Data)
-            {
-                if (coin.QuoteAsset != "USDT")
-                    continue;
+            //foreach (var coin in lSymbol.Data)
+            //{
+            //    if (coin.QuoteAsset != "USDT")
+            //        continue;
 
-                //if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
-                //    continue;
+            //    //if (coin.BaseAsset != "BTC" && coin.BaseAsset != "ETH" && coin.BaseAsset != "BNB")
+            //    //    continue;
 
-                //if (coin.BaseAsset != "BTC")
-                //    continue;
+            //    if (coin.BaseAsset != "DOGE")
+            //        continue;
 
-                await _service.SurveyCoinEliot(coin.Alias);
-                Thread.Sleep(1000);
-            }
-            _service.PrintAll();
+            //    await _service.SurveyCoinEliot(coin.Alias);
+            //    Thread.Sleep(1000);
+            //}
+            //_service.PrintAll();
 
-            _service.RankChungKhoan(EIndicator.DanZangerVolumne, 7);
+            //_service.RankChungKhoan(EIndicator.DanZangerVolumne, 7);
             //_service.TotalDays();
             ////#endregion
 

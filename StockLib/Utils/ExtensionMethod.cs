@@ -857,5 +857,112 @@ namespace StockLib.Utils
             }
             return val;
         }
+
+        public static List<TopBotModel> GetTopBottom(this List<Quote> lData)
+        {
+            var lResult = new List<TopBotModel>();
+            try
+            {
+                var count = lData.Count;
+                if (count < 5)
+                    return lResult;
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(0).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(1).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(2).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(3).Date, IsBot = false, IsTop = false });
+                for (var i = 4; i < count - 3; i++)
+                {
+                    var itemNext2 = lData.ElementAt(i);
+                    var itemNext1 = lData.ElementAt(i - 1);
+                    var itemCheck = lData.ElementAt(i - 2);
+                    var itemPrev1 = lData.ElementAt(i - 3);
+                    var itemPrev2 = lData.ElementAt(i - 4);
+                    if (itemCheck.Low <= Math.Min(itemPrev1.Low, itemPrev2.Low)
+                        && itemCheck.Low <= Math.Min(itemNext1.Low, itemNext2.Low)
+                        && itemCheck.High < Math.Max(itemPrev1.High, itemPrev2.High)
+                        && itemCheck.High < Math.Max(itemNext1.High, itemNext2.High))
+                    {
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low });
+                    }
+                    else if (itemCheck.Low > Math.Min(itemPrev1.Low, itemPrev2.Low)
+                        && itemCheck.Low > Math.Min(itemNext1.Low, itemNext2.Low)
+                        && itemCheck.High >= Math.Max(itemPrev1.High, itemPrev2.High)
+                        && itemCheck.High >= Math.Max(itemNext1.High, itemNext2.High))
+                    {
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High });
+                    }
+                    else
+                    {
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = false });
+                    }
+                }
+                lResult.Add(new TopBotModel { Date = lData.SkipLast(2).Last().Date, IsTop = false, IsBot = false });
+                lResult.Add(new TopBotModel { Date = lData.SkipLast(1).Last().Date, IsTop = false, IsBot = false });
+                lResult.Add(new TopBotModel { Date = lData.Last().Date, IsTop = false, IsBot = false });
+                return lResult;
+            }
+            catch
+            {   
+            }
+            return lResult;
+        }
+
+        public static List<TopBotModel> GetTopBottomClean(this List<Quote> lData)
+        {
+            var lResult = lData.GetTopBottom();
+            lResult.Reverse();
+            var count = lResult.Count();
+            decimal val = 0;
+            var state = 0;
+            var index = 0;
+            for (int i = 0; i < count; i++)
+            {
+                var item = lResult.ElementAt(i);
+                if (item.IsBot)
+                {
+                    if(state == 1)
+                    {
+                        if(item.Value > lResult.ElementAt(index).Value)
+                        {
+                            lResult.ElementAt(i).IsBot = false;
+                            continue;
+                        }
+                        else
+                        {
+                            lResult.ElementAt(index).IsBot = false;
+                        }
+                    }
+                    state = 1;
+                    index = i;
+                }
+                else if(item.IsTop)
+                {
+                    if (state == 2)
+                    {
+                        if (item.Value < lResult.ElementAt(index).Value)
+                        {
+                            lResult.ElementAt(i).IsTop = false;
+                            continue;
+                        }
+                        else
+                        {
+                            lResult.ElementAt(index).IsTop = false;
+                        }
+                    }
+                    state = 2;
+                    index = i;
+                }
+            }
+            lResult.Reverse();
+            return lResult;
+        }
+    }
+
+    public class TopBotModel
+    {
+        public DateTime Date { get; set; }
+        public bool IsTop { get; set; }
+        public bool IsBot { get; set; }
+        public decimal Value { get; set; }
     }
 }
