@@ -9,6 +9,7 @@ namespace StockLib.Service
 {
     public partial class PartternService
     {
+        private const int _interval = 5;
         public async Task SurveyCoinEliot(string code)
         {
             try
@@ -34,7 +35,7 @@ namespace StockLib.Service
                     var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
                     var time = DateTimeOffset.Now.AddDays(-3).ToUnixTimeMilliseconds();
 
-                    var lData = await _apiService.GetCoinData_Binance(_code, "5m", time);
+                    var lData = await _apiService.GetCoinData_Binance(_code, $"{_interval}m", time);
                     Thread.Sleep(200);
                     await Test(lData, _code);
                     //await SurveyCoinEliot(lData);
@@ -286,97 +287,151 @@ namespace StockLib.Service
             if (lData.Count() < 100)
                 return;
 
-            var test2 = lData.GetTopBottomClean();
-
-            var lema34 = lData.GetEma(34);
-            var lema89 = lData.GetEma(89);
-            //var lFrac = lData.GetFractal();
-            //var lMode = new List<(FractalResult, int)>();
-            var count = lema34.Count();
-            var isMin = true;
-            Quote minObj = null;
-            for (int i = 30; i < count - 2; i++) 
+            var lTopBottom = lData.GetTopBottomClean();
+            var lTop = lTopBottom.Where(x => x.IsTop);
+            var lBot = lTopBottom.Where(x => x.IsBot);
+            var count = lData.Count();
+            var flag = false;
+            TopBotModel bot = null;
+            TopBotModel top = null;
+            for ( var i = 0; i < count; i++)
             {
-                var item = lData.ElementAt(i);
-                if(!isMin)
+                var item = lData[i];
+                var itemTopBottom = lTopBottom[i];
+                if (flag)
                 {
-                    for (int j = 0; j < i; j++)
+                    if(item.Low <= bot.Value)
                     {
-                        var itemPrev = lData.ElementAt(j);
-                        if (item.Low > itemPrev.Low)
+                        bot = null;
+                        flag = false;
+                        continue;
+                    }
+                    var num = (bot.Date - top.Date).TotalMinutes / _interval;
+                    if(num < 4)
+                    {
+                        bot = null;
+                        flag = false;
+                        continue;
+                    }
+
+                    if (item.Close > top.Value
+                        && item.Close > item.Open)
+                    {
+                        Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy HH:mm")}| Top: {top.Date.ToString("dd/MM/yyyy HH:mm")}| Bot: {bot.Date.ToString("dd/MM/yyyy HH:mm")}");
+                        bot = null;
+                        top = null;
+                        flag = false;
+                    }
+                }
+
+                if (itemTopBottom.IsBot)
+                {
+                    var itemBot = lBot.Where(x => x.Date < itemTopBottom.Date)?.LastOrDefault();
+                    if(itemBot != null)
+                    {
+                        if(itemTopBottom.Value > itemBot.Value)
                         {
-                            isMin = false;
-                            break;
+                            flag = true;
+                            bot = itemTopBottom;
+                            top = lTop.Where(x => x.Date < itemTopBottom.Date).Last();
+                            continue;
+                            //Console.WriteLine($"{itemTopBottom.Date.ToString("dd/MM/yyyy HH:mm")}");
                         }
                     }
-
-                    if (!isMin)
-                        continue;
-
-                    var itemNext = lData.ElementAt(i + 1);
-                    var itemNext2 = lData.ElementAt(i + 2);
-                    if (itemNext.Low < item.Low
-                        || itemNext2.Low < item.Low)
-                    {
-                        isMin = false;
-                        continue;
-                    }
-
-                    minObj = item;
-                    i = i + 2;
-                    continue;
                 }
-
-                if(item.Low < minObj?.Low)
-                {
-                    minObj = item;
-                    continue;
-                }
-
-                var ema34 = lema34.ElementAt(i);
-                var ema89 = lema89.ElementAt(i);
-                if (item.Close < item.Open
-                    || item.High <= (decimal)Math.Max((ema34.Ema ?? 0), (ema89.Ema ?? 0))) 
-                {
-                    continue;
-                }
-
-                Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy HH:mm:ss")}");
             }
 
-            var x = 1;
-
-            //var ema34_0 = lema34.Last();
-            //var ema34_1 = lema34.SkipLast(1).Last();
-            //var ema34_2 = lema34.SkipLast(2).Last();
-            //var ema34_3 = lema34.SkipLast(3).Last();
-            //var ema34_4 = lema34.SkipLast(4).Last();
-            //var ema34_5 = lema34.SkipLast(5).Last();
-            //var ema34_6 = lema34.SkipLast(6).Last();
-
-            //var ema89_0 = lema89.Last();
-            //var ema89_1 = lema89.SkipLast(1).Last();
-            //var ema89_2 = lema89.SkipLast(2).Last();
-            //var ema89_3 = lema89.SkipLast(3).Last();
-            //var ema89_4 = lema89.SkipLast(4).Last();
-            //var ema89_5 = lema89.SkipLast(5).Last();
-            //var ema89_6 = lema89.SkipLast(6).Last();
-
-            //if(ema34_0.Ema > ema89_0.Ema)
-            //{
-            //    var tmp = 1;
-            //}
 
 
-            //if ((ema34_0.Ema > ema89_0.Ema && ema34_1.Ema <= ema89_1.Ema)
-            //    || (ema34_1.Ema > ema89_1.Ema && ema34_2.Ema <= ema89_2.Ema)
-            //    || (ema34_2.Ema > ema89_2.Ema && ema34_3.Ema <= ema89_3.Ema)
-            //    || (ema34_3.Ema > ema89_3.Ema && ema34_4.Ema <= ema89_4.Ema)
-            //    || (ema34_4.Ema > ema89_4.Ema && ema34_5.Ema <= ema89_5.Ema)
-            //    || (ema34_5.Ema > ema89_5.Ema && ema34_6.Ema <= ema89_6.Ema))
-            //{
-            //    _lCoin.Add(coin);
-            //}
+            //var lema34 = lData.GetEma(34);
+            //var lema89 = lData.GetEma(89);
+            //var lFrac = lData.GetFractal();
+            //var lMode = new List<(FractalResult, int)>();
+            //    var count = lema34.Count();
+            //    var isMin = true;
+            //    Quote minObj = null;
+            //    for (int i = 30; i < count - 2; i++) 
+            //    {
+            //        var item = lData.ElementAt(i);
+            //        if(!isMin)
+            //        {
+            //            for (int j = 0; j < i; j++)
+            //            {
+            //                var itemPrev = lData.ElementAt(j);
+            //                if (item.Low > itemPrev.Low)
+            //                {
+            //                    isMin = false;
+            //                    break;
+            //                }
+            //            }
+
+            //            if (!isMin)
+            //                continue;
+
+            //            var itemNext = lData.ElementAt(i + 1);
+            //            var itemNext2 = lData.ElementAt(i + 2);
+            //            if (itemNext.Low < item.Low
+            //                || itemNext2.Low < item.Low)
+            //            {
+            //                isMin = false;
+            //                continue;
+            //            }
+
+            //            minObj = item;
+            //            i = i + 2;
+            //            continue;
+            //        }
+
+            //        if(item.Low < minObj?.Low)
+            //        {
+            //            minObj = item;
+            //            continue;
+            //        }
+
+            //        var ema34 = lema34.ElementAt(i);
+            //        var ema89 = lema89.ElementAt(i);
+            //        if (item.Close < item.Open
+            //            || item.High <= (decimal)Math.Max((ema34.Ema ?? 0), (ema89.Ema ?? 0))) 
+            //        {
+            //            continue;
+            //        }
+
+            //        Console.WriteLine($"{item.Date.ToString("dd/MM/yyyy HH:mm:ss")}");
+            //    }
+
+            //    var x = 1;
+
+            //    //var ema34_0 = lema34.Last();
+            //    //var ema34_1 = lema34.SkipLast(1).Last();
+            //    //var ema34_2 = lema34.SkipLast(2).Last();
+            //    //var ema34_3 = lema34.SkipLast(3).Last();
+            //    //var ema34_4 = lema34.SkipLast(4).Last();
+            //    //var ema34_5 = lema34.SkipLast(5).Last();
+            //    //var ema34_6 = lema34.SkipLast(6).Last();
+
+            //    //var ema89_0 = lema89.Last();
+            //    //var ema89_1 = lema89.SkipLast(1).Last();
+            //    //var ema89_2 = lema89.SkipLast(2).Last();
+            //    //var ema89_3 = lema89.SkipLast(3).Last();
+            //    //var ema89_4 = lema89.SkipLast(4).Last();
+            //    //var ema89_5 = lema89.SkipLast(5).Last();
+            //    //var ema89_6 = lema89.SkipLast(6).Last();
+
+            //    //if(ema34_0.Ema > ema89_0.Ema)
+            //    //{
+            //    //    var tmp = 1;
+            //    //}
+
+
+            //    //if ((ema34_0.Ema > ema89_0.Ema && ema34_1.Ema <= ema89_1.Ema)
+            //    //    || (ema34_1.Ema > ema89_1.Ema && ema34_2.Ema <= ema89_2.Ema)
+            //    //    || (ema34_2.Ema > ema89_2.Ema && ema34_3.Ema <= ema89_3.Ema)
+            //    //    || (ema34_3.Ema > ema89_3.Ema && ema34_4.Ema <= ema89_4.Ema)
+            //    //    || (ema34_4.Ema > ema89_4.Ema && ema34_5.Ema <= ema89_5.Ema)
+            //    //    || (ema34_5.Ema > ema89_5.Ema && ema34_6.Ema <= ema89_6.Ema))
+            //    //{
+            //    //    _lCoin.Add(coin);
+            //    //}
         }
 
         //private async Task Test(List<Quote> lData, string coin)

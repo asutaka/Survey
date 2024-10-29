@@ -870,26 +870,24 @@ namespace StockLib.Utils
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(1).Date, IsBot = false, IsTop = false });
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(2).Date, IsBot = false, IsTop = false });
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(3).Date, IsBot = false, IsTop = false });
-                for (var i = 4; i < count - 3; i++)
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(3).Date, IsBot = false, IsTop = false });
+                for (var i = 5; i < count - 3; i++)
                 {
                     var itemNext2 = lData.ElementAt(i);
                     var itemNext1 = lData.ElementAt(i - 1);
                     var itemCheck = lData.ElementAt(i - 2);
                     var itemPrev1 = lData.ElementAt(i - 3);
                     var itemPrev2 = lData.ElementAt(i - 4);
-                    if (itemCheck.Low <= Math.Min(itemPrev1.Low, itemPrev2.Low)
-                        && itemCheck.Low <= Math.Min(itemNext1.Low, itemNext2.Low)
-                        && itemCheck.High < Math.Max(itemPrev1.High, itemPrev2.High)
-                        && itemCheck.High < Math.Max(itemNext1.High, itemNext2.High))
+                    var itemPrev3 = lData.ElementAt(i - 5);
+                    if (itemCheck.Low < Math.Min(Math.Min(itemPrev1.Close, itemPrev2.Close), itemPrev3.Close)
+                        && itemCheck.Low < Math.Min(itemNext1.Close, itemNext2.Close))
                     {
                         lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low });
                     }
-                    else if (itemCheck.Low > Math.Min(itemPrev1.Low, itemPrev2.Low)
-                        && itemCheck.Low > Math.Min(itemNext1.Low, itemNext2.Low)
-                        && itemCheck.High >= Math.Max(itemPrev1.High, itemPrev2.High)
-                        && itemCheck.High >= Math.Max(itemNext1.High, itemNext2.High))
+                    else if (itemCheck.Close > Math.Max(Math.Max(itemPrev1.Close, itemPrev2.Close), itemPrev3.Close)
+                        && itemCheck.Close > Math.Max(itemNext1.Close, itemNext2.Close))
                     {
-                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High });
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.Close });
                     }
                     else
                     {
