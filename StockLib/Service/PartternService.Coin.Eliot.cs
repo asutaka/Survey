@@ -286,7 +286,6 @@ namespace StockLib.Service
             if (lData.Count() < 100)
                 return;
 
-            var test = lData.GetTopBottom();
             var test2 = lData.GetTopBottomClean();
 
             var lema34 = lData.GetEma(34);
