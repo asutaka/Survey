@@ -910,7 +910,6 @@ namespace StockLib.Utils
             var lResult = lData.GetTopBottom();
             lResult.Reverse();
             var count = lResult.Count();
-            decimal val = 0;
             var state = 0;
             var index = 0;
             for (int i = 0; i < count; i++)

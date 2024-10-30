@@ -39,7 +39,7 @@ namespace StockLib.Service
                     if(lBuy1.Any())
                     {
                         sBuilder.AppendLine("+ Mua vượt đỉnh:");
-                        foreach (var item in lBuy1)
+                        foreach (var item in lBuy1.Take(10))
                         {
                             sBuilder.AppendLine($"   - {item.Item2}");
                         }
@@ -47,7 +47,7 @@ namespace StockLib.Service
                     if (lBuy2.Any())
                     {
                         sBuilder.AppendLine("+ Mua Test lại:");
-                        foreach (var item in lBuy2)
+                        foreach (var item in lBuy2.Take(15))
                         {
                             sBuilder.AppendLine($"   - {item.Item2}");
                         }

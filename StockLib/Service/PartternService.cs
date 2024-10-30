@@ -235,5 +235,14 @@ namespace StockLib.Service
                 Console.WriteLine($"{item.Item2}: {item.Item1}");
             }
         }
+
+        private List<(DateTime, DateTime, int, decimal)> lTotal = new List<(DateTime, DateTime, int, decimal)>();
+        public void PrintAll()
+        {
+            foreach (var item in lTotal.OrderBy(x => x.Item1).ThenBy(x => x.Item2))
+            {
+                _logger.LogInformation($"BUY: {item.Item1.ToString("dd/MM/yyyy")}|SELL: {item.Item2.ToString("dd/MM/yyyy")}|Giu: {item.Item3} nen| Rate: {item.Item4}%");
+            }
+        }
     }
 }
