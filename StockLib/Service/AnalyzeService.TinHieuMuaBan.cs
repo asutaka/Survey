@@ -15,6 +15,8 @@ namespace StockLib.Service
                 var lGoldFish = new List<Stock>();
                 var lSuperTrend = new List<Stock>();
                 var lSuperTrendPhrase2 = new List<Stock>();
+                var lEliot = new List<Stock>();
+                var lEliot2 = new List<Stock>();
 
                 foreach (var item in StaticVal._lStock)
                 {
@@ -69,9 +71,48 @@ namespace StockLib.Service
                             lSuperTrendPhrase2.Add(item);
                         }
                     }
+
+                    if(true)//Eliot
+                    {
+                        var eliot = lData.CheckEliot();
+                        if(eliot.Item1)
+                        {
+                            if(eliot.Item2 == 1)
+                            {
+                                lEliot.Add(item);
+                            }
+                            else
+                            {
+                                lEliot2.Add(item);
+                            }
+                        }
+                    }    
                 }
                 
                 var sBuilder = new StringBuilder();
+
+                if (lEliot.Any())
+                {
+                    sBuilder.AppendLine();
+                    sBuilder.AppendLine("[Tín hiệu Eliot]");
+
+                    foreach (var item in lEliot.OrderByDescending(x => x.rank).Take(10))
+                    {
+                        sBuilder.AppendLine($"{item.s}");
+                    }
+                }
+
+                if (lEliot2.Any())
+                {
+                    sBuilder.AppendLine();
+                    sBuilder.AppendLine("[Tín hiệu Eliot 2]");
+
+                    foreach (var item in lEliot2.OrderByDescending(x => x.rank).Take(10))
+                    {
+                        sBuilder.AppendLine($"{item.s}");
+                    }
+                }
+
 
                 if (lDanCustom.Any())
                 {
