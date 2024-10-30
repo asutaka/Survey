@@ -68,6 +68,8 @@ namespace StockLib.Service
                 var Bot = lBot.Last();
                 var NearBot = lBot.SkipLast(1).Last();
                 var cur = lVal.Last();
+                if(cur.Close <= cur.Open)
+                    return (false, 0);
 
                 var botDiv = Bot.Value - NearBot.Value;
                 if(botDiv <= 0)
