@@ -68,7 +68,9 @@ namespace StockLib.Service
                 var Bot = lBot.Last();
                 var NearBot = lBot.SkipLast(1).Last();
                 var cur = lVal.Last();
-                if(cur.Close <= cur.Open)
+                var near = lVal.SkipLast(1).Last();
+                if (cur.Close <= cur.Open
+                    && cur.Close <= near.Close)
                     return (false, 0);
 
                 var botDiv = Bot.Value - NearBot.Value;
@@ -78,7 +80,7 @@ namespace StockLib.Service
                 var timeDiv = (Bot.Date - Top.Date).TotalMinutes;
                 if(timeDiv > 0)
                 {
-                    var near = lVal.SkipLast(1).Last();
+                    
                     if(cur.Close > Top.Value
                         && near.Close <= Top.Value)
                     {

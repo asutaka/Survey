@@ -22,7 +22,8 @@ namespace StockLib.Service
         Task<(int, string)> BaoCaoPhanTich(DateTime dt);
         Task<(int, string)> TraceGia(DateTime dt);
 
-        Task<(int, string)> TinHieuMuaBanCoin();
+        Task<(int, string)> TinHieuMuaBanCoin_Binance();
+        Task<(int, string)> TinHieuMuaBanCoin_Bybit();
     }
     public partial class AnalyzeService : IAnalyzeService
     {

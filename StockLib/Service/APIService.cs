@@ -14,6 +14,7 @@ using System.Net.Http.Headers;
 using System.Text;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
+using static StockLib.Service.APIService;
 
 namespace StockLib.Service
 {
@@ -72,6 +73,8 @@ namespace StockLib.Service
         Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
         Task<MacroVar_Commodities_Data> Macrovar_Commodities();
         Task<(float, float)> Drewry_WCI();
+
+        Task<List<BinanceAllSymbol>> GetBinanceSymbol();
     }
     public partial class APIService : IAPIService
     {
@@ -1642,6 +1645,36 @@ namespace StockLib.Service
             return new List<Quote>();
         }
 
+        public async Task<List<BinanceAllSymbol>> GetBinanceSymbol()
+        {
+            var url = "https://api3.binance.com/sapi/v1/convert/exchangeInfo?toAsset=USDT";
+            try
+            {
+                using var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "");
+                request.Content = new StringContent("",
+                                                    Encoding.UTF8,
+                                                    "application/json");
+
+                var response = await client.SendAsync(request);
+                var contents = await response.Content.ReadAsStringAsync();
+                if (contents.Length < 200)
+                    return new List<BinanceAllSymbol>();
+                var res = JsonConvert.DeserializeObject<List<BinanceAllSymbol>>(contents);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"APIService.GetBinanceSymbol|EXCEPTION| {ex.Message}");
+            }
+            return new List<BinanceAllSymbol>();
+        }
+
 
         private class SSI_DataTradingResponse
         {
@@ -1679,6 +1712,12 @@ namespace StockLib.Service
             public decimal buy_qtty { get; set; }
             public decimal buy_val { get; set; }
             public decimal net_val { get; set; }
+        }
+
+        public class BinanceAllSymbol
+        {
+            public string FromAsset { get; set; }
+            public string ToAsset { get; set; }
         }
     }
 }
