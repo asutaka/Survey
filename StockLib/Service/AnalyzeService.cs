@@ -1,5 +1,8 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using iTextSharp.text.pdf.qrcode;
+using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using StockLib.DAL;
+using StockLib.DAL.Entity;
 using StockLib.Utils;
 
 namespace StockLib.Service
@@ -24,6 +27,7 @@ namespace StockLib.Service
 
         Task<(int, string)> TinHieuMuaBanCoin_Binance();
         Task<(int, string)> TinHieuMuaBanCoin_Bybit();
+        Task<bool> CheckVietStockToken();
     }
     public partial class AnalyzeService : IAnalyzeService
     {
@@ -61,6 +65,52 @@ namespace StockLib.Service
             _thongkeQuyRepo = thongkeQuyRepo;
             _haiquanRepo = haiquanRepo;
             _bcptRepo = bcptRepo;
+        }
+
+        public async Task<bool> CheckVietStockToken()
+        {
+            try
+            {
+                var dt = DateTime.Now;
+                var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
+                var mode = EConfigDataType.CheckVietStockToken;
+                var builder = Builders<ConfigData>.Filter;
+                var filter = builder.Eq(x => x.ty, (int)mode);
+                var lConfig = _configRepo.GetByFilter(filter);
+                if (lConfig.Any())
+                {
+                    if (lConfig.Any(x => x.t == t))
+                        return true;
+                }
+
+                var lReportID = await _apiService.VietStock_KQKD_GetListReportData("ACB");
+
+                var last = lConfig.LastOrDefault();
+                if (last is null)
+                {
+                    _configRepo.InsertOne(new ConfigData
+                    {
+                        ty = (int)mode,
+                        t = t
+                    });
+                }
+                else
+                {
+                    last.t = t;
+                    _configRepo.Update(last);
+                }
+
+                if (lReportID is null)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"AnalyzeService.CheckVietStockToken|EXCEPTION| {ex.Message}");
+            }
+            return true;
         }
     }
 }

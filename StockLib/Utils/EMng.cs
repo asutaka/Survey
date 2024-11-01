@@ -141,7 +141,8 @@ namespace StockLib.Utils
         TongCucHaiQuan_XK = 43,
         TongCucHaiQuan_NK = 44,
         CurrentTime = 50,
-        TraceGia = 60
+        TraceGia = 60,
+        CheckVietStockToken = 61,
     }
 
     public enum EHnxExchange

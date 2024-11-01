@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using iTextSharp.text.pdf.qrcode;
+using Microsoft.Extensions.Logging;
 using StockLib.Service;
 
 namespace StockLib.PublicService
@@ -250,6 +251,23 @@ namespace StockLib.PublicService
             }
         }
 
+        private async Task CheckVietStockToken()
+        {
+            try
+            {
+               var res = await _analyzeService.CheckVietStockToken();
+                if(!res)
+                {
+                    await _teleService.SendTextMessageAsync(_idUser, $"[VietStock] Token is Expired");
+                    //error
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.CheckVietStockToken|EXCEPTION| {ex.Message}");
+            }
+        }
+
         public async Task AnalyzeJob()
         {
             try
@@ -270,6 +288,9 @@ namespace StockLib.PublicService
                 //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
                 //}
                 //return;
+
+                await CheckVietStockToken();
+                return;
 
                 await BaoCaoPhanTich(dt);
                 await TongCucHaiQuan(dt);
@@ -304,6 +325,11 @@ namespace StockLib.PublicService
                         await ThongKe(dt);
                         await ThongKeTuDoanh(dt);
                     }
+                }
+
+                if(dt.Hour == 23)
+                {
+                    await CheckVietStockToken();
                 }
             }
             catch(Exception ex)
