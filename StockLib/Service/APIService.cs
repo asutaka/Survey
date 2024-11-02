@@ -21,6 +21,7 @@ namespace StockLib.Service
     public interface IAPIService
     {
         Task<List<Quote>> GetCoinData_Binance(string coin, string mode, long fromTime);
+        Task<List<Quote>> GetCoinData_Binance(string coin, int num, string mode);
         Task<ReportDataIDResponse> VietStock_CDKT_GetListReportData(string code);
         Task<ReportDataIDResponse> VietStock_KQKD_GetListReportData(string code);
         Task<ReportTempIDResponse> VietStock_CSTC_GetListTempID(string code);
@@ -1600,6 +1601,94 @@ namespace StockLib.Service
                 _logger.LogError($"APIService.GetChartImage|EXCEPTION| {ex.Message}");
             }
             return null;
+        }
+
+        public async Task<List<Quote>> GetCoinData_Binance(string coin, int num, string mode)
+        {
+            var dt = DateTime.Now;
+            long div = 0;
+            if(mode == "5m")
+            {
+                div = 3;
+            }
+            else if(mode == "15m")
+            {
+                div = 10;
+            }
+            else if(mode == "1h")
+            {
+                div = 40;
+            }
+            else if(mode == "4h")
+            {
+                div = 150;
+            }
+            else if(mode == "1d")
+            {
+                div = 900;
+            }
+            var lQuote = new List<Quote>();
+            var count = 0;
+            var start = new DateTimeOffset(dt.AddDays(-div)).ToUnixTimeMilliseconds();
+            var end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            do
+            {
+                var url = string.Format("https://api3.binance.com/api/v3/klines?symbol={0}&interval={1}&startTime={2}&endTime={3}&limit=1000", coin, mode, start, end);
+                try
+                {
+                    using var client = _client.CreateClient();
+                    client.BaseAddress = new Uri(url);
+                    client.DefaultRequestHeaders
+                          .Accept
+                          .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "");
+                    request.Content = new StringContent("",
+                                                        Encoding.UTF8,
+                                                        "application/json");
+
+                    var response = await client.SendAsync(request);
+                    var contents = await response.Content.ReadAsStringAsync();
+                    if (contents.Length < 200)
+                    {
+                        lQuote.Reverse();
+                        return lQuote;
+                    }
+                    var lArray = JArray.Parse(contents);
+                    if (lArray.Any())
+                    {
+                        var lOut = lArray.Select(x => new Quote
+                        {
+                            Date = long.Parse(x[0].ToString()).UnixTimeStampMinisecondToDateTime(),
+                            Open = decimal.Parse(x[1].ToString()),
+                            High = decimal.Parse(x[2].ToString()),
+                            Low = decimal.Parse(x[3].ToString()),
+                            Close = decimal.Parse(x[4].ToString()),
+                            Volume = decimal.Parse(x[5].ToString()),
+                        }).ToList();
+                        lOut.Reverse();
+                        lQuote.AddRange(lOut);
+                        count += lOut.Count();
+                        if(count >= num)
+                        {
+                            lQuote.Reverse();
+                            return lQuote;
+                        }
+                    }
+                    else
+                    {
+                        lQuote.Reverse();
+                        return lQuote;
+                    }
+                    end = start - 1;
+                    start = start - div * 86400000;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, $"APIService.GetCoinData_Binance|EXCEPTION|INPUT: coin:{coin}| {ex.Message}");
+                }
+            }
+            while (true);
         }
 
         public async Task<List<Quote>> GetCoinData_Binance(string coin, string mode, long fromTime)

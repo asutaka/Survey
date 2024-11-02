@@ -879,13 +879,13 @@ namespace StockLib.Utils
                     var itemPrev1 = lData.ElementAt(i - 3);
                     var itemPrev2 = lData.ElementAt(i - 4);
                     var itemPrev3 = lData.ElementAt(i - 5);
-                    if (itemCheck.Low < Math.Min(Math.Min(itemPrev1.Close, itemPrev2.Close), itemPrev3.Close)
-                        && itemCheck.Low < Math.Min(itemNext1.Close, itemNext2.Close))
+                    if (itemCheck.Close < Math.Min(Math.Min(Math.Min(itemPrev1.Close, itemPrev1.Open), Math.Min(itemPrev2.Close, itemPrev2.Open)), Math.Min(itemPrev3.Close, itemPrev3.Open))
+                        && itemCheck.Close < itemNext1.Close)
                     {
-                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low });
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Close });
                     }
-                    else if (itemCheck.Close > Math.Max(Math.Max(itemPrev1.Close, itemPrev2.Close), itemPrev3.Close)
-                        && itemCheck.Close > Math.Max(itemNext1.Close, itemNext2.Close))
+                    else if (itemCheck.Close > Math.Max(Math.Max(Math.Max(itemPrev1.Close, itemPrev1.Open), Math.Max(itemPrev2.Close, itemPrev2.Open)), Math.Max(itemPrev3.Close, itemPrev3.Open))
+                        && itemCheck.Close > itemNext1.Close)
                     {
                         lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.Close });
                     }
