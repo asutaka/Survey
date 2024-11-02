@@ -48,7 +48,7 @@ namespace StockTestCase
             ///
 
             ////#region Test All Coin
-            await _service.SurveyCoinEliot("");
+            await _service.SurveyCoinEliot("EDUUSDT");
             //var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
 
 
