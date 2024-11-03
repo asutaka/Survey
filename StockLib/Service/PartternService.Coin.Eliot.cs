@@ -5,6 +5,7 @@ using System.Runtime.ConstrainedExecution;
 using System;
 using System.Net.WebSockets;
 using System.Xml.Linq;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -17,10 +18,11 @@ namespace StockLib.Service
             {
                 var lAll = await _apiService.GetCoinData_Binance(code, 2000, $"4h");
                 var count = lAll.Count;
-                for ( int j = 1; j < count - 1; j++)
+                for ( int j = 6; j < count - 1; j++)
                 {
+                    //var lData = lAll;
                     var lData = lAll.Take(j).ToList();
-                    await CheckPhanKy(lData );
+                    await CheckPhanKy(lData);
                 }
             }
             catch (Exception ex)
@@ -32,12 +34,21 @@ namespace StockLib.Service
         private async Task<int> CheckPhanKy(List<Quote> lData)
         {
             var lRsi = lData.GetRsi(6);
-            var lBB = lData.GetBollingerBands();
             var lTopBottom = lData.GetTopBottomClean();
+            //var last = lTopBottom.SkipLast(1).Last();
+            //if(last.IsTop)
+            //{
+            //    Console.WriteLine($"TOP: {last.Date.ToString("dd/MM/yyyy HH")}");
+            //}
+            //if (last.IsBot)
+            //{
+            //    Console.WriteLine($"Bot: {last.Date.ToString("dd/MM/yyyy HH")}");
+            //}
+
             var lTop = lTopBottom.Where(x => x.IsTop);
             if (lTop.Count() >= 2)
             {
-                if (lTopBottom.ElementAt(j - 2).IsTop)
+                if (lTopBottom.SkipLast(2).Last().IsTop)
                 {
                     var item = lTop.Last();
                     var prev = lTop.SkipLast(1).Last();
@@ -54,7 +65,7 @@ namespace StockLib.Service
             var lBot = lTopBottom.Where(x => x.IsBot);
             if (lBot.Count() >= 2)
             {
-                if (lTopBottom.ElementAt(j - 2).IsBot)
+                if (lTopBottom.SkipLast(2).Last().IsBot)
                 {
                     var item = lBot.Last();
                     var prev = lBot.SkipLast(1).Last();
