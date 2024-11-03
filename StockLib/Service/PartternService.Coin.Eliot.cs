@@ -1,11 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 using StockLib.Utils;
-using System.Runtime.ConstrainedExecution;
-using System;
-using System.Net.WebSockets;
-using System.Xml.Linq;
-using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
