@@ -8,9 +8,9 @@ namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
-        private long _time = DateTimeOffset.Now.AddDays(-30).ToUnixTimeMilliseconds();
-        //private long _time = DateTimeOffset.Now.AddDays(-150).ToUnixTimeMilliseconds();
+        private long _time = DateTimeOffset.Now.AddDays(-150).ToUnixTimeMilliseconds();
         private List<(int, string)> _lLong = new List<(int, string)>();
+        private List<(int, string)> _lShort = new List<(int, string)>();
         public async Task<(int, string)> TinHieuMuaBanCoin_Binance()
         {
             try
@@ -19,7 +19,7 @@ namespace StockLib.Service
                 foreach (var item in lSymbols)
                 {
                     var coin = $"{item.FromAsset}{item.ToAsset}";
-                    var lData = await _apiService.GetCoinData_Binance(coin, "1h", _time);
+                    var lData = await _apiService.GetCoinData_Binance(coin, "4h", _time);
                     Thread.Sleep(200);
                     var eliot = lData.CheckEliot();
                     if (eliot.Item1)
