@@ -14,41 +14,54 @@ namespace StockLib.Service
         {
             try
             {
-                var lSymbols = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
-                var lSymbolFilter = lSymbols.Data.Where(x => x.QuoteAsset == "USDT");
-                var tm3p = lSymbolFilter.Count();
-                foreach (var item in lSymbols.Data)
+                var lAll = await _apiService.GetCoinData_Binance(code, 2000, $"4h");
+                var count = lAll.Count;
+                for ( int j = 1; j < count - 1; j++)
                 {
-                    _code = item.Alias;
-                    //var lByBit = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, code, Bybit.Net.Enums.KlineInterval.OneWeek, null, null, 1000);
-                    //var lData = lByBit.Data.List.Select(x => new Quote
-                    //{
-                    //    Date = x.StartTime,
-                    //    Open = x.OpenPrice,
-                    //    High = x.HighPrice,
-                    //    Low = x.LowPrice,
-                    //    Close = x.ClosePrice,
-                    //    Volume = x.Volume,
-                    //}).ToList();
-                    //lData.Reverse();
+                    var lData = lAll.Take(j).ToList();
+                    var lRsi = lData.GetRsi(6);
+                    var lBB = lData.GetBollingerBands();
+                    var lTopBottom = lData.GetTopBottomClean();
+                    var lTop = lTopBottom.Where(x => x.IsTop);
+                    if (lTop.Count() >= 2)
+                    {
+                        if(lTopBottom.ElementAt(j- 2).IsTop)
+                        {
+                            var item = lTop.Last();
+                            var prev = lTop.SkipLast(1).Last();
+                            var itemRSI = lRsi.First(x => x.Date == item.Date);
+                            var prevRSI = lRsi.First(x => x.Date == prev.Date);
+                            if ((item.Value >= prev.Value && itemRSI.Rsi < prevRSI.Rsi)
+                            || (item.Value > prev.Value && itemRSI.Rsi <= prevRSI.Rsi))
+                            {
+                                Console.WriteLine($"SELL: {item.Date.ToString("dd/MM/yyyy HH")}");
+                            }
+                        }
+                    }
+                    var lBot = lTopBottom.Where(x => x.IsBot);
+                    if (lBot.Count() >= 2)
+                    {
+                        if (lTopBottom.ElementAt(j - 2).IsBot)
+                        {
+                            var item = lBot.Last();
+                            var prev = lBot.SkipLast(1).Last();
+                            var itemRSI = lRsi.First(x => x.Date == item.Date);
+                            var prevRSI = lRsi.First(x => x.Date == prev.Date);
 
-                    var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
-                    var time = DateTimeOffset.Now.AddDays(-3).ToUnixTimeMilliseconds();
-
-                    var lData = await _apiService.GetCoinData_Binance(_code, $"{_interval}m", time);
-                    Thread.Sleep(200);
-                    //await SurveyCoinEliot(lData);
+                            if ((item.Value <= prev.Value && itemRSI.Rsi > prevRSI.Rsi)
+                                || (item.Value < prev.Value && itemRSI.Rsi >= prevRSI.Rsi))
+                            {
+                                Console.WriteLine($"BUY: {item.Date.ToString("dd/MM/yyyy HH")}");
+                            }
+                        }
+                    }
                 }
-
-                var tmp = 1;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"PartternService.SurveyEliot|EXCEPTION| {ex.Message}");
             }
         }
-
-        
     }
 
     public static class clsEliot
