@@ -9,15 +9,15 @@ namespace StockLib.Service
 {
     public partial class BllService 
     {
-        public async Task SyncBCTC_BatDongSan()
+        public async Task SyncBCTC_BatDongSan(bool onlyLast = false)
         {
             try
             {
                 var lBDS = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.BDS)).Select(x => x.s);
                 foreach (var item in lBDS)
                 {
-                    await SyncBCTC_BatDongSan_KQKD(item);
-                    await SyncBCTC_BatDongSan_CDKT(item);
+                    await SyncBCTC_BatDongSan_KQKD(item, onlyLast);
+                    await SyncBCTC_BatDongSan_CDKT(item, onlyLast);
                 }
             }
             catch (Exception ex)
@@ -26,14 +26,21 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_KQKD(string code)
+        private async Task SyncBCTC_BatDongSan_KQKD(string code, bool onlyLast)
         {
             try
             {
                 var time = GetCurrentTime();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
+                if (onlyLast)
+                {
+                    lReportID.data = lReportID.data.TakeLast(4).ToList();
+                }
                 Thread.Sleep(1000);
+                if (!lReportID.data.Any())
+                    return;
+
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
                 if (last.BasePeriodBegin / 100 > time.Item2) 
@@ -92,7 +99,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken=KfZYybRs9qYVyNmoczUJUaVItBQB3M64pTTwOaz0XLN7DziURs1EoHjiUPLcHiAY4OlvMaIMTGzRUiWbjVTqUm3vw0vwAHMoEJbgeqa8NpFi-NBrUMIYHOx4ApBOrenS0&");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -200,14 +207,20 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_BatDongSan_CDKT(string code)
+        private async Task SyncBCTC_BatDongSan_CDKT(string code, bool onlyLast)
         {
             try
             {
                 var time = GetCurrentTime();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
+                if (onlyLast)
+                {
+                    lReportID.data = lReportID.data.TakeLast(4).ToList();
+                }
                 Thread.Sleep(1000);
+                if (!lReportID.data.Any())
+                    return;
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
                 if (last.BasePeriodBegin / 100 > time.Item2)
@@ -266,7 +279,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken=KfZYybRs9qYVyNmoczUJUaVItBQB3M64pTTwOaz0XLN7DziURs1EoHjiUPLcHiAY4OlvMaIMTGzRUiWbjVTqUm3vw0vwAHMoEJbgeqa8NpFi-NBrUMIYHOx4ApBOrenS0&");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)

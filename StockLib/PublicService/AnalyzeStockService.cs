@@ -251,16 +251,29 @@ namespace StockLib.PublicService
             }
         }
 
-        private async Task CheckVietStockToken()
+        private async Task<bool> CheckVietStockToken()
         {
             try
             {
                var res = await _analyzeService.CheckVietStockToken();
-                if(!res)
-                {
-                    await _teleService.SendTextMessageAsync(_idUser, $"[VietStock] Token is Expired");
-                    //error
-                }
+                if (res)
+                    return true;
+
+                await _teleService.SendTextMessageAsync(_idUser, $"[VietStock] Token is Expired");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeStockService.CheckVietStockToken|EXCEPTION| {ex.Message}");
+            }
+
+            return false;
+        }
+
+        private async Task SyncBCTC()
+        {
+            try
+            {
+                await _analyzeService.SyncBCTC();
             }
             catch (Exception ex)
             {
@@ -289,9 +302,6 @@ namespace StockLib.PublicService
                 //}
                 //return;
 
-                await CheckVietStockToken();
-                return;
-
                 await BaoCaoPhanTich(dt);
                 await TongCucHaiQuan(dt);
                 if (dt.Day == 6)
@@ -299,7 +309,7 @@ namespace StockLib.PublicService
                     await TongCucThongKe(dt);
                 }
 
-                if(dt.Minute < 30 && (dt.Hour == 9 
+                if (dt.Minute < 30 && (dt.Hour == 9
                     || dt.Hour == 13
                     || dt.Hour == 17))
                 {
@@ -327,9 +337,13 @@ namespace StockLib.PublicService
                     }
                 }
 
-                if(dt.Hour == 23)
+                if (dt.Hour == 23)
                 {
-                    await CheckVietStockToken();
+                    var isValid = await CheckVietStockToken();
+                    if (isValid)
+                    {
+                        await SyncBCTC();
+                    }
                 }
             }
             catch(Exception ex)

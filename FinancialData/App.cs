@@ -19,7 +19,7 @@ namespace FinancialData
         {
             //await _service.SyncTest();
             //await _service.SyncBCTC_BatDongSan();
-            await _service.SyncBCTC_NganHang();
+            //await _service.SyncBCTC_NganHang();
             //await _service.SyncBCTC_ChungKhoan();
             //await _service.SyncBCTC_Thep();
             //await _service.SyncBCTC_BanLe();

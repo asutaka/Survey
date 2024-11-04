@@ -4,7 +4,6 @@ using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Utils;
 using System.Text;
-using static StockLib.Service.BllService;
 
 namespace StockLib.Service
 {
@@ -43,20 +42,38 @@ namespace StockLib.Service
         /// Tăng trưởng nợ xấu: càng nhỏ càng tốt
         /// Bao phủ nợ xấu: càng cao càng tốt
         /// <returns></returns>
-        public async Task SyncBCTC_NganHang()
+        public async Task SyncBCTC_NganHang(bool onlyLast = false)
         {
             try
             {
                 var lNganHang = StaticVal._lStock.Where(x => x.status == 1 && x.cat.Any(x => x.ty == (int)EStockType.NganHang)).Select(x => x.s);
-
                 foreach (var item in lNganHang)
                 {
-                    await SyncBCTC_NganHang_KQKD(item);
-                    await SyncBCTC_NganHang_CIR(item);
-                    await SyncBCTC_NganHang_NIM_TinDung(item);
+                    FilterDefinition<Financial> filter = null;
+                    var builder = Builders<Financial>.Filter;
+                    var lFilter = new List<FilterDefinition<Financial>>()
+                    {
+                        builder.Eq(x => x.d, StaticVal._curQuarter),
+                        builder.Eq(x => x.s, item),
+                    };
+                    foreach (var itemFilter in lFilter)
+                    {
+                        if (filter is null)
+                        {
+                            filter = itemFilter;
+                            continue;
+                        }
+                        filter &= itemFilter;
+                    }
+                    var exists = _financialRepo.GetEntityByFilter(filter);
+                    if (exists != null)
+                        continue;
+
+                    await SyncBCTC_NganHang_KQKD(item, onlyLast);
+                    await SyncBCTC_NganHang_CIR(item, onlyLast);
+                    await SyncBCTC_NganHang_NIM_TinDung(item, onlyLast);
                     await SyncBCTC_NgayCongBo(item);
                 }
-
                 SyncBCTC_TinhCacChiSoConLai();
 
             }
@@ -81,14 +98,20 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_KQKD(string code)
+        private async Task SyncBCTC_NganHang_KQKD(string code, bool onlyLast)
         {
             try
             {
                 var batchCount = 8;
                 var time = GetCurrentTime();
                 var lReportID = await _apiService.VietStock_KQKD_GetListReportData(code);
+                if(onlyLast)
+                {
+                    lReportID.data = lReportID.data.TakeLast(4).ToList();
+                }
                 Thread.Sleep(1000);
+                if (!lReportID.data.Any())
+                    return;
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
                 if (last.BasePeriodBegin / 100 > time.Item2)
@@ -146,7 +169,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken=KfZYybRs9qYVyNmoczUJUaVItBQB3M64pTTwOaz0XLN7DziURs1EoHjiUPLcHiAY4OlvMaIMTGzRUiWbjVTqUm3vw0vwAHMoEJbgeqa8NpFi-NBrUMIYHOx4ApBOrenS0&");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -251,13 +274,19 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_CIR(string code)
+        private async Task SyncBCTC_NganHang_CIR(string code, bool onlyLast)
         {
             try
             {
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_CSTC_GetListTempID(code);
+                if (onlyLast)
+                {
+                    lReportID.data = lReportID.data.TakeLast(4).ToList();
+                }
                 Thread.Sleep(1000);
+                if (!lReportID.data.Any())
+                    return;
                 var totalCount = lReportID.data.Count();
                 lReportID.data = lReportID.data.Where(x => x.YearPeriod >= 2020).ToList();
                 var lBatch = new List<List<ReportTempIDDetailResponse>>();
@@ -281,8 +310,7 @@ namespace StockLib.Service
                 {
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
-                    strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken=KfZYybRs9qYVyNmoczUJUaVItBQB3M64pTTwOaz0XLN7DziURs1EoHjiUPLcHiAY4OlvMaIMTGzRUiWbjVTqUm3vw0vwAHMoEJbgeqa8NpFi-NBrUMIYHOx4ApBOrenS0&");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}&");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -365,9 +393,8 @@ namespace StockLib.Service
             }
         }
 
-
         private List<SubKQKD> _lSubKQKD = new List<SubKQKD>();
-        private async Task SubBCTC_KQKD(string code)
+        private async Task SubBCTC_KQKD(string code, bool onlyLast)
         {
             try
             {
@@ -378,7 +405,13 @@ namespace StockLib.Service
                 {
                     return;
                 }
+                if (onlyLast)
+                {
+                    lReportID.data = lReportID.data.TakeLast(4).ToList();
+                }
                 Thread.Sleep(1000);
+                if (!lReportID.data.Any())
+                    return;
                 var time = GetCurrentTime();
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
@@ -437,7 +470,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken=KfZYybRs9qYVyNmoczUJUaVItBQB3M64pTTwOaz0XLN7DziURs1EoHjiUPLcHiAY4OlvMaIMTGzRUiWbjVTqUm3vw0vwAHMoEJbgeqa8NpFi-NBrUMIYHOx4ApBOrenS0&");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -498,14 +531,20 @@ namespace StockLib.Service
         }
 
         private List<SubCDKT> _lSubCDKT = new List<SubCDKT>();
-        private async Task SubBCTC_CDKT(string code)
+        private async Task SubBCTC_CDKT(string code, bool onlyLast)
         {
             try
             {
                 _lSubCDKT.Clear();
                 var batchCount = 8;
                 var lReportID = await _apiService.VietStock_CDKT_GetListReportData(code);
+                if (onlyLast)
+                {
+                    lReportID.data = lReportID.data.TakeLast(4).ToList();
+                }
                 Thread.Sleep(1000);
+                if (!lReportID.data.Any())
+                    return;
                 var time = GetCurrentTime();
                 var totalCount = lReportID.data.Count();
                 var last = lReportID.data.Last();
@@ -564,7 +603,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken=KfZYybRs9qYVyNmoczUJUaVItBQB3M64pTTwOaz0XLN7DziURs1EoHjiUPLcHiAY4OlvMaIMTGzRUiWbjVTqUm3vw0vwAHMoEJbgeqa8NpFi-NBrUMIYHOx4ApBOrenS0&");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -636,16 +675,16 @@ namespace StockLib.Service
             }
         }
 
-        private async Task SyncBCTC_NganHang_NIM_TinDung(string code)
+        private async Task SyncBCTC_NganHang_NIM_TinDung(string code, bool onlyLast)
         {
             try
             {
-                await SubBCTC_KQKD(code);
-                await SubBCTC_CDKT(code);
+                await SubBCTC_KQKD(code, onlyLast);
+                await SubBCTC_CDKT(code, onlyLast);
 
                 var count = _lSubKQKD.Count();
 
-                for (int i = 0; i < count; i++)
+                for (int i = 3; i < count; i++)
                 {
                     var elementKQKD = _lSubKQKD[i];
 
@@ -717,128 +756,128 @@ namespace StockLib.Service
 
         private async Task SyncBCTC_NgayCongBo(string code)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                var lBCTC = await _apiService.VietStock_GetDanhSachBCTC(code, i + 1);
-                if(lBCTC is null || !lBCTC.Any())
-                {
-                    return;
-                }
+            //for (int i = 0; i < 3; i++)
+            //{
+            //    var lBCTC = await _apiService.VietStock_GetDanhSachBCTC(code, i + 1);
+            //    if(lBCTC is null || !lBCTC.Any())
+            //    {
+            //        return;
+            //    }
 
-                foreach (var item in lBCTC)
-                {
-                    var quarter = -1;
-                    var year = -1;
-
-
-                    if (item.Url.Contains("/2028"))
-                    {
-                        year = 2028;
-                    }
-                    else if (item.Url.Contains("/2027"))
-                    {
-                        year = 2027;
-                    }
-                    else if (item.Url.Contains("/2026"))
-                    {
-                        year = 2026;
-                    }
-                    else if (item.Url.Contains("/2025"))
-                    {
-                        year = 2025;
-                    }
-                    else if (item.Url.Contains("/2024"))
-                    {
-                        year = 2024;
-                    }
-                    else if (item.Url.Contains("/2023"))
-                    {
-                        year = 2023;
-                    }
-                    else if (item.Url.Contains("/2022"))
-                    {
-                        year = 2022;
-                    }
-                    else if (item.Url.Contains("/2021"))
-                    {
-                        year = 2021;
-                    }
-                    else if (item.Url.Contains("/2020"))
-                    {
-                        year = 2020;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
-                    if(item.Url.ToUpper().Contains("QUY 1"))
-                    {
-                        quarter = 1;
-                    }
-                    else if(item.Url.ToUpper().Contains("QUY 2"))
-                    {
-                        quarter = 2;
-                    }
-                    else if (item.Url.ToUpper().Contains("QUY 3"))
-                    {
-                        quarter = 3;
-                    }
-                    else if (item.Url.ToUpper().Contains("QUY 4"))
-                    {
-                        quarter = 4;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-
-                    if (item.Url.ToUpper().Contains("CONGTYME")
-                        || item.Url.ToUpper().Contains("LE"))
-                    {
-                        continue;
-                    }
+            //    foreach (var item in lBCTC)
+            //    {
+            //        var quarter = -1;
+            //        var year = -1;
 
 
-                    var cleanDate = item.LastUpdate.Replace("/", "").Replace("Date", "").Replace("(", "").Replace(")", "");
-                    var checkDate = long.TryParse(cleanDate, out var longDate);
-                    if (!checkDate)
-                        continue;
+            //        if (item.Url.Contains("/2028"))
+            //        {
+            //            year = 2028;
+            //        }
+            //        else if (item.Url.Contains("/2027"))
+            //        {
+            //            year = 2027;
+            //        }
+            //        else if (item.Url.Contains("/2026"))
+            //        {
+            //            year = 2026;
+            //        }
+            //        else if (item.Url.Contains("/2025"))
+            //        {
+            //            year = 2025;
+            //        }
+            //        else if (item.Url.Contains("/2024"))
+            //        {
+            //            year = 2024;
+            //        }
+            //        else if (item.Url.Contains("/2023"))
+            //        {
+            //            year = 2023;
+            //        }
+            //        else if (item.Url.Contains("/2022"))
+            //        {
+            //            year = 2022;
+            //        }
+            //        else if (item.Url.Contains("/2021"))
+            //        {
+            //            year = 2021;
+            //        }
+            //        else if (item.Url.Contains("/2020"))
+            //        {
+            //            year = 2020;
+            //        }
+            //        else
+            //        {
+            //            continue;
+            //        }
 
-                    var date = longDate.UnixTimeStampToDateTime(false);
+            //        if(item.Url.ToUpper().Contains("QUY 1"))
+            //        {
+            //            quarter = 1;
+            //        }
+            //        else if(item.Url.ToUpper().Contains("QUY 2"))
+            //        {
+            //            quarter = 2;
+            //        }
+            //        else if (item.Url.ToUpper().Contains("QUY 3"))
+            //        {
+            //            quarter = 3;
+            //        }
+            //        else if (item.Url.ToUpper().Contains("QUY 4"))
+            //        {
+            //            quarter = 4;
+            //        }
+            //        else
+            //        {
+            //            continue;
+            //        }
 
-                    var pl = int.Parse($"{date.Year}{date.Month.To2Digit()}{date.Day.To2Digit()}{date.Hour.To2Digit()}");
+            //        if (item.Url.ToUpper().Contains("CONGTYME")
+            //            || item.Url.ToUpper().Contains("LE"))
+            //        {
+            //            continue;
+            //        }
 
-                    FilterDefinition<Financial> filter = null;
-                    var builder = Builders<Financial>.Filter;
-                    var lFilter = new List<FilterDefinition<Financial>>
-                        {
-                            builder.Eq(x => x.s, code),
-                            builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
-                        };
 
-                    foreach (var itemFilter in lFilter)
-                    {
-                        if (filter is null)
-                        {
-                            filter = itemFilter;
-                            continue;
-                        }
-                        filter &= itemFilter;
-                    }
+            //        var cleanDate = item.LastUpdate.Replace("/", "").Replace("Date", "").Replace("(", "").Replace(")", "");
+            //        var checkDate = long.TryParse(cleanDate, out var longDate);
+            //        if (!checkDate)
+            //            continue;
 
-                    var lUpdate = _financialRepo.GetByFilter(filter);
-                    Financial entityUpdate = lUpdate.FirstOrDefault();
-                    if (lUpdate is null || !lUpdate.Any())
-                    {
-                        continue;
-                    }
+            //        var date = longDate.UnixTimeStampToDateTime(false);
 
-                    entityUpdate.pl = pl;
-                    entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
-                    _financialRepo.Update(entityUpdate);
-                }
-            }
+            //        var pl = int.Parse($"{date.Year}{date.Month.To2Digit()}{date.Day.To2Digit()}{date.Hour.To2Digit()}");
+
+            //        FilterDefinition<Financial> filter = null;
+            //        var builder = Builders<Financial>.Filter;
+            //        var lFilter = new List<FilterDefinition<Financial>>
+            //            {
+            //                builder.Eq(x => x.s, code),
+            //                builder.Eq(x => x.d, int.Parse($"{year}{quarter}"))
+            //            };
+
+            //        foreach (var itemFilter in lFilter)
+            //        {
+            //            if (filter is null)
+            //            {
+            //                filter = itemFilter;
+            //                continue;
+            //            }
+            //            filter &= itemFilter;
+            //        }
+
+            //        var lUpdate = _financialRepo.GetByFilter(filter);
+            //        Financial entityUpdate = lUpdate.FirstOrDefault();
+            //        if (lUpdate is null || !lUpdate.Any())
+            //        {
+            //            continue;
+            //        }
+
+            //        entityUpdate.pl = pl;
+            //        entityUpdate.t = (int)DateTimeOffset.Now.ToUnixTimeSeconds();
+            //        _financialRepo.Update(entityUpdate);
+            //    }
+            //}
         }
         
         public class SubKQKD

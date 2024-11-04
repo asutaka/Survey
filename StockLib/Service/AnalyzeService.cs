@@ -28,6 +28,7 @@ namespace StockLib.Service
         Task<(int, string)> TinHieuMuaBanCoin_Binance();
         Task<(int, string)> TinHieuMuaBanCoin_Bybit();
         Task<bool> CheckVietStockToken();
+        Task SyncBCTC();
     }
     public partial class AnalyzeService : IAnalyzeService
     {
@@ -42,6 +43,7 @@ namespace StockLib.Service
         private readonly IThongKeHaiQuanRepo _haiquanRepo;
         private readonly IConfigBaoCaoPhanTichRepo _bcptRepo;
         private readonly ICoinRepo _coinRepo;
+        private readonly IBllService _bllService;
         public AnalyzeService(ILogger<AnalyzeService> logger,
                             IAPIService apiService,
                             IFileService fileService,
@@ -52,7 +54,8 @@ namespace StockLib.Service
                             IThongKeRepo thongkeRepo,
                             IThongKeHaiQuanRepo haiquanRepo,
                             IThongKeQuyRepo thongkeQuyRepo,
-                            IConfigBaoCaoPhanTichRepo bcptRepo) 
+                            IConfigBaoCaoPhanTichRepo bcptRepo,
+                            IBllService bllService) 
         {
             _logger = logger;
             _apiService = apiService;
@@ -65,6 +68,7 @@ namespace StockLib.Service
             _thongkeQuyRepo = thongkeQuyRepo;
             _haiquanRepo = haiquanRepo;
             _bcptRepo = bcptRepo;
+            _bllService = bllService;
         }
 
         public async Task<bool> CheckVietStockToken()

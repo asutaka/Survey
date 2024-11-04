@@ -9,25 +9,25 @@ namespace StockLib.Service
     public interface IBllService
     {
         Task SyncTest();
-        Task SyncBCTC_BatDongSan();
-        Task SyncBCTC_NganHang();
-        Task SyncBCTC_ChungKhoan();
-        Task SyncBCTC_Thep();
-        Task SyncBCTC_BanLe();
-        Task SyncBCTC_Dien();
-        Task SyncBCTC_CangBien();
-        Task SyncBCTC_CaoSu();
-        Task SyncBCTC_DetMay();
-        Task SyncBCTC_Go();
-        Task SyncBCTC_HangKhong();
-        Task SyncBCTC_Logistic();
-        Task SyncBCTC_Nhua();
-        Task SyncBCTC_Oto();
-        Task SyncBCTC_PhanBon();
-        Task SyncBCTC_Than();
-        Task SyncBCTC_ThuySan();
-        Task SyncBCTC_Ximang();
-        Task SyncBCTC_DauKhi();
+        Task SyncBCTC_BatDongSan(bool onlyLast = false);
+        Task SyncBCTC_NganHang(bool onlyLast = false);
+        Task SyncBCTC_ChungKhoan(bool onlyLast = false);
+        Task SyncBCTC_Thep(bool onlyLast = false);
+        Task SyncBCTC_BanLe(bool onlyLast = false);
+        Task SyncBCTC_Dien(bool onlyLast = false);
+        Task SyncBCTC_CangBien(bool onlyLast = false);
+        Task SyncBCTC_CaoSu(bool onlyLast = false);
+        Task SyncBCTC_DetMay(bool onlyLast = false);
+        Task SyncBCTC_Go(bool onlyLast = false);
+        Task SyncBCTC_HangKhong(bool onlyLast = false);
+        Task SyncBCTC_Logistic(bool onlyLast = false);
+        Task SyncBCTC_Nhua(bool onlyLast = false);
+        Task SyncBCTC_Oto(bool onlyLast = false);
+        Task SyncBCTC_PhanBon(bool onlyLast = false);
+        Task SyncBCTC_Than(bool onlyLast = false);
+        Task SyncBCTC_ThuySan(bool onlyLast = false);
+        Task SyncBCTC_Ximang(bool onlyLast = false);
+        Task SyncBCTC_DauKhi(bool onlyLast = false);
 
         Task SyncPE();
         Task SyncKeHoach();

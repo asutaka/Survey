@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HttpClientToCurl;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StockLib.Model;
 using StockLib.Utils;
