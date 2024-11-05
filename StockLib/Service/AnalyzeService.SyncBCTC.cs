@@ -6,10 +6,10 @@
         {
             try
             {
-                await _bllService.SyncBCTC(true);
                 await _bllService.SyncBCTC_NganHang(true);
-                await _bllService.SyncBCTC_BatDongSan(true);
                 await _bllService.SyncBCTC_ChungKhoan(true);
+                await _bllService.SyncBCTC_BatDongSan(true);
+                await _bllService.SyncBCTC(true);
             }
             catch(Exception ex)
             {
