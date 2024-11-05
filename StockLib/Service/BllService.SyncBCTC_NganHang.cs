@@ -169,7 +169,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}&");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -470,7 +470,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}&");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
@@ -603,7 +603,7 @@ namespace StockLib.Service
                     var strBuilder = new StringBuilder();
                     strBuilder.Append($"StockCode={code}&");
                     strBuilder.Append($"Unit=1000000000&");
-                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}");
+                    strBuilder.Append($"__RequestVerificationToken={StaticVal._VietStock_Token}&");
 
                     var count = item.Count();
                     for (int i = 0; i < count; i++)
