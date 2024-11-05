@@ -12,22 +12,7 @@ namespace StockLib.Service
         Task SyncBCTC_BatDongSan(bool onlyLast = false);
         Task SyncBCTC_NganHang(bool onlyLast = false);
         Task SyncBCTC_ChungKhoan(bool onlyLast = false);
-        Task SyncBCTC_Thep(bool onlyLast = false);
-        Task SyncBCTC_BanLe(bool onlyLast = false);
-        Task SyncBCTC_Dien(bool onlyLast = false);
-        Task SyncBCTC_CangBien(bool onlyLast = false);
-        Task SyncBCTC_CaoSu(bool onlyLast = false);
-        Task SyncBCTC_DetMay(bool onlyLast = false);
-        Task SyncBCTC_Go(bool onlyLast = false);
-        Task SyncBCTC_HangKhong(bool onlyLast = false);
-        Task SyncBCTC_Logistic(bool onlyLast = false);
-        Task SyncBCTC_Nhua(bool onlyLast = false);
-        Task SyncBCTC_Oto(bool onlyLast = false);
-        Task SyncBCTC_PhanBon(bool onlyLast = false);
-        Task SyncBCTC_Than(bool onlyLast = false);
-        Task SyncBCTC_ThuySan(bool onlyLast = false);
-        Task SyncBCTC_Ximang(bool onlyLast = false);
-        Task SyncBCTC_DauKhi(bool onlyLast = false);
+        Task SyncBCTC(bool onlyLast = false);
 
         Task SyncPE();
         Task SyncKeHoach();

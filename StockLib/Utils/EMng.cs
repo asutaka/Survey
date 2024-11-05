@@ -533,4 +533,11 @@ namespace StockLib.Utils
         [Display(Name = "DXY")]
         DXY = 18,//Chỉ số đô la
     }
+
+    public enum ECDKTType
+    {
+        Normal = 1,
+        BDS = 2,
+        ChungKhoan = 3
+    }
 }
