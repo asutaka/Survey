@@ -1008,7 +1008,158 @@ namespace StockLib.Utils
                 Console.WriteLine(ex.Message);
             }
             return new List<TopBotModel>();
-        }   
+        }
+
+        public static List<TopBotModel> GetTopBottom_HL(this List<Quote> lData)
+        {
+            var lResult = new List<TopBotModel>();
+            try
+            {
+                var count = lData.Count;
+                if (count < 5)
+                    return lResult;
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(0).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(1).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(2).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(3).Date, IsBot = false, IsTop = false });
+                lResult.Add(new TopBotModel { Date = lData.ElementAt(4).Date, IsBot = false, IsTop = false });
+                for (var i = 6; i <= count - 1; i++)
+                {
+                    var itemNext1 = lData.ElementAt(i);
+                    var itemCheck = lData.ElementAt(i - 1);
+                    var itemPrev1 = lData.ElementAt(i - 2);
+                    var itemPrev2 = lData.ElementAt(i - 3);
+                    var itemPrev3 = lData.ElementAt(i - 4);
+                    if (itemCheck.Low < Math.Min(Math.Min(itemPrev1.Low, itemPrev2.Low), itemPrev3.Low)
+                        && itemCheck.Low < itemNext1.Low)
+                    {
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low });
+                    }
+                    else if (itemCheck.High > Math.Max(Math.Max(itemPrev1.High, itemPrev2.High), itemPrev3.High)
+                        && itemCheck.High > itemNext1.High)
+                    {
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High });
+                    }
+                    else
+                    {
+                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = false });
+                    }
+                }
+                lResult.Add(new TopBotModel { Date = lData.Last().Date, IsTop = false, IsBot = false });
+                return lResult;
+            }
+            catch
+            {
+            }
+            return lResult;
+        }
+
+        public static List<TopBotModel> GetTopBottomClean_HL(this List<Quote> lData)
+        {
+            try
+            {
+                var lResult = lData.GetTopBottom_HL();
+                lResult.Reverse();
+                var count = lResult.Count();
+                var state = 0;
+                var index = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    var item = lResult.ElementAt(i);
+                    if (item.IsBot)
+                    {
+                        if (state == 1)
+                        {
+                            if (item.Value > lResult.ElementAt(index).Value)
+                            {
+                                lResult.ElementAt(i).IsBot = false;
+                                continue;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(index).IsBot = false;
+                            }
+                        }
+                        state = 1;
+                        index = i;
+                    }
+                    else if (item.IsTop)
+                    {
+                        if (state == 2)
+                        {
+                            if (item.Value < lResult.ElementAt(index).Value)
+                            {
+                                lResult.ElementAt(i).IsTop = false;
+                                continue;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(index).IsTop = false;
+                            }
+                        }
+                        state = 2;
+                        index = i;
+                    }
+                }
+                lResult.Reverse();
+                //min length bot to top
+                var lTopBot = lResult.Where(x => x.IsTop || x.IsBot).ToList();
+                if (lTopBot.Any())
+                {
+                    var first = lTopBot.First();
+                    if (first.IsTop)
+                    {
+                        lTopBot.RemoveAt(0);
+                    }
+                    var topBotCount = lTopBot.Count();
+                    var indexBotFlag = -1;
+                    var indexTopFlag = -1;
+                    for (int i = 0; i < topBotCount - 2; i = i + 2)
+                    {
+                        var indexBot = lResult.IndexOf(lTopBot.ElementAt(i));
+                        var indexTop = lResult.IndexOf(lTopBot.ElementAt(i + 1));
+                        var div = indexTop - indexBot;
+                        if (indexBotFlag > -1)
+                        {
+                            var curBot = lTopBot.ElementAt(i);
+                            var curTop = lTopBot.ElementAt(i + 1);
+
+                            var prevBot = lResult.ElementAt(indexBotFlag);
+                            var prevTop = lResult.ElementAt(indexTopFlag);
+
+                            if (prevBot.Value < curBot.Value)
+                            {
+                                lResult.ElementAt(i).IsBot = false;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(indexBotFlag).IsBot = false;
+                            }
+                            lResult.ElementAt(indexTopFlag).IsTop = false;
+                            indexBotFlag = -1;
+                            indexTopFlag = -1;
+                        }
+
+                        if (div < MIN_LENGTH)
+                        {
+                            indexBotFlag = indexBot;
+                            indexTopFlag = indexTop;
+                        }
+                        else
+                        {
+                            indexBotFlag = -1;
+                            indexTopFlag = -1;
+                        }
+                    }
+                }
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return new List<TopBotModel>();
+        }
     }
 
     public class TopBotModel

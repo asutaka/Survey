@@ -70,6 +70,65 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        public async Task<(int, string)> TinHieuMuaBanCoin_PriceAction_Binance()
+        {
+            try
+            {
+                var lSymbols = await _apiService.GetBinanceSymbol();
+                foreach (var item in lSymbols)
+                {
+                    var coin = $"{item.FromAsset}{item.ToAsset}";
+                    var lData = await _apiService.GetCoinData_Binance(coin, "4h", _time);
+                    Thread.Sleep(200);
+                    var eliot = lData.CheckPriceAction();
+                    if (eliot.Item1)
+                    {
+                        _lLong.Add((eliot.Item2, coin));
+                    }
+                }
+
+                var sBuilder = new StringBuilder();
+
+
+                if (_lLong.Any())
+                {
+                    sBuilder.AppendLine();
+                    sBuilder.AppendLine("[Eliot sóng 3 - Binance]");
+
+                    var lBuy = _lLong.Where(x => x.Item1 == 1);
+                    var lSell = _lLong.Where(x => x.Item1 == 2);
+                    if (lBuy.Any())
+                    {
+                        sBuilder.AppendLine("+ Mua:");
+                        foreach (var item in lBuy.Take(10))
+                        {
+                            sBuilder.AppendLine($"   - {item.Item2}");
+                        }
+                    }
+                    if (lSell.Any())
+                    {
+                        sBuilder.AppendLine("+ Bán:");
+                        foreach (var item in lSell.Take(10))
+                        {
+                            sBuilder.AppendLine($"   - {item.Item2}");
+                        }
+                    }
+                }
+
+                if (string.IsNullOrWhiteSpace(sBuilder.ToString()))
+                {
+                    return (0, null);
+                }
+                return (1, sBuilder.ToString());
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.TinHieuMuaBanCoin_Binance|EXCEPTION| {ex.Message}");
+            }
+
+            return (0, null);
+        }
+
         public async Task<(int, string)> TinHieuMuaBanCoin_Bybit()
         {
             try
