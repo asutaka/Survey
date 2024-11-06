@@ -29,7 +29,7 @@ namespace StockLib.Service
         private async Task<int> CheckPhanKy(List<Quote> lData)
         {
             var lRsi = lData.GetRsi(6);
-            var lTopBottom = lData.GetTopBottomClean(5);
+            var lTopBottom = lData.GetTopBottomClean(3);
             //var last = lTopBottom.SkipLast(1).Last();
             //if(last.IsTop)
             //{

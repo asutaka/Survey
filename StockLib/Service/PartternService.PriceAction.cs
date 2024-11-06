@@ -10,18 +10,19 @@ namespace StockLib.Service
         {
             try
             {
-                var lAll = await _apiService.GetCoinData_Binance(code, 500, $"4h");
+                var lAll = await _apiService.GetCoinData_Binance(code, 200, $"4h");
                 var count = lAll.Count;
                 for (int j = 6; j < count - 1; j++)
                 {
-                    //var lData = lAll;
-                    var lData = lAll.Take(j).ToList();
+                    var lData = lAll;
+                    //var lData = lAll.Take(j).ToList();
                     var res = lData.CheckPriceAction();
                     if(res.Item1)
                     {
                         var mode = res.Item2 == 1 ? "BUY" : "SELL";
                         Console.WriteLine($"{mode} {code}: {lData.Last().Date.ToString("dd/MM/yyyy HH")}");
                     }
+                    break;
                 }
             }
             catch (Exception ex)
@@ -44,7 +45,7 @@ namespace StockLib.Service
                 var count = lVal.Count();
                 var near1 = lVal.SkipLast(1).Last();
                 var near2 = lVal.SkipLast(2).Last();
-                var lTopBottom = lVal.GetTopBottomClean_HL(5);
+                var lTopBottom = lVal.GetTopBottomClean_HL(3, true);
                 var lTop = lTopBottom.Where(x => x.IsTop);
                 var lBot = lTopBottom.Where(x => x.IsBot);
                 var TopBottom = lTopBottom.Last();

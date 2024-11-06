@@ -858,7 +858,7 @@ namespace StockLib.Utils
             return val;
         }
 
-        public static List<TopBotModel> GetTopBottom(this List<Quote> lData)
+        public static List<TopBotModel> GetTopBottom(this List<Quote> lData, int minrate, bool isPrint)
         {
             var lResult = new List<TopBotModel>();
             try
@@ -871,6 +871,7 @@ namespace StockLib.Utils
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(2).Date, IsBot = false, IsTop = false });
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(3).Date, IsBot = false, IsTop = false });
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(4).Date, IsBot = false, IsTop = false });
+                var lastItem = new TopBotModel();
                 for (var i = 6; i <= count - 1; i++)
                 {
                     var itemNext1 = lData.ElementAt(i);
@@ -881,12 +882,52 @@ namespace StockLib.Utils
                     if (itemCheck.Close < Math.Min(Math.Min(Math.Min(itemPrev1.Close, itemPrev1.Open), Math.Min(itemPrev2.Close, itemPrev2.Open)), Math.Min(itemPrev3.Close, itemPrev3.Open))
                         && itemCheck.Close < itemNext1.Close)
                     {
-                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Close });
+                        var model = new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Close };
+                        if (lastItem.Value > 0)
+                        {
+                            var rate = Math.Abs(Math.Round(100 * (-1 + model.Value / lastItem.Value)));
+                            if(rate < minrate)
+                            {
+                                if(lastItem.IsBot && (itemCheck.Close < lastItem.Value))
+                                {
+                                    var index = lResult.IndexOf(lastItem);
+                                    lResult.ElementAt(index).IsBot = false;
+                                    lResult.Add(model);
+                                }
+                                else
+                                {
+                                    lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = false });
+                                }
+                                continue;
+                            }
+                        }
+                        lastItem = model;
+                        lResult.Add(model);
                     }
                     else if (itemCheck.Close > Math.Max(Math.Max(Math.Max(itemPrev1.Close, itemPrev1.Open), Math.Max(itemPrev2.Close, itemPrev2.Open)), Math.Max(itemPrev3.Close, itemPrev3.Open))
                         && itemCheck.Close > itemNext1.Close)
                     {
-                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.Close });
+                        var model = new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.Close };
+                        if (lastItem.Value > 0)
+                        {
+                            var rate = Math.Abs(Math.Round(100 * (-1 + model.Value / lastItem.Value)));
+                            if (rate < minrate)
+                            {
+                                if (lastItem.IsTop && (itemCheck.Close > lastItem.Value))
+                                {
+                                    var index = lResult.IndexOf(lastItem);
+                                    lResult.ElementAt(index).IsTop = false;
+                                    lResult.Add(model);
+                                }
+                                else
+                                {
+                                    lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = false });
+                                }
+                                continue;
+                            }
+                        }
+                        lastItem = model;
+                        lResult.Add(model);
                     }
                     else
                     {
@@ -894,6 +935,20 @@ namespace StockLib.Utils
                     }
                 }
                 lResult.Add(new TopBotModel { Date = lData.Last().Date, IsTop = false, IsBot = false });
+                if (isPrint)
+                {
+                    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
+                    {
+                        if (item.IsBot)
+                        {
+                            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                        }
+                    }
+                }
                 return lResult;
             }
             catch
@@ -903,11 +958,11 @@ namespace StockLib.Utils
         }
 
         private static int MIN_LENGTH = 7;
-        public static List<TopBotModel> GetTopBottomClean(this List<Quote> lData, int minrate)
+        public static List<TopBotModel> GetTopBottomClean(this List<Quote> lData, int minrate, bool isPrint = false)
         {
             try
             {
-                var lResult = lData.GetTopBottom();
+                var lResult = lData.GetTopBottom(minrate, isPrint);
                 lResult.Reverse();
                 var count = lResult.Count();
                 var state = 0;
@@ -1014,34 +1069,6 @@ namespace StockLib.Utils
                             lResult.ElementAt(indexTop).IsBot = false;
                         }
                     }
-
-                    for (int i = 0; i < topBotCount - 2; i = i + 2)
-                    {
-                        var itemBot = lTopBot.ElementAt(i);
-                        var itemTop = lTopBot.ElementAt(i + 1);
-                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
-                        if (div < minrate)
-                        {
-                            var indexBot = lResult.IndexOf(itemBot);
-                            var indexTop = lResult.IndexOf(itemTop);
-                            lResult.ElementAt(indexBot).IsBot = false;
-                            lResult.ElementAt(indexTop).IsBot = false;
-                        }
-                    }
-
-                    for (int i = 1; i < topBotCount - 2; i = i + 2)
-                    {
-                        var itemBot = lTopBot.ElementAt(i);
-                        var itemTop = lTopBot.ElementAt(i + 1);
-                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
-                        if (div < minrate)
-                        {
-                            var indexBot = lResult.IndexOf(itemBot);
-                            var indexTop = lResult.IndexOf(itemTop);
-                            lResult.ElementAt(indexBot).IsBot = false;
-                            lResult.ElementAt(indexTop).IsBot = false;
-                        }
-                    }
                 }
                 return lResult;
             }
@@ -1052,7 +1079,7 @@ namespace StockLib.Utils
             return new List<TopBotModel>();
         }
 
-        public static List<TopBotModel> GetTopBottom_HL(this List<Quote> lData)
+        public static List<TopBotModel> GetTopBottom_HL(this List<Quote> lData, int minrate, bool isPrint)
         {
             var lResult = new List<TopBotModel>();
             try
@@ -1065,6 +1092,8 @@ namespace StockLib.Utils
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(2).Date, IsBot = false, IsTop = false });
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(3).Date, IsBot = false, IsTop = false });
                 lResult.Add(new TopBotModel { Date = lData.ElementAt(4).Date, IsBot = false, IsTop = false });
+
+                var lastItem = new TopBotModel();
                 for (var i = 6; i <= count - 1; i++)
                 {
                     var itemNext1 = lData.ElementAt(i);
@@ -1072,15 +1101,56 @@ namespace StockLib.Utils
                     var itemPrev1 = lData.ElementAt(i - 2);
                     var itemPrev2 = lData.ElementAt(i - 3);
                     var itemPrev3 = lData.ElementAt(i - 4);
+
                     if (itemCheck.Low < Math.Min(Math.Min(itemPrev1.Low, itemPrev2.Low), itemPrev3.Low)
                         && itemCheck.Low < itemNext1.Low)
                     {
-                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low });
+                        var model = new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low };
+                        if (lastItem.Value > 0)
+                        {
+                            var rate = Math.Abs(Math.Round(100 * (-1 + model.Value / lastItem.Value)));
+                            if (rate < minrate)
+                            {
+                                if (lastItem.IsBot && (itemCheck.Low < lastItem.Value))
+                                {
+                                    var index = lResult.IndexOf(lastItem);
+                                    lResult.ElementAt(index).IsBot = false;
+                                    lResult.Add(model);
+                                }
+                                else
+                                {
+                                    lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = false });
+                                }
+                                continue;
+                            }
+                        }
+                        lastItem = model;
+                        lResult.Add(model);
                     }
                     else if (itemCheck.High > Math.Max(Math.Max(itemPrev1.High, itemPrev2.High), itemPrev3.High)
                         && itemCheck.High > itemNext1.High)
                     {
-                        lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High });
+                        var model = new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High };
+                        if (lastItem.Value > 0)
+                        {
+                            var rate = Math.Abs(Math.Round(100 * (-1 + model.Value / lastItem.Value)));
+                            if (rate < minrate)
+                            {
+                                if (lastItem.IsTop && (itemCheck.High > lastItem.Value))
+                                {
+                                    var index = lResult.IndexOf(lastItem);
+                                    lResult.ElementAt(index).IsTop = false;
+                                    lResult.Add(model);
+                                }
+                                else
+                                {
+                                    lResult.Add(new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = false });
+                                }
+                                continue;
+                            }
+                        }
+                        lastItem = model;
+                        lResult.Add(model);
                     }
                     else
                     {
@@ -1088,6 +1158,21 @@ namespace StockLib.Utils
                     }
                 }
                 lResult.Add(new TopBotModel { Date = lData.Last().Date, IsTop = false, IsBot = false });
+
+                if(isPrint)
+                {
+                    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
+                    {
+                        if(item.IsBot)
+                        {
+                            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                        }
+                    }
+                }
                 return lResult;
             }
             catch
@@ -1096,11 +1181,11 @@ namespace StockLib.Utils
             return lResult;
         }
 
-        public static List<TopBotModel> GetTopBottomClean_HL(this List<Quote> lData, int minrate)
+        public static List<TopBotModel> GetTopBottomClean_HL(this List<Quote> lData, int minrate, bool isPrint = false)
         {
             try
             {
-                var lResult = lData.GetTopBottom_HL();
+                var lResult = lData.GetTopBottom_HL(minrate, isPrint);
                 lResult.Reverse();
                 var count = lResult.Count();
                 var state = 0;
@@ -1191,34 +1276,6 @@ namespace StockLib.Utils
                         {
                             indexBotFlag = -1;
                             indexTopFlag = -1;
-                        }
-                    }
-
-                    for (int i = 0; i < topBotCount - 2; i = i + 2)
-                    {
-                        var itemBot = lTopBot.ElementAt(i);
-                        var itemTop = lTopBot.ElementAt(i + 1);
-                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
-                        if (div < minrate)
-                        {
-                            var indexBot = lResult.IndexOf(itemBot);
-                            var indexTop = lResult.IndexOf(itemTop);
-                            lResult.ElementAt(indexBot).IsBot = false;
-                            lResult.ElementAt(indexTop).IsBot = false;
-                        }
-                    }
-
-                    for (int i = 1; i < topBotCount - 2; i = i + 2)
-                    {
-                        var itemBot = lTopBot.ElementAt(i);
-                        var itemTop = lTopBot.ElementAt(i + 1);
-                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
-                        if (div < minrate)
-                        {
-                            var indexBot = lResult.IndexOf(itemBot);
-                            var indexTop = lResult.IndexOf(itemTop);
-                            lResult.ElementAt(indexBot).IsBot = false;
-                            lResult.ElementAt(indexTop).IsBot = false;
                         }
                     }
                 }
