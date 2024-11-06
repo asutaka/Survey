@@ -903,7 +903,7 @@ namespace StockLib.Utils
         }
 
         private static int MIN_LENGTH = 7;
-        public static List<TopBotModel> GetTopBottomClean(this List<Quote> lData)
+        public static List<TopBotModel> GetTopBottomClean(this List<Quote> lData, int minrate)
         {
             try
             {
@@ -1000,6 +1000,48 @@ namespace StockLib.Utils
                             indexTopFlag = -1;
                         }
                     }
+
+                    for (int i = 0; i < topBotCount - 2; i = i + 2)
+                    {
+                        var itemBot = lTopBot.ElementAt(i);
+                        var itemTop = lTopBot.ElementAt(i + 1);
+                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
+                        if(div < minrate)
+                        {
+                            var indexBot = lResult.IndexOf(itemBot);
+                            var indexTop = lResult.IndexOf(itemTop);
+                            lResult.ElementAt(indexBot).IsBot = false;
+                            lResult.ElementAt(indexTop).IsBot = false;
+                        }
+                    }
+
+                    for (int i = 0; i < topBotCount - 2; i = i + 2)
+                    {
+                        var itemBot = lTopBot.ElementAt(i);
+                        var itemTop = lTopBot.ElementAt(i + 1);
+                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
+                        if (div < minrate)
+                        {
+                            var indexBot = lResult.IndexOf(itemBot);
+                            var indexTop = lResult.IndexOf(itemTop);
+                            lResult.ElementAt(indexBot).IsBot = false;
+                            lResult.ElementAt(indexTop).IsBot = false;
+                        }
+                    }
+
+                    for (int i = 1; i < topBotCount - 2; i = i + 2)
+                    {
+                        var itemBot = lTopBot.ElementAt(i);
+                        var itemTop = lTopBot.ElementAt(i + 1);
+                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
+                        if (div < minrate)
+                        {
+                            var indexBot = lResult.IndexOf(itemBot);
+                            var indexTop = lResult.IndexOf(itemTop);
+                            lResult.ElementAt(indexBot).IsBot = false;
+                            lResult.ElementAt(indexTop).IsBot = false;
+                        }
+                    }
                 }
                 return lResult;
             }
@@ -1054,7 +1096,7 @@ namespace StockLib.Utils
             return lResult;
         }
 
-        public static List<TopBotModel> GetTopBottomClean_HL(this List<Quote> lData)
+        public static List<TopBotModel> GetTopBottomClean_HL(this List<Quote> lData, int minrate)
         {
             try
             {
@@ -1149,6 +1191,34 @@ namespace StockLib.Utils
                         {
                             indexBotFlag = -1;
                             indexTopFlag = -1;
+                        }
+                    }
+
+                    for (int i = 0; i < topBotCount - 2; i = i + 2)
+                    {
+                        var itemBot = lTopBot.ElementAt(i);
+                        var itemTop = lTopBot.ElementAt(i + 1);
+                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
+                        if (div < minrate)
+                        {
+                            var indexBot = lResult.IndexOf(itemBot);
+                            var indexTop = lResult.IndexOf(itemTop);
+                            lResult.ElementAt(indexBot).IsBot = false;
+                            lResult.ElementAt(indexTop).IsBot = false;
+                        }
+                    }
+
+                    for (int i = 1; i < topBotCount - 2; i = i + 2)
+                    {
+                        var itemBot = lTopBot.ElementAt(i);
+                        var itemTop = lTopBot.ElementAt(i + 1);
+                        var div = Math.Round(100 * (-1 + itemTop.Value / itemBot.Value));
+                        if (div < minrate)
+                        {
+                            var indexBot = lResult.IndexOf(itemBot);
+                            var indexTop = lResult.IndexOf(itemTop);
+                            lResult.ElementAt(indexBot).IsBot = false;
+                            lResult.ElementAt(indexTop).IsBot = false;
                         }
                     }
                 }
