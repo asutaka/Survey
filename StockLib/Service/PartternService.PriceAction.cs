@@ -45,7 +45,7 @@ namespace StockLib.Service
                 var count = lVal.Count();
                 var near1 = lVal.SkipLast(1).Last();
                 var near2 = lVal.SkipLast(2).Last();
-                var lTopBottom = lVal.GetTopBottomClean_HL(3, true);
+                var lTopBottom = lVal.GetTopBottomClean_HL(4, true);
                 var lTop = lTopBottom.Where(x => x.IsTop);
                 var lBot = lTopBottom.Where(x => x.IsBot);
                 var TopBottom = lTopBottom.Last();

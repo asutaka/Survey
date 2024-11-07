@@ -880,7 +880,8 @@ namespace StockLib.Utils
                     var itemPrev2 = lData.ElementAt(i - 3);
                     var itemPrev3 = lData.ElementAt(i - 4);
                     if (itemCheck.Close < Math.Min(Math.Min(Math.Min(itemPrev1.Close, itemPrev1.Open), Math.Min(itemPrev2.Close, itemPrev2.Open)), Math.Min(itemPrev3.Close, itemPrev3.Open))
-                        && itemCheck.Close < itemNext1.Close)
+                        && itemCheck.Close < itemNext1.Close
+                        && (itemNext1.Close - itemNext1.Open) > (decimal)0.2 * (itemNext1.High - itemNext1.Low))
                     {
                         var model = new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Close };
                         if (lastItem.Value > 0)
@@ -905,7 +906,8 @@ namespace StockLib.Utils
                         lResult.Add(model);
                     }
                     else if (itemCheck.Close > Math.Max(Math.Max(Math.Max(itemPrev1.Close, itemPrev1.Open), Math.Max(itemPrev2.Close, itemPrev2.Open)), Math.Max(itemPrev3.Close, itemPrev3.Open))
-                        && itemCheck.Close > itemNext1.Close)
+                        && itemCheck.Close > itemNext1.Close
+                        && (itemNext1.Open - itemNext1.Close) > (decimal)0.2 * (itemNext1.High - itemNext1.Low))
                     {
                         var model = new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.Close };
                         if (lastItem.Value > 0)
@@ -1103,7 +1105,8 @@ namespace StockLib.Utils
                     var itemPrev3 = lData.ElementAt(i - 4);
 
                     if (itemCheck.Low < Math.Min(Math.Min(itemPrev1.Low, itemPrev2.Low), itemPrev3.Low)
-                        && itemCheck.Low < itemNext1.Low)
+                        && itemCheck.Low < itemNext1.Low
+                        && (itemNext1.Close - itemNext1.Open) > (decimal)0.2 * (itemNext1.High - itemNext1.Low))
                     {
                         var model = new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low };
                         if (lastItem.Value > 0)
@@ -1128,7 +1131,8 @@ namespace StockLib.Utils
                         lResult.Add(model);
                     }
                     else if (itemCheck.High > Math.Max(Math.Max(itemPrev1.High, itemPrev2.High), itemPrev3.High)
-                        && itemCheck.High > itemNext1.High)
+                        && itemCheck.High > itemNext1.High
+                        && (itemNext1.Open - itemNext1.Close) > (decimal)0.2 * (itemNext1.High - itemNext1.Low))
                     {
                         var model = new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High };
                         if (lastItem.Value > 0)
