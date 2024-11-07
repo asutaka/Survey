@@ -965,49 +965,8 @@ namespace StockLib.Utils
             try
             {
                 var lResult = lData.GetTopBottom(minrate, isPrint);
-                lResult.Reverse();
                 var count = lResult.Count();
-                var state = 0;
-                var index = 0;
-                for (int i = 0; i < count; i++)
-                {
-                    var item = lResult.ElementAt(i);
-                    if (item.IsBot)
-                    {
-                        if (state == 1)
-                        {
-                            if (item.Value > lResult.ElementAt(index).Value)
-                            {
-                                lResult.ElementAt(i).IsBot = false;
-                                continue;
-                            }
-                            else
-                            {
-                                lResult.ElementAt(index).IsBot = false;
-                            }
-                        }
-                        state = 1;
-                        index = i;
-                    }
-                    else if (item.IsTop)
-                    {
-                        if (state == 2)
-                        {
-                            if (item.Value < lResult.ElementAt(index).Value)
-                            {
-                                lResult.ElementAt(i).IsTop = false;
-                                continue;
-                            }
-                            else
-                            {
-                                lResult.ElementAt(index).IsTop = false;
-                            }
-                        }
-                        state = 2;
-                        index = i;
-                    }
-                }
-                lResult.Reverse();
+                
                 //min length bot to top
                 var lTopBot = lResult.Where(x => x.IsTop || x.IsBot).ToList();
                 if (lTopBot.Any())
@@ -1070,6 +1029,47 @@ namespace StockLib.Utils
                             lResult.ElementAt(indexBot).IsBot = false;
                             lResult.ElementAt(indexTop).IsBot = false;
                         }
+                    }
+                }
+
+                var state = 0;
+                var index = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    var item = lResult.ElementAt(i);
+                    if (item.IsBot)
+                    {
+                        if (state == 1)
+                        {
+                            if (item.Value > lResult.ElementAt(index).Value)
+                            {
+                                lResult.ElementAt(i).IsBot = false;
+                                continue;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(index).IsBot = false;
+                            }
+                        }
+                        state = 1;
+                        index = i;
+                    }
+                    else if (item.IsTop)
+                    {
+                        if (state == 2)
+                        {
+                            if (item.Value < lResult.ElementAt(index).Value)
+                            {
+                                lResult.ElementAt(i).IsTop = false;
+                                continue;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(index).IsTop = false;
+                            }
+                        }
+                        state = 2;
+                        index = i;
                     }
                 }
                 return lResult;
@@ -1190,49 +1190,8 @@ namespace StockLib.Utils
             try
             {
                 var lResult = lData.GetTopBottom_HL(minrate, isPrint);
-                lResult.Reverse();
                 var count = lResult.Count();
-                var state = 0;
-                var index = 0;
-                for (int i = 0; i < count; i++)
-                {
-                    var item = lResult.ElementAt(i);
-                    if (item.IsBot)
-                    {
-                        if (state == 1)
-                        {
-                            if (item.Value > lResult.ElementAt(index).Value)
-                            {
-                                lResult.ElementAt(i).IsBot = false;
-                                continue;
-                            }
-                            else
-                            {
-                                lResult.ElementAt(index).IsBot = false;
-                            }
-                        }
-                        state = 1;
-                        index = i;
-                    }
-                    else if (item.IsTop)
-                    {
-                        if (state == 2)
-                        {
-                            if (item.Value < lResult.ElementAt(index).Value)
-                            {
-                                lResult.ElementAt(i).IsTop = false;
-                                continue;
-                            }
-                            else
-                            {
-                                lResult.ElementAt(index).IsTop = false;
-                            }
-                        }
-                        state = 2;
-                        index = i;
-                    }
-                }
-                lResult.Reverse();
+                
                 //min length bot to top
                 var lTopBot = lResult.Where(x => x.IsTop || x.IsBot).ToList();
                 if (lTopBot.Any())
@@ -1280,6 +1239,61 @@ namespace StockLib.Utils
                         {
                             indexBotFlag = -1;
                             indexTopFlag = -1;
+                        }
+                    }
+                }
+
+                var state = 0;
+                var index = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    var item = lResult.ElementAt(i);
+                    if (item.IsBot)
+                    {
+                        if (state == 1)
+                        {
+                            if (item.Value > lResult.ElementAt(index).Value)
+                            {
+                                lResult.ElementAt(i).IsBot = false;
+                                continue;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(index).IsBot = false;
+                            }
+                        }
+                        state = 1;
+                        index = i;
+                    }
+                    else if (item.IsTop)
+                    {
+                        if (state == 2)
+                        {
+                            if (item.Value < lResult.ElementAt(index).Value)
+                            {
+                                lResult.ElementAt(i).IsTop = false;
+                                continue;
+                            }
+                            else
+                            {
+                                lResult.ElementAt(index).IsTop = false;
+                            }
+                        }
+                        state = 2;
+                        index = i;
+                    }
+                }
+                if (isPrint)
+                {
+                    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
+                    {
+                        if (item.IsBot)
+                        {
+                            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
                         }
                     }
                 }
