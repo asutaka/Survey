@@ -938,20 +938,20 @@ namespace StockLib.Utils
                     }
                 }
                 lResult.Add(new TopBotModel { Date = lData.Last().Date, IsTop = false, IsBot = false });
-                if (isPrint)
-                {
-                    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
-                    {
-                        if (item.IsBot)
-                        {
-                            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
-                        }
-                    }
-                }
+                //if (isPrint)
+                //{
+                //    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
+                //    {
+                //        if (item.IsBot)
+                //        {
+                //            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                //        }
+                //    }
+                //}
                 return lResult;
             }
             catch
@@ -1165,20 +1165,20 @@ namespace StockLib.Utils
                 }
                 lResult.Add(new TopBotModel { Date = lData.Last().Date, IsTop = false, IsBot = false });
 
-                if(isPrint)
-                {
-                    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
-                    {
-                        if(item.IsBot)
-                        {
-                            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
-                        }
-                    }
-                }
+                //if(isPrint)
+                //{
+                //    foreach (var item in lResult.Where(x => x.IsBot || x.IsTop))
+                //    {
+                //        if(item.IsBot)
+                //        {
+                //            Console.WriteLine($"BOT: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                //        }
+                //        else
+                //        {
+                //            Console.WriteLine($"TOP: {item.Date.ToString("dd/MM/yyyy HH:mm")}");
+                //        }
+                //    }
+                //}
                 return lResult;
             }
             catch
