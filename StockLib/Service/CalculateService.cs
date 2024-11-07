@@ -75,28 +75,28 @@ namespace StockLib.Service
                 strOutput.AppendLine($" - Số cp tăng giá: {Math.Round((float)lReport.Count(x => x.isPriceUp) * 100 / count, 1)}%");
                 strOutput.AppendLine($" - Số cp trên MA20: {Math.Round((float)lReport.Count(x => x.isGEMA20) * 100 / count, 1)}%");
 
-                var lBatDay = lReport.Where(x => x.bd)
-                    .OrderBy(x => x.rank)
-                    .ThenBy(x => x.priceBB)
-                    .Take(20);
-                if (lBatDay.Any())
-                {
-                    strOutput.AppendLine();
-                    strOutput.AppendLine($"*Top cp bắt đáy (BB x EMA50):");
-                    var index = 1;
-                    foreach (var item in lBatDay)
-                    {
-                        strOutput.Append($"{index++}. {item.s}");
-                        if (item.isRsiZero)
-                        {
-                            strOutput.AppendLine(" - RSI zero");
-                        }
-                        else
-                        {
-                            strOutput.AppendLine();
-                        }
-                    }
-                }
+                //var lBatDay = lReport.Where(x => x.bd)
+                //    .OrderBy(x => x.rank)
+                //    .ThenBy(x => x.priceBB)
+                //    .Take(20);
+                //if (lBatDay.Any())
+                //{
+                //    strOutput.AppendLine();
+                //    strOutput.AppendLine($"*Top cp bắt đáy (BB x EMA50):");
+                //    var index = 1;
+                //    foreach (var item in lBatDay)
+                //    {
+                //        strOutput.Append($"{index++}. {item.s}");
+                //        if (item.isRsiZero)
+                //        {
+                //            strOutput.AppendLine(" - RSI zero");
+                //        }
+                //        else
+                //        {
+                //            strOutput.AppendLine();
+                //        }
+                //    }
+                //}
 
                 var lTrenMa20 = lReport.Where(x => x.isPriceUp && x.isCrossMa20Up)
                                     .OrderBy(x => x.rank)
