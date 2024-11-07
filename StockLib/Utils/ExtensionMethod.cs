@@ -893,6 +893,7 @@ namespace StockLib.Utils
                                 {
                                     var index = lResult.IndexOf(lastItem);
                                     lResult.ElementAt(index).IsBot = false;
+                                    lastItem = model;
                                     lResult.Add(model);
                                 }
                                 else
@@ -1118,6 +1119,7 @@ namespace StockLib.Utils
                                 {
                                     var index = lResult.IndexOf(lastItem);
                                     lResult.ElementAt(index).IsBot = false;
+                                    lastItem = model;
                                     lResult.Add(model);
                                 }
                                 else
