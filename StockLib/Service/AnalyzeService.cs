@@ -28,6 +28,7 @@ namespace StockLib.Service
         Task<(int, string)> TinHieuMuaBanCoin_Binance();
         Task<(int, string)> TinHieuMuaBanCoin_PriceAction_Binance();
         Task<(int, string)> TinHieuMuaBanCoin_Bybit();
+        Task<(int, string)> CanhBaoBitcoin();
         Task<bool> CheckVietStockToken();
         Task SyncBCTC();
     }

@@ -31,10 +31,17 @@ namespace StockLib.PublicService
         {
             try
             {
-                var tinhieu_priceAction_binance = await _analyzeService.TinHieuMuaBanCoin_PriceAction_Binance();
-                if (tinhieu_priceAction_binance.Item1 > 0)
+                //var bitcoin_check = await _analyzeService.CanhBaoBitcoin();
+                //if (bitcoin_check.Item1 > 0)
+                //{
+                //    await _teleService.SendTextMessageAsync(_idUser, bitcoin_check.Item2);
+                //    return;
+                //}
+
+                var bybit = await _analyzeService.TinHieuMuaBanCoin_Bybit();
+                if (bybit.Item1 > 0)
                 {
-                    await _teleService.SendTextMessageAsync(_idUser, tinhieu_priceAction_binance.Item2);
+                    await _teleService.SendTextMessageAsync(_idUser, bybit.Item2);
                     Thread.Sleep(1000);
                 }
 
