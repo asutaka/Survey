@@ -179,54 +179,18 @@ namespace StockLib.Service
         {
             try
             {
-                var lSymbols = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
-                var lSymbolFilter = lSymbols.Data.Where(x => x.QuoteAsset == "USDT").Select(x => x.Alias);
+                var lSymbols = await _apiService.GetBybitSymbol();
+                var lSymbolFilter = lSymbols.Where(x => x.quote_currency == "USDT").Select(x => x.name);
+                var count = 0;
                 foreach (var item in lSymbolFilter)
                 {
-                    var res15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, item, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
-                    if (!res15m.Success)
-                        return (0, null);
 
-                    var lData15m = res15m.Data.List.Select(x => new Quote
-                    {
-                        Date = x.StartTime,
-                        Open = x.OpenPrice,
-                        High = x.HighPrice,
-                        Low = x.LowPrice,
-                        Close = x.ClosePrice,
-                        Volume = x.Volume
-                    }).ToList();
-
-                    var lrsi15m = lData15m.GetRsi(6);
-                    if (lrsi15m.Last().Rsi >= 71)
-                        continue;
-
-
-                    Thread.Sleep(200);
-                    var res1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, item, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
-                    if (!res1h.Success)
-                        return (0, null);
-
-                    var lData1h = res1h.Data.List.Select(x => new Quote
-                    {
-                        Date = x.StartTime,
-                        Open = x.OpenPrice,
-                        High = x.HighPrice,
-                        Low = x.LowPrice,
-                        Close = x.ClosePrice,
-                        Volume = x.Volume
-                    }).ToList();
-
-                    var lrsi1h = lData1h.GetRsi(6);
-                    if (lrsi1h.Last().Rsi >= 71)
-                        continue;
-
-
-                    Thread.Sleep(200);
-
-                    var res4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Spot, item, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
+                    var res4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
                     if (!res4h.Success)
-                        return (0, null);
+                        continue;
+
+                    if (res4h.Data.List.Count() < 20)
+                        continue;
 
                     var lData4h = res4h.Data.List.Select(x => new Quote
                     {
@@ -237,14 +201,74 @@ namespace StockLib.Service
                         Close = x.ClosePrice,
                         Volume = x.Volume
                     }).ToList();
+                    lData4h.Reverse();
 
                     var lrsi4h = lData4h.GetRsi(6);
                     if (lrsi4h.Last().Rsi >= 71)
                         continue;
 
+                    Thread.Sleep(200);
+
+                    var res1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
+                    if (!res1h.Success)
+                        continue;
+
+                    var lData1h = res1h.Data.List.Select(x => new Quote
+                    {
+                        Date = x.StartTime,
+                        Open = x.OpenPrice,
+                        High = x.HighPrice,
+                        Low = x.LowPrice,
+                        Close = x.ClosePrice,
+                        Volume = x.Volume
+                    }).ToList();
+                    lData1h.Reverse();
+
+                    var lrsi1h = lData1h.GetRsi(6);
+                    if (lrsi1h.Last().Rsi >= 71)
+                        continue;
 
                     Thread.Sleep(200);
+
+                    var res15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
+                    if (!res15m.Success)
+                        continue;
+
+                    var lData15m = res15m.Data.List.Select(x => new Quote
+                    {
+                        Date = x.StartTime,
+                        Open = x.OpenPrice,
+                        High = x.HighPrice,
+                        Low = x.LowPrice,
+                        Close = x.ClosePrice,
+                        Volume = x.Volume
+                    }).ToList();
+                    lData15m.Reverse();
+
+                    var lrsi15m = lData15m.GetRsi(6);
+                    if (lrsi15m.Last().Rsi >= 71)
+                        continue;
+
+                    var lbb15m = lData15m.GetBollingerBands();
+                    if (lData15m.Last().Close <= (decimal)lbb15m.Last().Sma)
+                        continue;
+
+                    var max = lData15m.TakeLast(50).MaxBy(x => x.Close);
+                    var min = lData15m.TakeLast(50).MinBy(x => x.Close);
+                    var min_near = lData15m.TakeLast(10).MinBy(x => x.Close);
+                    if (min_near.Close < (decimal)0.5 * (min.Close + max.Close)
+                      //|| min_near.Close > (decimal)0.15 * (min.Close + max.Close)
+                      //|| lData15m.Last().Close < (decimal)1.05 * min_near.Close
+                      || max.Date >= min_near.Date
+                      || max.Date <= min.Date)
+                        continue;
+
+                    Thread.Sleep(200);
+              
+                    count++;
                 }
+
+                var tmp = 1;
 
                 //var sBuilder = new StringBuilder();
 

@@ -76,6 +76,7 @@ namespace StockLib.Service
         Task<(float, float)> Drewry_WCI();
 
         Task<List<BinanceAllSymbol>> GetBinanceSymbol();
+        Task<List<BybitSymbolDetail>> GetBybitSymbol();
     }
     public partial class APIService : IAPIService
     {
@@ -1764,6 +1765,35 @@ namespace StockLib.Service
             return new List<BinanceAllSymbol>();
         }
 
+        public async Task<List<BybitSymbolDetail>> GetBybitSymbol()
+        {
+            var url = "https://api.bybit.com/v2/public/symbols";
+            try
+            {
+                using var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "");
+                request.Content = new StringContent("",
+                                                    Encoding.UTF8,
+                                                    "application/json");
+
+                var response = await client.SendAsync(request);
+                var contents = await response.Content.ReadAsStringAsync();
+                if (contents.Length < 200)
+                    return new List<BybitSymbolDetail>();
+                var res = JsonConvert.DeserializeObject<BybitSymbol>(contents);
+                return res.result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"APIService.GetBinanceSymbol|EXCEPTION| {ex.Message}");
+            }
+            return new List<BybitSymbolDetail>();
+        }
 
         private class SSI_DataTradingResponse
         {
@@ -1807,6 +1837,18 @@ namespace StockLib.Service
         {
             public string FromAsset { get; set; }
             public string ToAsset { get; set; }
+        }
+
+        public class BybitSymbol
+        {
+            public List<BybitSymbolDetail> result { get; set; }
+        }
+
+        public class BybitSymbolDetail
+        {
+            public string name { get; set; }
+            public string base_currency { get; set; }
+            public string quote_currency { get; set; }
         }
     }
 }
