@@ -31,12 +31,12 @@ namespace StockLib.PublicService
         {
             try
             {
-                //var bitcoin_check = await _analyzeService.CanhBaoBitcoin();
-                //if (bitcoin_check.Item1 > 0)
-                //{
-                //    await _teleService.SendTextMessageAsync(_idUser, bitcoin_check.Item2);
-                //    return;
-                //}
+                var bitcoin_check = await _analyzeService.CanhBaoBitcoin();
+                if (bitcoin_check.Item1 > 0)
+                {
+                    await _teleService.SendTextMessageAsync(_idUser, bitcoin_check.Item2);
+                    return;
+                }
 
                 var bybit = await _analyzeService.TinHieuMuaBanCoin_Bybit();
                 if (bybit.Item1 > 0)

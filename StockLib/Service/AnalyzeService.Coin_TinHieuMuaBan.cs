@@ -181,7 +181,7 @@ namespace StockLib.Service
             {
                 var lSymbols = await _apiService.GetBybitSymbol();
                 var lSymbolFilter = lSymbols.Where(x => x.quote_currency == "USDT").Select(x => x.name);
-                var count = 0;
+                var lRes = new List<string>();
                 foreach (var item in lSymbolFilter)
                 {
 
@@ -255,7 +255,7 @@ namespace StockLib.Service
 
                     var max = lData15m.TakeLast(50).MaxBy(x => x.Close);
                     var min = lData15m.TakeLast(50).MinBy(x => x.Close);
-                    var min_near = lData15m.TakeLast(10).MinBy(x => x.Close);
+                    var min_near = lData15m.TakeLast(6).MinBy(x => x.Close);
                     if (min_near.Close < (decimal)0.45 * (min.Close + max.Close)
                       //|| min_near.Close > (decimal)0.15 * (min.Close + max.Close)
                       //|| lData15m.Last().Close < (decimal)1.05 * min_near.Close
@@ -264,45 +264,27 @@ namespace StockLib.Service
                         continue;
 
                     Thread.Sleep(200);
-                    Console.WriteLine(item);
-                    count++;
+                    lRes.Add(item);
                 }
 
-                var tmp = 1;
-
-                //var sBuilder = new StringBuilder();
+                var sBuilder = new StringBuilder();
 
 
-                //if (_lLong.Any())
-                //{
-                //    sBuilder.AppendLine();
-                //    sBuilder.AppendLine("[Eliot sóng 3 - Bybit]");
+                if (lRes.Any())
+                {
+                    sBuilder.AppendLine();
+                    sBuilder.AppendLine("[Eliot]");
+                    foreach (var item in lRes.Take(15))
+                    {
+                        sBuilder.AppendLine($"   - {item}");
+                    }
+                }
 
-                //    var lBuy1 = _lLong.Where(x => x.Item1 == 1);
-                //    var lBuy2 = _lLong.Where(x => x.Item1 == 2);
-                //    if (lBuy1.Any())
-                //    {
-                //        sBuilder.AppendLine("+ Mua vượt đỉnh:");
-                //        foreach (var item in lBuy1.Take(10))
-                //        {
-                //            sBuilder.AppendLine($"   - {item.Item2}");
-                //        }
-                //    }
-                //    if (lBuy2.Any())
-                //    {
-                //        sBuilder.AppendLine("+ Mua Test lại:");
-                //        foreach (var item in lBuy2.Take(15))
-                //        {
-                //            sBuilder.AppendLine($"   - {item.Item2}");
-                //        }
-                //    }
-                //}
-
-                //if (string.IsNullOrWhiteSpace(sBuilder.ToString()))
-                //{
-                //    return (0, null);
-                //}
-                //return (1, sBuilder.ToString());
+                if (string.IsNullOrWhiteSpace(sBuilder.ToString()))
+                {
+                    return (0, null);
+                }
+                return (1, sBuilder.ToString());
             }
             catch (Exception ex)
             {
