@@ -256,7 +256,7 @@ namespace StockLib.Service
                     var max = lData15m.TakeLast(50).MaxBy(x => x.Close);
                     var min = lData15m.TakeLast(50).MinBy(x => x.Close);
                     var min_near = lData15m.TakeLast(10).MinBy(x => x.Close);
-                    if (min_near.Close < (decimal)0.5 * (min.Close + max.Close)
+                    if (min_near.Close < (decimal)0.45 * (min.Close + max.Close)
                       //|| min_near.Close > (decimal)0.15 * (min.Close + max.Close)
                       //|| lData15m.Last().Close < (decimal)1.05 * min_near.Close
                       || max.Date >= min_near.Date
@@ -264,7 +264,7 @@ namespace StockLib.Service
                         continue;
 
                     Thread.Sleep(200);
-              
+                    Console.WriteLine(item);
                     count++;
                 }
 
