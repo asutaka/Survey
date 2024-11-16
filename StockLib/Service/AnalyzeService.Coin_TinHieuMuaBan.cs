@@ -257,7 +257,7 @@ namespace StockLib.Service
                     var min = lData15m.TakeLast(50).MinBy(x => x.Close);
                     var min_near = lData15m.TakeLast(6).MinBy(x => x.Close);
                     if (min_near.Close < (decimal)0.45 * (min.Close + max.Close)
-                      || min_near.Close > (decimal)0.15 * (min.Close + max.Close)
+                      //|| min_near.Close > (decimal)0.1 * (min.Close + max.Close)
                       || lData15m.Last().Close < (decimal)1.01 * min_near.Close
                       || max.Date >= min_near.Date
                       || max.Date <= min.Date)
