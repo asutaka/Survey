@@ -247,7 +247,7 @@ namespace StockLib.Service
                 if (lVCI != null)
                 {
                     var lValid = lVCI.Where(x => x.makerDate >= time
-                                            && (x.pageLink == "company-research" || x.pageLink == "sector-reports" || x.pageLink == "macroeconomics"));
+                                            && (x.pageLink == "company-research" || x.pageLink == "sector-reports" || x.pageLink == "macroeconomics" || x.pageLink == "phan-tich-doanh-nghiep"));
                     if (lValid?.Any() ?? false)
                     {
                         foreach (var itemValid in lValid)
