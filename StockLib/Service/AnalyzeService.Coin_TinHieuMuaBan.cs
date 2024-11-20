@@ -30,21 +30,21 @@ namespace StockLib.Service
             try
             {
                 var l15m = await _apiService.GetCoinData_Binance("BTCUSDT", "15m", DateTimeOffset.Now.AddDays(-3).ToUnixTimeMilliseconds());
-                var l15m_rsi = l15m.GetRsi(6);
+                var l15m_rsi = l15m.GetRsi(14);
                 var rsi15m_last = l15m_rsi.Last();
                 var res15m = RSICheck(rsi15m_last.Rsi);
                 if (res15m.Item1 > 0)
                     return res15m;
 
                 var l1h = await _apiService.GetCoinData_Binance("BTCUSDT", "1h", DateTimeOffset.Now.AddDays(-10).ToUnixTimeMilliseconds());
-                var l1h_rsi = l1h.GetRsi(6);
+                var l1h_rsi = l1h.GetRsi(14);
                 var rsi1h_last = l1h_rsi.Last();
                 var res1h = RSICheck(rsi1h_last.Rsi);
                 if (res1h.Item1 > 0)
                     return res1h;
 
                 var l4h = await _apiService.GetCoinData_Binance("BTCUSDT", "4h", DateTimeOffset.Now.AddDays(-30).ToUnixTimeMilliseconds());
-                var l4h_rsi = l4h.GetRsi(6);
+                var l4h_rsi = l4h.GetRsi(14);
                 var rsi4h_last = l4h_rsi.Last();
                 var res4h = RSICheck(rsi4h_last.Rsi);
                 if (res4h.Item1 > 0)
