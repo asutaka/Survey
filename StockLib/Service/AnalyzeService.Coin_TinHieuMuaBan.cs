@@ -15,11 +15,11 @@ namespace StockLib.Service
         {
             if (rsi.Value >= 75)
             {
-                return (1, "[BTC cung 15 phút quá mua mức 2]");
+                return (1, $"[BTC cung 15 phút quá mua mức 2] giá: {quote.Close}");
             }
             else if (rsi.Value >= 70)
             {
-                return (1, "[BTC cung 15 phút quá mua mức 1]");
+                return (1, $"[BTC cung 15 phút quá mua mức 1] giá: {quote.Close}");
             }
             return (0, null);
         }
