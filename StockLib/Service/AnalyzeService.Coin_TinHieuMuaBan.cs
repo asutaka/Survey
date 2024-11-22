@@ -55,6 +55,20 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        public async Task<(int, string)> TraceGiaCoin(string coin)
+        {
+            try
+            {
+                var l15m = await _apiService.GetCoinData_Binance(coin, "15m", DateTimeOffset.Now.AddDays(-1).ToUnixTimeMilliseconds());
+                return (1, $"Giá {coin}: {l15m.Last().Close}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return (0, null);
+        }
+
         public async Task<(int, string)> TinHieuMuaBanCoin_Binance()
         {
             try
