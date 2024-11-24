@@ -20,6 +20,7 @@ namespace StockLib.PublicService
         Task SurveyCoinSuperTrend(string code);
         Task SurveyCoinSuperTrendPhrase2(string code);
         Task SurveyCoinDanZagerCustom(string code);
+        Task BatDay(string code);
         Task SurveyCoinEliot(string code);
         Task SurveyPriceAction(string code);
         void PrintAll();
@@ -55,6 +56,11 @@ namespace StockLib.PublicService
         public async Task SurveyCoinDanZagerCustom(string code)
         {
             await _partternService.SurveyCoinDanZagerCustom(code);
+        }
+
+        public async Task BatDay(string code)
+        {
+            await _partternService.BatDay(code);
         }
 
         public async Task SurveyGoldFish(string code)

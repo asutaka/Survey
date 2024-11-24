@@ -48,7 +48,8 @@ namespace StockTestCase
             ///
 
             ////#region Test All Coin
-            await _service.SurveyCoinDanZagerCustom("BTCUSDT");
+            await _service.BatDay("BTCUSDT");
+            //await _service.SurveyCoinDanZagerCustom("BTCUSDT");
             //await _service.SurveyCoinEliot("BTCUSDT");
             //var lSymbol = await StaticVal.ByBitInstance().SpotApiV3.ExchangeData.GetSymbolsAsync();
 

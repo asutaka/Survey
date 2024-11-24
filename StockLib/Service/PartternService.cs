@@ -24,6 +24,7 @@ namespace StockLib.Service
         Task SurveyCoinSuperTrend(string code);
         Task SurveyCoinSuperTrendPhrase2(string code);
         Task SurveyCoinDanZagerCustom(string code);
+        Task BatDay(string code);
         Task SurveyCoinEliot(string code);
         Task SurveyPriceAction(string code);
         void PrintAll();
