@@ -1187,6 +1187,23 @@ namespace StockLib.Utils
             return lResult;
         }
 
+        public static List<TopBotModel> GetTopBottom_HL_TopClean(this List<Quote> lData, int minrate, bool isPrint = false)
+        {
+            var lResult = lData.GetTopBottom_HL(minrate, isPrint);
+            var count = lResult.Count();
+            for (int i = 0; i < count - 2; i++) 
+            { 
+                var item = lResult[i];
+                var itemNext = lResult[i + 2];
+                if(item.IsTop && item.Value < itemNext.Value)
+                {
+                    lResult[i].IsTop = false;
+                    lResult[i + 2].IsTop = true;
+                }
+            }
+            return lResult;
+        }
+
         public static List<TopBotModel> GetTopBottomClean_HL(this List<Quote> lData, int minrate, bool isPrint = false)
         {
             try

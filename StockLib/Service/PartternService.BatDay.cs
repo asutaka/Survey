@@ -27,7 +27,7 @@ namespace StockLib.Service
                 lData.Reverse();
 
                 var count = lData.Count();
-                for (int i = 50; i < count; i++)
+                for (int i = 300; i < count; i++)
                 {
                     BatDay(lData.Take(i).ToList());
                 }
@@ -116,117 +116,282 @@ namespace StockLib.Service
         {
             try
             {
+                var lTop = lData.GetTopBottom_HL_TopClean(0, false).Where(x => x.IsTop);
                 var item = lData.Last();
                 var near = lData.Skip(1).Last();
                 var near2 = lData.Skip(2).Last();
-                var max150 = lData.TakeLast(150).MaxBy(x => x.High);
-                var max100 = lData.TakeLast(100).MaxBy(x => x.High);
-                var max80 = lData.TakeLast(80).MaxBy(x => x.High);
-                var max50 = lData.TakeLast(50).MaxBy(x => x.High);
-                var max30 = lData.TakeLast(30).MaxBy(x => x.High);
+                if (!((item.Close > item.Open * (decimal)1.01 || near.Close > near.Open * (decimal)1.01)
+                    || (near2.Close > near2.Open * (decimal)1.01 || near.Close > near.Open * (decimal)1.01)))
+                {
+                    return (false, 0);
+                }
+
+                var max250 = lTop.Where(x => x.Date > lData.SkipLast(250).Last().Date).MaxBy(x => x.Value);
+                var max200 = lTop.Where(x => x.Date > lData.SkipLast(200).Last().Date).MaxBy(x => x.Value);
+                var max150 = lTop.Where(x => x.Date > lData.SkipLast(150).Last().Date).MaxBy(x => x.Value);
+                var max100 = lTop.Where(x => x.Date > lData.SkipLast(100).Last().Date).MaxBy(x => x.Value);
+                var max80 = lTop.Where(x => x.Date > lData.SkipLast(80).Last().Date).MaxBy(x => x.Value);
+                var max50 = lTop.Where(x => x.Date > lData.SkipLast(50).Last().Date).MaxBy(x => x.Value);
+                var max30 = lTop.Where(x => x.Date > lData.SkipLast(30).Last().Date).MaxBy(x => x.Value);
+                if(max50 is null)
+                {
+                    max50 = new TopBotModel();
+                }
+                if (max30 is null)
+                {
+                    max30 = new TopBotModel();
+                }
 
                 var index = lData.IndexOf(item);
-                var index150 = lData.IndexOf(max150);
-                var index100 = lData.IndexOf(max100);
-                var index80 = lData.IndexOf(max80);
-                var index50 = lData.IndexOf(max50);
-                var index30 = lData.IndexOf(max30);
+                var index250 = lData.IndexOf(lData.First(x => x.Date == max250.Date));
+                var index200 = lData.IndexOf(lData.First(x => x.Date == max200.Date));
+                var index150 = lData.IndexOf(lData.First(x => x.Date == max150.Date));
+                var index100 = lData.IndexOf(lData.First(x => x.Date == max100.Date));
+                var index80 = lData.IndexOf(lData.First(x => x.Date == max80.Date));
+                var index50 = lData.IndexOf(lData.FirstOrDefault(x => x.Date == max50.Date));
+                var index30 = lData.IndexOf(lData.FirstOrDefault(x => x.Date == max30.Date));
 
-                
-                //150
-                if(index150 < index80 && max150.High > max80.High)
+                //50
+                if(index - index50 >= 10)
                 {
-                    var check = isTrendline(item, near, max150, max80, index, index150, index80);
-                    if (check)
+                    if (index250 < index50 && max250.Value > max50.Value)
                     {
-                        Console.WriteLine("150 -> 80");
-                        return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        var check = isTrendline(item, near, max250.Value, max50.Value, index, index250, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 50|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max250.Value, max50.Value, index - 1, index250, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 50(2)|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
                     }
-                    check = isTrendline(near, near2, max150, max80, index - 1, index150, index80);
-                    if (check)
+
+                    if (index200 < index50 && max200.Value > max50.Value)
                     {
-                        Console.WriteLine("150 -> 80: 2");
-                        return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        var check = isTrendline(item, near, max200.Value, max50.Value, index, index200, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 50|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max200.Value, max50.Value, index - 1, index200, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 50(2)|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
+                    if (index150 < index50 && max150.Value > max50.Value)
+                    {
+                        var check = isTrendline(item, near, max150.Value, max50.Value, index, index150, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"150 -> 50|Max1: {max150.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max150.Value, max50.Value, index - 1, index150, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"150 -> 50(2)|Max1: {max150.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
+                    if (index100 < index50 && max100.Value > max50.Value)
+                    {
+                        var check = isTrendline(item, near, max100.Value, max50.Value, index, index100, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"100 -> 50|Max1: {max100.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max100.Value, max50.Value, index - 1, index100, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"100 -> 50(2)|Max1: {max100.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
                     }
                 }
 
-                if (index150 < index50 && max150.High > max50.High)
+                //30
+                if(index - index30 >= 10)
                 {
-                    var check = isTrendline(item, near, max150, max50, index, index150, index50);
-                    if (check)
+                    if (index250 < index30 && max250.Value > max30.Value)
                     {
-                        Console.WriteLine("150 -> 50");
-                        return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        var check = isTrendline(item, near, max250.Value, max30.Value, index, index250, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 30|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max250.Value, max30.Value, index - 1, index250, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 30(2)|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
                     }
-                    check = isTrendline(near, near2, max150, max50, index - 1, index150, index50);
-                    if (check)
+
+                    if (index200 < index30 && max200.Value > max30.Value)
                     {
-                        Console.WriteLine("150 -> 50: 2");
-                        return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        var check = isTrendline(item, near, max200.Value, max30.Value, index, index200, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 30|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max200.Value, max30.Value, index - 1, index200, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 30(2)|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
+                    if (index150 < index30 && max150.Value > max30.Value)
+                    {
+                        var check = isTrendline(item, near, max150.Value, max30.Value, index, index150, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"150 -> 30|Max1: {max150.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max150.Value, max30.Value, index - 1, index150, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"150 -> 30(2)|Max1: {max150.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
+                    if (index100 < index30 && max100.Value > max30.Value)
+                    {
+                        var check = isTrendline(item, near, max100.Value, max30.Value, index, index100, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"100 -> 30|Max1: {max100.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max100.Value, max30.Value, index - 1, index100, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"100 -> 30(2)|Max1: {max100.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
                     }
                 }
 
-                if (index150 < index30 && max150.High > max30.High)
-                {
-                    var check = isTrendline(item, near, max150, max30, index, index150, index30);
-                    if (check)
-                    {
-                        Console.WriteLine("150 -> 80");
-                        return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
-                    }
-                    check = isTrendline(near, near2, max150, max30, index - 1, index150, index30);
-                    if (check)
-                    {
-                        Console.WriteLine("150 -> 80: 2");
-                        return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
-                    }
-                }
-                //100
-                if (index100 < index50 && max100.High > max50.High)
-                {
-                    var check = isTrendline(item, near, max100, max50, index, index100, index50);
-                    if (check)
-                    {
-                        Console.WriteLine("100 -> 50");
-                        return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
-                    }
-                    check = isTrendline(near, near2, max100, max50, index - 1, index100, index50);
-                    if (check)
-                    {
-                        Console.WriteLine("100 -> 50: 2");
-                        return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
-                    }
-                }
-
-                if (index100 < index30 && max100.High > max30.High)
-                {
-                    var check = isTrendline(item, near, max100, max30, index, index100, index30);
-                    if (check)
-                    {
-                        Console.WriteLine("100 -> 30");
-                        return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
-                    }
-                    check = isTrendline(near, near2, max100, max30, index - 1, index100, index30);
-                    if (check)
-                    {
-                        Console.WriteLine("100 -> 30: 2");
-                        return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
-                    }
-                }
                 //80
-                if (index80 < index30 && max80.High > max30.High)
+                if(index - index80 >= 10)
                 {
-                    var check = isTrendline(item, near, max80, max30, index, index80, index30);
-                    if (check)
+                    if (index250 < index80 && max250.Value > max80.Value)
                     {
-                        Console.WriteLine("80 -> 30");
-                        return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        var check = isTrendline(item, near, max250.Value, max80.Value, index, index250, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 80|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max250.Value, max80.Value, index - 1, index250, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 80(2)|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
                     }
-                    check = isTrendline(near, near2, max80, max30, index - 1, index80, index30);
-                    if (check)
+
+                    if (index200 < index80 && max200.Value > max80.Value)
                     {
-                        Console.WriteLine("80 -> 30: 2");
-                        return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        var check = isTrendline(item, near, max200.Value, max80.Value, index, index200, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 80|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max200.Value, max80.Value, index - 1, index200, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 80(2)|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
+                    if (index150 < index80 && max150.Value > max80.Value)
+                    {
+                        var check = isTrendline(item, near, max150.Value, max80.Value, index, index150, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"150 -> 80|Max1: {max150.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max150.Value, max80.Value, index - 1, index150, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"150 -> 80(2)|Max1: {max150.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+                }
+
+                //100
+                if(index - index100 >= 10)
+                {
+                    if (index250 < index100 && max250.Value > max100.Value)
+                    {
+                        var check = isTrendline(item, near, max250.Value, max100.Value, index, index250, index100);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 100|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max100.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max250.Value, max100.Value, index - 1, index250, index100);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 100(2)|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max100.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
+                    if (index200 < index100 && max200.Value > max100.Value)
+                    {
+                        var check = isTrendline(item, near, max200.Value, max100.Value, index, index200, index100);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 100|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max100.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max200.Value, max100.Value, index - 1, index200, index100);
+                        if (check)
+                        {
+                            Console.WriteLine($"200 -> 100(2)|Max1: {max200.Date.ToString("dd/MM/yyyy HH")}|Max2: {max100.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+                }
+
+                //150
+                if(index - index150 >= 10)
+                {
+                    if (index250 < index150 && max250.Value > max150.Value)
+                    {
+                        var check = isTrendline(item, near, max250.Value, max150.Value, index, index250, index150);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 150|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max150.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max250.Value, max150.Value, index - 1, index250, index150);
+                        if (check)
+                        {
+                            Console.WriteLine($"250 -> 150(2)|Max1: {max250.Date.ToString("dd/MM/yyyy HH")}|Max2: {max150.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
                     }
                 }
             }
@@ -237,11 +402,20 @@ namespace StockLib.Service
             return (false, 0);
         }
 
-        private static bool isTrendline(Quote cur, Quote near, Quote max1, Quote max2, int indexCur, int indexMax1, int indexMax2)
+        private static bool isTrendline(Quote cur, Quote near, decimal max1, decimal max2, int indexCur, int indexMax1, int indexMax2)
         {
-            var curCheck = (max1.High - max2.High) * (indexCur - indexMax1) + (indexMax2 - indexMax1) * (cur.Close - max1.High) > 0;
-            var nearCheck = (max1.High - max2.High) * ((indexCur - 1) - indexMax1) + (indexMax2 - indexMax1) * (near.Close - max1.High) > 0;
-            return curCheck && !nearCheck;
+            var curCheck = (max1 - max2) * (indexCur - indexMax1) + (indexMax2 - indexMax1) * (cur.Close - max1) > 0;
+            var nearCheck = (max1 - max2) * ((indexCur - 1) - indexMax1) + (indexMax2 - indexMax1) * (near.Close - max1) > 0;
+            var res = curCheck && !nearCheck;
+            //if (res)
+            //{
+            //    var val = max1 + (max1 - max2) * (indexCur - indexMax1)/(indexMax1 - indexMax2);
+            //    var rate = Math.Round(100 * (-1 + cur.Close / val), 3);
+            //    //Console.WriteLine(rate);
+            //    if (rate > (decimal)0.1)
+            //        return true;
+            //}
+            return res;
         }
 
     }
