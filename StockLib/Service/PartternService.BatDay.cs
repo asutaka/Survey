@@ -126,6 +126,7 @@ namespace StockLib.Service
                     return (false, 0);
                 }
 
+                var max = lTop.MaxBy(x => x.Value);
                 var max250 = lTop.Where(x => x.Date > lData.SkipLast(250).Last().Date).MaxBy(x => x.Value);
                 var max200 = lTop.Where(x => x.Date > lData.SkipLast(200).Last().Date).MaxBy(x => x.Value);
                 var max150 = lTop.Where(x => x.Date > lData.SkipLast(150).Last().Date).MaxBy(x => x.Value);
@@ -143,6 +144,7 @@ namespace StockLib.Service
                 }
 
                 var index = lData.IndexOf(item);
+                var indexMax = lData.IndexOf(lData.First(x => x.Date == max.Date));
                 var index250 = lData.IndexOf(lData.First(x => x.Date == max250.Date));
                 var index200 = lData.IndexOf(lData.First(x => x.Date == max200.Date));
                 var index150 = lData.IndexOf(lData.First(x => x.Date == max150.Date));
@@ -154,6 +156,22 @@ namespace StockLib.Service
                 //50
                 if(index - index50 >= 10)
                 {
+                    if (indexMax < index50 && max.Value > max50.Value)
+                    {
+                        var check = isTrendline(item, near, max.Value, max50.Value, index, indexMax, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 50|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max.Value, max50.Value, index - 1, indexMax, index50);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 50(2)|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max50.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
                     if (index250 < index50 && max250.Value > max50.Value)
                     {
                         var check = isTrendline(item, near, max250.Value, max50.Value, index, index250, index50);
@@ -222,6 +240,22 @@ namespace StockLib.Service
                 //30
                 if(index - index30 >= 10)
                 {
+                    if (indexMax < index30 && max.Value > max30.Value)
+                    {
+                        var check = isTrendline(item, near, max.Value, max30.Value, index, indexMax, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 30|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max.Value, max30.Value, index - 1, indexMax, index30);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 30(2)|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max30.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
                     if (index250 < index30 && max250.Value > max30.Value)
                     {
                         var check = isTrendline(item, near, max250.Value, max30.Value, index, index250, index30);
@@ -290,6 +324,22 @@ namespace StockLib.Service
                 //80
                 if(index - index80 >= 10)
                 {
+                    if (indexMax < index80 && max.Value > max80.Value)
+                    {
+                        var check = isTrendline(item, near, max.Value, max80.Value, index, indexMax, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 80|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max.Value, max80.Value, index - 1, indexMax, index80);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 80(2)|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max80.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
                     if (index250 < index80 && max250.Value > max80.Value)
                     {
                         var check = isTrendline(item, near, max250.Value, max80.Value, index, index250, index80);
@@ -342,6 +392,22 @@ namespace StockLib.Service
                 //100
                 if(index - index100 >= 10)
                 {
+                    if (indexMax < index100 && max.Value > max100.Value)
+                    {
+                        var check = isTrendline(item, near, max.Value, max100.Value, index, indexMax, index100);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 100|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max100.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max.Value, max100.Value, index - 1, indexMax, index100);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 100(2)|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max100.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
                     if (index250 < index100 && max250.Value > max100.Value)
                     {
                         var check = isTrendline(item, near, max250.Value, max100.Value, index, index250, index100);
@@ -378,6 +444,22 @@ namespace StockLib.Service
                 //150
                 if(index - index150 >= 10)
                 {
+                    if (indexMax < index150 && max.Value > max150.Value)
+                    {
+                        var check = isTrendline(item, near, max.Value, max150.Value, index, indexMax, index150);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 150|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max150.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, item.Close * (decimal)0.6 + item.Open * (decimal)0.4);
+                        }
+                        check = isTrendline(near, near2, max.Value, max150.Value, index - 1, indexMax, index150);
+                        if (check)
+                        {
+                            Console.WriteLine($"Max -> 150(2)|Max1: {max.Date.ToString("dd/MM/yyyy HH")}|Max2: {max150.Date.ToString("dd/MM/yyyy HH")}");
+                            return (true, near.Close * (decimal)0.6 + near.Open * (decimal)0.4);
+                        }
+                    }
+
                     if (index250 < index150 && max250.Value > max150.Value)
                     {
                         var check = isTrendline(item, near, max250.Value, max150.Value, index, index250, index150);
