@@ -489,14 +489,6 @@ namespace StockLib.Service
             var curCheck = (max1 - max2) * (indexCur - indexMax1) + (indexMax2 - indexMax1) * (cur.Close - max1) > 0;
             var nearCheck = (max1 - max2) * ((indexCur - 1) - indexMax1) + (indexMax2 - indexMax1) * (near.Close - max1) > 0;
             var res = curCheck && !nearCheck;
-            //if (res)
-            //{
-            //    var val = max1 + (max1 - max2) * (indexCur - indexMax1)/(indexMax1 - indexMax2);
-            //    var rate = Math.Round(100 * (-1 + cur.Close / val), 3);
-            //    //Console.WriteLine(rate);
-            //    if (rate > (decimal)0.1)
-            //        return true;
-            //}
             return res;
         }
 
