@@ -1201,6 +1201,42 @@ namespace StockLib.Utils
                     lResult[i + 2].IsTop = true;
                 }
             }
+
+            var minTop = 10;
+            var flag = 0;
+            for (int i = 0; i < count - 1; i++)
+            {
+                var item = lResult[i];
+                if (item.IsTop)
+                {
+                    if(i - flag <= minTop)
+                    {
+                        if (lResult[i].Value >= lResult[flag].Value)
+                        {
+                            lResult[flag].IsTop = false;
+                            flag = i;
+                        }
+                        else
+                        {
+                            lResult[i].IsTop = false;
+                        }
+                    }
+                    else
+                    {
+                        flag = i;
+                    }
+                }
+            }
+
+            //for (int i = 0; i < count - 1; i++)
+            //{
+            //    var item = lResult[i];
+            //    if(item.IsTop)
+            //    {
+            //        Console.WriteLine(i);
+            //    }
+            //}
+
             return lResult;
         }
 
