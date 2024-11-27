@@ -1767,7 +1767,7 @@ namespace StockLib.Service
 
         public async Task<List<BybitSymbolDetail>> GetBybitSymbol()
         {
-            var url = "https://api.bybit.com/v2/public/symbols";
+            var url = "https://api2.bybitglobal.com/spot/api/basic/symbol_list_v3";
             try
             {
                 using var client = _client.CreateClient();
@@ -1775,18 +1775,16 @@ namespace StockLib.Service
                 client.DefaultRequestHeaders
                       .Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
 
-                HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, "");
-                request.Content = new StringContent("",
-                                                    Encoding.UTF8,
-                                                    "application/json");
-
-                var response = await client.SendAsync(request);
-                var contents = await response.Content.ReadAsStringAsync();
+                var contents = await responseMessage.Content.ReadAsStringAsync();
                 if (contents.Length < 200)
                     return new List<BybitSymbolDetail>();
                 var res = JsonConvert.DeserializeObject<BybitSymbol>(contents);
-                return res.result;
+                return res.result.quoteTokenResult.FirstOrDefault(x => x.tokenId == "USDT")?.quoteTokenSymbols ?? new List<BybitSymbolDetail>();
             }
             catch (Exception ex)
             {
@@ -1841,14 +1839,24 @@ namespace StockLib.Service
 
         public class BybitSymbol
         {
-            public List<BybitSymbolDetail> result { get; set; }
+            public BybitSymbolResult result { get; set; }
+        }
+
+        public class BybitSymbolResult
+        {
+            public List<BybitQuoteTokenResult> quoteTokenResult { get; set; }
+        }
+
+        public class BybitQuoteTokenResult
+        {
+            public string tokenId { get; set; }
+            public List<BybitSymbolDetail> quoteTokenSymbols { get; set; }
         }
 
         public class BybitSymbolDetail
         {
-            public string name { get; set; }
-            public string base_currency { get; set; }
-            public string quote_currency { get; set; }
+            public string si { get; set; }
+            public string tfn { get; set; }
         }
     }
 }

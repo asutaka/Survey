@@ -31,18 +31,18 @@ namespace StockLib.PublicService
         {
             try
             {
-                var coin_check = await _analyzeService.TraceGiaCoin("ETHUSDT");
-                if (coin_check.Item1 > 0)
-                {
-                    await _teleService.SendTextMessageAsync(_idUser, coin_check.Item2);
-                }
+                //var coin_check = await _analyzeService.TraceGiaCoin("ETHUSDT");
+                //if (coin_check.Item1 > 0)
+                //{
+                //    await _teleService.SendTextMessageAsync(_idUser, coin_check.Item2);
+                //}
 
-                var bitcoin_check = await _analyzeService.CanhBaoBitcoin();
-                if (bitcoin_check.Item1 > 0)
-                {
-                    await _teleService.SendTextMessageAsync(_idUser, bitcoin_check.Item2);
-                    return;
-                }
+                //var bitcoin_check = await _analyzeService.CanhBaoBitcoin();
+                //if (bitcoin_check.Item1 > 0)
+                //{
+                //    await _teleService.SendTextMessageAsync(_idUser, bitcoin_check.Item2);
+                //    return;
+                //}
 
                 var bybit = await _analyzeService.TinHieuMuaBanCoin_Bybit();
                 if (bybit.Item1 > 0)

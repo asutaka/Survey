@@ -1202,14 +1202,14 @@ namespace StockLib.Utils
                 }
             }
 
-            var minTop = 10;
+            var minTop = 15;
             var flag = 0;
             for (int i = 0; i < count - 1; i++)
             {
                 var item = lResult[i];
                 if (item.IsTop)
                 {
-                    if(i - flag <= minTop)
+                    if (i - flag <= minTop)
                     {
                         if (lResult[i].Value >= lResult[flag].Value)
                         {
@@ -1231,9 +1231,9 @@ namespace StockLib.Utils
             //for (int i = 0; i < count - 1; i++)
             //{
             //    var item = lResult[i];
-            //    if(item.IsTop)
+            //    if (item.IsTop)
             //    {
-            //        Console.WriteLine(i);
+            //        Console.WriteLine($"{i}: {item.Date.ToString("dd/MM/yyyy HH")}");
             //    }
             //}
 

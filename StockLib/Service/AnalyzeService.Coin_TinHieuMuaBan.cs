@@ -187,101 +187,120 @@ namespace StockLib.Service
             return (0, null);
         }
 
+        private (bool, string) BatDay(List<Quote> lData)
+        {
+            try
+            {
+                var lVol = new List<Quote>();
+                foreach (var item in lData)
+                {
+                    lVol.Add(new Quote { Date = item.Date, Close = item.Volume, Open = item.Open, High = item.High, Low = item.Low, Volume = item.Volume });
+                }
+                var lVolMa = lVol.GetSma(20);
+                var lBB = lData.GetBollingerBands();
+
+                var lastItem = lData.Last();
+                var lastVol = lVolMa.Last();
+                var lastBB = lBB.Last();
+
+                var Trendline = lData.CheckTrendline(lVolMa, lBB);
+                if (Trendline.Item1)
+                {
+                    return (true, "TrendLine");
+                    //Console.WriteLine($"{lastItem.Date.ToString($"dd/MM/yyyy HH")}|ENTRY: {Trendline.Item2}");
+                }
+
+                var BatDay = lastItem.CheckBatDay(lastVol, lastBB);
+                if (BatDay.Item1)
+                {
+                    return (true, "TrendLine");
+                    //Console.WriteLine($"{lastItem.Date.ToString($"dd/MM/yyyy HH")}|ENTRY: {BatDay.Item2}");
+                }
+
+                lastItem = lData.SkipLast(1).Last();
+                lastVol = lVolMa.SkipLast(1).Last();
+                lastBB = lBB.SkipLast(1).Last();
+                BatDay = lastItem.CheckBatDay(lastVol, lastBB);
+                if (BatDay.Item1)
+                {
+                    return (true, "BatDay");
+                    //Console.WriteLine($"{lastItem.Date.ToString($"dd/MM/yyyy HH")}|ENTRY: {BatDay.Item2}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"PartternService.BatDay|EXCEPTION| {ex.Message}");
+            }
+
+            return (false, null);
+        }
+
         public async Task<(int, string)> TinHieuMuaBanCoin_Bybit()
         {
             try
             {
                 var lSymbols = await _apiService.GetBybitSymbol();
-                var lSymbolFilter = lSymbols.Where(x => x.quote_currency == "USDT").Select(x => x.name);
+                var lSymbolFilter = lSymbols.Select(x => x.si);
                 var lRes = new List<string>();
                 foreach (var item in lSymbolFilter)
                 {
-
-                    var res4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
-                    if (!res4h.Success)
-                        continue;
-
-                    if (res4h.Data.List.Count() < 20)
-                        continue;
-
-                    var lData4h = res4h.Data.List.Select(x => new Quote
+                    try
                     {
-                        Date = x.StartTime,
-                        Open = x.OpenPrice,
-                        High = x.HighPrice,
-                        Low = x.LowPrice,
-                        Close = x.ClosePrice,
-                        Volume = x.Volume
-                    }).ToList();
-                    lData4h.Reverse();
+                        var res4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
+                        if (!res4h.Success)
+                            continue;
 
-                    var lrsi4h = lData4h.GetRsi(6);
-                    if (lrsi4h.Last().Rsi >= 71)
-                        continue;
+                        if (res4h.Data.List.Count() < 20)
+                            continue;
 
-                    Thread.Sleep(200);
+                        var lData4h = res4h.Data.List.Select(x => new Quote
+                        {
+                            Date = x.StartTime,
+                            Open = x.OpenPrice,
+                            High = x.HighPrice,
+                            Low = x.LowPrice,
+                            Close = x.ClosePrice,
+                            Volume = x.Volume
+                        }).ToList();
+                        lData4h.Reverse();
+                        var check = BatDay(lData4h);
+                        if (check.Item1)
+                        {
+                            lRes.Add($"{item}: {check.Item2}");
+                            Thread.Sleep(200);
+                            continue;
+                        }
 
-                    var res1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
-                    if (!res1h.Success)
-                        continue;
+                        Thread.Sleep(200);
 
-                    var lData1h = res1h.Data.List.Select(x => new Quote
+                        var res15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
+                        if (!res15m.Success)
+                            continue;
+
+                        var lData15m = res15m.Data.List.Select(x => new Quote
+                        {
+                            Date = x.StartTime,
+                            Open = x.OpenPrice,
+                            High = x.HighPrice,
+                            Low = x.LowPrice,
+                            Close = x.ClosePrice,
+                            Volume = x.Volume
+                        }).ToList();
+                        lData15m.Reverse();
+                        check = BatDay(lData15m);
+                        if (check.Item1)
+                        {
+                            lRes.Add($"{item}: {check.Item2}");
+                        }
+                    }
+                    catch(Exception ex)
                     {
-                        Date = x.StartTime,
-                        Open = x.OpenPrice,
-                        High = x.HighPrice,
-                        Low = x.LowPrice,
-                        Close = x.ClosePrice,
-                        Volume = x.Volume
-                    }).ToList();
-                    lData1h.Reverse();
-
-                    var lrsi1h = lData1h.GetRsi(6);
-                    if (lrsi1h.Last().Rsi >= 71)
-                        continue;
-
+                        Console.WriteLine(ex.Message);
+                    }
                     Thread.Sleep(200);
-
-                    var res15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, item, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
-                    if (!res15m.Success)
-                        continue;
-
-                    var lData15m = res15m.Data.List.Select(x => new Quote
-                    {
-                        Date = x.StartTime,
-                        Open = x.OpenPrice,
-                        High = x.HighPrice,
-                        Low = x.LowPrice,
-                        Close = x.ClosePrice,
-                        Volume = x.Volume
-                    }).ToList();
-                    lData15m.Reverse();
-
-                    var lrsi15m = lData15m.GetRsi(6);
-                    if (lrsi15m.Last().Rsi >= 71)
-                        continue;
-
-                    var lbb15m = lData15m.GetBollingerBands();
-                    if (lData15m.Last().Close <= (decimal)lbb15m.Last().Sma)
-                        continue;
-
-                    var max = lData15m.TakeLast(50).MaxBy(x => x.Close);
-                    var min = lData15m.TakeLast(50).MinBy(x => x.Close);
-                    var min_near = lData15m.TakeLast(6).MinBy(x => x.Close);
-                    if (min_near.Close < (decimal)0.45 * (min.Close + max.Close)
-                      //|| min_near.Close > (decimal)0.1 * (min.Close + max.Close)
-                      || lData15m.Last().Close < (decimal)1.01 * min_near.Close
-                      || max.Date >= min_near.Date
-                      || max.Date <= min.Date)
-                        continue;
-
-                    Thread.Sleep(200);
-                    lRes.Add(item);
                 }
 
                 var sBuilder = new StringBuilder();
-
-
                 if (lRes.Any())
                 {
                     sBuilder.AppendLine();
