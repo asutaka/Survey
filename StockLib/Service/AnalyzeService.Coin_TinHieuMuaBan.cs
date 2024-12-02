@@ -235,6 +235,12 @@ namespace StockLib.Service
             return (false, null);
         }
 
+        public async Task<(int, string)> LiquidTrace()
+        {
+            await _socketService.LiquidWebSocket("wss://ws.coinank.com/wsKline/wsKline");
+            return (0, null);
+        }
+
         public async Task<(int, string)> TinHieuMuaBanCoin_Bybit()
         {
             try

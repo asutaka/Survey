@@ -1,11 +1,13 @@
 ﻿using HtmlAgilityPack;
 using HttpClientToCurl;
+using iTextSharp.text;
 using iTextSharp.text.pdf.qrcode;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Skender.Stock.Indicators;
+using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Service.Settings;
 using StockLib.Utils;
@@ -77,6 +79,7 @@ namespace StockLib.Service
 
         Task<List<BinanceAllSymbol>> GetBinanceSymbol();
         Task<List<BybitSymbolDetail>> GetBybitSymbol();
+        Task<CoinAnk_LiquidValue> CoinAnk_GetLiquidValue(string coin);
     }
     public partial class APIService : IAPIService
     {
@@ -1791,6 +1794,51 @@ namespace StockLib.Service
                 _logger.LogError(ex, $"APIService.GetBinanceSymbol|EXCEPTION| {ex.Message}");
             }
             return new List<BybitSymbolDetail>();
+        }
+
+        public async Task<CoinAnk_LiquidValue> CoinAnk_GetLiquidValue(string coin)
+        {
+            var url = $"https://api.coinank.com/api/liqMap/getLiqHeatMap?exchangeName=Binance&symbol={coin}&interval=1d";
+            try
+            {
+                using var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.DefaultRequestHeaders
+                      .Accept
+                      .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("coinank-apikey", "LWIzMWUtYzU0Ny1kMjk5LWI2ZDA3Yjc2MzFhYmEyYzkwM2NjfDI4NDQyNjc2MTQ1MjkzNDc=");
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                var contents = await responseMessage.Content.ReadAsStringAsync();
+                if (contents.Length < 200)
+                    return new CoinAnk_LiquidValue();
+                var res = JsonConvert.DeserializeObject<CoinAnk_LiquidValue>(contents);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"APIService.GetLiquidValue|EXCEPTION| {ex.Message}");
+            }
+            return new CoinAnk_LiquidValue();
+        }
+
+        public class CoinAnk_LiquidValue
+        {
+            public CoinAnk_LiquidValueDetail data { get; set; }
+        }
+
+        public class CoinAnk_LiquidValueDetail
+        {
+            public CoinAnk_LiquidHeatmap liqHeatMap { get; set; }
+        }
+
+        public class CoinAnk_LiquidHeatmap
+        {
+            public List<List<string>> data { get; set; }
+            public decimal maxLiqValue { get; set; }
         }
 
         private class SSI_DataTradingResponse

@@ -32,6 +32,7 @@ namespace StockLib.Service
         Task<(int, string)> TraceGiaCoin(string coin);
         Task<bool> CheckVietStockToken();
         Task SyncBCTC();
+        Task<(int, string)> LiquidTrace();
     }
     public partial class AnalyzeService : IAnalyzeService
     {
@@ -47,6 +48,7 @@ namespace StockLib.Service
         private readonly IConfigBaoCaoPhanTichRepo _bcptRepo;
         private readonly ICoinRepo _coinRepo;
         private readonly IBllService _bllService;
+        private readonly IWebSocketService _socketService;
         public AnalyzeService(ILogger<AnalyzeService> logger,
                             IAPIService apiService,
                             IFileService fileService,
@@ -58,7 +60,8 @@ namespace StockLib.Service
                             IThongKeHaiQuanRepo haiquanRepo,
                             IThongKeQuyRepo thongkeQuyRepo,
                             IConfigBaoCaoPhanTichRepo bcptRepo,
-                            IBllService bllService) 
+                            IBllService bllService,
+                            IWebSocketService socketService) 
         {
             _logger = logger;
             _apiService = apiService;
@@ -72,6 +75,7 @@ namespace StockLib.Service
             _haiquanRepo = haiquanRepo;
             _bcptRepo = bcptRepo;
             _bllService = bllService;
+            _socketService = socketService;
         }
 
         public async Task<bool> CheckVietStockToken()
