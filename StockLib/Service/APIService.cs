@@ -1796,6 +1796,14 @@ namespace StockLib.Service
             return new List<BybitSymbolDetail>();
         }
 
+        private string CoinAnk_GetKey()
+        {
+            var str = "-b31e-c547-d299-b6d07b7631aba2c903cc|";
+            var time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            time += 1111111111111;
+            var text = $"{str}{time}347".Base64Encode();
+            return text;
+        }
         public async Task<CoinAnk_LiquidValue> CoinAnk_GetLiquidValue(string coin)
         {
             var url = $"https://api.coinank.com/api/liqMap/getLiqHeatMap?exchangeName=Binance&symbol={coin}&interval=1d";
@@ -1807,7 +1815,7 @@ namespace StockLib.Service
                       .Accept
                       .Add(new MediaTypeWithQualityHeaderValue("application/json"));
                 var requestMessage = new HttpRequestMessage();
-                requestMessage.Headers.Add("coinank-apikey", "LWIzMWUtYzU0Ny1kMjk5LWI2ZDA3Yjc2MzFhYmEyYzkwM2NjfDI4NDQyNjc2MTQ1MjkzNDc=");
+                requestMessage.Headers.Add("coinank-apikey", CoinAnk_GetKey());
                 requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
                 requestMessage.Method = HttpMethod.Get;
                 var responseMessage = await client.SendAsync(requestMessage);
@@ -1837,7 +1845,8 @@ namespace StockLib.Service
 
         public class CoinAnk_LiquidHeatmap
         {
-            public List<List<string>> data { get; set; }
+            public List<List<decimal>> data { get; set; }
+            public List<decimal> priceArray { get; set; }
             public decimal maxLiqValue { get; set; }
         }
 
