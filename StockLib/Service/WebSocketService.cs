@@ -122,12 +122,16 @@ namespace StockLib.Service
                                 && (8 * priceMaxCeil + minPrice) > 9 * curPrice)
                             {
                                 //Buy khi giá gần đến điểm thanh lý trên(2/3)
-                                Console.WriteLine($"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                                var mess = $"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}";
+                                await _teleService.SendTextMessageAsync(1066022551, mess);
+                                Console.WriteLine(mess);
                             }
                             else if((11 * priceMaxCeil - minPrice) >= 10 * curPrice)
                             {
                                 //Sell khi giá vượt qua điểm thanh lý trên
-                                Console.WriteLine($"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                                var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}";
+                                await _teleService.SendTextMessageAsync(1066022551, mess);
+                                Console.WriteLine(mess);
                             }
                         }
                         else if(priceMaxFloor > 0)
@@ -136,12 +140,16 @@ namespace StockLib.Service
                                 && (maxPrice + 8 * priceMaxFloor) < 9 * curPrice)
                             {
                                 //Sell khi giá gần đến điểm thanh lý dưới(1/3)
-                                Console.WriteLine($"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                                var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}";
+                                await _teleService.SendTextMessageAsync(1066022551, mess);
+                                Console.WriteLine(mess);
                             }
                             else if((11 * priceMaxFloor - maxPrice) <= 10 * curPrice)
                             {
                                 //Buy khi giá gần đến điểm thanh lý dưới(1/3)
-                                Console.WriteLine($"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                                var mess = $"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}";
+                                await _teleService.SendTextMessageAsync(1066022551, mess);
+                                Console.WriteLine(mess);
                             }
                         }
                     }
