@@ -44,8 +44,7 @@ namespace StockLib.PublicService
                 //    return;
                 //}
 
-                //var bybit = await _analyzeService.TinHieuMuaBanCoin_Bybit();
-                var bybit = await _analyzeService.LiquidTrace();
+                var bybit = await _analyzeService.TinHieuMuaBanCoin_Bybit();
                 if (bybit.Item1 > 0)
                 {
                     await _teleService.SendTextMessageAsync(_idUser, bybit.Item2);

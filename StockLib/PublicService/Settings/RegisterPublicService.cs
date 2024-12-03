@@ -12,6 +12,7 @@ namespace StockLib.PublicService.Settings
             services.AddSingleton<IAnalyzeStockService, AnalyzeStockService>();
             services.AddSingleton<IStockTestCaseService, StockTestCaseService>();
             services.AddSingleton<IAnalyzeCoinService, AnalyzeCoinService>();
+            services.AddSingleton<IAutobotService, AutobotService>();
         }
     }
 }
