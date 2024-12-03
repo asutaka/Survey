@@ -63,8 +63,8 @@ namespace StockLib.Service
 
                 foreach (var item in res.data)
                 {
-                    //if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase))
-                    //    continue;
+                    if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase))
+                        continue;
 
                     if (!_lSymbol.Contains(item.contractCode))
                         continue;
@@ -74,63 +74,74 @@ namespace StockLib.Service
                     var message = $"{item.exchangeName}|{item.baseCoin}|{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
                     Console.WriteLine(msg);
                     var dat = await _apiService.CoinAnk_GetLiquidValue(item.contractCode);
+                    Thread.Sleep(100);
                     try
                     {
-                        var lLiquidLast = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) == 288);
-                        var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "15m", DateTimeOffset.Now.AddHours(-1).ToUnixTimeMilliseconds());
-                        if (lPrice != null && lPrice.Any())
+                        if (dat is null || dat.data is null || dat.data.liqHeatMap is null)
+                            continue;
+
+                        var lLiquidLast = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) == 287);
+                        var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "15m", DateTimeOffset.Now.AddHours(-2).ToUnixTimeMilliseconds());
+                        if (!(lPrice?.Any() ?? false))
+                            continue;
+
+                        var flag = -1;
+                        var curPrice = lPrice.Last().Close;
+                        var count = dat.data.liqHeatMap.priceArray.Count();
+                        for (var i = 0; i < count; i++)
                         {
-                            var flag = -1;
-                            var curPrice = lPrice.Last().Close;
-                            var count = dat.data.liqHeatMap.priceArray.Count();
-                            for (var i = 0; i < count; i++)
+                            var element = dat.data.liqHeatMap.priceArray[i];
+                            if (element > curPrice)
                             {
-                                var element = dat.data.liqHeatMap.priceArray[i];
-                                if (element > curPrice)
-                                {
-                                    flag = i; break;
-                                }
+                                flag = i; break;
                             }
-                            if (flag > -1)
+                        }
+
+                        if (flag < 0)
+                            continue;
+
+                        var maxCeil = lLiquidLast.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
+                        var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
+                        decimal priceMaxCeil = 0, priceMaxFloor = 0;
+                        //compare max Liquid
+                        if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                        {
+                            priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
+                        }
+                        if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                        {
+                            priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
+                        }
+
+                        var maxPrice = lPrice.Max(x => x.High);
+                        var minPrice = lPrice.Max(x => x.Low);
+
+                        if(priceMaxCeil > 0)
+                        {
+                            if ((2 * priceMaxCeil + minPrice) <= 3 * curPrice
+                                && (8 * priceMaxCeil + minPrice) > 9 * curPrice)
                             {
-                                var maxCeil = lLiquidLast.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
-                                var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
-                                decimal priceMaxCeil = 0, priceMaxFloor = 0;
-                                //compare max Liquid
-                                if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
-                                {
-                                    priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
-                                }
-                                if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
-                                {
-                                    priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
-                                }
-
-                                if (priceMaxCeil <= 0)
-                                {
-                                    Console.WriteLine($"SELL: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                }
-                                else if (priceMaxFloor <= 0)
-                                {
-                                    Console.WriteLine($"BUY: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                }
-                                else
-                                {
-                                    var div = priceMaxCeil - priceMaxFloor;
-                                    var divCeil = priceMaxCeil - curPrice;
-                                    var divFloor = curPrice - priceMaxFloor;
-                                    var rateCeil = divCeil * 100 / div;
-                                    var rateFloor = divFloor * 100 / div;
-
-                                    if (rateCeil >= 75 && rateCeil < 94)
-                                    {
-                                        Console.WriteLine($"BUY: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                    }
-                                    else if (rateFloor <= 25 && rateFloor > 6)
-                                    {
-                                        Console.WriteLine($"SELL: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                    }
-                                }
+                                //Buy khi giá gần đến điểm thanh lý trên(2/3)
+                                Console.WriteLine($"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                            }
+                            else if((11 * priceMaxCeil - minPrice) >= 10 * curPrice)
+                            {
+                                //Sell khi giá vượt qua điểm thanh lý trên
+                                Console.WriteLine($"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                            }
+                        }
+                        else if(priceMaxFloor > 0)
+                        {
+                            if ((maxPrice + 2 * priceMaxFloor) >= 3 * curPrice
+                                && (maxPrice + 8 * priceMaxFloor) < 9 * curPrice)
+                            {
+                                //Sell khi giá gần đến điểm thanh lý dưới(1/3)
+                                Console.WriteLine($"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
+                            }
+                            else if((11 * priceMaxFloor - maxPrice) <= 10 * curPrice)
+                            {
+                                //Buy khi giá gần đến điểm thanh lý dưới(1/3)
+                                Console.WriteLine($"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice}");
                             }
                         }
                     }
