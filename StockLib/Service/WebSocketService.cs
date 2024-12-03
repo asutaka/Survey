@@ -11,9 +11,11 @@ namespace StockLib.Service
     public class WebSocketService : IWebSocketService
     {
         private readonly IAPIService _apiService;
-        public WebSocketService(IAPIService apiService) 
+        private readonly ITeleService _teleService;
+        public WebSocketService(IAPIService apiService, ITeleService teleService) 
         {
             _apiService = apiService;
+            _teleService = teleService;
         }
         public async Task LiquidWebSocket(string url)
         {
@@ -61,81 +63,82 @@ namespace StockLib.Service
 
                 foreach (var item in res.data)
                 {
-                    if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase))
-                        continue;
+                    //if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase))
+                    //    continue;
 
                     if (!_lSymbol.Contains(item.contractCode))
                         continue;
 
-                    if (item.tradeTurnover >= 10000)
+                    if (item.tradeTurnover < 15000)
+                        continue;
+                    var message = $"{item.exchangeName}|{item.baseCoin}|{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
+                    Console.WriteLine(msg);
+                    var dat = await _apiService.CoinAnk_GetLiquidValue(item.contractCode);
+                    try
                     {
-                        var dat = await _apiService.CoinAnk_GetLiquidValue(item.contractCode);
-                        try
+                        var lLiquidLast = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) == 288);
+                        var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "15m", DateTimeOffset.Now.AddHours(-1).ToUnixTimeMilliseconds());
+                        if (lPrice != null && lPrice.Any())
                         {
-                            var lLiquidLast = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) == 288);
-                            var lPrice =  await _apiService.GetCoinData_Binance(item.contractCode, "15m", DateTimeOffset.Now.AddHours(-1).ToUnixTimeMilliseconds());
-                            if(lPrice != null && lPrice.Any())
+                            var flag = -1;
+                            var curPrice = lPrice.Last().Close;
+                            var count = dat.data.liqHeatMap.priceArray.Count();
+                            for (var i = 0; i < count; i++)
                             {
-                                var flag = -1;
-                                var curPrice = lPrice.Last().Close;
-                                var count = dat.data.liqHeatMap.priceArray.Count();
-                                for (var i = 0; i < count; i++)
+                                var element = dat.data.liqHeatMap.priceArray[i];
+                                if (element > curPrice)
                                 {
-                                    var element = dat.data.liqHeatMap.priceArray[i];
-                                    if(element > curPrice)
-                                    {
-                                        flag = i; break;
-                                    }    
+                                    flag = i; break;
                                 }
-                                if(flag > -1)
+                            }
+                            if (flag > -1)
+                            {
+                                var maxCeil = lLiquidLast.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
+                                var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
+                                decimal priceMaxCeil = 0, priceMaxFloor = 0;
+                                //compare max Liquid
+                                if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
                                 {
-                                    var maxCeil = lLiquidLast.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
-                                    var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
-                                    decimal priceMaxCeil = 0, priceMaxFloor = 0;
-                                    //compare max Liquid
-                                    if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
-                                    {
-                                        priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
-                                    }
-                                    if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
-                                    {
-                                        priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
-                                    }
+                                    priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
+                                }
+                                if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                                {
+                                    priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
+                                }
 
-                                    if(priceMaxCeil <= 0)
-                                    {
-                                        Console.WriteLine($"SELL: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                    }    
-                                    else if(priceMaxFloor <= 0)
+                                if (priceMaxCeil <= 0)
+                                {
+                                    Console.WriteLine($"SELL: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
+                                }
+                                else if (priceMaxFloor <= 0)
+                                {
+                                    Console.WriteLine($"BUY: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
+                                }
+                                else
+                                {
+                                    var div = priceMaxCeil - priceMaxFloor;
+                                    var divCeil = priceMaxCeil - curPrice;
+                                    var divFloor = curPrice - priceMaxFloor;
+                                    var rateCeil = divCeil * 100 / div;
+                                    var rateFloor = divFloor * 100 / div;
+
+                                    if (rateCeil >= 75 && rateCeil < 94)
                                     {
                                         Console.WriteLine($"BUY: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
                                     }
-                                    else
+                                    else if (rateFloor <= 25 && rateFloor > 6)
                                     {
-                                        var div = priceMaxCeil - priceMaxFloor;
-                                        var divCeil = priceMaxCeil - curPrice;
-                                        var divFloor = curPrice - priceMaxFloor;
-                                        var rateCeil = divCeil * 100 / div;
-                                        var rateFloor = divFloor * 100 / div;
-
-                                        if (rateCeil >= 75 && rateCeil < 94)
-                                        {
-                                            Console.WriteLine($"BUY: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                        }
-                                        else if (rateFloor <= 25 && rateFloor > 6)
-                                        {
-                                            Console.WriteLine($"SELL: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
-                                        }
+                                        Console.WriteLine($"SELL: {DateTime.Now.ToString("dd/MM/yyyy")}|Entry: {curPrice}");
                                     }
-                                }    
+                                }
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine(ex.Message);
-                        }
-                        Console.WriteLine(JsonConvert.SerializeObject(item));
                     }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                    Console.WriteLine(JsonConvert.SerializeObject(item));
                 }
             }
             catch (Exception ex)
