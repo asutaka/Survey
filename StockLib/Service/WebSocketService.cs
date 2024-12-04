@@ -100,24 +100,18 @@ namespace StockLib.Service
                         if (flag < 0)
                             continue;
 
-                        var maxCeil = lLiquidLast.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
-                        var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
-                        decimal priceMaxCeil = 0, priceMaxFloor = 0;
-                        //compare max Liquid
-                        if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                        if(item.posSide.Equals("short", StringComparison.OrdinalIgnoreCase))
                         {
-                            priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
-                        }
-                        if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
-                        {
-                            priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
-                        }
+                            decimal priceMaxCeil = 0;
+                            var maxCeil = lLiquidLast.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
+                            if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                            {
+                                priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
+                            }
+                            if (priceMaxCeil <= 0)
+                                continue;
 
-                        var maxPrice = lPrice.Max(x => x.High);
-                        var minPrice = lPrice.Max(x => x.Low);
-
-                        if(priceMaxCeil > 0)
-                        {
+                            var minPrice = lPrice.Max(x => x.Low);
                             if ((2 * priceMaxCeil + minPrice) <= 3 * curPrice
                                 && (8 * priceMaxCeil + minPrice) > 9 * curPrice)
                             {
@@ -126,7 +120,7 @@ namespace StockLib.Service
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
-                            else if((11 * priceMaxCeil - minPrice) >= 10 * curPrice)
+                            else if ((11 * priceMaxCeil - minPrice) >= 10 * curPrice)
                             {
                                 //Sell khi giá vượt qua điểm thanh lý trên
                                 var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|{minPrice}";
@@ -134,20 +128,30 @@ namespace StockLib.Service
                                 Console.WriteLine(mess);
                             }
                         }
-                        else if(priceMaxFloor > 0)
+                        else
                         {
+                            var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
+                            decimal priceMaxFloor = 0;
+                            if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                            {
+                                priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxFloor.ElementAt(1)];
+                            }
+                            if (priceMaxFloor <= 0)
+                                continue;
+
+                            var maxPrice = lPrice.Max(x => x.High);
                             if ((maxPrice + 2 * priceMaxFloor) >= 3 * curPrice
                                 && (maxPrice + 8 * priceMaxFloor) < 9 * curPrice)
                             {
                                 //Sell khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxCeil}|{minPrice}";
+                                var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|{maxPrice}";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
-                            else if((11 * priceMaxFloor - maxPrice) <= 10 * curPrice)
+                            else if ((11 * priceMaxFloor - maxPrice) <= 10 * curPrice)
                             {
                                 //Buy khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxCeil}|{minPrice}";
+                                var mess = $"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|{maxPrice}";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
