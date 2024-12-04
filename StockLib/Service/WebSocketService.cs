@@ -81,7 +81,7 @@ namespace StockLib.Service
                             continue;
 
                         var lLiquidLast = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) == 287);
-                        var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "15m", DateTimeOffset.Now.AddHours(-2).ToUnixTimeMilliseconds());
+                        var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "1h", DateTimeOffset.Now.AddHours(-24).ToUnixTimeMilliseconds());
                         if (!(lPrice?.Any() ?? false))
                             continue;
 
