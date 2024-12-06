@@ -111,7 +111,7 @@ namespace StockLib.Service
                             if (priceMaxCeil <= 0)
                                 continue;
 
-                            var minPrice = lPrice.Max(x => x.Low);
+                            var minPrice = lPrice.Min(x => x.Low);
                             if ((2 * priceMaxCeil + minPrice) <= 3 * curPrice
                                 && (8 * priceMaxCeil + minPrice) > 9 * curPrice)
                             {
