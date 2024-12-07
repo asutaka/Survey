@@ -116,14 +116,14 @@ namespace StockLib.Service
                                 && (8 * priceMaxCeil + minPrice) > 9 * curPrice)
                             {
                                 //Buy khi giá gần đến điểm thanh lý trên(2/3)
-                                var mess = $"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý: {priceMaxCeil}|{minPrice}|Max: {dat.data.liqHeatMap.maxLiqValue}|MaxCeil: {maxCeil.ElementAt(2)}";
+                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
                             else if (curPrice > priceMaxCeil)
                             {
                                 //Sell khi giá vượt qua điểm thanh lý trên
-                                var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|{minPrice}|Max: {dat.data.liqHeatMap.maxLiqValue}|MaxCeil: {maxCeil.ElementAt(2)}";
+                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
@@ -144,14 +144,14 @@ namespace StockLib.Service
                                 && (maxPrice + 8 * priceMaxFloor) < 9 * curPrice)
                             {
                                 //Sell khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|SHORT|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|{maxPrice}|Max: {dat.data.liqHeatMap.maxLiqValue}|MaxFloor: {maxFloor.ElementAt(2)}";
+                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
                             else if (curPrice < priceMaxFloor)
                             {
                                 //Buy khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|LONG|{item.baseCoin}|Date: {DateTime.Now.ToString("dd HH:mm")}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|{maxPrice}|Max: {dat.data.liqHeatMap.maxLiqValue}|MaxFloor: {maxFloor.ElementAt(2)}";
+                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
