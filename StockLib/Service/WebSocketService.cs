@@ -72,7 +72,7 @@ namespace StockLib.Service
                     if (item.tradeTurnover < 15000)
                         continue;
                     var message = $"{item.exchangeName}|{item.baseCoin}|{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
-                    Console.WriteLine(msg);
+                    Console.WriteLine(message);
                     var dat = await _apiService.CoinAnk_GetLiquidValue(item.contractCode);
                     Thread.Sleep(100);
                     try
