@@ -118,14 +118,16 @@ namespace StockLib.Service
                                 && curPrice < maxPrice * (decimal)0.98) 
                             {
                                 //Buy khi giá gần đến điểm thanh lý trên(2/3)
-                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
+                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|TP: {curPrice * (decimal)1.02}|SL:{curPrice * (decimal)0.98}";
+                                //var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
                             else if (curPrice > priceMaxCeil && curPrice >= maxPrice)
                             {
                                 //Sell khi giá vượt qua điểm thanh lý trên
-                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
+                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|TP: {curPrice * (decimal)0.95}|SL:{curPrice * (decimal)1.03}";
+                                //var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
@@ -146,14 +148,16 @@ namespace StockLib.Service
                                 && curPrice > minPrice * (decimal)1.02)
                             {
                                 //Sell khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
+                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|TP: {curPrice * (decimal)0.98}|SL:{curPrice * (decimal)1.02}";
+                                //var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
                             else if (curPrice < priceMaxFloor && curPrice < minPrice)
                             {
                                 //Buy khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
+                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|TP: {curPrice * (decimal)1.05}|SL:{curPrice * (decimal)0.97}";
+                                //var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(1066022551, mess);
                                 Console.WriteLine(mess);
                             }
