@@ -76,7 +76,7 @@ namespace StockLib.Service
                     if (item.tradeTurnover < 10000)
                         continue;
 
-                    var message = $"{item.baseCoin}|{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
+                    var message = $"{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
                     Console.WriteLine(message);
                     var dat = await _apiService.CoinAnk_GetLiquidValue(item.contractCode);
                     Thread.Sleep(100);
@@ -84,7 +84,7 @@ namespace StockLib.Service
                     {
                         if (dat is null || dat.data is null || dat.data.liqHeatMap is null)
                         {
-                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodata] {message}");
+                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodata] {item.baseCoin}|{message}");
                             continue;
                         }
 
@@ -92,7 +92,7 @@ namespace StockLib.Service
                         var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "1h", DateTimeOffset.Now.AddHours(-12).ToUnixTimeMilliseconds());
                         if (!(lPrice?.Any() ?? false))
                         {
-                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodata] {message}");
+                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodata] {item.baseCoin}|{message}");
                             continue;
                         }
 
@@ -110,7 +110,7 @@ namespace StockLib.Service
 
                         if (flag < 0)
                         {
-                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-noflag] {message}");
+                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-noflag] {item.baseCoin}({curPrice})|{message}");
                             continue;
                         }
 
@@ -126,7 +126,7 @@ namespace StockLib.Service
                             }
                             if (priceMaxCeil <= 0)
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
                                 continue;
                             }
                             //var tmp1 = (2 * priceMaxCeil + minPrice);
@@ -155,7 +155,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-pass] {message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-pass] {item.baseCoin}({curPrice})|{message}");
                             }
                         }
                         else
@@ -168,7 +168,7 @@ namespace StockLib.Service
                             }
                             if (priceMaxFloor <= 0)
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
                                 continue;
                             }
 
@@ -192,7 +192,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-pass] {message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-pass] {item.baseCoin}({curPrice})|{message}");
                             }
                         }
                     }
