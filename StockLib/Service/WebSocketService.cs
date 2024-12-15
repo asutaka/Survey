@@ -155,7 +155,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-pass] {item.baseCoin}({curPrice})|{message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopass] {item.baseCoin}({curPrice})|{message}");
                             }
                         }
                         else
@@ -192,7 +192,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-pass] {item.baseCoin}({curPrice})|{message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopass] {item.baseCoin}({curPrice})|{message}");
                             }
                         }
                     }
