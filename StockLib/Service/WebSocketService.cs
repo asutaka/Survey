@@ -73,7 +73,7 @@ namespace StockLib.Service
                     //if (item.tradeTurnover < 3000)
                     //    continue;
                     //Console.WriteLine($"{item.baseCoin}|{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}");
-                    if (item.tradeTurnover < 10000)
+                    if (item.tradeTurnover < 15000)
                         continue;
 
                     var message = $"{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
