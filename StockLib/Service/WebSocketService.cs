@@ -64,27 +64,23 @@ namespace StockLib.Service
 
                 foreach (var item in res.data)
                 {
-                    if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    if (!_lSymbol.Contains(item.contractCode))
-                        continue;
-
-                    //if (item.tradeTurnover < 3000)
-                    //    continue;
-                    //Console.WriteLine($"{item.baseCoin}|{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}");
-                    if (item.tradeTurnover < 15000)
+                    if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase)
+                        || !_lSymbol.Contains(item.contractCode)
+                        || item.tradeTurnover < 15000)
                         continue;
 
                     var message = $"{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
-                    Console.WriteLine(message);
+                    //Console.WriteLine(message);
                     var dat = await _apiService.CoinAnk_GetLiquidValue(item.contractCode);
                     Thread.Sleep(100);
                     try
                     {
                         if (dat is null || dat.data is null || dat.data.liqHeatMap is null)
                         {
-                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodata] {item.baseCoin}|{message}");
+                            if(item.tradeTurnover >= 20000)
+                            {
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodataheatmap] {item.baseCoin}|{message}");
+                            }    
                             continue;
                         }
 
@@ -92,7 +88,10 @@ namespace StockLib.Service
                         var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "1h", DateTimeOffset.Now.AddHours(-12).ToUnixTimeMilliseconds());
                         if (!(lPrice?.Any() ?? false))
                         {
-                            await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodata] {item.baseCoin}|{message}");
+                            if (item.tradeTurnover >= 20000)
+                            {
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodataprice] {item.baseCoin}|{message}");
+                            }
                             continue;
                         }
 
