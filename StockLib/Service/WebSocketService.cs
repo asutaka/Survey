@@ -79,12 +79,11 @@ namespace StockLib.Service
                         {
                             if(item.tradeTurnover >= 20000)
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodataheatmap] {item.baseCoin}|{message}");
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodataliquid] {item.baseCoin}|{message}");
                             }    
                             continue;
                         }
 
-                        var lLiquidLast = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) == 287);
                         var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "1h", DateTimeOffset.Now.AddHours(-12).ToUnixTimeMilliseconds());
                         if (!(lPrice?.Any() ?? false))
                         {
@@ -113,6 +112,8 @@ namespace StockLib.Service
                             continue;
                         }
 
+                        var lLiquid = dat.data.liqHeatMap.data.Where(x => x.ElementAt(0) >= 280);
+                        var lLiquidLast = lLiquid.Where(x => x.ElementAt(0) == 288);
                         var minPrice = lPrice.Min(x => x.Low);
                         var maxPrice = lPrice.Max(x => x.High);
                         if (item.posSide.Equals("short", StringComparison.OrdinalIgnoreCase))
@@ -128,39 +129,48 @@ namespace StockLib.Service
                                 await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
                                 continue;
                             }
-                            //var tmp1 = (2 * priceMaxCeil + minPrice);
-                            //var tmp2 = 3 * curPrice;
-                            //var tmp3 = (8 * priceMaxCeil + minPrice);
-                            //var tmp4 = 9 * curPrice;
-                            //var tmp5 = curPrice;
-                            //var tmp6 = maxPrice * (decimal)0.98;
                             if ((2 * priceMaxCeil + minPrice) <= 3 * curPrice
                                 && (8 * priceMaxCeil + minPrice) > 9 * curPrice
                                 && curPrice < maxPrice * (decimal)0.98) 
                             {
                                 //Buy khi giá gần đến điểm thanh lý trên(2/3)
                                 var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|TP(2%): {curPrice * (decimal)1.02}|SL(-2%):{curPrice * (decimal)0.98}";
-                                //var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(_channel, mess);
-                                Console.WriteLine(mess);
+                                continue;
+                                //Console.WriteLine(mess);
                             }
-                            else if (curPrice > priceMaxCeil && curPrice >= maxPrice)
+
+                            priceMaxCeil = 0;
+                            maxCeil = lLiquid.Where(x => x.ElementAt(1) > flag).MaxBy(x => x.ElementAt(2));
+                            if (maxCeil.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                            {
+                                priceMaxCeil = dat.data.liqHeatMap.priceArray[(int)maxCeil.ElementAt(1)];
+                            }
+                            if (priceMaxCeil <= 0)
+                            {
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
+                                continue;
+                            }
+
+                            if (curPrice > priceMaxCeil)
                             {
                                 //Sell khi giá vượt qua điểm thanh lý trên
                                 var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|TP(5%): {curPrice * (decimal)0.95}|SL(3%):{curPrice * (decimal)1.03}";
-                                //var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá tăng vượt qua điểm thanh lý điểm thanh lý: {priceMaxCeil}|Đáy({minPrice})|(Giá trị: {maxCeil.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(_channel, mess);
-                                Console.WriteLine(mess);
+                                //Console.WriteLine(mess);
                             }
                             else
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopass] {item.baseCoin}({curPrice})|{message}");
+                                if (item.tradeTurnover >= 20000)
+                                {
+                                    await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopassrule] {item.baseCoin}({curPrice})|{message}");
+                                }
                             }
                         }
                         else
                         {
-                            var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag).MaxBy(x => x.ElementAt(2));
                             decimal priceMaxFloor = 0;
+                            var maxFloor = lLiquidLast.Where(x => x.ElementAt(1) < flag - 1).MaxBy(x => x.ElementAt(2));
                             if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
                             {
                                 priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxFloor.ElementAt(1)];
@@ -177,21 +187,36 @@ namespace StockLib.Service
                             {
                                 //Sell khi giá gần đến điểm thanh lý dưới(1/3)
                                 var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|TP(2%): {curPrice * (decimal)0.98}|SL(2%):{curPrice * (decimal)1.02}";
-                                //var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(_channel, mess);
-                                Console.WriteLine(mess);
+                                continue;
+                                //Console.WriteLine(mess);
                             }
-                            else if (curPrice < priceMaxFloor && curPrice < minPrice)
+
+                            priceMaxFloor = 0;
+                            maxFloor = lLiquid.Where(x => x.ElementAt(1) < flag - 1).MaxBy(x => x.ElementAt(2));
+                            if (maxFloor.ElementAt(2) >= (decimal)0.9 * dat.data.liqHeatMap.maxLiqValue)
+                            {
+                                priceMaxFloor = dat.data.liqHeatMap.priceArray[(int)maxFloor.ElementAt(1)];
+                            }
+                            if (priceMaxFloor <= 0)
+                            {
+                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
+                                continue;
+                            }
+
+                            if (curPrice < priceMaxFloor)
                             {
                                 //Buy khi giá gần đến điểm thanh lý dưới(1/3)
                                 var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|TP(5%): {curPrice * (decimal)1.05}|SL(3%):{curPrice * (decimal)0.97}";
-                                //var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá giảm vượt qua điểm thanh lý: {priceMaxFloor}|Đỉnh({maxPrice})|(Giá trị: {maxFloor.ElementAt(2)}/{dat.data.liqHeatMap.maxLiqValue})";
                                 await _teleService.SendTextMessageAsync(_channel, mess);
-                                Console.WriteLine(mess);
+                                //Console.WriteLine(mess);
                             }
                             else
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopass] {item.baseCoin}({curPrice})|{message}");
+                                if (item.tradeTurnover >= 20000)
+                                {
+                                    await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopassrule] {item.baseCoin}({curPrice})|{message}");
+                                }
                             }
                         }
                     }
