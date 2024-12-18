@@ -126,7 +126,10 @@ namespace StockLib.Service
                             }
                             if (priceMaxCeil <= 0)
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
+                                if (item.tradeTurnover >= 20000)
+                                {
+                                    await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
+                                }
                                 continue;
                             }
                             if ((2 * priceMaxCeil + minPrice) <= 3 * curPrice
@@ -177,7 +180,10 @@ namespace StockLib.Service
                             }
                             if (priceMaxFloor <= 0)
                             {
-                                await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
+                                if (item.tradeTurnover >= 20000)
+                                {
+                                    await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
+                                }
                                 continue;
                             }
 
