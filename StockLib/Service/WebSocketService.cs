@@ -137,7 +137,9 @@ namespace StockLib.Service
                                 && curPrice < maxPrice * (decimal)0.98) 
                             {
                                 //Buy khi giá gần đến điểm thanh lý trên(2/3)
-                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|TP(2%): {curPrice * (decimal)1.02}|SL(-2%):{curPrice * (decimal)0.98}";
+                                var tp = Math.Round(100 * (-1 + priceMaxCeil / curPrice), 1);
+
+                                var mess = $"|LONG|{item.baseCoin}|Entry: {curPrice} --> Giá tăng gần đến điểm thanh lý({priceMaxCeil})|TP({tp}%)|SL(-2%):{curPrice * (decimal)0.98}";
                                 await _teleService.SendTextMessageAsync(_channel, mess);
                                 continue;
                                 //Console.WriteLine(mess);
@@ -192,7 +194,8 @@ namespace StockLib.Service
                                 && curPrice > minPrice * (decimal)1.02)
                             {
                                 //Sell khi giá gần đến điểm thanh lý dưới(1/3)
-                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|TP(2%): {curPrice * (decimal)0.98}|SL(2%):{curPrice * (decimal)1.02}";
+                                var tp = Math.Abs(Math.Round(100 * (-1 + priceMaxFloor / curPrice), 1));
+                                var mess = $"|SHORT|{item.baseCoin}|Entry: {curPrice} --> Giá giảm gần đến điểm thanh lý: {priceMaxFloor}|TP({tp}%)|SL(2%):{curPrice * (decimal)1.02}";
                                 await _teleService.SendTextMessageAsync(_channel, mess);
                                 continue;
                                 //Console.WriteLine(mess);
