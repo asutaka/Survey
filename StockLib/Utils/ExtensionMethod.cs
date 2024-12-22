@@ -1109,10 +1109,16 @@ namespace StockLib.Utils
                     var itemPrev1 = lData.ElementAt(i - 2);
                     var itemPrev2 = lData.ElementAt(i - 3);
                     var itemPrev3 = lData.ElementAt(i - 4);
+                    //var tmp = "20/12/2024 12:00".ToDateTime("dd/MM/yyyy HH:mm");
+                    //if(itemCheck.Date == tmp)
+                    //{
+                    //    var tmp1 = 1;
+                    //}
 
                     if (itemCheck.Low < Math.Min(Math.Min(itemPrev1.Low, itemPrev2.Low), itemPrev3.Low)
                         && itemCheck.Low < itemNext1.Low
-                        && (itemNext1.Close - itemNext1.Open) > (decimal)0.2 * (itemNext1.High - itemNext1.Low))
+                        //&& (itemNext1.Close - itemNext1.Open) > (decimal)0.2 * (itemNext1.High - itemNext1.Low)
+                        )
                     {
                         var model = new TopBotModel { Date = itemCheck.Date, IsTop = false, IsBot = true, Value = itemCheck.Low };
                         if (lastItem.Value > 0)
@@ -1139,7 +1145,8 @@ namespace StockLib.Utils
                     }
                     else if (itemCheck.High > Math.Max(Math.Max(itemPrev1.High, itemPrev2.High), itemPrev3.High)
                         && itemCheck.High > itemNext1.High
-                        && (itemNext1.Open - itemNext1.Close) > (decimal)0.2 * (itemNext1.High - itemNext1.Low))
+                        //&& (itemNext1.Open - itemNext1.Close) > (decimal)0.2 * (itemNext1.High - itemNext1.Low)
+                        )
                     {
                         var model = new TopBotModel { Date = itemCheck.Date, IsTop = true, IsBot = false, Value = itemCheck.High };
                         if (lastItem.Value > 0)
@@ -1233,14 +1240,27 @@ namespace StockLib.Utils
                 }
             }
 
-            //for (int i = 0; i < count - 1; i++)
-            //{
-            //    var item = lResult[i];
-            //    if (item.IsTop)
-            //    {
-            //        Console.WriteLine($"{i}: {item.Date.ToString("dd/MM/yyyy HH")}");
-            //    }
-            //}
+            TopBotModel top = null;
+            var lMin = new List<DateTime>();
+            for (int i = 0; i < count - 1; i++)
+            {
+                var item = lResult[i];
+                if (item.IsTop)
+                {
+                    if(top != null)
+                    {
+                        var min = lData.Where(x => x.Date > top.Date && x.Date < item.Date).MinBy(x => x.Low);
+                        if (min != null)
+                            lMin.Add(min.Date);
+                    }
+                    top = item;
+                }
+            }
+
+            foreach (var item in lResult)
+            {
+                item.IsBot = lMin.Contains(item.Date);
+            }
 
             return lResult;
         }
