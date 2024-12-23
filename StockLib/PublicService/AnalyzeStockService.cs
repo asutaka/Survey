@@ -17,7 +17,7 @@ namespace StockLib.PublicService
 
         //private const long _idChannel = -1002247826353;
         private const long _idUser = 1066022551;
-        //private const long _idGroup = -4237476810;
+        private const long _idGroup = -4237476810;
         private const long _idMain = -1002247826353;
         public AnalyzeStockService(ILogger<AnalyzeStockService> logger,
                                     ITeleService teleService,
@@ -207,7 +207,7 @@ namespace StockLib.PublicService
                 var tinhieu = await _analyzeService.BaoCaoPhanTich(dt);
                 if (tinhieu.Item1 > 0)
                 {
-                    await _teleService.SendTextMessageAsync(_idUser, tinhieu.Item2);
+                    await _teleService.SendTextMessageAsync(_idGroup, tinhieu.Item2);
                     Thread.Sleep(1000);
                 }
             }
