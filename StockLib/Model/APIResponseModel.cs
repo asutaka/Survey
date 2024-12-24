@@ -298,6 +298,12 @@ namespace StockLib.Model
         public string newsTitle { get; set; }
         public string newsDate { get; set; }
         public string newsTime { get; set; }
+        public List<VNDirect_Attachment> attachments { get; set; }
+    }
+
+    public class VNDirect_Attachment
+    {
+        public string name { get; set; }
     }
 
     public class MigrateAsset_Main

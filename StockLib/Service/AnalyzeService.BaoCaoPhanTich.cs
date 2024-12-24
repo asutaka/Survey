@@ -56,17 +56,18 @@ namespace StockLib.Service
                             {
                                 var code = itemValid.attributes.slug.Split('-').First().ToUpper();
                                 sBuilder.AppendLine($"[DSC - Phân tích cổ phiếu] - {code}:{itemValid.attributes.title}");
+                                sBuilder.AppendLine($"Link: www.dsc.com.vn/bao-cao-phan-tich/{itemValid.attributes.slug}");
                             }
-                            else
+                            else if(!itemValid.attributes.category_id.data.attributes.slug.Contains("beat"))
                             {
                                 sBuilder.AppendLine($"[DSC - Báo cáo phân tích]");
+                                sBuilder.AppendLine($"Link: www.dsc.com.vn/bao-cao-phan-tich/{itemValid.attributes.slug}");
                             }
-                            sBuilder.AppendLine($"Link: www.dsc.com.vn/bao-cao-phan-tich/{itemValid.attributes.slug}");
                         }
                     }
                 }
 
-                var lVNDirect = await _apiService.VNDirect_GetPost();
+                var lVNDirect = await _apiService.VNDirect_GetPost(false);
                 if (lVNDirect != null)
                 {
                     var t = int.Parse($"{time.Year}{time.Month.To2Digit()}{time.Day.To2Digit()}");
@@ -104,7 +105,14 @@ namespace StockLib.Service
                             });
 
                             sBuilder.AppendLine($"[VNDirect - Phân tích cổ phiếu] {itemValid.newsTitle}");
-                            sBuilder.AppendLine($"Link: https://dstock.vndirect.com.vn/trung-tam-phan-tich/bao-cao-phan-tich-dn");
+                            if (itemValid.attachments.Any())
+                            {
+                                var link = $"https://www.vndirect.com.vn/cmsupload/beta/{itemValid.attachments.First().name}";
+                            }
+                            else
+                            {
+                                sBuilder.AppendLine($"Link: https://dstock.vndirect.com.vn/trung-tam-phan-tich/bao-cao-phan-tich-dn");
+                            }
                         }
                     }
                 }
@@ -159,7 +167,7 @@ namespace StockLib.Service
                     }
                 }
 
-                var lAgribank = await _apiService.Agribank_GetPost();
+                var lAgribank = await _apiService.Agribank_GetPost(false);
                 if (lAgribank != null)
                 {
                     var lValid = lAgribank.Where(x => x.Date > time);
@@ -195,12 +203,108 @@ namespace StockLib.Service
                                 ty = (int)ESource.Agribank
                             });
 
-                            sBuilder.AppendLine($"[Agribank - Phân tích cổ phiếu] {itemValid.Title.Replace("AGR Snapshot", "").Trim()}");
+                            if (itemValid.Title.Contains("AGR Snapshot"))
+                            {
+                                sBuilder.AppendLine($"[Agribank - Phân tích cổ phiếu] {itemValid.Title.Replace("AGR Snapshot", "").Trim()}");
+                                sBuilder.AppendLine($"Link: https://agriseco.com.vn/Report/ReportFile/{itemValid.ReportID}");
+                            }
+                        }
+                    }
+                }
+
+                var lVNDirectIndustry = await _apiService.VNDirect_GetPost(true);
+                if (lVNDirectIndustry != null)
+                {
+                    var t = int.Parse($"{time.Year}{time.Month.To2Digit()}{time.Day.To2Digit()}");
+                    var lValid = lVNDirect.Where(x => int.Parse(x.newsDate.Replace("-", "")) >= t);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.VNDirect),
+                                builder.Eq(x => x.key, itemValid.newsId),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.newsId,
+                                ty = (int)ESource.VNDirect
+                            });
+
+                            sBuilder.AppendLine($"[VNDirect - Báo cáo ngành] {itemValid.newsTitle}");
+                            if (itemValid.attachments.Any())
+                            {
+                                var link = $"https://www.vndirect.com.vn/cmsupload/beta/{itemValid.attachments.First().name}";
+                            }
+                            else
+                            {
+                                sBuilder.AppendLine($"Link: https://dstock.vndirect.com.vn/trung-tam-phan-tich/bao-cao-nganh");
+                            }
+                        }
+                    }
+                }
+
+                var lAgribankIndustry = await _apiService.Agribank_GetPost(true);
+                if (lAgribankIndustry != null)
+                {
+                    var lValid = lAgribank.Where(x => x.Date > time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.Agribank),
+                                builder.Eq(x => x.key, itemValid.ReportID.ToString()),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.ReportID.ToString(),
+                                ty = (int)ESource.Agribank
+                            });
+
+                            sBuilder.AppendLine($"[Agribank - Báo cáo ngành] {itemValid.Title.Trim()}");
                             sBuilder.AppendLine($"Link: https://agriseco.com.vn/Report/ReportFile/{itemValid.ReportID}");
                         }
                     }
                 }
 
+                //chưa pass
                 var lSSI = await _apiService.SSI_GetPost();
                 if (lSSI != null)
                 {

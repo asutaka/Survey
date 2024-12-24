@@ -48,9 +48,9 @@ namespace StockLib.Service
         Task<SSI_Share> SSI_GetShare(string code);
         //
         Task<List<DSC_Data>> DSC_GetPost();
-        Task<List<VNDirect_Data>> VNDirect_GetPost();
+        Task<List<VNDirect_Data>> VNDirect_GetPost(bool isIndustry);
         Task<List<MigrateAsset_Data>> MigrateAsset_GetPost();
-        Task<List<AGR_Data>> Agribank_GetPost();
+        Task<List<AGR_Data>> Agribank_GetPost(bool isIndustry);
         Task<List<VCI_Content>> VCI_GetPost();
         Task<List<BCPT_Crawl_Data>> SSI_GetPost();
         Task<List<BCPT_Crawl_Data>> BSC_GetPost();
@@ -825,9 +825,13 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<VNDirect_Data>> VNDirect_GetPost()
+        public async Task<List<VNDirect_Data>> VNDirect_GetPost(bool isIndustry)
         {
             var url = $"https://api-finfo.vndirect.com.vn/v4/news?q=newsType:company_report~locale:VN~newsSource:VNDIRECT&sort=newsDate:desc~newsTime:desc&size=20";
+            if(isIndustry)
+            {
+                url = $"https://api-finfo.vndirect.com.vn/v4/news?q=newsType:industry_report~locale:VN~newsSource:VNDIRECT&sort=newsDate:desc~newsTime:desc&size=20";
+            }
             try
             {
                 var client = _client.CreateClient();
@@ -879,9 +883,18 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<AGR_Data>> Agribank_GetPost()
+        public async Task<List<AGR_Data>> Agribank_GetPost(bool isIndustry)
         {
-            var url = $"https://agriseco.com.vn/api/Data/Report/SearchReports?categoryID=1&sourceID=5&sectorID=null&symbol=&keywords=&startDate=2022/10/6&endDate=2024/10/7&startIndex=0&count=10";
+            var cat = 1;
+            if (isIndustry)
+            {
+                cat = 2;
+            }
+            var dt = DateTime.Now;
+            var cur = $"{dt.Year}/{dt.Month}/{dt.Day}";
+            var dtNext = dt.AddDays(1);
+            var next = $"{dtNext.Year}/{dtNext.Month}/{dtNext.Day}";
+            var url = $"https://agriseco.com.vn/api/Data/Report/SearchReports?categoryID={cat}&sourceID=5&sectorID=null&symbol=&keywords=&startDate={cur}&endDate={next}&startIndex=0&count=10";
             try
             {
                 var client = _client.CreateClient();
