@@ -339,7 +339,18 @@ namespace StockLib.Model
         public string stockSymbol { get; set; }
         public string name { get; set; }
         public VCBS_Category category { get; set; }
+        public VCBS_File file { get; set; }
         public DateTime publishedAt { get; set; }
+    }
+
+    public class VCBS_Category
+    {
+        public string code { get; set; }
+    }
+
+    public class VCBS_File
+    {
+        public string name { get; set; }
     }
 
     public class VCI_Main
@@ -364,11 +375,6 @@ namespace StockLib.Model
         public string file { get; set; }
         public DateTime makerDate { get; set; }
         public string pageLink { get; set; }
-    }
-
-    public class VCBS_Category
-    {
-        public string code { get; set; }
     }
 
     public class BCPT_Crawl_Data

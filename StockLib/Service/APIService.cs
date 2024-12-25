@@ -1036,6 +1036,7 @@ namespace StockLib.Service
                     var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[4]/div[4]/div[2]/div/table/tbody/tr[{i + 1}]/td[2]/a");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[4]/div[4]/div[2]/div/table/tbody/tr[{i + 1}]/td[1]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
+                    var path = nodeCode?.OuterHtml.Split("\"").FirstOrDefault(x => x.Contains("bao-cao-phan-tich")).Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
                     if (string.IsNullOrWhiteSpace(timeStr))
                         continue;
@@ -1048,9 +1049,10 @@ namespace StockLib.Service
                         var day = int.Parse(strSplit[0].Trim());
                         lResult.Add(new BCPT_Crawl_Data
                         {
-                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
+                            id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 7).Trim()}",
                             title = title,
-                            date = new DateTime(year, month, day)
+                            date = new DateTime(year, month, day),
+                            path = $"https://www.bsc.com.vn{path}"
                         });
                     }
                 }
@@ -1092,11 +1094,13 @@ namespace StockLib.Service
                 {
                     var nodeCode = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/a");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/div[1]");
+                    var nodePath = doc.DocumentNode.SelectSingleNode($"//*[@id=\"content\"]/div/div/div[2]/main/section[2]/div/div[1]/div[{i + 1}]/div/div[2]/a");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
                     if (string.IsNullOrWhiteSpace(timeStr))
                         continue;
 
+                    var path = nodePath.OuterHtml.Split("\"").FirstOrDefault(x => x.Contains(".pdf")).Trim();
                     var strSplit = timeStr.Split('/');
                     if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
@@ -1107,7 +1111,8 @@ namespace StockLib.Service
                         {
                             id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
-                            date = new DateTime(year, month, day)
+                            date = new DateTime(year, month, day),
+                            path = path
                         });
                     }
                 }
@@ -1149,11 +1154,13 @@ namespace StockLib.Service
                 {
                     var nodeCode = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[2]/div[1]/div[1]");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[1]/div/div[1]");
+                    var nodePath = doc.DocumentNode.SelectSingleNode($"/html/body/div[3]/div[3]/div[{i + 1}]/div[3]/div/a");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim().Replace("\n", "/");
                     if (string.IsNullOrWhiteSpace(timeStr))
                         continue;
 
+                    var path = nodePath.OuterHtml.Split("\"").FirstOrDefault(x => x.Contains(".pdf")).Trim();
                     var strSplit = timeStr.Split('/');
                     if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
@@ -1164,7 +1171,8 @@ namespace StockLib.Service
                         {
                             id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
-                            date = new DateTime(year, month, day)
+                            date = new DateTime(year, month, day),
+                            path = path
                         });
                     }
                 }
@@ -1222,6 +1230,7 @@ namespace StockLib.Service
                         if (string.IsNullOrWhiteSpace(timeStr))
                             continue;
 
+                        var path = nodeTitle.OuterHtml.Split("'").FirstOrDefault(x => x.Contains(".pdf")).Trim();
                         var strSplit = timeStr.Split('/');
                         if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                         {
@@ -1234,7 +1243,8 @@ namespace StockLib.Service
                             {
                                 id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                                 title = title,
-                                date = new DateTime(year, month, day)
+                                date = new DateTime(year, month, day),
+                                path = path
                             });
                         }
                     }
@@ -1347,11 +1357,13 @@ namespace StockLib.Service
                 {
                     var nodeCode = doc.DocumentNode.SelectSingleNode($"//*[@id=\"ContentPlaceHolder1_AnalyzeReportList1_rptData_itemTR_{i}\"]/td[2]/a");
                     var nodeTime = doc.DocumentNode.SelectSingleNode($"//*[@id=\"ContentPlaceHolder1_AnalyzeReportList1_rptData_itemTR_{i}\"]/td[1]");
+                    var nodePath = doc.DocumentNode.SelectSingleNode($"//*[@id=\"ContentPlaceHolder1_AnalyzeReportList1_rptData_itemTR_{i}\"]/td[5]");
                     var title = nodeCode?.InnerText.Replace("\n", "").Trim();
                     var timeStr = nodeTime?.InnerText.Trim();
                     if (string.IsNullOrWhiteSpace(timeStr))
                         continue;
 
+                    var path = nodePath.OuterHtml.Split("'").FirstOrDefault(x => x.Contains(".pdf")).Trim();
                     var strSplit = timeStr.Split('/');
                     if (strSplit.Length == 3 && !string.IsNullOrWhiteSpace(title))
                     {
@@ -1362,7 +1374,8 @@ namespace StockLib.Service
                         {
                             id = $"{strSplit[2].Trim()}{strSplit[1].Trim()}{strSplit[0].Trim()}{title.Substring(0, 3)}",
                             title = title,
-                            date = new DateTime(year, month, day)
+                            date = new DateTime(year, month, day),
+                            path = $"https://cafef1.mediacdn.vn/Images/Uploaded/DuLieuDownload/PhanTichBaoCao/{path}"
                         });
                     }
                 }
