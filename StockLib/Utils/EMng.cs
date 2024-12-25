@@ -491,7 +491,8 @@ namespace StockLib.Utils
         CafeF = 9,
         VCBS = 10,
         FPTS = 11,
-        VCI = 12
+        VCI = 12,
+        KBS = 13
     }
 
     public enum EPrice

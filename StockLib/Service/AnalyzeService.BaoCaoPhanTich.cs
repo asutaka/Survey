@@ -365,10 +365,178 @@ namespace StockLib.Service
                 //    }
                 //}
 
-                var lBSC = await _apiService.BSC_GetPost(false);
-                if (lBSC != null)
+                //var lBSC = await _apiService.BSC_GetPost(false);
+                //if (lBSC != null)
+                //{
+                //    var lValid = lBSC.Where(x => x.date >= time);
+                //    if (lValid?.Any() ?? false)
+                //    {
+                //        foreach (var itemValid in lValid)
+                //        {
+                //            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                //            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                //            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                //            {
+                //                builder.Eq(x => x.d, d),
+                //                builder.Eq(x => x.ty, (int)ESource.BSC),
+                //                builder.Eq(x => x.key, itemValid.id),
+                //            };
+                //            foreach (var item in lFilter)
+                //            {
+                //                if (filter is null)
+                //                {
+                //                    filter = item;
+                //                    continue;
+                //                }
+                //                filter &= item;
+                //            }
+                //            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                //            if (entityValid != null)
+                //                continue;
+
+                //            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                //            {
+                //                d = d,
+                //                key = itemValid.id,
+                //                ty = (int)ESource.BSC
+                //            });
+
+                //            sBuilder.AppendLine($"[BSC - Phân tích cổ phiếu] {itemValid.title}");
+                //            sBuilder.AppendLine($"Link: https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/1");
+                //        }
+                //    }
+                //}
+
+                //var lMBS = await _apiService.MBS_GetPost(false);
+                //if (lMBS != null)
+                //{
+                //    var lValid = lMBS.Where(x => x.date >= time);
+                //    if (lValid?.Any() ?? false)
+                //    {
+                //        foreach (var itemValid in lValid)
+                //        {
+                //            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                //            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                //            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                //            {
+                //                builder.Eq(x => x.d, d),
+                //                builder.Eq(x => x.ty, (int)ESource.MBS),
+                //                builder.Eq(x => x.key, itemValid.id),
+                //            };
+                //            foreach (var item in lFilter)
+                //            {
+                //                if (filter is null)
+                //                {
+                //                    filter = item;
+                //                    continue;
+                //                }
+                //                filter &= item;
+                //            }
+                //            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                //            if (entityValid != null)
+                //                continue;
+
+                //            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                //            {
+                //                d = d,
+                //                key = itemValid.id,
+                //                ty = (int)ESource.MBS
+                //            });
+
+                //            sBuilder.AppendLine($"[MBS - Phân tích cổ phiếu] {itemValid.title}");
+                //            sBuilder.AppendLine($"Link: https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/nghien-cuu-co-phieu/");
+                //        }
+                //    }
+                //}
+
+                //var lPSI = await _apiService.PSI_GetPost(false);
+                //if (lPSI != null)
+                //{
+                //    var lValid = lPSI.Where(x => x.date >= time);
+                //    if (lValid?.Any() ?? false)
+                //    {
+                //        foreach (var itemValid in lValid)
+                //        {
+                //            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                //            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                //            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                //            {
+                //                builder.Eq(x => x.d, d),
+                //                builder.Eq(x => x.ty, (int)ESource.PSI),
+                //                builder.Eq(x => x.key, itemValid.id),
+                //            };
+                //            foreach (var item in lFilter)
+                //            {
+                //                if (filter is null)
+                //                {
+                //                    filter = item;
+                //                    continue;
+                //                }
+                //                filter &= item;
+                //            }
+                //            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                //            if (entityValid != null)
+                //                continue;
+
+                //            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                //            {
+                //                d = d,
+                //                key = itemValid.id,
+                //                ty = (int)ESource.PSI
+                //            });
+
+                //            sBuilder.AppendLine($"[PSI - Phân tích cổ phiếu] {itemValid.title}");
+                //            sBuilder.AppendLine($"Link: https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep");
+                //        }
+                //    }
+                //}
+
+                //var lFPTS = await _apiService.FPTS_GetPost(false);
+                //if (lFPTS != null)
+                //{
+                //    var lValid = lFPTS.Where(x => x.date >= time);
+                //    if (lValid?.Any() ?? false)
+                //    {
+                //        foreach (var itemValid in lValid)
+                //        {
+                //            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                //            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                //            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                //            {
+                //                builder.Eq(x => x.d, d),
+                //                builder.Eq(x => x.ty, (int)ESource.FPTS),
+                //                builder.Eq(x => x.key, itemValid.id),
+                //            };
+                //            foreach (var item in lFilter)
+                //            {
+                //                if (filter is null)
+                //                {
+                //                    filter = item;
+                //                    continue;
+                //                }
+                //                filter &= item;
+                //            }
+                //            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                //            if (entityValid != null)
+                //                continue;
+
+                //            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                //            {
+                //                d = d,
+                //                key = itemValid.id,
+                //                ty = (int)ESource.FPTS
+                //            });
+
+                //            sBuilder.AppendLine($"[FPTS - Phân tích cổ phiếu] {itemValid.title}");
+                //            sBuilder.AppendLine($"Link: https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=179");
+                //        }
+                //    }
+                //}
+
+                var lKBS = await _apiService.KBS_GetPost(false);
+                if (lKBS != null)
                 {
-                    var lValid = lBSC.Where(x => x.date >= time);
+                    var lValid = lKBS.Where(x => x.date >= time);
                     if (lValid?.Any() ?? false)
                     {
                         foreach (var itemValid in lValid)
@@ -378,7 +546,7 @@ namespace StockLib.Service
                             var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
                             {
                                 builder.Eq(x => x.d, d),
-                                builder.Eq(x => x.ty, (int)ESource.BSC),
+                                builder.Eq(x => x.ty, (int)ESource.KBS),
                                 builder.Eq(x => x.key, itemValid.id),
                             };
                             foreach (var item in lFilter)
@@ -398,137 +566,11 @@ namespace StockLib.Service
                             {
                                 d = d,
                                 key = itemValid.id,
-                                ty = (int)ESource.BSC
+                                ty = (int)ESource.KBS
                             });
 
-                            sBuilder.AppendLine($"[BSC - Phân tích cổ phiếu] {itemValid.title}");
-                            sBuilder.AppendLine($"Link: https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/1");
-                        }
-                    }
-                }
-
-                var lMBS = await _apiService.MBS_GetPost(false);
-                if (lMBS != null)
-                {
-                    var lValid = lMBS.Where(x => x.date >= time);
-                    if (lValid?.Any() ?? false)
-                    {
-                        foreach (var itemValid in lValid)
-                        {
-                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
-                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
-                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
-                            {
-                                builder.Eq(x => x.d, d),
-                                builder.Eq(x => x.ty, (int)ESource.MBS),
-                                builder.Eq(x => x.key, itemValid.id),
-                            };
-                            foreach (var item in lFilter)
-                            {
-                                if (filter is null)
-                                {
-                                    filter = item;
-                                    continue;
-                                }
-                                filter &= item;
-                            }
-                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
-                            if (entityValid != null)
-                                continue;
-
-                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
-                            {
-                                d = d,
-                                key = itemValid.id,
-                                ty = (int)ESource.MBS
-                            });
-
-                            sBuilder.AppendLine($"[MBS - Phân tích cổ phiếu] {itemValid.title}");
-                            sBuilder.AppendLine($"Link: https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/nghien-cuu-co-phieu/");
-                        }
-                    }
-                }
-
-                var lPSI = await _apiService.PSI_GetPost(false);
-                if (lPSI != null)
-                {
-                    var lValid = lPSI.Where(x => x.date >= time);
-                    if (lValid?.Any() ?? false)
-                    {
-                        foreach (var itemValid in lValid)
-                        {
-                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
-                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
-                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
-                            {
-                                builder.Eq(x => x.d, d),
-                                builder.Eq(x => x.ty, (int)ESource.PSI),
-                                builder.Eq(x => x.key, itemValid.id),
-                            };
-                            foreach (var item in lFilter)
-                            {
-                                if (filter is null)
-                                {
-                                    filter = item;
-                                    continue;
-                                }
-                                filter &= item;
-                            }
-                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
-                            if (entityValid != null)
-                                continue;
-
-                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
-                            {
-                                d = d,
-                                key = itemValid.id,
-                                ty = (int)ESource.PSI
-                            });
-
-                            sBuilder.AppendLine($"[PSI - Phân tích cổ phiếu] {itemValid.title}");
-                            sBuilder.AppendLine($"Link: https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep");
-                        }
-                    }
-                }
-
-                var lFPTS = await _apiService.FPTS_GetPost(false);
-                if (lFPTS != null)
-                {
-                    var lValid = lFPTS.Where(x => x.date >= time);
-                    if (lValid?.Any() ?? false)
-                    {
-                        foreach (var itemValid in lValid)
-                        {
-                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
-                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
-                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
-                            {
-                                builder.Eq(x => x.d, d),
-                                builder.Eq(x => x.ty, (int)ESource.FPTS),
-                                builder.Eq(x => x.key, itemValid.id),
-                            };
-                            foreach (var item in lFilter)
-                            {
-                                if (filter is null)
-                                {
-                                    filter = item;
-                                    continue;
-                                }
-                                filter &= item;
-                            }
-                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
-                            if (entityValid != null)
-                                continue;
-
-                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
-                            {
-                                d = d,
-                                key = itemValid.id,
-                                ty = (int)ESource.FPTS
-                            });
-
-                            sBuilder.AppendLine($"[FPTS - Phân tích cổ phiếu] {itemValid.title}");
-                            sBuilder.AppendLine($"Link: https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=179");
+                            sBuilder.AppendLine($"[KBS - Phân tích cổ phiếu] {itemValid.title}");
+                            sBuilder.AppendLine($"Link: {itemValid.path}");
                         }
                     }
                 }
@@ -832,6 +874,48 @@ namespace StockLib.Service
 
                             sBuilder.AppendLine($"[PSI - Báo cáo ngành] {itemValid.title}");
                             sBuilder.AppendLine($"Link: https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep");
+                        }
+                    }
+                }
+
+                var lKBSIndustry = await _apiService.KBS_GetPost(true);
+                if (lKBSIndustry != null)
+                {
+                    var lValid = lKBS.Where(x => x.date >= time);
+                    if (lValid?.Any() ?? false)
+                    {
+                        foreach (var itemValid in lValid)
+                        {
+                            FilterDefinition<ConfigBaoCaoPhanTich> filter = null;
+                            var builder = Builders<ConfigBaoCaoPhanTich>.Filter;
+                            var lFilter = new List<FilterDefinition<ConfigBaoCaoPhanTich>>()
+                            {
+                                builder.Eq(x => x.d, d),
+                                builder.Eq(x => x.ty, (int)ESource.KBS),
+                                builder.Eq(x => x.key, itemValid.id),
+                            };
+                            foreach (var item in lFilter)
+                            {
+                                if (filter is null)
+                                {
+                                    filter = item;
+                                    continue;
+                                }
+                                filter &= item;
+                            }
+                            var entityValid = _bcptRepo.GetEntityByFilter(filter);
+                            if (entityValid != null)
+                                continue;
+
+                            _bcptRepo.InsertOne(new ConfigBaoCaoPhanTich
+                            {
+                                d = d,
+                                key = itemValid.id,
+                                ty = (int)ESource.KBS
+                            });
+
+                            sBuilder.AppendLine($"[KBS - Báo cáo ngành] {itemValid.title}");
+                            sBuilder.AppendLine($"Link: {itemValid.path}");
                         }
                     }
                 }

@@ -1,4 +1,5 @@
-﻿using HtmlAgilityPack;
+﻿using Amazon.Runtime.Internal.Transform;
+using HtmlAgilityPack;
 using HttpClientToCurl;
 using iTextSharp.text;
 using iTextSharp.text.pdf.qrcode;
@@ -58,6 +59,7 @@ namespace StockLib.Service
         Task<List<BCPT_Crawl_Data>> MBS_GetPost(bool isIndustry);
         Task<List<BCPT_Crawl_Data>> PSI_GetPost(bool isIndustry);
         Task<List<BCPT_Crawl_Data>> FPTS_GetPost(bool isNganh);
+        Task<List<BCPT_Crawl_Data>> KBS_GetPost(bool isNganh);
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
         Task<Stream> TuDoanhHNX(EHnxExchange mode, DateTime dt);
@@ -1181,11 +1183,9 @@ namespace StockLib.Service
             try
             {
                 var url = $"https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=179";
-                var indexCode = 2;
                 if (isNganh)
                 {
                     url = $"https://ezsearch.fpts.com.vn/Services/EzReport/?tabid=174";
-                    indexCode = 3;
                 }
 
                 var lResult = new List<BCPT_Crawl_Data>();
@@ -1250,6 +1250,75 @@ namespace StockLib.Service
             catch (Exception ex)
             {
                 _logger.LogError($"APIService.FPTS_GetPost|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
+        public async Task<List<BCPT_Crawl_Data>> KBS_GetPost(bool isNganh)
+        {
+            try
+            {
+                var url = $"https://www.kbsec.com.vn/vi/bao-cao-cong-ty.htm";
+                if (isNganh)
+                {
+                    url = $"https://www.kbsec.com.vn/vi/bao-cao-nganh.htm";
+                }
+
+                var lResult = new List<BCPT_Crawl_Data>();
+                var link = string.Empty;
+                var client = _client.CreateClient();
+                client.BaseAddress = new Uri(url);
+                client.Timeout = TimeSpan.FromSeconds(15);
+
+                var requestMessage = new HttpRequestMessage();
+                requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36");
+                requestMessage.Method = HttpMethod.Get;
+                var responseMessage = await client.SendAsync(requestMessage);
+
+                var html = await responseMessage.Content.ReadAsStringAsync();
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
+                var lNode = doc.DocumentNode.SelectNodes($"//*[@id=\"form1\"]/main/div/div/div/div[2]/div[2]")?.Nodes();
+                if (!lNode.Any())
+                    return null;
+
+                foreach (var item in lNode)
+                {
+                    try
+                    {
+                        if (item.Name != "div" || item.InnerText.Trim().Length < 100)
+                            continue;
+                        var node = item.ChildNodes[1];
+                        
+                        var title = node.InnerText.Trim();
+                        var path = node.InnerHtml.Split("'").FirstOrDefault(x => x.Contains(".pdf"));
+                        if (string.IsNullOrWhiteSpace(title)
+                            || string.IsNullOrWhiteSpace(path))
+                            continue;
+
+                        var timeStr = item.ChildNodes[3].InnerText.Replace("AM","").Replace("PM","").Trim();
+                        var dt = timeStr.ToDateTime("dd/MM/yyyy HH:mm:ss");
+
+                        lResult.Add(new BCPT_Crawl_Data
+                        {
+                            id = $"{dt.Year}{dt.Month}{dt.Day}{path.Split('/').Last().Substring(0, 7)}",
+                            title = title,
+                            date = dt,
+                            path = path,
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"APIService.KBS_GetPost|EXCEPTION(DETAIL)| INPUT: {JsonConvert.SerializeObject(item)}| {ex.Message}");
+                    }
+
+                }
+
+                return lResult;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.KBS_GetPost|EXCEPTION| {ex.Message}");
             }
             return null;
         }

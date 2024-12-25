@@ -376,6 +376,7 @@ namespace StockLib.Model
         public string id { get; set; }
         public string title { get; set; }
         public DateTime date { get; set; }
+        public string path { get; set; }
     }
 
     public class MacroMicro_Close
