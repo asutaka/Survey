@@ -52,11 +52,11 @@ namespace StockLib.Service
         Task<List<MigrateAsset_Data>> MigrateAsset_GetPost();
         Task<List<AGR_Data>> Agribank_GetPost(bool isIndustry);
         Task<List<VCI_Content>> VCI_GetPost();
-        Task<List<BCPT_Crawl_Data>> SSI_GetPost();
-        Task<List<BCPT_Crawl_Data>> BSC_GetPost();
+        Task<List<BCPT_Crawl_Data>> SSI_GetPost(bool isIndustry);
+        Task<List<BCPT_Crawl_Data>> BSC_GetPost(bool isIndustry);
         Task<List<VCBS_Data>> VCBS_GetPost();
-        Task<List<BCPT_Crawl_Data>> MBS_GetPost();
-        Task<List<BCPT_Crawl_Data>> PSI_GetPost();
+        Task<List<BCPT_Crawl_Data>> MBS_GetPost(bool isIndustry);
+        Task<List<BCPT_Crawl_Data>> PSI_GetPost(bool isIndustry);
         Task<List<BCPT_Crawl_Data>> FPTS_GetPost(bool isNganh);
         Task<List<BCPT_Crawl_Data>> CafeF_GetPost();
 
@@ -946,13 +946,17 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<BCPT_Crawl_Data>> SSI_GetPost()
+        public async Task<List<BCPT_Crawl_Data>> SSI_GetPost(bool isIndustry)
         {
             try
             {
                 var lResult = new List<BCPT_Crawl_Data>();
                 var link = string.Empty;
                 var url = $"https://www.ssi.com.vn/khach-hang-ca-nhan/bao-cao-cong-ty";
+                if (isIndustry)
+                {
+                    url = "https://www.ssi.com.vn/khach-hang-ca-nhan/bao-cao-nganh";
+                }
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 client.Timeout = TimeSpan.FromSeconds(15);
@@ -1000,13 +1004,17 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<BCPT_Crawl_Data>> BSC_GetPost()
+        public async Task<List<BCPT_Crawl_Data>> BSC_GetPost(bool isIndustry)
         {
             try
             {
                 var lResult = new List<BCPT_Crawl_Data>();
                 var link = string.Empty;
                 var url = $"https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/1";
+                if (isIndustry)
+                {
+                    url = "https://www.bsc.com.vn/bao-cao-phan-tich/danh-muc-bao-cao/2";
+                }
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 client.Timeout = TimeSpan.FromSeconds(15);
@@ -1054,13 +1062,17 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<BCPT_Crawl_Data>> MBS_GetPost()
+        public async Task<List<BCPT_Crawl_Data>> MBS_GetPost(bool isIndustry)
         {
             try
             {
                 var lResult = new List<BCPT_Crawl_Data>();
                 var link = string.Empty;
                 var url = $"https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/nghien-cuu-co-phieu/";
+                if(isIndustry)
+                {
+                    url = "https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/bao-cao-phan-tich-nganh/";
+                }    
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 client.Timeout = TimeSpan.FromSeconds(15);
@@ -1107,13 +1119,17 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<List<BCPT_Crawl_Data>> PSI_GetPost()
+        public async Task<List<BCPT_Crawl_Data>> PSI_GetPost(bool isIndustry)
         {
             try
             {
                 var lResult = new List<BCPT_Crawl_Data>();
                 var link = string.Empty;
                 var url = $"https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-phan-tich-doanh-nghiep";
+                if (isIndustry)
+                {
+                    url = "https://www.psi.vn/vi/trung-tam-phan-tich/bao-cao-nganh";
+                }
                 var client = _client.CreateClient();
                 client.BaseAddress = new Uri(url);
                 client.Timeout = TimeSpan.FromSeconds(15);
