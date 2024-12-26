@@ -217,11 +217,11 @@ namespace StockLib.PublicService
             }
         }
 
-        private async Task TraceGia(DateTime dt)
+        private async Task TraceGia(DateTime dt, bool isAll)
         {
             try
             {
-                var tinhieu = await _analyzeService.TraceGia(dt);
+                var tinhieu = await _analyzeService.TraceGia(dt, isAll);
                 if (tinhieu.Item1 > 0)
                 {
                     await _teleService.SendTextMessageAsync(_idUser, tinhieu.Item2);
@@ -290,17 +290,19 @@ namespace StockLib.PublicService
                 var isTimePrint = dt.Minute >= 15 && dt.Minute < 30;//từ phút thứ 15 đến phút thứ 30
                 var isRealTime = dt.Hour >= 9 && dt.Hour < 15;//từ 9h đến 3h
                 var isPreTrade = dt.Hour < 9;
-
-                //try
-                //{
-                //    //await _analyzeService.TongCucThongKeThangHis();
-                //    //await _analyzeService.TongCucThongKeQuyHis();
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
-                //}
+                //await TraceGia(dt, true);
                 //return;
+
+                ////try
+                ////{
+                ////    //await _analyzeService.TongCucThongKeThangHis();
+                ////    //await _analyzeService.TongCucThongKeQuyHis();
+                ////}
+                ////catch (Exception ex)
+                ////{
+                ////    _logger.LogError($"AnalyzeStockService.AnalyzeJob|EXCEPTION(TongCucThongKe)| {ex.Message}");
+                ////}
+                ////return;
 
                 await BaoCaoPhanTich(dt);
                 await TongCucHaiQuan(dt);
@@ -309,11 +311,17 @@ namespace StockLib.PublicService
                     await TongCucThongKe(dt);
                 }
 
-                if (dt.Minute < 30 && (dt.Hour == 9
-                    || dt.Hour == 13
-                    || dt.Hour == 17))
+                //Trace giá
+                if (dt.Minute < 30)
                 {
-                    await TraceGia(dt);
+                    if (dt.Hour == 9 || dt.Hour == 13)
+                    {
+                        await TraceGia(dt, false);
+                    }
+                    else if (dt.Hour == 17)
+                    {
+                        await TraceGia(dt, true);
+                    }
                 }
 
                 if (isDayOfWork)

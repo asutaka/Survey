@@ -8,7 +8,7 @@ namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
-        public async Task<(int, string)> TraceGia(DateTime dt)
+        public async Task<(int, string)> TraceGia(DateTime dt, bool isAll)
         {
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
             var dTime = new DateTimeOffset(new DateTime(dt.Year, dt.Month, dt.Day)).ToUnixTimeSeconds();
@@ -41,7 +41,7 @@ namespace StockLib.Service
                                                         || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 1).To2Digit()}"
                                                         || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 2).To2Digit()}"
                                                         || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 3).To2Digit()}");
-                    if(near != null)
+                    if (near != null)
                     {
                         var prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}");
                         if (prev is null)
@@ -61,16 +61,29 @@ namespace StockLib.Service
 
                         var strMes = string.Empty;
                         var rate = Math.Round(100 * (-1 + cur.metalsPrice.average / near.metalsPrice.average), 1);
-                        if (rate >= flag || rate <= -flag)
+                        if (isAll)
                         {
                             strMes = $"- Giá phốt pho vàng(weekly): {rate}%";
                             if (prev != null)
                             {
                                 var ratePrev = Math.Round(100 * (-1 + cur.metalsPrice.average / prev.metalsPrice.average), 1);
-                                strMes += $" |YoY: {Math.Round(ratePrev, 1)}%";
+                                strMes += $" |YoY: {Math.Round(ratePrev, 1)}% | => DGC, PAT";
                             }
                         }
-                       if(!string.IsNullOrWhiteSpace(strMes))
+                        else
+                        {
+                            if (rate >= flag || rate <= -flag)
+                            {
+                                strMes = $"- Giá phốt pho vàng(weekly): {rate}%";
+                                if (prev != null)
+                                {
+                                    var ratePrev = Math.Round(100 * (-1 + cur.metalsPrice.average / prev.metalsPrice.average), 1);
+                                    strMes += $" |YoY: {Math.Round(ratePrev, 1)}% |=> DGC, PAT";
+                                }
+                            }
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(strMes))
                         {
                             strOutput.AppendLine(strMes);
                         }
@@ -78,9 +91,16 @@ namespace StockLib.Service
                 }
 
                 var wci = await _apiService.Drewry_WCI();
-                if (wci.Item1 >= flag || wci.Item1 <= -flag)
+                if(isAll)
                 {
-                    strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%");
+                    strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}% |=> HAH");
+                }
+                else
+                {
+                    if (wci.Item1 >= flag || wci.Item1 <= -flag)
+                    {
+                        strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%|=> HAH");
+                    }
                 }
 
                 var bdti = await _apiService.Macrovar_Commodities();

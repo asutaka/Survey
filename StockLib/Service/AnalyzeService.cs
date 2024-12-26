@@ -23,7 +23,7 @@ namespace StockLib.Service
         Task<(int, string)> TongCucHaiQuan(DateTime dt, EConfigDataType mode);
         Task<(int, string)> TinHieuMuaBan();
         Task<(int, string)> BaoCaoPhanTich(DateTime dt);
-        Task<(int, string)> TraceGia(DateTime dt);
+        Task<(int, string)> TraceGia(DateTime dt, bool isAll);
 
         Task<(int, string)> TinHieuMuaBanCoin_Binance();
         Task<(int, string)> TinHieuMuaBanCoin_PriceAction_Binance();
