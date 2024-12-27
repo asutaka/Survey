@@ -65,8 +65,8 @@ namespace StockLib.Service
                 foreach (var item in res.data)
                 {
                     if (!"Binance".Equals(item.exchangeName, StringComparison.OrdinalIgnoreCase)
-                        || !_lSymbol.Contains(item.contractCode)
-                        || item.tradeTurnover < 15000)
+                        //|| !_lSymbol.Contains(item.contractCode)
+                        || item.tradeTurnover < 20000)
                         continue;
 
                     var message = $"{item.posSide}|{item.tradeTurnover.ToString("#,##0.##")}";
@@ -77,7 +77,7 @@ namespace StockLib.Service
                     {
                         if (dat is null || dat.data is null || dat.data.liqHeatMap is null)
                         {
-                            if(item.tradeTurnover >= 20000)
+                            if(item.tradeTurnover >= 25000)
                             {
                                 await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodataliquid] {item.baseCoin}|{message}");
                             }    
@@ -87,7 +87,7 @@ namespace StockLib.Service
                         var lPrice = await _apiService.GetCoinData_Binance(item.contractCode, "1h", DateTimeOffset.Now.AddHours(-12).ToUnixTimeMilliseconds());
                         if (!(lPrice?.Any() ?? false))
                         {
-                            if (item.tradeTurnover >= 20000)
+                            if (item.tradeTurnover >= 25000)
                             {
                                 await _teleService.SendTextMessageAsync(_channel, $"[LOG-nodataprice] {item.baseCoin}|{message}");
                             }
@@ -126,7 +126,7 @@ namespace StockLib.Service
                             }
                             if (priceMaxCeil <= 0)
                             {
-                                if (item.tradeTurnover >= 20000)
+                                if (item.tradeTurnover >= 25000)
                                 {
                                     await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
                                 }
@@ -166,7 +166,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                if (item.tradeTurnover >= 20000)
+                                if (item.tradeTurnover >= 25000)
                                 {
                                     await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopassrule] {item.baseCoin}({curPrice})|{message}");
                                 }
@@ -182,7 +182,7 @@ namespace StockLib.Service
                             }
                             if (priceMaxFloor <= 0)
                             {
-                                if (item.tradeTurnover >= 20000)
+                                if (item.tradeTurnover >= 25000)
                                 {
                                     await _teleService.SendTextMessageAsync(_channel, $"[LOG-noliquid] {item.baseCoin}({curPrice})|{message}");
                                 }
@@ -222,7 +222,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                if (item.tradeTurnover >= 20000)
+                                if (item.tradeTurnover >= 25000)
                                 {
                                     await _teleService.SendTextMessageAsync(_channel, $"[LOG-nopassrule] {item.baseCoin}({curPrice})|{message}");
                                 }
