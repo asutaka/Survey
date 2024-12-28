@@ -533,6 +533,8 @@ namespace StockLib.Utils
         milk = 17,//Giá sữa
         [Display(Name = "DXY")]
         DXY = 18,//Chỉ số đô la
+        [Display(Name = "kraft-pulp")]
+        kraftpulp = 19
     }
 
     public enum ECDKTType

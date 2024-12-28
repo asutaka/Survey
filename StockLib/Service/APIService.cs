@@ -1,22 +1,14 @@
-﻿using Amazon.Runtime.Internal.Transform;
-using HtmlAgilityPack;
-using HttpClientToCurl;
-using iTextSharp.text;
-using iTextSharp.text.pdf.qrcode;
+﻿using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver.Core.WireProtocol.Messages;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Skender.Stock.Indicators;
-using StockLib.DAL.Entity;
 using StockLib.Model;
 using StockLib.Service.Settings;
 using StockLib.Utils;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
-using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig.DocumentLayoutAnalysis.WordExtractor;
 using static StockLib.Service.APIService;
 
 namespace StockLib.Service
@@ -74,10 +66,10 @@ namespace StockLib.Service
 
 
         Task<List<Metal_Detail>> Metal_GetYellowPhotpho();
+        Task<List<Pig333_Clean>> Pig333_GetPigPrice();
         Task<double> Tradingeconimic_GetForex(string code);
         Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
-        Task<MacroVar_Commodities_Data> Macrovar_Commodities();
-        Task<(float, float)> Drewry_WCI();
+        Task<MacroMicro_Key> MacroMicro_WCI(string key);
 
         Task<List<BinanceAllSymbol>> GetBinanceSymbol();
         Task<List<BybitSymbolDetail>> GetBybitSymbol();
@@ -1480,6 +1472,51 @@ namespace StockLib.Service
             return null; 
         }
 
+        public async Task<List<Pig333_Clean>> Pig333_GetPigPrice()
+        {
+            try
+            {
+                var client = _client.CreateClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://www.pig333.com/markets_and_prices/?accio=cotitzacions");
+                request.Headers.Add("user-agent", "zzz");
+                var content = new StringContent("moneda=VND&unitats=kg&mercats=166", null, "application/x-www-form-urlencoded");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseMessageStr = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<Pig333_Main>(responseMessageStr);
+                responseModel.resultat = responseModel.resultat.Where(x => x.Contains("economia.data.addRow")).ToList();
+                responseModel.resultat = responseModel.resultat.Select(x => x.Replace("economia.data.addRow([new Date(", "").Replace("]", "").Replace(")","")).ToList();
+                
+                var lRes = new List<Pig333_Clean>();
+                foreach (var item in responseModel.resultat)
+                {
+                    try
+                    {
+                        var strSplit = item.Split(',');
+                        var i0 = int.Parse(strSplit[0].Trim());
+                        var i1 = int.Parse(strSplit[1].Trim());
+                        var i2 = int.Parse(strSplit[2].Trim());
+                        var i3 = decimal.Parse(strSplit[3].Trim());
+                        lRes.Add(new Pig333_Clean
+                        {
+                            Date = new DateTime(i0, i1, i2).AddMonths(1),
+                            Value = i3
+                        });
+                    }
+                    catch { }
+                }
+                lRes = lRes.OrderBy(x => x.Date).ToList();
+                
+                return lRes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Pig333_GetPigPrice|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
         public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()
         {
             try
@@ -1499,7 +1536,8 @@ namespace StockLib.Service
                     EPrice.Urea.GetDisplayName(), //U rê
                     EPrice.polyvinyl.GetDisplayName(), //Ống nhựa PVC
                     EPrice.Nickel.GetDisplayName(), //Niken
-                    EPrice.milk.GetDisplayName()//Sữa
+                    EPrice.milk.GetDisplayName(),//Sữa
+                    EPrice.kraftpulp.GetDisplayName()//Bột giấy
                 };
 
                 var lResult = new List<TradingEconomics_Data>();
@@ -1537,7 +1575,7 @@ namespace StockLib.Service
                             }
                             else if (i == 4)
                             {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                var isFloat = decimal.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
                                 if (isFloat)
                                 {
                                     model.Weekly = val;
@@ -1545,7 +1583,7 @@ namespace StockLib.Service
                             }
                             else if (i == 5)
                             {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                var isFloat = decimal.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
                                 if (isFloat)
                                 {
                                     model.Monthly = val;
@@ -1553,7 +1591,7 @@ namespace StockLib.Service
                             }
                             else if (i == 6)
                             {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                var isFloat = decimal.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
                                 if (isFloat)
                                 {
                                     model.YTD = val;
@@ -1561,7 +1599,7 @@ namespace StockLib.Service
                             }
                             else if (i == 7)
                             {
-                                var isFloat = float.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
+                                var isFloat = decimal.TryParse(columnsArray[i].InnerText.Replace("%", "").Trim(), out var val);
                                 if (isFloat)
                                 {
                                     model.YoY = val;
@@ -1585,41 +1623,16 @@ namespace StockLib.Service
             return null;
         }
 
-        public async Task<MacroVar_Commodities_Data> Macrovar_Commodities()
-        {
-            var url = $"https://macrovar.com/wp-admin/admin-ajax.php";
-            var body = $"action=update_market_tables&nonce=01ba1875c1&cntid=-1";
-            try
-            {
-                var client = _client.CreateClient();
-                client.Timeout = TimeSpan.FromSeconds(15);
-                client.BaseAddress = new Uri(url);
-                var requestMessage = new HttpRequestMessage();
-                requestMessage.Method = HttpMethod.Post;
-                requestMessage.Content = new StringContent(body, Encoding.UTF8, "application/x-www-form-urlencoded");
-                var responseMessage = await client.SendAsync(requestMessage);
-
-                if (responseMessage.StatusCode != HttpStatusCode.OK)
-                    return null;
-
-                var responseMessageStr = await responseMessage.Content.ReadAsStringAsync();
-                var responseModel = JsonConvert.DeserializeObject<MacroVar_Commodities_Main>(responseMessageStr);
-                return responseModel?.prices?.num;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"APIService.Macrovar_Commodities|EXCEPTION| {ex.Message}");
-            }
-            return null;
-        }
-
-        public async Task<(float, float)> Drewry_WCI()
+        public async Task<(string, string)> MacroMicro_GetAuthorize()
         {
             try
             {
-                var link = string.Empty;
-                var url = $"https://www.drewry.co.uk/supply-chain-advisors/supply-chain-expertise/world-container-index-assessed-by-drewry";
-                var client = _client.CreateClient();
+                var cookies = new CookieContainer();
+                var handler = new HttpClientHandler();
+                handler.CookieContainer = cookies;
+
+                var url = $"https://en.macromicro.me/charts/44756/drewry-world-container-index";
+                var client = new HttpClient(handler);
                 client.BaseAddress = new Uri(url);
                 client.Timeout = TimeSpan.FromSeconds(15);
 
@@ -1628,75 +1641,63 @@ namespace StockLib.Service
                 requestMessage.Method = HttpMethod.Get;
                 var responseMessage = await client.SendAsync(requestMessage);
 
-                //var responseMessage = await client.GetAsync("", HttpCompletionOption.ResponseContentRead);
                 var html = await responseMessage.Content.ReadAsStringAsync();
-                var doc = new HtmlDocument();
-                doc.LoadHtml(html);
+                var index = html.IndexOf("data-stk=");
+                if (index < 0)
+                    return (null, null);
 
-                var urls = doc.DocumentNode.Descendants("img")
-                                .Select(e => e.GetAttributeValue("src", null))
-                                .Where(s => !String.IsNullOrEmpty(s));
-                var truePath = urls.FirstOrDefault(x => x.Contains("WCI-Table"));
-                if (truePath != null)
-                {
-                    //Call Next
-                    var clientDetail = new HttpClient { BaseAddress = new Uri(truePath) };
-                    responseMessage = await clientDetail.GetAsync("", HttpCompletionOption.ResponseContentRead);
-                    var content = await responseMessage.Content.ReadAsStringAsync();
-                    doc.LoadHtml(content);
-                    var gs = doc.DocumentNode.Descendants("tspan");
-                    var count = 0;
-                    var isFirst = true;
-                    var flag = false;
-                    var sBuilder = new StringBuilder();
+                var sub = html.Substring(index + 10);
+                var indexCut = sub.IndexOf("\"");
+                if (indexCut < 0)
+                    return (null, null);
 
-                    foreach (var item in gs)
-                    {
-                        if (isFirst)
-                        {
-                            isFirst = false;
-                            continue;
-                        }
-
-                        if (flag)
-                        {
-                            sBuilder.AppendLine(item.InnerText);
-                            if(item.InnerText.Contains("%"))
-                            {
-                                count++;
-                            }
-
-                            if (count >= 2)
-                                break;
-                        }
-
-                        if (item.InnerText.Contains("$"))
-                        {
-                            count++;
-                        }
-
-                        if(count >= 3)
-                        {
-                            flag = true;
-                            count = 0;
-                            continue;
-                        }
-                    }
-
-                    var strSplit = sBuilder.ToString().Split("%");
-                    if(strSplit.Length >= 2)
-                    {
-                        var isFloat1 = float.TryParse(strSplit[0].Replace("\r\n", ""), out var val1);
-                        var isFloat2 = float.TryParse(strSplit[1].Replace("\r\n", ""), out var val2);
-                        return (val1, val2);
-                    }
-                }
+                var authorize = sub.Substring(0, indexCut);
+                var uri = new Uri(url);
+                var responseCookies = cookies.GetCookies(uri).Cast<Cookie>();
+                return (authorize, responseCookies?.FirstOrDefault().ToString());
             }
             catch (Exception ex)
             {
-                _logger.LogError($"APIService.Drewry_WCI|EXCEPTION| {ex.Message}");
+                _logger.LogError($"APIService.MacroMicro_WCI|EXCEPTION| {ex.Message}");
             }
-            return (0, 0);
+            return (null, null);
+        }
+        public async Task<MacroMicro_Key> MacroMicro_WCI(string key)
+        {
+            //wci: 44756
+            //bdti: 946
+            try
+            {
+                var res = await MacroMicro_GetAuthorize();
+                if (string.IsNullOrWhiteSpace(res.Item1)
+                    || string.IsNullOrWhiteSpace(res.Item2))
+                    return null;
+
+                var client = _client.CreateClient();
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://en.macromicro.me/charts/data/{key}");
+                request.Headers.Add("authorization", $"Bearer {res.Item1}");
+                request.Headers.Add("cookie", res.Item2);
+                request.Headers.Add("referer", "https://en.macromicro.me/collections/22190/sun-ming-te-investment-dashboard/44756/drewry-world-container-index");
+                request.Headers.Add("user-agent", "zzz");
+
+                request.Content = new StringContent(string.Empty,
+                                    Encoding.UTF8,
+                                    "application/json");//CONTENT-TYPE header
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseMessageStr = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<MacroMicro_Main>(responseMessageStr);
+                if(key.Equals("946"))
+                {
+                    return responseModel?.data.key2;
+                }    
+                return responseModel?.data.key;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.MacroMicro_WCI|EXCEPTION| {ex.Message}");
+            }
+            return null;
         }
 
         public async Task<Stream> GetChartImage(string body)

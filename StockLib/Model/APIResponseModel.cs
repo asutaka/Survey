@@ -404,28 +404,34 @@ namespace StockLib.Model
     public class TradingEconomics_Data
     {
         public string Code { get; set; }
-        public float Weekly { get; set; }
-        public float Monthly { get; set; }
-        public float YTD { get; set; }
-        public float YoY { get; set; }
+        public decimal Weekly { get; set; }
+        public decimal Monthly { get; set; }
+        public decimal YTD { get; set; }
+        public decimal YoY { get; set; }
     }
 
-    public class MacroVar_Commodities_Main
+    public class MacroMicro_Main
     {
-        public MacroVar_Commodities_Price prices { get; set; }
+        public MacroMicro_Data data { get; set; }
     }
 
-    public class MacroVar_Commodities_Price
+    public class MacroMicro_Data
     {
-        [JsonProperty(PropertyName ="172")]
-        public MacroVar_Commodities_Data num { get; set; }
+        [JsonProperty("c:44756")]
+        public MacroMicro_Key key { get; set; }
+        [JsonProperty("c:946")]
+        public MacroMicro_Key key2 { get; set; }
     }
 
-    public class MacroVar_Commodities_Data
+    public class MacroMicro_Key
     {
-        public double pr { get; set; }
-        public double ow { get; set; }
-        public double oy { get; set; }
+        public List<List<List<string>>> series { get; set; }
+    }
+
+    public class MacroMicro_CleanData
+    {
+        public DateTime Date { get; set; }
+        public decimal Value { get; set; }
     }
 
     public class Metal_Main
@@ -445,7 +451,29 @@ namespace StockLib.Model
 
     public class Metal_Price
     {
-        public float average { get; set; }
+        public decimal average { get; set; }
         public string renewDate { get; set; }
+        public DateTime Date { get; set; }
+    }
+
+    public class Pig333_Main
+    {
+        public List<string> resultat { get; set; }
+    }
+
+    public class Pig333_Clean
+    {
+        public DateTime Date { get; set; }
+        public decimal Value { get; set; }
+    }
+
+    public class TraceGiaModel
+    {
+        public string content { get; set; }
+        public decimal weekly { get; set; }
+        public decimal monthly { get; set; }
+        public decimal yearly { get; set; }
+        public decimal YTD { get; set; }
+        public string description { get; set; }
     }
 }

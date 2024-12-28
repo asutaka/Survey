@@ -186,11 +186,6 @@ namespace StockLib.Service
                         }
                     }
 
-                    if (stock.IsWCI())
-                    {
-                        var wci = await _apiService.Drewry_WCI();
-                        strRes.AppendLine($"+ Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%");
-                    }
                     if (stock.IsYellowPhotpho())
                     {
                         var lPhotpho = await _apiService.Metal_GetYellowPhotpho();
@@ -231,14 +226,6 @@ namespace StockLib.Service
                                 }
                                 strRes.AppendLine(strMes);
                             }
-                        }
-                    }
-                    if (stock.IsBDTI())
-                    {
-                        var bdti = await _apiService.Macrovar_Commodities(); //BDTI: cước vận tải dầu
-                        if (bdti != null)
-                        {
-                            strRes.AppendLine($"+ Cước vận tải dầu thô(weekly): {bdti.ow}%| YoY: {bdti.oy}%");
                         }
                     }
                     if (stock.IsDXY())
