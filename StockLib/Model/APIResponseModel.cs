@@ -404,28 +404,10 @@ namespace StockLib.Model
     public class TradingEconomics_Data
     {
         public string Code { get; set; }
-        public float Weekly { get; set; }
-        public float Monthly { get; set; }
-        public float YTD { get; set; }
-        public float YoY { get; set; }
-    }
-
-    public class MacroVar_Commodities_Main
-    {
-        public MacroVar_Commodities_Price prices { get; set; }
-    }
-
-    public class MacroVar_Commodities_Price
-    {
-        [JsonProperty(PropertyName ="172")]
-        public MacroVar_Commodities_Data num { get; set; }
-    }
-
-    public class MacroVar_Commodities_Data
-    {
-        public double pr { get; set; }
-        public double ow { get; set; }
-        public double oy { get; set; }
+        public decimal Weekly { get; set; }
+        public decimal Monthly { get; set; }
+        public decimal YTD { get; set; }
+        public decimal YoY { get; set; }
     }
 
     public class MacroMicro_Main
@@ -437,6 +419,8 @@ namespace StockLib.Model
     {
         [JsonProperty("c:44756")]
         public MacroMicro_Key key { get; set; }
+        [JsonProperty("c:946")]
+        public MacroMicro_Key key2 { get; set; }
     }
 
     public class MacroMicro_Key
@@ -467,8 +451,9 @@ namespace StockLib.Model
 
     public class Metal_Price
     {
-        public float average { get; set; }
+        public decimal average { get; set; }
         public string renewDate { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public class TraceGiaModel

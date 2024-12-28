@@ -37,18 +37,20 @@ namespace StockLib.Service
                     _configRepo.DeleteMany(filter);
                 }
 
+                var lTraceGia = new List<TraceGiaModel>();
                 var strOutput = new StringBuilder();
 
-                var wci = await _apiService.MacroMicro_WCI();
+                #region WCI Index
+                var wci = await _apiService.MacroMicro_WCI("44756");
                 var modelWCI = new TraceGiaModel
                 {
-                    content = "Giá cước Container",
+                    content = "Cước Container",
                     description = "HAH"
                 };
                 var isPrintWCI = false;
                 if (wci != null)
                 {
-                    
+
                     var composite = wci.series.FirstOrDefault();
                     if (composite != null)
                     {
@@ -59,7 +61,7 @@ namespace StockLib.Service
                                 Date = x[0].ToDateTime("yyyy-MM-dd"),
                                 Value = decimal.Parse(x[1])
                             });
-                            if(lData.Any())
+                            if (lData.Any())
                             {
                                 var last = lData.Last();
                                 //weekly
@@ -67,7 +69,7 @@ namespace StockLib.Service
                                 if (last.Date >= dtPrev)
                                 {
                                     var lastWeek = lData.SkipLast(1).Last();
-                                    var rateWeek = Math.Round(100 * (-1 + last.Value / lastWeek.Value));
+                                    var rateWeek = Math.Round(100 * (-1 + last.Value / lastWeek.Value), 1);
                                     modelWCI.weekly = rateWeek;
                                     if (rateWeek >= flag || rateWeek <= -flag)
                                     {
@@ -79,7 +81,7 @@ namespace StockLib.Service
                                 var itemMonthly = lData.Where(x => x.Date <= dtMonthly).OrderByDescending(x => x.Date).FirstOrDefault();
                                 if (itemMonthly != null)
                                 {
-                                    var rateMonthly = Math.Round(100 * (-1 + last.Value / itemMonthly.Value));
+                                    var rateMonthly = Math.Round(100 * (-1 + last.Value / itemMonthly.Value), 1);
                                     modelWCI.monthly = rateMonthly;
                                 }
                                 //yearly
@@ -87,7 +89,7 @@ namespace StockLib.Service
                                 var itemYearly = lData.Where(x => x.Date <= dtYearly).OrderByDescending(x => x.Date).FirstOrDefault();
                                 if (itemYearly != null)
                                 {
-                                    var rateYearly = Math.Round(100 * (-1 + last.Value / itemYearly.Value));
+                                    var rateYearly = Math.Round(100 * (-1 + last.Value / itemYearly.Value), 1);
                                     modelWCI.yearly = rateYearly;
                                 }
                                 //YTD
@@ -95,12 +97,12 @@ namespace StockLib.Service
                                 var itemYTD = lData.Where(x => x.Date <= dtYTD).OrderByDescending(x => x.Date).FirstOrDefault();
                                 if (itemYTD != null)
                                 {
-                                    var rateYTD = Math.Round(100 * (-1 + last.Value / itemYTD.Value));
+                                    var rateYTD = Math.Round(100 * (-1 + last.Value / itemYTD.Value), 1);
                                     modelWCI.YTD = rateYTD;
                                 }
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Console.WriteLine(ex.Message);
                         }
@@ -109,157 +111,341 @@ namespace StockLib.Service
                 //Print
                 if (isAll || isPrintWCI)
                 {
-                    strOutput.AppendLine(PrintTraceGia(modelWCI));
+                    lTraceGia.Add(modelWCI);
                 }
-                //photpho vang
+                #endregion
+                #region Yellow Photphorus Index
                 var lPhotpho = await _apiService.Metal_GetYellowPhotpho();
+                var modelPhotpho = new TraceGiaModel
+                {
+                    content = "Phốt pho vàng",
+                    description = "DGC,PAT"
+                };
+                var isPrintPhotpho = false;
                 if (lPhotpho?.Any() ?? false)
                 {
-                    var cur = lPhotpho.First();
-                    var time = cur.metalsPrice.renewDate.ToDateTime("yyyy-MM-dd");
-                    var nearTime = time.AddDays(-6);
-
-                    var near = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{nearTime.Day.To2Digit()}"
-                                                        || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 1).To2Digit()}"
-                                                        || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 2).To2Digit()}"
-                                                        || x.metalsPrice.renewDate == $"{nearTime.Year}-{nearTime.Month.To2Digit()}-{(nearTime.Day - 3).To2Digit()}");
-                    if (near != null)
+                    try
                     {
-                        var prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}");
-                        if (prev is null)
+                        foreach (var item in lPhotpho)
                         {
-                            prev = lPhotpho.FirstOrDefault(x => x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{time.Day.To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 1).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 2).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 3).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 4).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 5).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day + 6).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 1).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 2).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 3).To2Digit()}"
-                                                            || x.metalsPrice.renewDate == $"{time.AddYears(-1).Year}-{time.Month.To2Digit()}-{(time.Day - 4).To2Digit()}");
+                            item.metalsPrice.Date = item.metalsPrice.renewDate.ToDateTime("yyyy-MM-dd");
                         }
-
-                        var strMes = string.Empty;
-                        var rate = Math.Round(100 * (-1 + cur.metalsPrice.average / near.metalsPrice.average), 1);
-                        if (isAll)
+                        var cur = lPhotpho.First();
+                        //weekly
+                        var dtPrev = dt.AddDays(-2);
+                        if (cur.metalsPrice.Date >= dtPrev)
                         {
-                            strMes = $"- Giá phốt pho vàng(weekly): {rate}%";
-                            if (prev != null)
+                            var nearTime = cur.metalsPrice.Date.AddDays(-6);
+                            var itemWeekly = lPhotpho.Where(x => x.metalsPrice.Date <= nearTime).OrderByDescending(x => x.metalsPrice.Date).First();
+                            var rateWeek = Math.Round(100 * (-1 + cur.metalsPrice.average / itemWeekly.metalsPrice.average), 1);
+                            modelPhotpho.weekly = rateWeek;
+                            if (rateWeek >= flag || rateWeek <= -flag)
                             {
-                                var ratePrev = Math.Round(100 * (-1 + cur.metalsPrice.average / prev.metalsPrice.average), 1);
-                                strMes += $" |YoY: {Math.Round(ratePrev, 1)}% | => DGC, PAT";
+                                isPrintPhotpho = true;
                             }
                         }
-                        else
+                        //Monthly
+                        var dtMonthly = dt.AddMonths(-1);
+                        var itemMonthly = lPhotpho.Where(x => x.metalsPrice.Date <= dtMonthly).OrderByDescending(x => x.metalsPrice.Date).FirstOrDefault();
+                        if (itemMonthly != null)
                         {
-                            if (rate >= flag || rate <= -flag)
+                            var rateMonthly = Math.Round(100 * (-1 + cur.metalsPrice.average / itemMonthly.metalsPrice.average), 1);
+                            modelPhotpho.monthly = rateMonthly;
+                        }
+                        //yearly
+                        var dtYearly = dt.AddYears(-1);
+                        var itemYearly = lPhotpho.Where(x => x.metalsPrice.Date <= dtYearly).OrderByDescending(x => x.metalsPrice.Date).FirstOrDefault();
+                        if (itemYearly != null)
+                        {
+                            var rateYearly = Math.Round(100 * (-1 + cur.metalsPrice.average / itemYearly.metalsPrice.average), 1);
+                            modelPhotpho.yearly = rateYearly;
+                        }
+                        //YTD
+                        var dtYTD = new DateTime(dt.Year, 1, 2);
+                        var itemYTD = lPhotpho.Where(x => x.metalsPrice.Date <= dtYTD).OrderByDescending(x => x.metalsPrice.Date).FirstOrDefault();
+                        if (itemYTD != null)
+                        {
+                            var rateYTD = Math.Round(100 * (-1 + cur.metalsPrice.average / itemYTD.metalsPrice.average), 1);
+                            modelPhotpho.YTD = rateYTD;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                //Print
+                if (isAll || isPrintPhotpho)
+                {
+                    lTraceGia.Add(modelPhotpho);
+                }
+                #endregion
+
+                #region BDTI Index
+                var bdti = await _apiService.MacroMicro_WCI("946");
+                var modelBDTI = new TraceGiaModel
+                {
+                    content = "Cước vận tải dầu thô",
+                    description = "PVT,VTO"
+                };
+                var isPrintBDTI = false;
+                if (bdti != null)
+                {
+
+                    var composite = bdti.series.FirstOrDefault();
+                    if (composite != null)
+                    {
+                        try
+                        {
+                            var lData = composite.Select(x => new MacroMicro_CleanData
                             {
-                                strMes = $"- Giá phốt pho vàng(weekly): {rate}%";
-                                if (prev != null)
+                                Date = x[0].ToDateTime("yyyy-MM-dd"),
+                                Value = decimal.Parse(x[1])
+                            });
+                            if (lData.Any())
+                            {
+                                var last = lData.Last();
+                                //weekly
+                                var dtPrev = dt.AddDays(-2);
+                                if (last.Date >= dtPrev)
                                 {
-                                    var ratePrev = Math.Round(100 * (-1 + cur.metalsPrice.average / prev.metalsPrice.average), 1);
-                                    strMes += $" |YoY: {Math.Round(ratePrev, 1)}% |=> DGC, PAT";
+                                    var lastWeek = lData.SkipLast(1).Last();
+                                    var rateWeek = Math.Round(100 * (-1 + last.Value / lastWeek.Value), 1);
+                                    modelBDTI.weekly = rateWeek;
+                                    if (rateWeek >= flag || rateWeek <= -flag)
+                                    {
+                                        isPrintBDTI = true;
+                                    }
+                                }
+                                //Monthly
+                                var dtMonthly = dt.AddMonths(-1);
+                                var itemMonthly = lData.Where(x => x.Date <= dtMonthly).OrderByDescending(x => x.Date).FirstOrDefault();
+                                if (itemMonthly != null)
+                                {
+                                    var rateMonthly = Math.Round(100 * (-1 + last.Value / itemMonthly.Value), 1);
+                                    modelBDTI.monthly = rateMonthly;
+                                }
+                                //yearly
+                                var dtYearly = dt.AddYears(-1);
+                                var itemYearly = lData.Where(x => x.Date <= dtYearly).OrderByDescending(x => x.Date).FirstOrDefault();
+                                if (itemYearly != null)
+                                {
+                                    var rateYearly = Math.Round(100 * (-1 + last.Value / itemYearly.Value), 1);
+                                    modelBDTI.yearly = rateYearly;
+                                }
+                                //YTD
+                                var dtYTD = new DateTime(dt.Year, 1, 2);
+                                var itemYTD = lData.Where(x => x.Date <= dtYTD).OrderByDescending(x => x.Date).FirstOrDefault();
+                                if (itemYTD != null)
+                                {
+                                    var rateYTD = Math.Round(100 * (-1 + last.Value / itemYTD.Value), 1);
+                                    modelBDTI.YTD = rateYTD;
                                 }
                             }
                         }
-
-                        if (!string.IsNullOrWhiteSpace(strMes))
+                        catch (Exception ex)
                         {
-                            strOutput.AppendLine(strMes);
+                            Console.WriteLine(ex.Message);
                         }
                     }
                 }
-                
-                //var wci = await _apiService.Drewry_WCI();
-                //if(isAll)
-                //{
-                //    strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}% |=> HAH");
-                //}
-                //else
-                //{
-                //    if (wci.Item1 >= flag || wci.Item1 <= -flag)
-                //    {
-                //        strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%|=> HAH");
-                //    }
-                //}
-
-                var bdti = await _apiService.Macrovar_Commodities();
-                if (bdti.ow >= flag || bdti.ow <= -flag)
+                //Print
+                if (isAll || isPrintBDTI)
                 {
-                    strOutput.AppendLine($"   - Cước vận tải dầu thô(weekly): {bdti.ow}%| YoY: {bdti.oy}");
+                    lTraceGia.Add(modelBDTI);
                 }
+                #endregion
 
                 var lEconomic = await _apiService.Tradingeconimic_Commodities();
                 foreach (var item in lEconomic)
                 {
-                    if (item.Weekly >= flag || item.Weekly <= -flag) 
+                    if (isAll || item.Weekly >= flag || item.Weekly <= -flag) 
                     {
                         if(item.Code == EPrice.Crude_Oil.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Dầu Thô(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Dầu thô",
+                                description = "PLX,OIL",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if(item.Code == EPrice.Natural_gas.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Khí Tự Nhiên(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Khí tự nhiên",
+                                description = "GAS,DCM,DPM",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Coal.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Than(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Than",
+                                description = "",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Gold.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Vàng(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Vàng",
+                                description = "",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Steel.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Thép(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Thép",
+                                description = "HPG",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.HRC_Steel.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Thép HRC(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "HRC",
+                                description = "HSG,NKG,GDA",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Rubber.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Cao Su(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Cao su",
+                                description = "TRC,DRI",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Coffee.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Cà Phê(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Cà phê",
+                                description = "",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Rice.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Gạo(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Gạo",
+                                description = "LTG",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Sugar.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Đường(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Đường",
+                                description = "SLS,LSS,SBT,QNS",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Urea.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá U rê(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "U rê",
+                                description = "DPM,DCM",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.polyvinyl.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá nhựa PVC(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Hạt nhựa PVC",
+                                description = "BMP,NTP",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.Nickel.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Niken-PC1(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Niken",
+                                description = "PC1",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                         else if (item.Code == EPrice.milk.GetDisplayName())
                         {
-                            strOutput.AppendLine($"   - Giá Sữa(weekly): {Math.Round(item.Weekly, 1)}% |Monthly: {Math.Round(item.Monthly, 1)}% |YTD: {Math.Round(item.YTD, 1)}% |YoY: {Math.Round(item.YoY, 1)}%");
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Sữa",
+                                description = "VNM",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
                         }
                     }
                 }
 
-                //_configRepo.InsertOne(new ConfigData
-                //{
-                //    ty = (int)mode,
-                //    t = t
-                //});
+                foreach (var item in lTraceGia.OrderByDescending(x => x.weekly))
+                {
+                    strOutput.AppendLine(PrintTraceGia(item));
+                }
+
+                if(isAll)
+                {
+                    //_configRepo.InsertOne(new ConfigData
+                    //{
+                    //    ty = (int)mode,
+                    //    t = t
+                    //});
+                }
+
                 if (strOutput.Length > 0)
                 {
                     strOutput.Insert(0,"[Giá một số ngành hàng]\n");
