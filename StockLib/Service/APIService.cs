@@ -66,6 +66,7 @@ namespace StockLib.Service
 
 
         Task<List<Metal_Detail>> Metal_GetYellowPhotpho();
+        Task<List<Pig333_Clean>> Pig333_GetPigPrice();
         Task<double> Tradingeconimic_GetForex(string code);
         Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities();
         Task<MacroMicro_Key> MacroMicro_WCI(string key);
@@ -1471,6 +1472,51 @@ namespace StockLib.Service
             return null; 
         }
 
+        public async Task<List<Pig333_Clean>> Pig333_GetPigPrice()
+        {
+            try
+            {
+                var client = _client.CreateClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://www.pig333.com/markets_and_prices/?accio=cotitzacions");
+                request.Headers.Add("user-agent", "zzz");
+                var content = new StringContent("moneda=VND&unitats=kg&mercats=166", null, "application/x-www-form-urlencoded");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+                response.EnsureSuccessStatusCode();
+                var responseMessageStr = await response.Content.ReadAsStringAsync();
+                var responseModel = JsonConvert.DeserializeObject<Pig333_Main>(responseMessageStr);
+                responseModel.resultat = responseModel.resultat.Where(x => x.Contains("economia.data.addRow")).ToList();
+                responseModel.resultat = responseModel.resultat.Select(x => x.Replace("economia.data.addRow([new Date(", "").Replace("]", "").Replace(")","")).ToList();
+                
+                var lRes = new List<Pig333_Clean>();
+                foreach (var item in responseModel.resultat)
+                {
+                    try
+                    {
+                        var strSplit = item.Split(',');
+                        var i0 = int.Parse(strSplit[0].Trim());
+                        var i1 = int.Parse(strSplit[1].Trim());
+                        var i2 = int.Parse(strSplit[2].Trim());
+                        var i3 = decimal.Parse(strSplit[3].Trim());
+                        lRes.Add(new Pig333_Clean
+                        {
+                            Date = new DateTime(i0, i1, i2).AddMonths(1),
+                            Value = i3
+                        });
+                    }
+                    catch { }
+                }
+                lRes = lRes.OrderBy(x => x.Date).ToList();
+                
+                return lRes;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"APIService.Pig333_GetPigPrice|EXCEPTION| {ex.Message}");
+            }
+            return null;
+        }
+
         public async Task<List<TradingEconomics_Data>> Tradingeconimic_Commodities()
         {
             try
@@ -1490,7 +1536,8 @@ namespace StockLib.Service
                     EPrice.Urea.GetDisplayName(), //U rê
                     EPrice.polyvinyl.GetDisplayName(), //Ống nhựa PVC
                     EPrice.Nickel.GetDisplayName(), //Niken
-                    EPrice.milk.GetDisplayName()//Sữa
+                    EPrice.milk.GetDisplayName(),//Sữa
+                    EPrice.kraftpulp.GetDisplayName()//Bột giấy
                 };
 
                 var lResult = new List<TradingEconomics_Data>();

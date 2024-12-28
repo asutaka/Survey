@@ -14,7 +14,7 @@ namespace StockLib.Service
             var res = $"   - {model.content}: W({model.weekly}%)|M({model.monthly}%)|Y({model.yearly}%)|YTD({model.YTD}%)";
             if (!string.IsNullOrWhiteSpace(model.description))
             {
-                res += $"|=> {model.description}";
+                res += $"\n       => {model.description}\n";
             }
             return res;
         }
@@ -39,6 +39,68 @@ namespace StockLib.Service
 
                 var lTraceGia = new List<TraceGiaModel>();
                 var strOutput = new StringBuilder();
+
+                #region Giá Thịt Lợn
+                var pig = await _apiService.Pig333_GetPigPrice();
+                var modelPig = new TraceGiaModel
+                {
+                    content = "Giá thịt heo",
+                    description = "DBC,BAF,HAG"
+                };
+                var isPrintPig = false;
+                if (pig != null && pig.Any())
+                {
+                    try
+                    {
+                        var last = pig.Last();
+                        //weekly
+                        var dtPrev = dt.AddDays(-2);
+                        if (last.Date >= dtPrev)
+                        {
+                            var lastWeek = pig.SkipLast(1).Last();
+                            var rateWeek = Math.Round(100 * (-1 + last.Value / lastWeek.Value), 1);
+                            modelPig.weekly = rateWeek;
+                            if (rateWeek >= flag || rateWeek <= -flag)
+                            {
+                                isPrintPig = true;
+                            }
+                        }
+                        //Monthly
+                        var dtMonthly = dt.AddMonths(-1);
+                        var itemMonthly = pig.Where(x => x.Date <= dtMonthly).OrderByDescending(x => x.Date).FirstOrDefault();
+                        if (itemMonthly != null)
+                        {
+                            var rateMonthly = Math.Round(100 * (-1 + last.Value / itemMonthly.Value), 1);
+                            modelPig.monthly = rateMonthly;
+                        }
+                        //yearly
+                        var dtYearly = dt.AddYears(-1);
+                        var itemYearly = pig.Where(x => x.Date <= dtYearly).OrderByDescending(x => x.Date).FirstOrDefault();
+                        if (itemYearly != null)
+                        {
+                            var rateYearly = Math.Round(100 * (-1 + last.Value / itemYearly.Value), 1);
+                            modelPig.yearly = rateYearly;
+                        }
+                        //YTD
+                        var dtYTD = new DateTime(dt.Year, 1, 2);
+                        var itemYTD = pig.Where(x => x.Date <= dtYTD).OrderByDescending(x => x.Date).FirstOrDefault();
+                        if (itemYTD != null)
+                        {
+                            var rateYTD = Math.Round(100 * (-1 + last.Value / itemYTD.Value), 1);
+                            modelPig.YTD = rateYTD;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                //Print
+                if (isAll || isPrintPig)
+                {
+                    lTraceGia.Add(modelPig);
+                } 
+                #endregion
 
                 #region WCI Index
                 var wci = await _apiService.MacroMicro_WCI("44756");
@@ -285,6 +347,18 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
+                        else if (item.Code == EPrice.kraftpulp.GetDisplayName())
+                        {
+                            lTraceGia.Add(new TraceGiaModel
+                            {
+                                content = "Bột giấy",
+                                description = "DHC",
+                                weekly = item.Weekly,
+                                monthly = item.Monthly,
+                                yearly = item.YoY,
+                                YTD = item.YTD
+                            });
+                        }
                         else if (item.Code == EPrice.Coal.GetDisplayName())
                         {
                             lTraceGia.Add(new TraceGiaModel
@@ -439,11 +513,11 @@ namespace StockLib.Service
 
                 if(isAll)
                 {
-                    //_configRepo.InsertOne(new ConfigData
-                    //{
-                    //    ty = (int)mode,
-                    //    t = t
-                    //});
+                    _configRepo.InsertOne(new ConfigData
+                    {
+                        ty = (int)mode,
+                        t = t
+                    });
                 }
 
                 if (strOutput.Length > 0)

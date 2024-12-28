@@ -456,6 +456,17 @@ namespace StockLib.Model
         public DateTime Date { get; set; }
     }
 
+    public class Pig333_Main
+    {
+        public List<string> resultat { get; set; }
+    }
+
+    public class Pig333_Clean
+    {
+        public DateTime Date { get; set; }
+        public decimal Value { get; set; }
+    }
+
     public class TraceGiaModel
     {
         public string content { get; set; }
