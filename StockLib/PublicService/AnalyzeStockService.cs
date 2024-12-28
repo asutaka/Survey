@@ -224,7 +224,7 @@ namespace StockLib.PublicService
                 var tinhieu = await _analyzeService.TraceGia(dt, isAll);
                 if (tinhieu.Item1 > 0)
                 {
-                    await _teleService.SendTextMessageAsync(_idUser, tinhieu.Item2);
+                    await _teleService.SendTextMessageAsync(_idGroup, tinhieu.Item2);
                     Thread.Sleep(1000);
                 }
             }
