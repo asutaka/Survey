@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using StockLib.DAL.Entity;
+using StockLib.Model;
 using StockLib.Utils;
 using System.Text;
 
@@ -8,6 +9,15 @@ namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
+        private string PrintTraceGia(TraceGiaModel model)
+        {
+            var res = $"   - {model.content}: W({model.weekly}%)|M({model.monthly}%)|Y({model.yearly}%)|YTD({model.YTD}%)";
+            if (!string.IsNullOrWhiteSpace(model.description))
+            {
+                res += $"|=> {model.description}";
+            }
+            return res;
+        }
         public async Task<(int, string)> TraceGia(DateTime dt, bool isAll)
         {
             var t = long.Parse($"{dt.Year}{dt.Month.To2Digit()}{dt.Day.To2Digit()}");
@@ -29,6 +39,78 @@ namespace StockLib.Service
 
                 var strOutput = new StringBuilder();
 
+                var wci = await _apiService.MacroMicro_WCI();
+                var modelWCI = new TraceGiaModel
+                {
+                    content = "Giá cước Container",
+                    description = "HAH"
+                };
+                var isPrintWCI = false;
+                if (wci != null)
+                {
+                    
+                    var composite = wci.series.FirstOrDefault();
+                    if (composite != null)
+                    {
+                        try
+                        {
+                            var lData = composite.Select(x => new MacroMicro_CleanData
+                            {
+                                Date = x[0].ToDateTime("yyyy-MM-dd"),
+                                Value = decimal.Parse(x[1])
+                            });
+                            if(lData.Any())
+                            {
+                                var last = lData.Last();
+                                //weekly
+                                var dtPrev = dt.AddDays(-2);
+                                if (last.Date >= dtPrev)
+                                {
+                                    var lastWeek = lData.SkipLast(1).Last();
+                                    var rateWeek = Math.Round(100 * (-1 + last.Value / lastWeek.Value));
+                                    modelWCI.weekly = rateWeek;
+                                    if (rateWeek >= flag || rateWeek <= -flag)
+                                    {
+                                        isPrintWCI = true;
+                                    }
+                                }
+                                //Monthly
+                                var dtMonthly = dt.AddMonths(-1);
+                                var itemMonthly = lData.Where(x => x.Date <= dtMonthly).OrderByDescending(x => x.Date).FirstOrDefault();
+                                if (itemMonthly != null)
+                                {
+                                    var rateMonthly = Math.Round(100 * (-1 + last.Value / itemMonthly.Value));
+                                    modelWCI.monthly = rateMonthly;
+                                }
+                                //yearly
+                                var dtYearly = dt.AddYears(-1);
+                                var itemYearly = lData.Where(x => x.Date <= dtYearly).OrderByDescending(x => x.Date).FirstOrDefault();
+                                if (itemYearly != null)
+                                {
+                                    var rateYearly = Math.Round(100 * (-1 + last.Value / itemYearly.Value));
+                                    modelWCI.yearly = rateYearly;
+                                }
+                                //YTD
+                                var dtYTD = new DateTime(dt.Year, 1, 2);
+                                var itemYTD = lData.Where(x => x.Date <= dtYTD).OrderByDescending(x => x.Date).FirstOrDefault();
+                                if (itemYTD != null)
+                                {
+                                    var rateYTD = Math.Round(100 * (-1 + last.Value / itemYTD.Value));
+                                    modelWCI.YTD = rateYTD;
+                                }
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                    }
+                }
+                //Print
+                if (isAll || isPrintWCI)
+                {
+                    strOutput.AppendLine(PrintTraceGia(modelWCI));
+                }
                 //photpho vang
                 var lPhotpho = await _apiService.Metal_GetYellowPhotpho();
                 if (lPhotpho?.Any() ?? false)
@@ -89,19 +171,19 @@ namespace StockLib.Service
                         }
                     }
                 }
-
-                var wci = await _apiService.Drewry_WCI();
-                if(isAll)
-                {
-                    strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}% |=> HAH");
-                }
-                else
-                {
-                    if (wci.Item1 >= flag || wci.Item1 <= -flag)
-                    {
-                        strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%|=> HAH");
-                    }
-                }
+                
+                //var wci = await _apiService.Drewry_WCI();
+                //if(isAll)
+                //{
+                //    strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}% |=> HAH");
+                //}
+                //else
+                //{
+                //    if (wci.Item1 >= flag || wci.Item1 <= -flag)
+                //    {
+                //        strOutput.AppendLine($"   - Giá cước Container(weekly): {wci.Item1}%| YoY: {wci.Item2}%|=> HAH");
+                //    }
+                //}
 
                 var bdti = await _apiService.Macrovar_Commodities();
                 if (bdti.ow >= flag || bdti.ow <= -flag)

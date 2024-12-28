@@ -428,6 +428,28 @@ namespace StockLib.Model
         public double oy { get; set; }
     }
 
+    public class MacroMicro_Main
+    {
+        public MacroMicro_Data data { get; set; }
+    }
+
+    public class MacroMicro_Data
+    {
+        [JsonProperty("c:44756")]
+        public MacroMicro_Key key { get; set; }
+    }
+
+    public class MacroMicro_Key
+    {
+        public List<List<List<string>>> series { get; set; }
+    }
+
+    public class MacroMicro_CleanData
+    {
+        public DateTime Date { get; set; }
+        public decimal Value { get; set; }
+    }
+
     public class Metal_Main
     {
         public Metal_Data data { get; set; }
@@ -447,5 +469,15 @@ namespace StockLib.Model
     {
         public float average { get; set; }
         public string renewDate { get; set; }
+    }
+
+    public class TraceGiaModel
+    {
+        public string content { get; set; }
+        public decimal weekly { get; set; }
+        public decimal monthly { get; set; }
+        public decimal yearly { get; set; }
+        public decimal YTD { get; set; }
+        public string description { get; set; }
     }
 }
