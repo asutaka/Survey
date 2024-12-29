@@ -312,7 +312,7 @@ namespace StockLib.PublicService
                 }
 
                 //Trace giá
-                if (dt.Minute < 30)
+                if (dt.Minute < 15)
                 {
                     if (dt.Hour == 9 || dt.Hour == 13)
                     {
