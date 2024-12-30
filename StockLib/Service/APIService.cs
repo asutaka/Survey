@@ -1497,7 +1497,9 @@ namespace StockLib.Service
                         var i0 = int.Parse(strSplit[0].Trim());
                         var i1 = int.Parse(strSplit[1].Trim());
                         var i2 = int.Parse(strSplit[2].Trim());
-                        var i3 = decimal.Parse(strSplit[3].Trim());
+                        var isDecimal = decimal.TryParse(strSplit[3].Trim(), out var i3);
+                        if (!isDecimal)
+                            continue;
                         lRes.Add(new Pig333_Clean
                         {
                             Date = new DateTime(i0, i1 + 1, i2),
