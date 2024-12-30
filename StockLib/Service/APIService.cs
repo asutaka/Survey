@@ -1500,7 +1500,7 @@ namespace StockLib.Service
                         var i3 = decimal.Parse(strSplit[3].Trim());
                         lRes.Add(new Pig333_Clean
                         {
-                            Date = new DateTime(i0, i1, i2).AddMonths(1),
+                            Date = new DateTime(i0, i1 + 1, i2),
                             Value = i3
                         });
                     }
