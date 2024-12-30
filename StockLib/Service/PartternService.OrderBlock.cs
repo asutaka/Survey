@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
+using StockLib.Model;
 using StockLib.Utils;
+using static iTextSharp.text.pdf.AcroFields;
 
 namespace StockLib.Service
 {
@@ -47,6 +49,8 @@ namespace StockLib.Service
                 var lTopDown = lData.GetTopBottom_HL_TopClean(0, false);
                 var lTop = lTopDown.Where(x => x.IsTop);
                 var lBot = lTopDown.Where(x => x.IsBot);
+                var lOrderBlockTop = new List<QuoteEx>();
+                var lOrderBlockBot = new List<QuoteEx>();
                 foreach (var top in lTop) 
                 {
                     var item = lData.First(x => x.Date == top.Date);
@@ -57,7 +61,18 @@ namespace StockLib.Service
                     {
                         var entry = item.High - uplen / 2;
                         var sl = entry + uplen;
-                        Console.WriteLine($"TOP(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
+                        lOrderBlockTop.Add(new QuoteEx
+                        {
+                            Date = item.Date,
+                            Open = item.Open,
+                            Close = item.Close,
+                            High = item.High,
+                            Low = item.Low,
+                            Mode = 1,
+                            Entry = entry,
+                            SL = sl,
+                        });
+                        //Console.WriteLine($"TOP(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                     }
                     else
                     {
@@ -67,7 +82,18 @@ namespace StockLib.Service
                         {
                             var entry = Math.Min(item.Open, item.Close);
                             var sl = Math.Max(item.High, next.High);
-                            Console.WriteLine($"TOP(outsidebar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
+                            lOrderBlockTop.Add(new QuoteEx
+                            {
+                                Date = item.Date,
+                                Open = item.Open,
+                                Close = item.Close,
+                                High = item.High,
+                                Low = item.Low,
+                                Mode = 2,
+                                Entry = entry,
+                                SL = sl,
+                            });
+                            //Console.WriteLine($"TOP(outsidebar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                         }
                     }
                 }
@@ -81,7 +107,18 @@ namespace StockLib.Service
                     {
                         var entry = downlen / 2 + item.Low;
                         var sl = entry - downlen;
-                        Console.WriteLine($"BOT(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
+                        //Console.WriteLine($"BOT(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
+                        lOrderBlockBot.Add(new QuoteEx
+                        {
+                            Date = item.Date,
+                            Open = item.Open,
+                            Close = item.Close,
+                            High = item.High,
+                            Low = item.Low,
+                            Mode = 3,
+                            Entry = entry,
+                            SL = sl,
+                        });
                     }
                     else
                     {
@@ -91,10 +128,84 @@ namespace StockLib.Service
                         {
                             var entry = Math.Max(item.Open, item.Close);
                             var sl = Math.Min(item.Low, next.Low);
-                            Console.WriteLine($"BOT(outsidebar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
+                            lOrderBlockBot.Add(new QuoteEx
+                            {
+                                Date = item.Date,
+                                Open = item.Open,
+                                Close = item.Close,
+                                High = item.High,
+                                Low = item.Low,
+                                Mode = 4,
+                                Entry = entry,
+                                SL = sl,
+                            });
+                            //Console.WriteLine($"BOT(outsidebar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                         }
                     }
                 }
+
+                var lRemove = new List<QuoteEx>();
+                var countTop = lOrderBlockTop.Count;
+                if (countTop > 0) 
+                {
+                    for (var i = 0; i < countTop - 1; i++)
+                    {
+                        var cur = lOrderBlockTop[i];
+                        var next = lOrderBlockTop[i + 1];
+                        if (next.High >= cur.High)
+                        {
+                            lRemove.Add(cur);
+                        }
+                    }
+                    if(lRemove.Any())
+                    {
+                        lOrderBlockTop = lOrderBlockTop.Where(x => !lRemove.Any(y => y.Date == x.Date)).ToList();
+                        lRemove.Clear();
+                    }
+                }
+
+                var countBot = lOrderBlockBot.Count;
+                if (countBot > 0)
+                {
+                    for (var i = 0; i < countBot - 1; i++)
+                    {
+                        var cur = lOrderBlockBot[i];
+                        var next = lOrderBlockBot[i + 1];
+                        if (next.Low <= cur.Low)
+                        {
+                            lRemove.Add(cur);
+                        }
+                    }
+                    if (lRemove.Any())
+                    {
+                        lOrderBlockBot = lOrderBlockBot.Where(x => !lRemove.Any(y => y.Date == x.Date)).ToList();
+                    }
+                }
+
+                var lTotal = new List<QuoteEx>();
+                lTotal.AddRange(lOrderBlockTop);
+                lTotal.AddRange(lOrderBlockBot);
+                lTotal = lTotal.OrderBy(x => x.Date).ToList();
+                foreach (var item in lTotal) 
+                {
+                    var title = string.Empty;
+                    if (item.Mode == 1)
+                    {
+                        title = "TOP(pinbar)";
+                    }
+                    else if (item.Mode == 2)
+                    {
+                        title = "TOP(outsidebar)";
+                    }
+                    else if (item.Mode == 3)
+                    {
+                        title = "BOT(pinbar)";
+                    }
+                    else title = "BOT(outsidebar)";
+                    Console.WriteLine($"{title}: {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {item.Entry}|SL: {item.SL}");
+                }
+                //Console.WriteLine($"TOP(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
+
                 var tmp = 1;
 
 
