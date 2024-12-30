@@ -1633,7 +1633,7 @@ namespace StockLib.Service
                 var handler = new HttpClientHandler();
                 handler.CookieContainer = cookies;
 
-                var url = $"https://en.macromicro.me/charts/44756/drewry-world-container-index";
+                var url = $"https://en.macromicro.me/";
                 var client = new HttpClient(handler);
                 client.BaseAddress = new Uri(url);
                 client.Timeout = TimeSpan.FromSeconds(15);
