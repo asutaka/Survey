@@ -510,7 +510,7 @@ namespace StockLib.Utils
         [Display(Name = "HRC Steel")]
         HRC_Steel = 6,//Thép HRC
         [Display(Name = "Gold")]
-        Gold = 4,//Vàng
+        Gold = 99,//Vàng
         [Display(Name = "Coffee")]
         Coffee = 32,//Cà phê
         [Display(Name = "Rice")]
@@ -534,7 +534,7 @@ namespace StockLib.Utils
         [Display(Name = "DXY")]
         DXY = 18,//Chỉ số đô la
         [Display(Name = "kraft-pulp")]
-        kraftpulp = 19
+        kraftpulp = 98
     }
 
     public enum ECDKTType

@@ -1528,7 +1528,7 @@ namespace StockLib.Service
                     EPrice.Crude_Oil.GetDisplayName(),//Dầu thô
                     EPrice.Natural_gas.GetDisplayName(),//Khí thiên nhiên
                     EPrice.Coal.GetDisplayName(),//Than
-                    EPrice.Gold.GetDisplayName(),//Vàng
+                    EPrice.Gold.GetDisplayName(),//Vàng--
                     EPrice.Steel.GetDisplayName(),//Thép
                     EPrice.HRC_Steel.GetDisplayName(),//Thép HRC
                     EPrice.Rubber.GetDisplayName(), //Cao su
@@ -1536,7 +1536,7 @@ namespace StockLib.Service
                     EPrice.Rice.GetDisplayName(), //Gạo
                     EPrice.Sugar.GetDisplayName(), //Đường
                     EPrice.Urea.GetDisplayName(), //U rê
-                    EPrice.polyvinyl.GetDisplayName(), //Ống nhựa PVC
+                    EPrice.polyvinyl.GetDisplayName(), //Ống nhựa PVC--
                     EPrice.Nickel.GetDisplayName(), //Niken
                     EPrice.milk.GetDisplayName(),//Sữa
                     EPrice.kraftpulp.GetDisplayName()//Bột giấy
@@ -1609,7 +1609,7 @@ namespace StockLib.Service
                             }
                         }
                         if (!string.IsNullOrWhiteSpace(model.Code)
-                            && lCode.Any(x => x.Equals(model.Code, StringComparison.OrdinalIgnoreCase)))
+                            && lCode.Any(x => x.Replace(" ","").Replace("-","").Equals(model.Code.Replace(" ", "").Replace("-", ""), StringComparison.OrdinalIgnoreCase)))
                         {
                             lResult.Add(model);
                         }
