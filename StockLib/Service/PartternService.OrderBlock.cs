@@ -103,7 +103,7 @@ namespace StockLib.Service
                     var downlen = Math.Min(item.Open, item.Close) - item.Low;
                     var len = item.High - item.Low;
 
-                    if (downlen / len >= (decimal)0.4)
+                    if (downlen / len >= (decimal)0.6)
                     {
                         var entry = downlen / 2 + item.Low;
                         var sl = entry - downlen;
