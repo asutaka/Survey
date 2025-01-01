@@ -57,7 +57,7 @@ namespace StockLib.Service
                     var uplen = item.High - Math.Max(item.Open, item.Close);
                     var len = item.High - item.Low;
 
-                    if (uplen / len >= (decimal)0.4)
+                    if (uplen / len >= (decimal)0.6)
                     {
                         var entry = item.High - uplen / 2;
                         var sl = entry + uplen;
