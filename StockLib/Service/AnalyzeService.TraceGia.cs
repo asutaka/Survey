@@ -506,7 +506,7 @@ namespace StockLib.Service
                     }
                 }
 
-                foreach (var item in lTraceGia.OrderByDescending(x => x.weekly))
+                foreach (var item in lTraceGia.OrderByDescending(x => x.weekly).ThenBy(x => x.monthly))
                 {
                     strOutput.AppendLine(PrintTraceGia(item));
                 }
