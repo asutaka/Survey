@@ -3,6 +3,8 @@ using MongoDB.Driver;
 using StockLib.DAL.Entity;
 using StockLib.Utils;
 using System.Text;
+using static iTextSharp.text.pdf.AcroFields;
+using System.Web;
 
 namespace StockLib.Service
 {
@@ -457,7 +459,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                sBuilder.AppendLine($"Link: {itemValid.path}");
+                                sBuilder.AppendLine($"Link: {HttpUtility.HtmlDecode(itemValid.path)}");
                             }
                         }
                     }
@@ -879,7 +881,7 @@ namespace StockLib.Service
                             }
                             else
                             {
-                                sBuilder.AppendLine($"Link: {itemValid.path}");
+                                sBuilder.AppendLine($"Link: {HttpUtility.HtmlDecode(itemValid.path)}");
                             }
                         }
                     }
