@@ -7,7 +7,9 @@ namespace StockLib.Utils
     public static class StaticVal
     {
         private static BybitRestClient _bybit;
+        private static BybitSocketClient _bybitSocket;
         private static BinanceRestClient _binance;
+        private static BinanceSocketClient _binanceSocket;
 
         public static (long, long, long, long) _currentTime;//yearquarter + year + quarter + flag
         public static int _TAKE = 15;
@@ -26,6 +28,15 @@ namespace StockLib.Utils
             return _bybit;
         }
 
+        public static BybitSocketClient BybitSocketInstance()
+        {
+            if (_bybitSocket == null)
+            {
+                _bybitSocket = new BybitSocketClient();
+            }
+            return _bybitSocket;
+        }
+
 
         public static BinanceRestClient BinanceInstance()
         {
@@ -36,6 +47,14 @@ namespace StockLib.Utils
             return _binance;
         }
 
+        public static BinanceSocketClient BinanceSocketInstance()
+        {
+            if (_binanceSocket == null)
+            {
+                _binanceSocket = new BinanceSocketClient();
+            }
+            return _binanceSocket;
+        }
 
         public static List<string> _lBanLeKey = new List<string>
         {

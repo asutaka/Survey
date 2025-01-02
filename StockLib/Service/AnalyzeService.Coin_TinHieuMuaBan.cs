@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Binance.Net.Clients;
+using CryptoExchange.Net.Interfaces;
+using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 using StockLib.Utils;
 using System.Text;
@@ -245,6 +247,19 @@ namespace StockLib.Service
         {
             try
             {
+                //var socketClient = new BinanceSocketClient();
+                //var tickerSubscriptionResult = socketClient.SpotApi.ExchangeData.SubscribeToTickerUpdatesAsync("ETHUSDT", (update) =>
+                //{
+                //    var lastPrice = update.Data.LastPrice;
+                //});
+
+                //var tickerSubscriptionResult = StaticVal.BybitSocketInstance().V5SpotApi.SubscribeToTickerUpdatesAsync("ETHUSDT", (update) =>
+                //{
+                //    var lastPrice = update.Data.LastPrice;
+                //    Console.WriteLine(lastPrice);
+                //});
+                //return (0, null);
+
                 var lSymbols = await _apiService.GetBybitSymbol();
                 var lSymbolFilter = lSymbols.Select(x => x.si);
                 var lRes = new List<string>();
