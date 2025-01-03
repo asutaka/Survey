@@ -452,7 +452,7 @@ namespace StockLib.Service
                                 ty = (int)ESource.MBS
                             });
 
-                            sBuilder.AppendLine($"[MBS - Phân tích cổ phiếu] {itemValid.title}");
+                            sBuilder.AppendLine($"[MBS - Phân tích cổ phiếu] {HttpUtility.HtmlDecode(itemValid.title)}");
                             if (string.IsNullOrWhiteSpace(itemValid.path))
                             {
                                 sBuilder.AppendLine($"Link: https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/nghien-cuu-co-phieu/");
@@ -874,7 +874,7 @@ namespace StockLib.Service
                                 ty = (int)ESource.MBS
                             });
 
-                            sBuilder.AppendLine($"[MBS - Báo cáo ngành] {itemValid.title}");
+                            sBuilder.AppendLine($"[MBS - Báo cáo ngành] {HttpUtility.HtmlDecode(itemValid.title)}");
                             if (string.IsNullOrWhiteSpace(itemValid.path))
                             {
                                 sBuilder.AppendLine($"Link: https://mbs.com.vn/trung-tam-nghien-cuu/bao-cao-phan-tich/bao-cao-phan-tich-nganh/");
