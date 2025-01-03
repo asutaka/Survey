@@ -323,7 +323,7 @@ namespace StockLib.Service
                 {
                     if (isAll || item.Weekly >= flag || item.Weekly <= -flag) 
                     {
-                        if(item.Code == EPrice.Crude_Oil.GetDisplayName())
+                        if(item.Code.Equals(EPrice.Crude_Oil.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -335,7 +335,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if(item.Code == EPrice.Natural_gas.GetDisplayName())
+                        else if(item.Code.Equals(EPrice.Natural_gas.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -347,7 +347,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.kraftpulp.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.kraftpulp.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -359,7 +359,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Coal.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Coal.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -371,7 +371,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Gold.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Gold.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -383,7 +383,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Steel.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Steel.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -395,7 +395,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.HRC_Steel.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.HRC_Steel.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -407,7 +407,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Rubber.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Rubber.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -419,7 +419,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Coffee.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Coffee.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -431,7 +431,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Rice.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Rice.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -443,7 +443,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Sugar.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Sugar.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -455,7 +455,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Urea.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Urea.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -467,7 +467,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.polyvinyl.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.polyvinyl.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -479,7 +479,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.Nickel.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.Nickel.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
@@ -491,7 +491,7 @@ namespace StockLib.Service
                                 YTD = item.YTD
                             });
                         }
-                        else if (item.Code == EPrice.milk.GetDisplayName())
+                        else if (item.Code.Equals(EPrice.milk.GetDisplayName(), StringComparison.CurrentCultureIgnoreCase))
                         {
                             lTraceGia.Add(new TraceGiaModel
                             {
