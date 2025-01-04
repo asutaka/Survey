@@ -1,14 +1,14 @@
 using StockLib.PublicService;
 
-namespace TeleStock
+namespace TeleCoin
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly ITeleStockService _teleService;
+        private readonly ITeleCoinService _teleService;
 
         public Worker(ILogger<Worker> logger,
-                    ITeleStockService teleService)
+                    ITeleCoinService teleService)
         {
             _logger = logger;
             _teleService = teleService;
@@ -16,6 +16,7 @@ namespace TeleStock
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await _teleService.SubcribeCoin();
             while (!stoppingToken.IsCancellationRequested)
             {
                 await _teleService.BotSyncUpdate();
