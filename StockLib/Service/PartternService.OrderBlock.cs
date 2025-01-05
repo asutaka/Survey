@@ -42,7 +42,7 @@ namespace StockLib.Service
             }
         }
 
-        public void OrderBlock(List<Quote> lData)
+        public List<QuoteEx> OrderBlock(List<Quote> lData)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace StockLib.Service
 
                     if (uplen / len >= (decimal)0.6)
                     {
-                        var entry = item.High - uplen / 2;
+                        var entry = item.High - uplen / 4;
                         var sl = entry + uplen;
                         lOrderBlockTop.Add(new QuoteEx
                         {
@@ -80,8 +80,8 @@ namespace StockLib.Service
                         var next = lData.ElementAt(index + 1);
                         if (next.Open > next.Close && next.Close <= Math.Min(item.Open, item.Close) && next.Open >= Math.Max(item.Open, item.Close))
                         {
-                            var entry = Math.Min(item.Open, item.Close);
-                            var sl = Math.Max(item.High, next.High);
+                            var entry = Math.Min(item.Open, item.Close) + 3 * Math.Abs(item.Open - item.Close) / 4;
+                            var sl = Math.Max(item.High, next.High) + Math.Abs(item.Open - item.Close) / 4; 
                             lOrderBlockTop.Add(new QuoteEx
                             {
                                 Date = item.Date,
@@ -105,7 +105,7 @@ namespace StockLib.Service
 
                     if (downlen / len >= (decimal)0.6)
                     {
-                        var entry = downlen / 2 + item.Low;
+                        var entry = downlen / 4 + item.Low;
                         var sl = entry - downlen;
                         //Console.WriteLine($"BOT(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                         lOrderBlockBot.Add(new QuoteEx
@@ -126,8 +126,8 @@ namespace StockLib.Service
                         var next = lData.ElementAt(index + 1);
                         if (next.Open < next.Close && next.Close >= Math.Max(item.Open, item.Close) && next.Open <= Math.Min(item.Open, item.Close))
                         {
-                            var entry = Math.Max(item.Open, item.Close);
-                            var sl = Math.Min(item.Low, next.Low);
+                            var entry = Math.Min(item.Open, item.Close) + Math.Abs(item.Open - item.Close) / 4;
+                            var sl = Math.Min(item.Low, next.Low) + Math.Abs(item.Open - item.Close) / 4; ;
                             lOrderBlockBot.Add(new QuoteEx
                             {
                                 Date = item.Date,
@@ -186,48 +186,31 @@ namespace StockLib.Service
                 lTotal.AddRange(lOrderBlockTop);
                 lTotal.AddRange(lOrderBlockBot);
                 lTotal = lTotal.OrderBy(x => x.Date).ToList();
-                foreach (var item in lTotal) 
-                {
-                    var title = string.Empty;
-                    if (item.Mode == 1)
-                    {
-                        title = "TOP(pinbar)";
-                    }
-                    else if (item.Mode == 2)
-                    {
-                        title = "TOP(outsidebar)";
-                    }
-                    else if (item.Mode == 3)
-                    {
-                        title = "BOT(pinbar)";
-                    }
-                    else title = "BOT(outsidebar)";
-                    Console.WriteLine($"{title}: {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {item.Entry}|SL: {item.SL}");
-                }
-                //Console.WriteLine($"TOP(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
-
-                var tmp = 1;
-
-
-                //var BatDay = lastItem.CheckBatDay(lastVol, lastBB);
-                //if (BatDay.Item1)
+                return lTotal;
+                //foreach (var item in lTotal) 
                 //{
-                //    Console.WriteLine($"{lastItem.Date.ToString($"dd/MM/yyyy HH")}|ENTRY: {BatDay.Item2}");
-                //}
-
-                //lastItem = lData.SkipLast(1).Last();
-                //lastVol = lVolMa.SkipLast(1).Last();
-                //lastBB = lBB.SkipLast(1).Last();
-                //BatDay = lastItem.CheckBatDay(lastVol, lastBB);
-                //if (BatDay.Item1)
-                //{
-                //    Console.WriteLine($"{lastItem.Date.ToString($"dd/MM/yyyy HH")}|ENTRY: {BatDay.Item2}");
+                //    var title = string.Empty;
+                //    if (item.Mode == 1)
+                //    {
+                //        title = "TOP(pinbar)";
+                //    }
+                //    else if (item.Mode == 2)
+                //    {
+                //        title = "TOP(outsidebar)";
+                //    }
+                //    else if (item.Mode == 3)
+                //    {
+                //        title = "BOT(pinbar)";
+                //    }
+                //    else title = "BOT(outsidebar)";
+                //    Console.WriteLine($"{title}: {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {item.Entry}|SL: {item.SL}");
                 //}
             }
             catch (Exception ex)
             {
                 _logger.LogError($"PartternService.BatDay|EXCEPTION| {ex.Message}");
             }
+            return null;
         }
     }
 

@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using Skender.Stock.Indicators;
 using StockLib.DAL;
+using StockLib.Model;
 using StockLib.Utils;
 using System.Text;
 
@@ -30,6 +31,7 @@ namespace StockLib.Service
         Task SurveyCoinEliot(string code);
         Task SurveyPriceAction(string code);
         void PrintAll();
+        List<QuoteEx> OrderBlock(List<Quote> lData);
     }
     public partial class PartternService : IPartternService
     {

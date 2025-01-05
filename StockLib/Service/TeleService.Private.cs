@@ -25,6 +25,20 @@ namespace StockLib.Service
             return _bot;
         }
 
+        private TelegramBotClient BotCoinInstance()
+        {
+            try
+            {
+                if (_botCoin == null)
+                    _botCoin = new TelegramBotClient(ServiceSetting._botTokenCoin);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"TeleService.BotCoinInstance|EXCEPTION| {ex.Message}");
+            }
+
+            return _botCoin;
+        }
         private async Task PrintImage(string code, long userId, bool isNganh)
         {
             var curDirectory = Directory.GetCurrentDirectory();

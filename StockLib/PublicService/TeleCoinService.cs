@@ -6,13 +6,16 @@ namespace StockLib.PublicService
     {
         Task BotSyncUpdate();
         Task SubcribeCoin();
+        Task CalculateCoin();
     }
     public class TeleCoinService : ITeleCoinService
     {
         private readonly ITeleService _service;
-        public TeleCoinService(ITeleService service)
+        private readonly IAnalyzeService _analyzeService;
+        public TeleCoinService(ITeleService service, IAnalyzeService analyzeService)
         {
             _service = service;
+            _analyzeService = analyzeService;
         }
         public async Task BotSyncUpdate()
         {
@@ -21,7 +24,12 @@ namespace StockLib.PublicService
 
         public async Task SubcribeCoin()
         {
-            await _service.SubcribeCoin();
+            await _analyzeService.SubcribeCoin();
+        }
+
+        public async Task CalculateCoin()
+        {
+            await _analyzeService.CalculateCoin();
         }
     }
 }

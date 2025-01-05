@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using StockLib.DAL;
 using StockLib.DAL.Entity;
-using StockLib.Utils;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -11,7 +10,6 @@ namespace StockLib.Service
     {
         Task BotSyncUpdate();
         Task BotCoinSyncUpdate();
-        Task SubcribeCoin();
         Task SendTextMessageAsync(long channelID, string mes);
     }
     public partial class TeleService : ITeleService
@@ -39,6 +37,7 @@ namespace StockLib.Service
             _userMessageRepo = userMessageRepo;
             _bllService = bllService;
             _userMessageCoinRepo = userMessageCoinRepo;
+            //_analyzeService = analyzeService;
             StockInstance();
         }
 
@@ -181,7 +180,7 @@ namespace StockLib.Service
                                }
                                #endregion
                                //action
-                               await AnalyzeCoin(item.Message.From.Id, item.Message.Text);
+                               //await _analyzeService.AnalyzeCoin(item.Message.From.Id, item.Message.Text);
                            }
                            catch (Exception ex)
                            {
