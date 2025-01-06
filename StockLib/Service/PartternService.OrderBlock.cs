@@ -51,13 +51,20 @@ namespace StockLib.Service
                 var lBot = lTopDown.Where(x => x.IsBot);
                 var lOrderBlockTop = new List<QuoteEx>();
                 var lOrderBlockBot = new List<QuoteEx>();
+                var maxTop = lTop.MaxBy(x => x.Value);
+                var minBot = lBot.MinBy(x => x.Value);
+                lTop = lTop.Where(x => x.Date >= maxTop.Date).ToList();
+                lBot = lBot.Where(x => x.Date >= minBot.Date).ToList();
                 foreach (var top in lTop) 
                 {
                     var item = lData.First(x => x.Date == top.Date);
                     var uplen = item.High - Math.Max(item.Open, item.Close);
                     var len = item.High - item.Low;
+                    var avg = lData.Where(x => x.Date <= top.Date).TakeLast(5).Average(x => x.High - x.Low);
+                    var itemData = lData.First(x => x.Date == top.Date);
 
-                    if (uplen / len >= (decimal)0.6)
+                    if (uplen / len >= (decimal)0.6 
+                        && (itemData.High - itemData.Low) >= (decimal)1.3 * avg)
                     {
                         var entry = item.High - uplen / 4;
                         var sl = entry + uplen;
@@ -71,6 +78,7 @@ namespace StockLib.Service
                             Mode = 1,
                             Entry = entry,
                             SL = sl,
+                            Focus = Math.Max(item.Open, item.Close),
                         });
                         //Console.WriteLine($"TOP(pinbar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                     }
@@ -78,7 +86,10 @@ namespace StockLib.Service
                     {
                         var index = lData.IndexOf(item);
                         var next = lData.ElementAt(index + 1);
-                        if (next.Open > next.Close && next.Close <= Math.Min(item.Open, item.Close) && next.Open >= Math.Max(item.Open, item.Close))
+                        if (next.Open > next.Close 
+                            && next.Close <= Math.Min(item.Open, item.Close) 
+                            && next.Open >= Math.Max(item.Open, item.Close)
+                            && (next.High - next.Low) >= (decimal)1.3 * avg)
                         {
                             var entry = Math.Min(item.Open, item.Close) + 3 * Math.Abs(item.Open - item.Close) / 4;
                             var sl = Math.Max(item.High, next.High) + Math.Abs(item.Open - item.Close) / 4; 
@@ -92,6 +103,7 @@ namespace StockLib.Service
                                 Mode = 2,
                                 Entry = entry,
                                 SL = sl,
+                                Focus = Math.Min(item.Open, item.Close)
                             });
                             //Console.WriteLine($"TOP(outsidebar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                         }
@@ -102,8 +114,11 @@ namespace StockLib.Service
                     var item = lData.First(x => x.Date == top.Date);
                     var downlen = Math.Min(item.Open, item.Close) - item.Low;
                     var len = item.High - item.Low;
+                    var avg = lData.Where(x => x.Date <= top.Date).TakeLast(5).Average(x => x.High - x.Low);
+                    var itemData = lData.First(x => x.Date == top.Date);
 
-                    if (downlen / len >= (decimal)0.6)
+                    if (downlen / len >= (decimal)0.6
+                        && (itemData.High - itemData.Low) >= (decimal)1.3 * avg)
                     {
                         var entry = downlen / 4 + item.Low;
                         var sl = entry - downlen;
@@ -118,13 +133,17 @@ namespace StockLib.Service
                             Mode = 3,
                             Entry = entry,
                             SL = sl,
+                            Focus = Math.Max(item.Open, item.Close)
                         });
                     }
                     else
                     {
                         var index = lData.IndexOf(item);
                         var next = lData.ElementAt(index + 1);
-                        if (next.Open < next.Close && next.Close >= Math.Max(item.Open, item.Close) && next.Open <= Math.Min(item.Open, item.Close))
+                        if (next.Open < next.Close 
+                            && next.Close >= Math.Max(item.Open, item.Close) 
+                            && next.Open <= Math.Min(item.Open, item.Close)
+                            && (next.High - next.Low) >= (decimal)1.3 * avg)
                         {
                             var entry = Math.Min(item.Open, item.Close) + Math.Abs(item.Open - item.Close) / 4;
                             var sl = Math.Min(item.Low, next.Low) + Math.Abs(item.Open - item.Close) / 4; ;
@@ -138,6 +157,7 @@ namespace StockLib.Service
                                 Mode = 4,
                                 Entry = entry,
                                 SL = sl,
+                                Focus = Math.Max(item.Open, item.Close)
                             });
                             //Console.WriteLine($"BOT(outsidebar): {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {entry}|SL: {sl}");
                         }
@@ -187,28 +207,10 @@ namespace StockLib.Service
                 lTotal.AddRange(lOrderBlockBot);
                 lTotal = lTotal.OrderBy(x => x.Date).ToList();
                 return lTotal;
-                //foreach (var item in lTotal) 
-                //{
-                //    var title = string.Empty;
-                //    if (item.Mode == 1)
-                //    {
-                //        title = "TOP(pinbar)";
-                //    }
-                //    else if (item.Mode == 2)
-                //    {
-                //        title = "TOP(outsidebar)";
-                //    }
-                //    else if (item.Mode == 3)
-                //    {
-                //        title = "BOT(pinbar)";
-                //    }
-                //    else title = "BOT(outsidebar)";
-                //    Console.WriteLine($"{title}: {item.Date.ToString("dd/MM/yyyy HH:mm")}|ENTRY: {item.Entry}|SL: {item.SL}");
-                //}
             }
             catch (Exception ex)
             {
-                _logger.LogError($"PartternService.BatDay|EXCEPTION| {ex.Message}");
+                _logger.LogError($"PartternService.OrderBlock|EXCEPTION| {ex.Message}");
             }
             return null;
         }
