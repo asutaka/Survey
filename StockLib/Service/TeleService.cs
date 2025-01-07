@@ -11,6 +11,7 @@ namespace StockLib.Service
         Task BotSyncUpdate();
         Task BotCoinSyncUpdate();
         Task SendTextMessageAsync(long channelID, string mes);
+        Task SendTextMessageCoinAsync(long channelID, string mes);
     }
     public partial class TeleService : ITeleService
     {
@@ -44,6 +45,11 @@ namespace StockLib.Service
         public async Task SendTextMessageAsync(long channelID, string mes)
         {
             await BotInstance().SendTextMessageAsync(channelID, mes);
+        }
+
+        public async Task SendTextMessageCoinAsync(long channelID, string mes)
+        {
+            await BotCoinInstance().SendTextMessageAsync(channelID, mes);
         }
 
         public async Task BotSyncUpdate()

@@ -8,5 +8,6 @@ namespace StockLib.Model
         public decimal Entry { get; set; }
         public decimal SL { get; set; }
         public decimal Focus { get; set; }
+        public int Interval { get; set; }
     }
 }

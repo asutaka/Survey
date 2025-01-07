@@ -5,8 +5,10 @@ namespace StockLib.PublicService
     public interface ITeleCoinService
     {
         Task BotSyncUpdate();
+        Task SendMessage(string mes, long id);
         Task SubcribeCoin();
-        Task CalculateCoin();
+        Task DetectOrderBlock();
+        Task<List<string>> CheckEntry();
     }
     public class TeleCoinService : ITeleCoinService
     {
@@ -22,14 +24,24 @@ namespace StockLib.PublicService
             await _service.BotCoinSyncUpdate();
         }
 
+        public async Task SendMessage(string mes, long id)
+        {
+            await _service.SendTextMessageCoinAsync(id, mes);
+        }
+
         public async Task SubcribeCoin()
         {
             await _analyzeService.SubcribeCoin();
         }
 
-        public async Task CalculateCoin()
+        public async Task DetectOrderBlock()
         {
-            await _analyzeService.CalculateCoin();
+            await _analyzeService.DetectOrderBlock();
+        }
+
+        public async Task<List<string>> CheckEntry()
+        {
+            return await _analyzeService.CheckEntry();
         }
     }
 }

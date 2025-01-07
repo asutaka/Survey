@@ -543,4 +543,22 @@ namespace StockLib.Utils
         BDS = 2,
         ChungKhoan = 3
     }
+
+    public enum EOrderBlockMode
+    {
+        TopPinbar = 1,
+        TopInsideBar = 2,
+        BotPinbar = 3,
+        BotInsideBar = 4
+    }
+
+    public enum EIntervalMode
+    {
+        [Display(Name = "15m")]
+        M15 = 1,
+        [Display(Name = "1H")]
+        H1 = 2,
+        [Display(Name = "4H")]
+        H4 = 3
+    }
 }

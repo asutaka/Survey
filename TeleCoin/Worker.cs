@@ -6,6 +6,7 @@ namespace TeleCoin
     {
         private readonly ILogger<Worker> _logger;
         private readonly ITeleCoinService _teleService;
+        private readonly long _channelCoin = -1002424403434;
 
         public Worker(ILogger<Worker> logger,
                     ITeleCoinService teleService)
@@ -16,18 +17,21 @@ namespace TeleCoin
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _teleService.CalculateCoin();
-            return;
+            var mesSend = string.Empty;
             await _teleService.SubcribeCoin();
             while (!stoppingToken.IsCancellationRequested)
             {
                 await _teleService.BotSyncUpdate();
-                var dt = DateTime.Now;
-                if(dt.Hour % 30 == 0
-                    && dt.Minute == 0
-                    && dt.Second < 2)
+                await _teleService.DetectOrderBlock();
+                var lMes = await _teleService.CheckEntry();
+                if (lMes?.Any() ?? false)
                 {
-                    await _teleService.CalculateCoin();
+                    var mes = string.Join("\n", lMes.ToArray());
+                    if (mes.Equals(mesSend))
+                        continue;
+
+                    mesSend = mes;
+                    await _teleService.SendMessage(mes, _channelCoin);
                 }
                 await Task.Delay(1000, stoppingToken);
             }

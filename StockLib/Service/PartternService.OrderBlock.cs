@@ -75,7 +75,7 @@ namespace StockLib.Service
                             Close = item.Close,
                             High = item.High,
                             Low = item.Low,
-                            Mode = 1,
+                            Mode = (int)EOrderBlockMode.TopPinbar,
                             Entry = entry,
                             SL = sl,
                             Focus = Math.Max(item.Open, item.Close),
@@ -100,7 +100,7 @@ namespace StockLib.Service
                                 Close = item.Close,
                                 High = item.High,
                                 Low = item.Low,
-                                Mode = 2,
+                                Mode = (int)EOrderBlockMode.TopInsideBar,
                                 Entry = entry,
                                 SL = sl,
                                 Focus = Math.Min(item.Open, item.Close)
@@ -130,7 +130,7 @@ namespace StockLib.Service
                             Close = item.Close,
                             High = item.High,
                             Low = item.Low,
-                            Mode = 3,
+                            Mode = (int)EOrderBlockMode.BotPinbar,
                             Entry = entry,
                             SL = sl,
                             Focus = Math.Max(item.Open, item.Close)
@@ -154,7 +154,7 @@ namespace StockLib.Service
                                 Close = item.Close,
                                 High = item.High,
                                 Low = item.Low,
-                                Mode = 4,
+                                Mode = (int)EOrderBlockMode.BotInsideBar,
                                 Entry = entry,
                                 SL = sl,
                                 Focus = Math.Max(item.Open, item.Close)

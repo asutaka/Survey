@@ -1,5 +1,4 @@
-﻿using iTextSharp.text.pdf.qrcode;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using StockLib.DAL;
 using StockLib.DAL.Entity;
@@ -34,7 +33,8 @@ namespace StockLib.Service
         Task SyncBCTC();
         Task<(int, string)> LiquidTrace();
         Task SubcribeCoin();
-        Task CalculateCoin();
+        Task DetectOrderBlock();
+        Task<List<string>> CheckEntry();
         Task AnalyzeCoin(long userId, string input);
     }
     public partial class AnalyzeService : IAnalyzeService

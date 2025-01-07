@@ -2,44 +2,40 @@
 using Skender.Stock.Indicators;
 using StockLib.Model;
 using StockLib.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StockLib.Service
 {
     public partial class AnalyzeService
     {
-        private LinkedList<decimal> _lEth = new LinkedList<decimal>();
-        private LinkedList<decimal> _lBtc = new LinkedList<decimal>();
-        private LinkedList<decimal> _lXbt = new LinkedList<decimal>();
-        private LinkedList<decimal> _lWld = new LinkedList<decimal>();
-        private int N = 10;
+        private static LinkedList<(decimal, DateTime)> _lEth = new LinkedList<(decimal, DateTime)>();
+        private static LinkedList<(decimal, DateTime)> _lBtc = new LinkedList<(decimal, DateTime)>();
+        private static LinkedList<(decimal, DateTime)> _lXbt = new LinkedList<(decimal, DateTime)>();
+        private static LinkedList<(decimal, DateTime)> _lWld = new LinkedList<(decimal, DateTime)>();
+        private const int N = 10;
+        public static object _objLock = 1;
         private void Add_Eth(decimal item)
         {
             if (_lEth.Count >= N)
                 _lEth.RemoveLast();
-            _lEth.AddFirst(item);
+            _lEth.AddFirst((item, DateTime.Now));
         }
         private void Add_Btc(decimal item)
         {
             if (_lBtc.Count >= N)
                 _lBtc.RemoveLast();
-            _lBtc.AddFirst(item);
+            _lBtc.AddFirst((item, DateTime.Now));
         }
         private void Add_Xbt(decimal item)
         {
             if (_lXbt.Count >= N)
                 _lXbt.RemoveLast();
-            _lXbt.AddFirst(item);
+            _lXbt.AddFirst((item, DateTime.Now));
         }
         private void Add_Wld(decimal item)
         {
             if (_lWld.Count >= N)
                 _lWld.RemoveLast();
-            _lWld.AddFirst(item);
+            _lWld.AddFirst((item, DateTime.Now));
         }
 
         public async Task SubcribeCoin()
@@ -52,7 +48,6 @@ namespace StockLib.Service
                     if (lastPrice != null && lastPrice > 0)
                     {
                         Add_Eth(lastPrice ?? 0);
-                        Console.WriteLine(_lEth.Count());
                         //Console.WriteLine($"ETH: {lastPrice}");
                     }
                 });
@@ -143,11 +138,31 @@ namespace StockLib.Service
             //}
         }
 
-        public async Task CalculateCoin()
+        private static Dictionary<string, List<QuoteEx>> _dicOB = new Dictionary<string, List<QuoteEx>>();
+        public async Task DetectOrderBlock()
         {
             try
             {
+                var dt = DateTime.Now;
+                if (!((dt.Minute % 30 == 0
+                    && dt.Second < 2) || !_dicOB.Any()))
+                {
+                    return;
+                }
                 var btc = "BTCUSDT";
+                var eth = "ETHUSDT";
+                var wld = "WLDUSDT";
+                var aixbt = "AIXBTUSDT";
+
+                var dicOB = new Dictionary<string, List<QuoteEx>>
+                {
+                    { btc, new List<QuoteEx>() },
+                    { eth, new List<QuoteEx>() },
+                    { wld, new List<QuoteEx>() },
+                    { aixbt, new List<QuoteEx>() }
+                };
+
+               
                 var btc4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, btc, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
                 var lbtc4h = btc4h.Data.List.Select(x => new Quote
                 {
@@ -158,10 +173,18 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 lbtc4h.Reverse();
                 var lOB_btc4h = _partternService.OrderBlock(lbtc4h?? new List<Quote>());
+                if(lOB_btc4h.Any())
+                {
+                    foreach (var item in lOB_btc4h)
+                    {
+                        item.Interval = (int)EIntervalMode.H4;
+                    }
+                    dicOB[btc].AddRange(lOB_btc4h);
+                }    
                 Thread.Sleep(100);
+
                 var btc1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, btc, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
                 var lbtc1h = btc1h.Data.List.Select(x => new Quote
                 {
@@ -172,10 +195,18 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 lbtc1h.Reverse();
                 var lOB_btc1h = _partternService.OrderBlock(lbtc1h ?? new List<Quote>());
+                if (lOB_btc1h.Any())
+                {
+                    foreach (var item in lOB_btc1h)
+                    {
+                        item.Interval = (int)EIntervalMode.H1;
+                    }
+                    dicOB[btc].AddRange(lOB_btc1h);
+                }
                 Thread.Sleep(100);
+
                 var btc15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, btc, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
                 var lbtc15m = btc15m.Data.List.Select(x => new Quote
                 {
@@ -186,12 +217,19 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 lbtc15m.Reverse();
                 var lOB_btc15m = _partternService.OrderBlock(lbtc15m ?? new List<Quote>());
+                if (lOB_btc15m.Any())
+                {
+                    foreach (var item in lOB_btc15m)
+                    {
+                        item.Interval = (int)EIntervalMode.M15;
+                    }
+                    dicOB[btc].AddRange(lOB_btc15m);
+                }
                 Thread.Sleep(100);
 
-                var eth = "ETHUSDT";
+                
                 var eth4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, eth, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
                 var leth4h = eth4h.Data.List.Select(x => new Quote
                 {
@@ -202,9 +240,16 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 leth4h.Reverse();
                 var lOB_eth4h = _partternService.OrderBlock(leth4h ?? new List<Quote>());
+                if (lOB_eth4h.Any())
+                {
+                    foreach (var item in lOB_eth4h)
+                    {
+                        item.Interval = (int)EIntervalMode.H4;
+                    }
+                    dicOB[eth].AddRange(lOB_eth4h);
+                }
                 Thread.Sleep(100);
 
                 var eth1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, eth, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
@@ -217,9 +262,16 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 leth1h.Reverse();
                 var lOB_eth1h = _partternService.OrderBlock(leth1h ?? new List<Quote>());
+                if (lOB_eth1h.Any())
+                {   
+                    foreach (var item in lOB_eth1h)
+                    {
+                        item.Interval = (int)EIntervalMode.H1;
+                    }
+                    dicOB[eth].AddRange(lOB_eth1h);
+                }
                 Thread.Sleep(100);
 
                 var eth15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, eth, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
@@ -232,12 +284,19 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 leth15m.Reverse();
                 var lOB_eth15m = _partternService.OrderBlock(leth15m ?? new List<Quote>());
+                if (lOB_eth15m.Any())
+                {   
+                    foreach (var item in lOB_eth15m)
+                    {
+                        item.Interval = (int)EIntervalMode.M15;
+                    }
+                    dicOB[eth].AddRange(lOB_eth15m);
+                }
                 Thread.Sleep(100);
 
-                var wld = "WLDUSDT";
+                
                 var wld4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, wld, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
                 var lwld4h = wld4h.Data.List.Select(x => new Quote
                 {
@@ -248,9 +307,16 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 lwld4h.Reverse();
                 var lOB_wld4h = _partternService.OrderBlock(lwld4h ?? new List<Quote>());
+                if (lOB_wld4h.Any())
+                {
+                    foreach (var item in lOB_wld4h)
+                    {
+                        item.Interval = (int)EIntervalMode.H4;
+                    }
+                    dicOB[wld].AddRange(lOB_wld4h);
+                }
                 Thread.Sleep(100);
 
                 var wld1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, wld, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
@@ -263,9 +329,16 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 lwld1h.Reverse();
                 var lOB_wld1h = _partternService.OrderBlock(lwld1h ?? new List<Quote>());
+                if (lOB_wld1h.Any())
+                {   
+                    foreach (var item in lOB_wld1h)
+                    {
+                        item.Interval = (int)EIntervalMode.H1;
+                    }
+                    dicOB[wld].AddRange(lOB_wld1h);
+                }
                 Thread.Sleep(100);
 
                 var wld15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, wld, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
@@ -278,12 +351,18 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 lwld15m.Reverse();
                 var lOB_wld15m = _partternService.OrderBlock(lwld15m ?? new List<Quote>());
+                if (lOB_wld15m.Any())
+                {   
+                    foreach (var item in lOB_wld15m)
+                    {
+                        item.Interval = (int)EIntervalMode.M15;
+                    }
+                    dicOB[wld].AddRange(lOB_wld15m);
+                }
                 Thread.Sleep(100);
 
-                var aixbt = "AIXBTUSDT";
                 var aixbt4h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, aixbt, Bybit.Net.Enums.KlineInterval.FourHours, null, null, 200);
                 var laixbt4h = aixbt4h.Data.List.Select(x => new Quote
                 {
@@ -294,10 +373,18 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 laixbt4h.Reverse();
                 var lOB_aixbt4h = _partternService.OrderBlock(laixbt4h ?? new List<Quote>());
+                if (lOB_aixbt4h.Any())
+                {   
+                    foreach (var item in lOB_aixbt4h)
+                    {
+                        item.Interval = (int)EIntervalMode.H4;
+                    }
+                    dicOB[aixbt].AddRange(lOB_aixbt4h);
+                }
                 Thread.Sleep(100);
+
                 var aixbt1h = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, aixbt, Bybit.Net.Enums.KlineInterval.OneHour, null, null, 200);
                 var laixbt1h = aixbt1h.Data.List.Select(x => new Quote
                 {
@@ -308,10 +395,18 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 laixbt1h.Reverse();
                 var lOB_aixbt1h = _partternService.OrderBlock(laixbt1h ?? new List<Quote>());
+                if (lOB_aixbt1h.Any())
+                {   
+                    foreach (var item in lOB_aixbt1h)
+                    {
+                        item.Interval = (int)EIntervalMode.H1;
+                    }
+                    dicOB[aixbt].AddRange(lOB_aixbt1h);
+                }
                 Thread.Sleep(100);
+
                 var aixbt15m = await StaticVal.ByBitInstance().V5Api.ExchangeData.GetKlinesAsync(Bybit.Net.Enums.Category.Inverse, aixbt, Bybit.Net.Enums.KlineInterval.FifteenMinutes, null, null, 200);
                 var laixbt15m = aixbt15m.Data.List.Select(x => new Quote
                 {
@@ -322,14 +417,116 @@ namespace StockLib.Service
                     Close = x.ClosePrice,
                     Volume = x.Volume,
                 }).ToList();
-
                 laixbt15m.Reverse();
                 var lOB_aixbt15m = _partternService.OrderBlock(laixbt15m ?? new List<Quote>());
+                if (lOB_aixbt15m.Any())
+                {   
+                    foreach (var item in lOB_aixbt15m)
+                    {
+                        item.Interval = (int)EIntervalMode.M15;
+                    }
+                    dicOB[aixbt].AddRange(lOB_aixbt15m);
+                }
+                Monitor.TryEnter(_objLock, TimeSpan.FromSeconds(100));
+                _dicOB = dicOB;
             }
             catch (Exception ex)
             {
                 _logger.LogError($"AnalyzeService.CalculateCoin|EXCEPTION| {ex.Message}");
             }
+        }
+
+        public async Task<List<string>> CheckEntry()
+        {
+            var lRes = new List<string>();
+            try
+            {
+                var dt = DateTime.Now;
+                var btc = "BTCUSDT";
+                Monitor.Enter(_objLock);
+                var lastBTC = _lBtc.LastOrDefault();
+                Monitor.Exit(_objLock);
+                if(lastBTC.Item1 != null && (dt - lastBTC.Item2).TotalMinutes < 1)
+                {
+                    var focusShort = _dicOB[btc].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.TopPinbar || x.Mode == (int)EOrderBlockMode.TopInsideBar)
+                                                            && lastBTC.Item1 >= x.Focus);
+                    if (focusShort != null)
+                    {
+                        lRes.Add($"[OrderBlock - Short] BTC|{((EIntervalMode)focusShort.Interval).GetDisplayName()}|Entry: {focusShort.Entry}|SL: {focusShort.SL}");
+                    }
+                    var focusLong = _dicOB[btc].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.BotPinbar || x.Mode == (int)EOrderBlockMode.BotInsideBar)
+                                                           && lastBTC.Item1 <= x.Focus);
+                    if (focusLong != null)
+                    {
+                        lRes.Add($"[OrderBlock - Long] BTC|{((EIntervalMode)focusLong.Interval).GetDisplayName()}|Entry: {focusLong.Entry}|SL: {focusLong.SL}");
+                    }
+                }
+
+                var eth = "ETHUSDT";
+                Monitor.Enter(_objLock);
+                var lastEth = _lEth.LastOrDefault();
+                Monitor.Exit(_objLock);
+                if (lastEth.Item1 != null && (dt - lastEth.Item2).TotalMinutes < 1)
+                {
+                    var focusShort = _dicOB[eth].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.TopPinbar || x.Mode == (int)EOrderBlockMode.TopInsideBar)
+                                                            && lastEth.Item1 >= x.Focus);
+                    if (focusShort != null)
+                    {
+                        lRes.Add($"[OrderBlock - Short] ETH|{((EIntervalMode)focusShort.Interval).GetDisplayName()}|Entry: {focusShort.Entry}|SL: {focusShort.SL}");
+                    }
+                    var focusLong = _dicOB[eth].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.BotPinbar || x.Mode == (int)EOrderBlockMode.BotInsideBar)
+                                                           && lastEth.Item1 <= x.Focus);
+                    if (focusLong != null)
+                    {
+                        lRes.Add($"[OrderBlock - Long] ETH|{((EIntervalMode)focusLong.Interval).GetDisplayName()}|Entry: {focusLong.Entry}|SL: {focusLong.SL}");
+                    }
+                }
+
+                var wld = "WLDUSDT";
+                Monitor.Enter(_objLock);
+                var lastWLD = _lWld.LastOrDefault();
+                Monitor.Exit(_objLock);
+                if (lastWLD.Item1 != null && (dt - lastWLD.Item2).TotalMinutes < 1)
+                {
+                    var focusShort = _dicOB[wld].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.TopPinbar || x.Mode == (int)EOrderBlockMode.TopInsideBar)
+                                                            && lastWLD.Item1 >= x.Focus);
+                    if (focusShort != null)
+                    {
+                        lRes.Add($"[OrderBlock - Short] WLD|{((EIntervalMode)focusShort.Interval).GetDisplayName()}|Entry: {focusShort.Entry}|SL: {focusShort.SL}");
+                    }
+                    var focusLong = _dicOB[wld].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.BotPinbar || x.Mode == (int)EOrderBlockMode.BotInsideBar)
+                                                           && lastWLD.Item1 <= x.Focus);
+                    if (focusLong != null)
+                    {
+                        lRes.Add($"[OrderBlock - Long] WLD|{((EIntervalMode)focusLong.Interval).GetDisplayName()}|Entry: {focusLong.Entry}|SL: {focusLong.SL}");
+                    }
+                }
+
+                var aixbt = "AIXBTUSDT";
+                Monitor.Enter(_objLock);
+                var lastXbt = _lXbt.LastOrDefault();
+                Monitor.Exit(_objLock);
+                if (lastXbt.Item1 != null && (dt - lastXbt.Item2).TotalMinutes < 1)
+                {
+                    var focusShort = _dicOB[aixbt].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.TopPinbar || x.Mode == (int)EOrderBlockMode.TopInsideBar)
+                                                            && lastXbt.Item1 >= x.Focus);
+                    if (focusShort != null)
+                    {
+                        lRes.Add($"[OrderBlock - Short] AIXBT|{((EIntervalMode)focusShort.Interval).GetDisplayName()}|Entry: {focusShort.Entry}|SL: {focusShort.SL}");
+                    }
+                    var focusLong = _dicOB[aixbt].FirstOrDefault(x => (x.Mode == (int)EOrderBlockMode.BotPinbar || x.Mode == (int)EOrderBlockMode.BotInsideBar)
+                                                           && lastXbt.Item1 <= x.Focus);
+                    if (focusLong != null)
+                    {
+                        lRes.Add($"[OrderBlock - Long] AIXBT|{((EIntervalMode)focusLong.Interval).GetDisplayName()}|Entry: {focusLong.Entry}|SL: {focusLong.SL}");
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"AnalyzeService.CheckEntry|EXCEPTION| {ex.Message}");
+            }
+            return lRes;
         }
     }
 }
